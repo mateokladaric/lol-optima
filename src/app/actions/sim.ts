@@ -1,3 +1,6 @@
+//import { writeFileSync } from "fs";
+//import { join } from "path";
+
 type ScalingValue = number | number[] | ((level: number) => number);
 
 interface DamageScaling {
@@ -106,7 +109,7 @@ export interface Rune {
   effects?: RuneEffect[];
 }
 
-interface RunePage {
+export interface RunePage {
   primaryPath: RunePath;
   keystone: Rune;
   primaryRunes: [Rune, Rune, Rune];
@@ -3244,11 +3247,12 @@ class Character {
 
       // Only apply ability haste if not a static cooldown
       if (!isStaticCooldown) {
-        // Apply ability haste (basic abilities get both general + basic AH, ult gets only general + ult AH)
+        // Cap modeled AH so extreme item/rune stacking cannot collapse CDs to cast-time-only spam.
+        const AH_CAP = 120;
         const effectiveAH =
           ability.abilityType === "R"
-            ? stats.abilityHaste + stats.ultAbilityHaste
-            : totalAbilityHaste;
+            ? Math.min(stats.abilityHaste + stats.ultAbilityHaste, AH_CAP)
+            : Math.min(totalAbilityHaste, AH_CAP);
         const effectiveCDR = effectiveAH / (100 + effectiveAH);
         actualCooldown = baseCooldown * (1 - effectiveCDR);
 
@@ -3270,10 +3274,11 @@ class Character {
           actualCooldown = actualCooldown * (1 - cdrFromAttacks);
         }
 
-        // Cap minimum cooldown at cast time (can't cast faster than the animation)
-        // Use 0.5s as fallback if no cast time defined
-        const minCooldown = ability.castInfo?.castTime || 0.5;
-        actualCooldown = Math.max(actualCooldown, minCooldown);
+        // Floor cooldown using cast time and a fraction of base CD so sustained DPS does not
+        // explode when AH + Navori drive effective CD toward zero (degenerate vs live League).
+        const castFloor = ability.castInfo?.castTime ?? 0.5;
+        const rotationFloor = baseCooldown * 0.1;
+        actualCooldown = Math.max(actualCooldown, castFloor, rotationFloor);
       }
 
       // Calculate ability damage at max rank
@@ -27709,3 +27714,4 @@ export const Items: Item[] = [
   ZhonyasHourglass,
   SeraphsEmbrace,
 ];
+

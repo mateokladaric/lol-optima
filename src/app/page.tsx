@@ -1,5 +1,11 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
+import { recommendBuildsForChampion, resolveDuel } from "@/lib/buildOptimizer";
+import type {
+  BuildRecommendation,
+  DuelAssumptions,
+  ResolvedDuel,
+} from "@/lib/buildOptimizer";
 import { Character, Item, Characters, Items } from "./actions/sim";
 
 type BuildResult = {
@@ -26,6 +32,249 @@ type SortConfig = {
   direction: "asc" | "desc";
 };
 
+function BuildFinder(): React.ReactElement {
+  const [championSearch, setChampionSearch] = useState("");
+  const [selectedChampion, setSelectedChampion] = useState<Character | null>(
+    null,
+  );
+  const [recs, setRecs] = useState<BuildRecommendation[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [targetMaxHP, setTargetMaxHP] = useState(3000);
+  const [targetBonusHP, setTargetBonusHP] = useState(1000);
+  const [incomingPhysPct, setIncomingPhysPct] = useState(50);
+
+  const duelOptions = useMemo<DuelAssumptions>(
+    () => ({
+      targetMaxHP,
+      targetBonusHP,
+      incomingPhysShare: incomingPhysPct / 100,
+    }),
+    [targetMaxHP, targetBonusHP, incomingPhysPct],
+  );
+
+  const duelResolved = useMemo(() => resolveDuel(duelOptions), [duelOptions]);
+
+  const filteredChampions = useMemo(
+    () =>
+      Characters.filter((c) =>
+        c.Name.toLowerCase().includes(championSearch.toLowerCase()),
+      ),
+    [championSearch],
+  );
+
+  useEffect(() => {
+    if (!selectedChampion) {
+      setRecs([]);
+      return;
+    }
+    setBusy(true);
+    const t = window.setTimeout(() => {
+      setRecs(
+        recommendBuildsForChampion(selectedChampion, Items, {
+          duel: duelOptions,
+        }),
+      );
+      setBusy(false);
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [selectedChampion, duelOptions]);
+
+  return (
+    <div className="flex flex-1 flex-col min-h-0 p-4 overflow-hidden">
+      <div className="mb-4 shrink-0">
+        <h1 className="text-2xl font-bold text-white mb-1">1v1 build finder</h1>
+        <p className="text-gray-400 text-sm max-w-3xl">
+          Picks a balanced mix of damage and effective HP for a reference duel.
+          Tune opponent HP and how much damage you expect to take as physical
+          vs magic. Builds are refined with simulated annealing (Monte Carlo
+          search), so the first computation for a champion can take a few
+          seconds. Press{" "}
+          <kbd className="px-1 bg-gray-800 rounded">F4</kbd> for Random / Meta /
+          manual Planner.
+        </p>
+        <fieldset className="mt-3 flex flex-wrap gap-4 items-end text-sm border border-gray-700 rounded-lg p-3 bg-gray-800/30">
+          <legend className="text-gray-500 px-1 text-xs">Duel assumptions</legend>
+          <div>
+            <label htmlFor="duel-max-hp" className="block text-gray-500 text-xs mb-1">
+              Opponent max HP
+            </label>
+            <input
+              id="duel-max-hp"
+              type="number"
+              min={400}
+              max={12000}
+              step={100}
+              value={targetMaxHP}
+              onChange={(e) => setTargetMaxHP(Number(e.target.value) || 3000)}
+              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="duel-bonus-hp"
+              className="block text-gray-500 text-xs mb-1"
+            >
+              Opponent bonus HP
+            </label>
+            <input
+              id="duel-bonus-hp"
+              type="number"
+              min={0}
+              max={8000}
+              step={100}
+              value={targetBonusHP}
+              onChange={(e) => setTargetBonusHP(Number(e.target.value) || 0)}
+              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+            />
+          </div>
+          <div className="min-w-[200px]">
+            <label
+              htmlFor="duel-phys-share"
+              className="block text-gray-500 text-xs mb-1"
+            >
+              Incoming damage: {incomingPhysPct}% phys / {100 - incomingPhysPct}
+              % magic
+            </label>
+            <input
+              id="duel-phys-share"
+              type="range"
+              min={0}
+              max={100}
+              value={incomingPhysPct}
+              onChange={(e) => setIncomingPhysPct(Number(e.target.value))}
+              className="w-full accent-blue-500"
+            />
+          </div>
+        </fieldset>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+        <div className="w-full lg:w-[320px] shrink-0 flex flex-col border border-gray-700 rounded-lg bg-gray-800/40">
+          <label htmlFor="champion-search" className="sr-only">
+            Search champion
+          </label>
+          <input
+            id="champion-search"
+            type="text"
+            placeholder="Search champion..."
+            value={championSearch}
+            onChange={(e) => setChampionSearch(e.target.value)}
+            className="m-2 px-3 py-2 text-sm bg-gray-900 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+          />
+          <div className="flex-1 overflow-y-auto px-2 pb-2">
+            <div className="grid grid-cols-2 gap-1">
+              {filteredChampions.map((c) => (
+                <button
+                  key={c.Name}
+                  type="button"
+                  onClick={() => setSelectedChampion(c)}
+                  className={`p-2 rounded text-left text-xs font-medium border transition-colors ${
+                    selectedChampion?.Name === c.Name
+                      ? "border-blue-500 bg-blue-900/40 text-white"
+                      : "border-gray-600 bg-gray-800/80 hover:border-gray-500"
+                  }`}
+                >
+                  {c.Name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto pr-1">
+          {!selectedChampion && (
+            <div className="text-gray-500 text-sm">Select a champion.</div>
+          )}
+          {selectedChampion && busy && (
+            <div className="text-gray-400 text-sm">Computing builds…</div>
+          )}
+          {selectedChampion && !busy && recs.length === 0 && (
+            <div className="text-gray-500 text-sm">No recommendations.</div>
+          )}
+          {selectedChampion && !busy && recs.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-gray-500 text-xs">
+                Scores use opponent HP {duelResolved.targetMaxHP} (+{" "}
+                {duelResolved.targetBonusHP} bonus) and your Eff. HP weights{" "}
+                {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical.
+              </p>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+              {recs.map((r) => (
+                <div
+                  key={`${r.profile}-${r.label}-${r.items.join(",")}`}
+                  className="border border-gray-600 rounded-lg p-3 bg-gray-800/60"
+                >
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <div>
+                      <div className="text-amber-300 font-semibold text-sm">
+                        {r.label}
+                      </div>
+                      <div className="text-gray-500 text-xs mt-0.5">
+                        {r.description}
+                      </div>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-wide text-gray-500 border border-gray-600 rounded px-1.5 py-0.5 shrink-0">
+                      {r.profile}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs mb-2">
+                    <div className="bg-gray-900/50 rounded p-1.5">
+                      <div className="text-gray-500">Total DPS</div>
+                      <div className="font-bold text-blue-300">
+                        {r.totalDPS.toFixed(0)}
+                      </div>
+                    </div>
+                    <div className="bg-gray-900/50 rounded p-1.5">
+                      <div className="text-gray-500">Eff. HP</div>
+                      <div className="font-bold text-green-300">
+                        {Math.round(r.effectiveHP)}
+                      </div>
+                    </div>
+                    <div className="bg-gray-900/50 rounded p-1.5">
+                      <div className="text-gray-500">Keystone</div>
+                      <div className="font-bold text-yellow-200 truncate">
+                        {r.rune}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-gray-500 mb-1">Items</div>
+                  <div className="flex flex-wrap gap-1">
+                    {r.items.map((name) => (
+                      <span
+                        key={name}
+                        className="text-[11px] bg-purple-900/40 px-2 py-0.5 rounded border border-purple-700/50"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-4 gap-1 mt-2 text-[10px] text-center text-gray-400">
+                    <span>AA {r.autoAttackDPS.toFixed(0)}</span>
+                    <span>OH {r.onHitDPS.toFixed(0)}</span>
+                    <span>Ab {r.abilityDPS.toFixed(0)}</span>
+                    <span>DoT {r.dotDPS.toFixed(0)}</span>
+                  </div>
+                  <details className="mt-2 text-xs">
+                    <summary className="cursor-pointer text-gray-400 hover:text-gray-300">
+                      DPS breakdown
+                    </summary>
+                    <div className="mt-2 space-y-0.5 font-mono text-[10px] text-gray-400 max-h-40 overflow-y-auto border border-gray-700/50 rounded p-2 bg-gray-900/40">
+                      {r.breakdown.map((line) => (
+                        <div key={`${r.profile}-${line}`}>{line}</div>
+                      ))}
+                    </div>
+                  </details>
+                </div>
+              ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Random Build Generator Component with case-unboxing animation
 function RandomBuildGenerator(): React.ReactElement {
   const [isSpinning, setIsSpinning] = useState(false);
@@ -51,6 +300,7 @@ function RandomBuildGenerator(): React.ReactElement {
   }, []);
 
   // Keyboard controls: Escape closes popup, Space spins
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && selectedBuild) {
@@ -319,6 +569,7 @@ function RandomBuildGenerator(): React.ReactElement {
 type MetaData = {
   championBuilds: ChampionBuilds[];
   generatedAt: string;
+  duel?: ResolvedDuel;
 };
 
 function MetaAnalysis(): React.ReactElement {
@@ -456,14 +707,27 @@ function MetaAnalysis(): React.ReactElement {
           {metaData && (
             <span className="text-gray-500 ml-2">
               • Generated {new Date(metaData.generatedAt).toLocaleString()}
+              {metaData.duel && (
+                <span className="block mt-1 text-[11px]">
+                  Duel: target {metaData.duel.targetMaxHP} HP (+{" "}
+                  {metaData.duel.targetBonusHP} bonus), Eff. HP weight{" "}
+                  {(metaData.duel.incomingPhysShare * 100).toFixed(0)}% phys
+                </span>
+              )}
             </span>
           )}
         </p>
 
         <div className="flex gap-4 mb-4 items-center">
           <div className="flex items-center gap-2">
-            <label className="text-gray-400 text-sm">Champion:</label>
+            <label
+              htmlFor="meta-champion-filter"
+              className="text-gray-400 text-sm"
+            >
+              Champion:
+            </label>
             <select
+              id="meta-champion-filter"
               value={selectedChampionFilter || ""}
               onChange={(e) =>
                 setSelectedChampionFilter(e.target.value || null)
@@ -645,9 +909,9 @@ function MetaAnalysis(): React.ReactElement {
 }
 
 export default function Home(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<"random" | "planner" | "meta">(
-    "random",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "finder" | "random" | "planner" | "meta"
+  >("finder");
   const [showDevTabs, setShowDevTabs] = useState(false);
   const [selectedChampion, setSelectedChampion] = useState<Character | null>(
     null,
@@ -734,6 +998,16 @@ export default function Home(): React.ReactElement {
       {showDevTabs && (
         <div className="flex border-b border-gray-700">
           <button
+            onClick={() => setActiveTab("finder")}
+            className={`px-6 py-3 font-semibold transition-colors ${
+              activeTab === "finder"
+                ? "bg-gray-800 text-white border-b-2 border-emerald-500"
+                : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+            }`}
+          >
+            1v1 Finder
+          </button>
+          <button
             onClick={() => setActiveTab("random")}
             className={`px-6 py-3 font-semibold transition-colors ${
               activeTab === "random"
@@ -767,7 +1041,9 @@ export default function Home(): React.ReactElement {
       )}
 
       {/* Tab Content */}
-      {activeTab === "random" ? (
+      {!showDevTabs || activeTab === "finder" ? (
+        <BuildFinder />
+      ) : activeTab === "random" ? (
         <RandomBuildGenerator />
       ) : activeTab === "planner" ? (
         <div className="flex flex-1 overflow-hidden">

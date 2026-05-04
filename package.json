@@ -1,26 +1,34 @@
 {
   "name": "loloptima",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "compute-meta": "tsx scripts/compute-meta.ts",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "cf:build": "npx opennextjs-cloudflare build",
+    "preview": "npm run cf:build && npx wrangler dev",
+    "deploy": "npm run cf:build && npx wrangler deploy"
   },
   "dependencies": {
-    "next": "16.1.2",
+    "next": "15.5.9",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.14.8",
     "@biomejs/biome": "2.2.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.19.4",
+    "typescript": "^5",
+    "wrangler": "^4.59.2"
   }
 }
