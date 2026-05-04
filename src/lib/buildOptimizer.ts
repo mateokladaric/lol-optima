@@ -8,10 +8,90 @@
  */
 
 import type { Character, Item, Rune, RunePage } from "@/app/actions/sim";
-import { AllKeystones, Items } from "@/app/actions/sim";
+import { AllKeystones, Item as ItemModel, Items } from "@/app/actions/sim";
 
 function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
+}
+
+const REALISTIC_PAREN_ALLOWED = new Set(["base", "melee", "ranged"]);
+
+function isMeleeChampion(champion: Character): boolean {
+  return champion.AttackRange <= 250;
+}
+
+function parenToken(name: string): string | null {
+  const m = name.match(/\(([^)]+)\)/);
+  return m ? m[1].trim().toLowerCase() : null;
+}
+
+function isRealisticName(name: string): boolean {
+  const token = parenToken(name);
+  if (!token) return true;
+  if (!REALISTIC_PAREN_ALLOWED.has(token)) return false;
+  return true;
+}
+
+function candidatePriority(item: Item, melee: boolean): number {
+  const token = parenToken(item.name);
+  let score = 0;
+
+  if (!token) score += 6;
+  if (token === "base") score += 10;
+  if (token === "melee") score += melee ? 8 : -6;
+  if (token === "ranged") score += melee ? -6 : 8;
+
+  // Keep stable tie-breaking close to baseline rows.
+  if (item.name.includes("(Base)")) score += 2;
+  if (item.name.includes("(Melee)")) score += melee ? 2 : -1;
+  if (item.name.includes("(Ranged)")) score += melee ? -1 : 2;
+  return score;
+}
+
+function applyRealisticApproximation(item: Item, melee: boolean): Item {
+  // Kraken is a 3-hit cadence proc with missing-HP scaling; approximate sustained value
+  // with an average on-hit contribution rather than an always-proc burst row.
+  if (item.getGroupName() === "Kraken Slayer") {
+    const avgProc = melee ? 58 : 46; // ~175/3 melee, ~140/3 ranged
+    return new ItemModel(
+      "Kraken Slayer (Averaged)",
+      {
+        ...item.stats,
+        physicalOnHit: avgProc,
+      },
+      [],
+      "Kraken Slayer",
+    );
+  }
+  return item;
+}
+
+function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
+  const melee = isMeleeChampion(champion);
+  const grouped = new Map<string, Item[]>();
+
+  for (const item of itemPool) {
+    if (!isRealisticName(item.name)) continue;
+    const group = item.getGroupName();
+    if (!grouped.has(group)) grouped.set(group, []);
+    grouped.get(group)?.push(item);
+  }
+
+  const selected: Item[] = [];
+  for (const [, candidates] of grouped) {
+    let best = candidates[0];
+    let bestScore = candidatePriority(best, melee);
+    for (let i = 1; i < candidates.length; i++) {
+      const sc = candidatePriority(candidates[i], melee);
+      if (sc > bestScore) {
+        best = candidates[i];
+        bestScore = sc;
+      }
+    }
+    selected.push(applyRealisticApproximation(best, melee));
+  }
+
+  return selected;
 }
 
 export type ResolvedDuel = {
@@ -474,6 +554,7 @@ export function recommendBuildsForChampion(
   itemPool: Item[] = Items,
   options?: RecommendBuildsOptions,
 ): BuildRecommendation[] {
+  const realisticPool = buildRealisticItemPool(champion, itemPool);
   const duel = resolveDuel(options?.duel);
   const useMC = options?.monteCarlo !== false;
   const mc = resolveMonteCarloParams(options?.monteCarloParams);
@@ -497,13 +578,13 @@ export function recommendBuildsForChampion(
   const seenItemSets: Item[][] = [];
 
   for (const profile of profiles) {
-    const greedy = greedyFill(champion, itemPool, profile, duel);
+    const greedy = greedyFill(champion, realisticPool, profile, duel);
     let primary: Item[] = [];
 
     if (useMC && greedy.length === 6) {
       const saBest = simulatedAnnealingOptimize(
         champion,
-        itemPool,
+        realisticPool,
         profile,
         duel,
         mc,
@@ -520,7 +601,7 @@ export function recommendBuildsForChampion(
     } else if (useMC) {
       primary = simulatedAnnealingOptimize(
         champion,
-        itemPool,
+        realisticPool,
         profile,
         duel,
         mc,
@@ -569,7 +650,7 @@ export function recommendBuildsForChampion(
     let bestAlt: Item[] | null = null;
     let bestAltScore = -Infinity;
     for (let i = 0; i < nProbes; i++) {
-      const b = sampleFullBuild(itemPool);
+      const b = sampleFullBuild(realisticPool);
       if (b.length < 6) continue;
       if (!isDistinct(b, [primary])) continue;
       const s0 = scoreBuildFast(champion, profile, b, duel);

@@ -2627,6 +2627,24 @@ const ZhonyasHourglass = new Item(
   "Stasis",
 );
 
+/**
+ * Abilities flagged `appliesOnHit` are often rotation/proc-gated; without full
+ * rotation sim we scale their contribution toward a sustained 1v1 average.
+ */
+const ONHIT_SUSTAINED_FACTOR: Record<string, number> = {
+  Headshot: 0.22,
+  "Crippling Strike": 0.32,
+  "Mystic Shot": 0.42,
+  "Skip 'n Slash": 0.33,
+  "Blunt Force Trauma": 0.38,
+  Tumble: 0.42,
+  Determination: 0.34,
+  "Three Talon Strike": 0.58,
+};
+
+/** Fraction of autos with Lethal Tempo “bonus attack” damage treated as active. */
+const LETHAL_TEMPO_BOLT_UPTIME = 0.52;
+
 class Character {
   Name: string;
   HP: number;
@@ -3167,20 +3185,42 @@ class Character {
           100;
       }
 
-      onHitDamagePerAttack += onHitDamage;
-      breakdown.push(`${ability.name}: +${onHitDamage.toFixed(1)} on-hit`);
+      const sustain =
+        ONHIT_SUSTAINED_FACTOR[ability.name] ??
+        (ability.abilityType === "passive" ? 0.85 : 0.92);
+      const sustainedOnHit = onHitDamage * sustain;
+      onHitDamagePerAttack += sustainedOnHit;
+      if (sustain < 0.999) {
+        breakdown.push(
+          `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit (×${sustain.toFixed(2)} sustained)`,
+        );
+      } else {
+        breakdown.push(`${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit`);
+      }
     }
 
     // Process on-hit rune effects (Press the Attack, Grasp, etc.)
     const runeEffects = this.getAllRuneEffects();
     for (const effect of runeEffects) {
-      if (effect.type === "onHit" && effect.damage && effect.cooldown) {
-        const damage = this.calculateRuneDamage(
-          effect.damage,
-          stats,
-          18,
-          targetMaxHP,
+      if (effect.type !== "onHit" || !effect.damage) continue;
+
+      const damage = this.calculateRuneDamage(
+        effect.damage,
+        stats,
+        18,
+        targetMaxHP,
+      );
+
+      if (effect.trigger === "perStack") {
+        const avgPerHit = damage * LETHAL_TEMPO_BOLT_UPTIME;
+        onHitDamagePerAttack += avgPerHit;
+        breakdown.push(
+          `Rune (Lethal Tempo bolt, sustained): +${avgPerHit.toFixed(1)} per hit`,
         );
+        continue;
+      }
+
+      if (effect.cooldown) {
         const avgDamagePerHit = damage / effect.cooldown;
         onHitDamagePerAttack += avgDamagePerHit;
         breakdown.push(`Rune (on-hit): +${avgDamagePerHit.toFixed(1)} per hit`);
@@ -26521,12 +26561,13 @@ const PressTheAttack: Rune = {
 };
 
 const LethalTempo: Rune = {
-  name: "Lethal Tempo (Max Stacks)",
+  name: "Lethal Tempo (sustained avg)",
   path: "Precision",
   slot: "keystone",
-  description: "Gain 6% AS per stack (max 6), bonus bolts at max stacks",
+  description:
+    "Modeled ~62% of max attack speed stacks; bonus-attack damage uses sustained uptime (see DPS breakdown).",
   stats: {
-    attackSpeed: 36, // 6 stacks × 6% for melee
+    attackSpeed: 22, // ~62% of 6×6% melee cap — ramp + falloff not snapshot max
   },
   effects: [
     {
@@ -26546,9 +26587,8 @@ const Conqueror: Rune = {
   slot: "keystone",
   description: "Gain AD/AP per stack, heal at max stacks",
   stats: {
-    // Max stacks = 28.8 AD, but we ramp up over 12 hits
-    // Average effective AD = maxAD / 2 = 14.4 (spend half fight ramping, half at max)
-    ad: 14.4,
+    // Max stacks ~28.8 AD; sustained 1v1 closer to ~40–45% of peak than 50%
+    ad: 12,
   },
 };
 
@@ -26558,9 +26598,7 @@ const ConquerorAP: Rune = {
   slot: "keystone",
   description: "Gain AD/AP per stack, heal at max stacks",
   stats: {
-    // Max stacks = 48 AP, but we ramp up over 12 hits
-    // Average effective AP = maxAP / 2 = 24 (spend half fight ramping, half at max)
-    ap: 24,
+    ap: 20,
   },
 };
 
@@ -26592,16 +26630,17 @@ const Electrocute: Rune = {
 };
 
 const DarkHarvest: Rune = {
-  name: "Dark Harvest (10 souls)",
+  name: "Dark Harvest (avg souls)",
   path: "Domination",
   slot: "keystone",
-  description: "Damaging low HP champions deals bonus damage and reaps a soul",
+  description:
+    "Damaging low HP champions deals bonus damage and reaps a soul — modeled ~5 souls by mid duel, not 10.",
   effects: [
     {
       type: "onAbilityHit",
       trigger: "conditional",
       damage: {
-        baseDamage: 140, // 30 base + 11 × 10 souls
+        baseDamage: 85, // ~30 + 11×5 souls (sustained, not stacked snapshot)
         bonusAdRatio: 10,
         apRatio: 5,
         damageType: "adaptive",
@@ -26805,32 +26844,32 @@ const Overheal: Rune = {
 };
 
 const LegendAlacrity: Rune = {
-  name: "Legend: Alacrity (10 stacks)",
+  name: "Legend: Alacrity (avg stacks)",
   path: "Precision",
   slot: "slot2",
-  description: "18% attack speed at max stacks",
+  description: "~68% of max Legend stacks for sustained 1v1",
   stats: {
-    attackSpeed: 18, // 10 stacks × 1.5% + 3% base
+    attackSpeed: 12,
   },
 };
 
 const LegendHaste: Rune = {
-  name: "Legend: Haste (10 stacks)",
+  name: "Legend: Haste (avg stacks)",
   path: "Precision",
   slot: "slot2",
-  description: "20 ability haste at max stacks",
+  description: "~68% of max Legend stacks for sustained 1v1",
   stats: {
-    abilityHaste: 20, // 10 stacks × 1.5 + 5 base
+    abilityHaste: 14,
   },
 };
 
 const LegendBloodline: Rune = {
-  name: "Legend: Bloodline (10 stacks)",
+  name: "Legend: Bloodline (avg stacks)",
   path: "Precision",
   slot: "slot2",
-  description: "9% life steal at max stacks",
+  description: "~68% of max Legend stacks for sustained 1v1",
   stats: {
-    lifeSteal: 9, // 10 stacks × 0.6% + 3% base
+    lifeSteal: 6,
   },
 };
 
@@ -26864,7 +26903,7 @@ const CutDown: Rune = {
     {
       type: "conditional",
       trigger: "conditional",
-      statMultiplier: 12, // Assume max (target has 100% more HP)
+      statMultiplier: 8,
       conditions: [
         {
           type: "targetHealthDifference",
@@ -26934,7 +26973,7 @@ const ZombieWard: Rune = {
   slot: "slot2",
   description: "Gain adaptive force from zombie wards",
   stats: {
-    ad: 9, // Max stacks (or ap: 15)
+    ad: 6,
   },
 };
 
@@ -26944,27 +26983,27 @@ const GhostPoro: Rune = {
   slot: "slot2",
   description: "Gain adaptive force from ghost poros",
   stats: {
-    ad: 10.8, // Max stacks (or ap: 18)
+    ad: 8,
   },
 };
 
 const EyeballCollection: Rune = {
-  name: "Eyeball Collection (10 stacks)",
+  name: "Eyeball Collection (avg stacks)",
   path: "Domination",
   slot: "slot2",
-  description: "1.2 AD or 2 AP per stack, max 18 AD or 30 AP",
+  description: "~58% of max stacks — typical mid-duel value, not full 10",
   stats: {
-    ad: 18, // Max stacks for AD champions
+    ad: 10,
   },
 };
 
 const EyeballCollectionAP: Rune = {
-  name: "Eyeball Collection (10 stacks, AP)",
+  name: "Eyeball Collection (avg stacks, AP)",
   path: "Domination",
   slot: "slot2",
-  description: "1.2 AD or 2 AP per stack, max 18 AD or 30 AP",
+  description: "~58% of max stacks — typical mid-duel value, not full 10",
   stats: {
-    ap: 30, // Max stacks for AP champions
+    ap: 17,
   },
 };
 
@@ -26993,12 +27032,12 @@ const RelentlessHunter: Rune = {
 };
 
 const UltimateHunter: Rune = {
-  name: "Ultimate Hunter (5 stacks)",
+  name: "Ultimate Hunter (avg stacks)",
   path: "Domination",
   slot: "slot3",
-  description: "30 ultimate ability haste at max stacks",
+  description: "~65% of max unique takedown stacks for ult haste",
   stats: {
-    ultAbilityHaste: 30, // 5 stacks × 5 + 5 base
+    ultAbilityHaste: 20,
   },
 };
 
