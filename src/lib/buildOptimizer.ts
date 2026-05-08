@@ -144,6 +144,7 @@ export type BuildProfileId =
   | "glass"
   | "tank"
   | "ap"
+  | "spell"
   | "ad"
   | "bruiser";
 
@@ -257,6 +258,16 @@ function profileScore(
       const bonus =
         apFromItems >= 120 ? 1.15 : apFromItems >= 60 ? 1.05 : 0.72;
       return Math.log1p(apLean) * bonus * Math.pow(Math.log1p(ehp / 600), 0.25);
+    }
+    case "spell": {
+      const spellOnly = dps.abilityDPS + dps.dotDPS + dps.burstDPS;
+      const bonus =
+        apFromItems >= 120 ? 1.15 : apFromItems >= 60 ? 1.05 : 0.72;
+      return (
+        Math.log1p(spellOnly) *
+        bonus *
+        Math.pow(Math.log1p(ehp / 650), 0.2)
+      );
     }
     case "ad":
       return (
@@ -544,6 +555,11 @@ const PROFILE_META: Record<
     label: "AP / spell-heavy",
     description: "Favors ability + DoT output and AP itemization.",
   },
+  spell: {
+    label: "Spell-only (no autos)",
+    description:
+      "Optimizes ability + DoT + burst output while ignoring auto-attack and on-hit DPS.",
+  },
   ad: {
     label: "AD / autos & on-hit",
     description: "Favors auto attacks, on-hit, and physical carry patterns.",
@@ -586,6 +602,7 @@ export function recommendBuildsForChampion(
     "glass",
     "tank",
     "ap",
+    "spell",
     "ad",
     "bruiser",
   ];
@@ -734,6 +751,7 @@ export function recommendBuildsForChampion(
         "glass",
         "tank",
         "ap",
+        "spell",
         "ad",
         "bruiser",
       ];
