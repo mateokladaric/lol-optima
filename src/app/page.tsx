@@ -12,6 +12,7 @@ import { Characters, Items, type Character, type Item } from "./actions/sim";
 type BuildResult = {
   champion: string;
   items: string[];
+  totalGold?: number;
   rune: string; // Keystone rune name
   totalDPS: number;
   autoAttackDPS: number;
@@ -266,7 +267,7 @@ function BuildFinder(): React.ReactElement {
                       {r.profile}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs mb-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs mb-2">
                     <div className="bg-gray-900/50 rounded p-1.5">
                       <div className="text-gray-500">Total DPS</div>
                       <div className="font-bold text-blue-300">
@@ -280,13 +281,21 @@ function BuildFinder(): React.ReactElement {
                       </div>
                     </div>
                     <div className="bg-gray-900/50 rounded p-1.5">
+                      <div className="text-gray-500">Est. gold</div>
+                      <div className="font-bold text-cyan-200">
+                        ~{r.totalGold.toLocaleString()}g
+                      </div>
+                    </div>
+                    <div className="bg-gray-900/50 rounded p-1.5">
                       <div className="text-gray-500">Keystone</div>
                       <div className="font-bold text-yellow-200 truncate">
                         {r.rune}
                       </div>
                     </div>
                   </div>
-                  <div className="text-[10px] text-gray-500 mb-1">Items</div>
+                  <div className="text-[10px] text-gray-500 mb-1">
+                    Items (rough buy order: best est. power/gold first; cheaper when tied)
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {r.items.map((name) => (
                       <span

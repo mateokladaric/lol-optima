@@ -2736,6 +2736,11 @@ export type SimulationScenario = {
   abilityHasteCap?: number;
   cooldownFloorBaseRatio?: number;
   enableChampionRotationProfiles?: boolean;
+  /**
+   * When true: attack speed does not contribute to auto DPS, on-hit DPS, or
+   * attack-based basic-ability CDR (e.g. Navori). Used for "spell-only" builds.
+   */
+  spellOnlyNoAutos?: boolean;
 };
 
 type ResolvedSimulationScenario = {
@@ -2748,6 +2753,7 @@ type ResolvedSimulationScenario = {
   abilityHasteCap: number;
   cooldownFloorBaseRatio: number;
   enableChampionRotationProfiles: boolean;
+  spellOnlyNoAutos: boolean;
 };
 
 const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
@@ -2760,6 +2766,7 @@ const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
   abilityHasteCap: 120,
   cooldownFloorBaseRatio: 0.1,
   enableChampionRotationProfiles: true,
+  spellOnlyNoAutos: false,
 };
 
 function clamp01(n: number): number {
@@ -2798,6 +2805,7 @@ function resolveSimulationScenario(
     enableChampionRotationProfiles:
       scenario?.enableChampionRotationProfiles ??
       DEFAULT_SIM_SCENARIO.enableChampionRotationProfiles,
+    spellOnlyNoAutos: Boolean(scenario?.spellOnlyNoAutos),
   };
 }
 
@@ -3164,6 +3172,8 @@ class Character {
   } {
     const sim = resolveSimulationScenario(scenario);
     const stats = this.getTotalStats();
+    /** For spell-only scenarios: no AAs, no on-hit DPS, no Navori-style CDR from attacks. */
+    const attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
     const breakdown: string[] = [];
     const rotationProfile =
       sim.enableChampionRotationProfiles
@@ -3179,7 +3189,7 @@ class Character {
     const critMultiplier =
       1 + (stats.critChance / 100) * ((stats.critDmg - 100) / 100);
     const autoAttackDamagePerHit = baseAutoAttackDamage * critMultiplier;
-    const autoAttackDPS = autoAttackDamagePerHit * stats.as;
+    const autoAttackDPS = autoAttackDamagePerHit * attackRate;
     breakdown.push(
       `Base AA: ${autoAttackDPS.toFixed(1)} DPS (${stats.ad.toFixed(
         1,
@@ -3405,12 +3415,12 @@ class Character {
       }
     }
 
-    const onHitDPS = onHitDamagePerAttack * stats.as;
+    const onHitDPS = onHitDamagePerAttack * attackRate;
     if (onHitDamagePerAttack > 0) {
       breakdown.push(
         `On-hit total: ${onHitDPS.toFixed(
           1,
-        )} DPS (${onHitDamagePerAttack.toFixed(1)} * ${stats.as.toFixed(
+        )} DPS (${onHitDamagePerAttack.toFixed(1)} * ${attackRate.toFixed(
           2,
         )} AS)`,
       );
@@ -3486,7 +3496,7 @@ class Character {
         ) {
           const cdrPerAttack =
             stats.basicAbilityCooldownReductionOnAttack / 100;
-          const attacksDuringCooldown = stats.as * actualCooldown;
+          const attacksDuringCooldown = attackRate * actualCooldown;
           // Each attack reduces remaining CD by cdrPerAttack fraction
           // Effective CD reduction factor
           const cdrFromAttacks =

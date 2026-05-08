@@ -14,6 +14,15 @@ simulated annealing to explore strong 6-item builds.
   - Scenario level (used for ability/rune scaling and ability ranks)
   - Champion rotation templates toggle (rotation-aware vs raw generic cadence)
 
+## Item gold (buy order & efficiency)
+
+Recommendations list items in **rough purchase order** (estimated cheap → expensive).
+`Est. gold` is a **stat-based approximation** to Riot’s shop pricing (not patch-perfect),
+plus a few manual overrides. It is used to:
+
+- sort displayed item slots for “power sooner” intuition
+- break ties when choosing between item variants in the same group (better power per gold)
+
 ### Meta generation env vars
 
 Used by `npm run compute-meta`:

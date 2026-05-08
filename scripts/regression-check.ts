@@ -72,4 +72,19 @@ for (const test of CASES) {
   }
 }
 
+const lux = Characters.find((c) => c.Name === "Lux");
+if (lux) {
+  const luxSpell = recommendBuildsForChampion(lux, Items, {
+    simulation: { level: 18 },
+    monteCarlo: false,
+  }).find((r) => r.profile === "spell");
+  const forbidden = /Blade of the Ruined King|Navori Flickerblade|Phantom Dancer/i;
+  const bad = (luxSpell?.items ?? []).some((n) => forbidden.test(n));
+  if (bad) {
+    fail(
+      `Lux spell-only must not pick auto/on-hit items (Navori/BotRK/PD): ${luxSpell?.items.join(", ")}`,
+    );
+  }
+}
+
 console.log(`Regression checks passed (${CASES.length} champion scenarios).`);

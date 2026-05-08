@@ -15,6 +15,11 @@ import type {
   SimulationScenario,
 } from "@/app/actions/sim";
 import { AllKeystones, Item as ItemModel, Items } from "@/app/actions/sim";
+import {
+  goldEfficiencyTieBreak,
+  sortItemsForPurchaseOrder,
+  totalBuildGold,
+} from "@/lib/itemGold";
 
 export type { SimulationScenario };
 
@@ -74,6 +79,16 @@ function applyRealisticApproximation(item: Item, melee: boolean): Item {
   return item;
 }
 
+/** Per-profile sim tweaks: spell-only scoring assumes no autos / no on-hit cadence. */
+function mergeProfileSimulation(
+  profile: BuildProfileId,
+  simulation: SimulationScenario | undefined,
+): SimulationScenario {
+  const base: SimulationScenario = simulation ? { ...simulation } : {};
+  if (profile === "spell") return { ...base, spellOnlyNoAutos: true };
+  return base;
+}
+
 function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
   const melee = isMeleeChampion(champion);
   const grouped = new Map<string, Item[]>();
@@ -88,11 +103,16 @@ function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
   const selected: Item[] = [];
   for (const [, candidates] of grouped) {
     let best = candidates[0];
-    let bestScore = candidatePriority(best, melee);
+    let bestScore =
+      candidatePriority(best, melee) * 1000 +
+      goldEfficiencyTieBreak(best) * 120;
     for (let i = 1; i < candidates.length; i++) {
-      const sc = candidatePriority(candidates[i], melee);
+      const cand = candidates[i];
+      const sc =
+        candidatePriority(cand, melee) * 1000 +
+        goldEfficiencyTieBreak(cand) * 120;
       if (sc > bestScore) {
-        best = candidates[i];
+        best = cand;
         bestScore = sc;
       }
     }
@@ -153,6 +173,8 @@ export interface BuildRecommendation {
   label: string;
   description: string;
   items: string[];
+  /** Sum of estimated gold (`items` order: power/gold first, then cheaper when tied). */
+  totalGold: number;
   rune: string;
   score: number;
   totalDPS: number;
@@ -558,7 +580,7 @@ const PROFILE_META: Record<
   spell: {
     label: "Spell-only (no autos)",
     description:
-      "Optimizes ability + DoT + burst output while ignoring auto-attack and on-hit DPS.",
+      "Optimizes ability + DoT + burst. Sim assumes no attack cadence (no AA/on-hit DPS, no Navori CDR from autos).",
   },
   ad: {
     label: "AD / autos & on-hit",
@@ -611,7 +633,8 @@ export function recommendBuildsForChampion(
   const seenItemSets: Item[][] = [];
 
   for (const profile of profiles) {
-    const greedy = greedyFill(champion, realisticPool, profile, duel, simulation);
+    const profileSim = mergeProfileSimulation(profile, simulation);
+    const greedy = greedyFill(champion, realisticPool, profile, duel, profileSim);
     let primary: Item[] = [];
 
     if (useMC && greedy.length === 6) {
@@ -620,14 +643,14 @@ export function recommendBuildsForChampion(
         realisticPool,
         profile,
         duel,
-        simulation,
+        profileSim,
         mc,
         greedy,
       );
-      const gFast = scoreBuildFast(champion, profile, greedy, duel, simulation);
+      const gFast = scoreBuildFast(champion, profile, greedy, duel, profileSim);
       const sFast =
         saBest.length === 6
-          ? scoreBuildFast(champion, profile, saBest, duel, simulation)
+          ? scoreBuildFast(champion, profile, saBest, duel, profileSim)
           : -Infinity;
       primary = sFast >= gFast && saBest.length === 6 ? saBest : greedy;
     } else if (greedy.length === 6) {
@@ -638,7 +661,7 @@ export function recommendBuildsForChampion(
         realisticPool,
         profile,
         duel,
-        simulation,
+        profileSim,
         mc,
         null,
       );
@@ -651,7 +674,7 @@ export function recommendBuildsForChampion(
       primary,
       profile,
       duel,
-        simulation,
+      profileSim,
     );
     const gc = cloneChampionWithLoadout(
       champion,
@@ -661,18 +684,20 @@ export function recommendBuildsForChampion(
     const gd = gc.calculateDPS(
       duel.targetMaxHP,
       duel.targetBonusHP,
-      simulation,
+      profileSim,
     );
     const gehp = mixedEffectiveHP(gc.getTotalStats(), duel.incomingPhysShare);
     const gscore = profileScore(profile, gd, gehp, primary);
 
     if (isDistinct(primary, seenItemSets)) {
       seenItemSets.push(primary);
+      const purchaseOrder = sortItemsForPurchaseOrder(primary);
       results.push({
         profile,
         label: PROFILE_META[profile].label,
         description: PROFILE_META[profile].description,
-        items: primary.map((i) => i.name),
+        items: purchaseOrder.map((i) => i.name),
+        totalGold: totalBuildGold(purchaseOrder),
         rune: gRune?.name ?? "None",
         score: gscore,
         totalDPS: gd.totalDPS,
@@ -684,7 +709,7 @@ export function recommendBuildsForChampion(
         effectiveHP: gehp,
         breakdown: gd.breakdown,
         duel: { ...duel },
-        simulation: { ...simulation },
+        simulation: { ...profileSim },
       });
     }
 
@@ -694,7 +719,7 @@ export function recommendBuildsForChampion(
       const b = sampleFullBuild(realisticPool);
       if (b.length < 6) continue;
       if (!isDistinct(b, [primary])) continue;
-      const s0 = scoreBuildFast(champion, profile, b, duel, simulation);
+      const s0 = scoreBuildFast(champion, profile, b, duel, profileSim);
       if (s0 > bestAltScore) {
         bestAltScore = s0;
         bestAlt = b;
@@ -706,7 +731,7 @@ export function recommendBuildsForChampion(
         bestAlt,
         profile,
         duel,
-        simulation,
+        profileSim,
       );
       const c = cloneChampionWithLoadout(
         champion,
@@ -716,17 +741,19 @@ export function recommendBuildsForChampion(
       const dps = c.calculateDPS(
         duel.targetMaxHP,
         duel.targetBonusHP,
-        simulation,
+        profileSim,
       );
       const ehp = mixedEffectiveHP(c.getTotalStats(), duel.incomingPhysShare);
       const sc = profileScore(profile, dps, ehp, bestAlt);
       if (sc > gscore * 0.88) {
         seenItemSets.push(bestAlt);
+        const altOrder = sortItemsForPurchaseOrder(bestAlt);
         results.push({
           profile,
           label: `${PROFILE_META[profile].label} (alt)`,
           description: PROFILE_META[profile].description,
-          items: bestAlt.map((x) => x.name),
+          items: altOrder.map((x) => x.name),
+          totalGold: totalBuildGold(altOrder),
           rune: aRune?.name ?? "None",
           score: sc,
           totalDPS: dps.totalDPS,
@@ -738,7 +765,7 @@ export function recommendBuildsForChampion(
           effectiveHP: ehp,
           breakdown: dps.breakdown,
           duel: { ...duel },
-          simulation: { ...simulation },
+          simulation: { ...profileSim },
         });
       }
     }
@@ -766,6 +793,7 @@ export function recommendBuildsForChampion(
 export type SerializedBuildResult = {
   champion: string;
   items: string[];
+  totalGold: number;
   rune: string;
   totalDPS: number;
   autoAttackDPS: number;
@@ -856,6 +884,7 @@ export function computeMetaForAllChampions(
       return {
         champion: champion.Name,
         items: r.items,
+        totalGold: r.totalGold,
         rune: r.rune,
         totalDPS: r.totalDPS,
         autoAttackDPS: r.autoAttackDPS,
