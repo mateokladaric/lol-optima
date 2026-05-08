@@ -5,8 +5,9 @@ import type {
   BuildRecommendation,
   DuelAssumptions,
   ResolvedDuel,
+  SimulationScenario,
 } from "@/lib/buildOptimizer";
-import { Character, Item, Characters, Items } from "./actions/sim";
+import { Characters, Items, type Character, type Item } from "./actions/sim";
 
 type BuildResult = {
   champion: string;
@@ -42,6 +43,8 @@ function BuildFinder(): React.ReactElement {
   const [targetMaxHP, setTargetMaxHP] = useState(3000);
   const [targetBonusHP, setTargetBonusHP] = useState(1000);
   const [incomingPhysPct, setIncomingPhysPct] = useState(50);
+  const [simulationLevel, setSimulationLevel] = useState(18);
+  const [useRotationProfiles, setUseRotationProfiles] = useState(true);
 
   const duelOptions = useMemo<DuelAssumptions>(
     () => ({
@@ -72,12 +75,16 @@ function BuildFinder(): React.ReactElement {
       setRecs(
         recommendBuildsForChampion(selectedChampion, Items, {
           duel: duelOptions,
+          simulation: {
+            level: simulationLevel,
+            enableChampionRotationProfiles: useRotationProfiles,
+          },
         }),
       );
       setBusy(false);
     }, 0);
     return () => window.clearTimeout(t);
-  }, [selectedChampion, duelOptions]);
+  }, [selectedChampion, duelOptions, simulationLevel, useRotationProfiles]);
 
   return (
     <div className="flex flex-1 flex-col min-h-0 p-4 overflow-hidden">
@@ -145,6 +152,46 @@ function BuildFinder(): React.ReactElement {
               className="w-full accent-blue-500"
             />
           </div>
+          <div>
+            <label
+              htmlFor="duel-level"
+              className="block text-gray-500 text-xs mb-1"
+            >
+              Simulation level
+            </label>
+            <input
+              id="duel-level"
+              type="number"
+              min={1}
+              max={18}
+              step={1}
+              value={simulationLevel}
+              onChange={(e) =>
+                setSimulationLevel(Math.max(1, Math.min(18, Number(e.target.value) || 18)))
+              }
+              className="w-24 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="duel-rotation-profiles"
+              className="block text-gray-500 text-xs mb-1"
+            >
+              Rotation templates
+            </label>
+            <button
+              id="duel-rotation-profiles"
+              type="button"
+              onClick={() => setUseRotationProfiles((prev) => !prev)}
+              className={`px-3 py-1 rounded border text-xs font-medium transition-colors ${
+                useRotationProfiles
+                  ? "bg-emerald-900/50 border-emerald-600 text-emerald-200"
+                  : "bg-gray-900 border-gray-600 text-gray-300"
+              }`}
+            >
+              {useRotationProfiles ? "Enabled" : "Disabled"}
+            </button>
+          </div>
         </fieldset>
       </div>
 
@@ -196,7 +243,9 @@ function BuildFinder(): React.ReactElement {
               <p className="text-gray-500 text-xs">
                 Scores use opponent HP {duelResolved.targetMaxHP} (+{" "}
                 {duelResolved.targetBonusHP} bonus) and your Eff. HP weights{" "}
-                {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical.
+                {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical at
+                level {simulationLevel}. Rotation templates{" "}
+                {useRotationProfiles ? "enabled" : "disabled"}.
               </p>
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               {recs.map((r) => (
@@ -570,6 +619,7 @@ type MetaData = {
   championBuilds: ChampionBuilds[];
   generatedAt: string;
   duel?: ResolvedDuel;
+  simulation?: SimulationScenario;
 };
 
 function MetaAnalysis(): React.ReactElement {

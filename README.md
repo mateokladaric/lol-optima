@@ -1,3 +1,50 @@
+## LoLoptima
+
+LoLoptima is a 1v1-oriented League build simulator and recommender. It evaluates
+item/rune loadouts with a sustained-DPS + effective-HP score and uses
+simulated annealing to explore strong 6-item builds.
+
+## Simulation Controls
+
+- Duel assumptions (UI + compute script):
+  - Target max HP
+  - Target bonus HP
+  - Incoming physical damage share
+- Simulation assumptions:
+  - Scenario level (used for ability/rune scaling and ability ranks)
+  - Champion rotation templates toggle (rotation-aware vs raw generic cadence)
+
+### Meta generation env vars
+
+Used by `npm run compute-meta`:
+
+- `LOLOPTIMA_TARGET_MAX_HP`
+- `LOLOPTIMA_TARGET_BONUS_HP`
+- `LOLOPTIMA_INCOMING_PHYS_SHARE`
+- `LOLOPTIMA_SA_ITER`
+- `LOLOPTIMA_SA_RESTARTS`
+- `LOLOPTIMA_MC_PROBES`
+- `LOLOPTIMA_SIM_LEVEL`
+- `LOLOPTIMA_SIM_ROTATION_PROFILES` (`true/false`, `1/0`, `yes/no`)
+
+## Quality scripts
+
+- `npm run regression:sim`  
+  Fast simulation regression checks for several champions and scenario toggles.
+
+- `npm run meta:diff`  
+  Compares current computed top-build DPS against a baseline meta file (default:
+  `public/data/metaBuilds.json`) and prints top movers.
+
+Optional env vars for `meta:diff`:
+
+- `LOLOPTIMA_BASELINE_META_PATH`
+- `LOLOPTIMA_SIM_LEVEL`
+- `LOLOPTIMA_SIM_ROTATION_PROFILES`
+- `LOLOPTIMA_META_DIFF_TOP_N`
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

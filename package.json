@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "compute-meta": "tsx scripts/compute-meta.ts",
+    "regression:sim": "tsx scripts/regression-check.ts",
+    "meta:diff": "tsx scripts/meta-diff.ts",
     "lint": "biome check",
     "format": "biome format --write",
     "cf:build": "npx opennextjs-cloudflare build",

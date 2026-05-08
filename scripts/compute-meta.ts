@@ -5,6 +5,7 @@ import {
   computeMetaForAllChampions,
   type DuelAssumptions,
   type MonteCarloParams,
+  type SimulationScenario,
 } from "../src/lib/buildOptimizer";
 
 function envNum(key: string): number | undefined {
@@ -12,6 +13,15 @@ function envNum(key: string): number | undefined {
   if (v === undefined || v === "") return undefined;
   const n = Number(v);
   return Number.isFinite(n) ? n : undefined;
+}
+
+function envBool(key: string): boolean | undefined {
+  const v = process.env[key];
+  if (v === undefined || v === "") return undefined;
+  const norm = v.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(norm)) return true;
+  if (["0", "false", "no", "off"].includes(norm)) return false;
+  return undefined;
 }
 
 const duel: DuelAssumptions = {};
@@ -30,13 +40,25 @@ if (saIter !== undefined) mc.iterationsPerRestart = saIter;
 if (saRestarts !== undefined) mc.restarts = saRestarts;
 if (mcProbes !== undefined) mc.randomProbeSamples = mcProbes;
 
+const simulation: SimulationScenario = {};
+const level = envNum("LOLOPTIMA_SIM_LEVEL");
+if (level !== undefined) simulation.level = level;
+const useRotation = envBool("LOLOPTIMA_SIM_ROTATION_PROFILES");
+if (useRotation !== undefined) {
+  simulation.enableChampionRotationProfiles = useRotation;
+}
+
 const meta = computeMetaForAllChampions(
   Characters,
   Items,
   Object.keys(duel).length > 0 ? duel : undefined,
   Object.keys(mc).length > 0 ? mc : undefined,
+  Object.keys(simulation).length > 0 ? simulation : undefined,
 );
 const outPath = join(process.cwd(), "public", "data", "metaBuilds.json");
 writeFileSync(outPath, JSON.stringify(meta, null, 2), "utf8");
 console.log(`Wrote ${outPath} (${meta.championBuilds.length} champions)`);
 console.log("Duel assumptions:", meta.duel);
+if (meta.simulation) {
+  console.log("Simulation assumptions:", meta.simulation);
+}

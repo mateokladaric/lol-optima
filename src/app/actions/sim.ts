@@ -2645,6 +2645,119 @@ const ONHIT_SUSTAINED_FACTOR: Record<string, number> = {
 /** Fraction of autos with Lethal Tempo “bonus attack” damage treated as active. */
 const LETHAL_TEMPO_BOLT_UPTIME = 0.52;
 
+type AbilityType = "passive" | "Q" | "W" | "E" | "R";
+
+type ChampionRotationProfile = {
+  abilityTypeMultiplier?: Partial<Record<Exclude<AbilityType, "passive">, number>>;
+  onHitSustainMultiplier?: number;
+};
+
+/**
+ * Champion-level rotation weighting for sustained 1v1 sims.
+ * Values tune cast cadence realism without implementing full per-frame combat scripting.
+ */
+const CHAMPION_ROTATION_PROFILES: Record<string, ChampionRotationProfile> = {
+  Ahri: { abilityTypeMultiplier: { Q: 1.0, W: 0.9, E: 0.65, R: 0.45 } },
+  Aatrox: { abilityTypeMultiplier: { Q: 0.95, W: 0.6, E: 0.8, R: 0.35 } },
+  Cassiopeia: { abilityTypeMultiplier: { Q: 1.0, W: 0.45, E: 1.3, R: 0.3 } },
+  Ezreal: { abilityTypeMultiplier: { Q: 1.15, W: 0.7, E: 0.35, R: 0.15 } },
+  Jinx: { abilityTypeMultiplier: { Q: 0.8, W: 0.45, E: 0.35, R: 0.2 } },
+  Katarina: { abilityTypeMultiplier: { Q: 0.9, W: 0.9, E: 1.15, R: 0.55 } },
+  Renekton: { abilityTypeMultiplier: { Q: 0.9, W: 0.95, E: 0.8, R: 0.6 } },
+  Riven: { abilityTypeMultiplier: { Q: 1.2, W: 0.9, E: 0.75, R: 0.55 } },
+  Vayne: {
+    abilityTypeMultiplier: { Q: 1.05, W: 1.0, E: 0.45, R: 0.35 },
+    onHitSustainMultiplier: 1.08,
+  },
+  Zed: { abilityTypeMultiplier: { Q: 0.95, W: 0.55, E: 0.9, R: 0.45 } },
+};
+
+export type SimulationScenario = {
+  level?: number;
+  avgCurrentHPRatio?: number;
+  conditionalLowHpUptime?: number;
+  conditionalGeneralUptime?: number;
+  onHitPassiveFallbackSustain?: number;
+  onHitActiveFallbackSustain?: number;
+  abilityHasteCap?: number;
+  cooldownFloorBaseRatio?: number;
+  enableChampionRotationProfiles?: boolean;
+};
+
+type ResolvedSimulationScenario = {
+  level: number;
+  avgCurrentHPRatio: number;
+  conditionalLowHpUptime: number;
+  conditionalGeneralUptime: number;
+  onHitPassiveFallbackSustain: number;
+  onHitActiveFallbackSustain: number;
+  abilityHasteCap: number;
+  cooldownFloorBaseRatio: number;
+  enableChampionRotationProfiles: boolean;
+};
+
+const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
+  level: 18,
+  avgCurrentHPRatio: 0.6,
+  conditionalLowHpUptime: 0.3,
+  conditionalGeneralUptime: 0.5,
+  onHitPassiveFallbackSustain: 0.85,
+  onHitActiveFallbackSustain: 0.92,
+  abilityHasteCap: 120,
+  cooldownFloorBaseRatio: 0.1,
+  enableChampionRotationProfiles: true,
+};
+
+function clamp01(n: number): number {
+  return Math.max(0, Math.min(1, n));
+}
+
+function resolveSimulationScenario(
+  scenario?: SimulationScenario,
+): ResolvedSimulationScenario {
+  return {
+    level: Math.max(1, Math.min(18, Math.round(scenario?.level ?? DEFAULT_SIM_SCENARIO.level))),
+    avgCurrentHPRatio: clamp01(
+      scenario?.avgCurrentHPRatio ?? DEFAULT_SIM_SCENARIO.avgCurrentHPRatio,
+    ),
+    conditionalLowHpUptime: clamp01(
+      scenario?.conditionalLowHpUptime ?? DEFAULT_SIM_SCENARIO.conditionalLowHpUptime,
+    ),
+    conditionalGeneralUptime: clamp01(
+      scenario?.conditionalGeneralUptime ?? DEFAULT_SIM_SCENARIO.conditionalGeneralUptime,
+    ),
+    onHitPassiveFallbackSustain: clamp01(
+      scenario?.onHitPassiveFallbackSustain ??
+        DEFAULT_SIM_SCENARIO.onHitPassiveFallbackSustain,
+    ),
+    onHitActiveFallbackSustain: clamp01(
+      scenario?.onHitActiveFallbackSustain ??
+        DEFAULT_SIM_SCENARIO.onHitActiveFallbackSustain,
+    ),
+    abilityHasteCap: Math.max(
+      0,
+      scenario?.abilityHasteCap ?? DEFAULT_SIM_SCENARIO.abilityHasteCap,
+    ),
+    cooldownFloorBaseRatio: clamp01(
+      scenario?.cooldownFloorBaseRatio ?? DEFAULT_SIM_SCENARIO.cooldownFloorBaseRatio,
+    ),
+    enableChampionRotationProfiles:
+      scenario?.enableChampionRotationProfiles ??
+      DEFAULT_SIM_SCENARIO.enableChampionRotationProfiles,
+  };
+}
+
+function basicAbilityRankAtLevel(level: number): number {
+  return Math.min(5, Math.max(1, Math.floor((level + 1) / 2)));
+}
+
+function ultRankAtLevel(level: number): number {
+  if (level >= 16) return 3;
+  if (level >= 11) return 2;
+  if (level >= 6) return 1;
+  return 0;
+}
+
 class Character {
   Name: string;
   HP: number;
@@ -2985,6 +3098,7 @@ class Character {
   calculateDPS(
     targetMaxHP: number = 3000,
     targetBonusHP: number = 1000,
+    scenario?: SimulationScenario,
   ): {
     autoAttackDPS: number;
     onHitDPS: number;
@@ -2994,8 +3108,13 @@ class Character {
     totalDPS: number;
     breakdown: string[];
   } {
+    const sim = resolveSimulationScenario(scenario);
     const stats = this.getTotalStats();
     const breakdown: string[] = [];
+    const rotationProfile =
+      sim.enableChampionRotationProfiles
+        ? CHAMPION_ROTATION_PROFILES[this.Name]
+        : undefined;
 
     // Calculate effective ability haste for cooldown reduction
     const totalAbilityHaste = stats.abilityHaste + stats.basicAbilityHaste;
@@ -3027,8 +3146,7 @@ class Character {
       breakdown.push(`Physical on-hit (base AD): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitCurrentHealthPercent) {
-      // Use 60% of max HP as average current HP during fight
-      const avgCurrentHP = targetMaxHP * 0.6;
+      const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
       const dmg =
         (avgCurrentHP * stats.physicalOnHitCurrentHealthPercent) / 100;
       onHitDamagePerAttack += dmg;
@@ -3085,7 +3203,12 @@ class Character {
       if (!ability.appliesOnHit || !ability.damage) continue;
 
       let onHitDamage = 0;
-      const level = ability.abilityType === "passive" ? 18 : 5; // Use max rank for abilities
+      const level =
+        ability.abilityType === "passive"
+          ? sim.level
+          : ability.abilityType === "R"
+            ? Math.max(1, ultRankAtLevel(sim.level))
+            : basicAbilityRankAtLevel(sim.level);
 
       if (ability.damage.baseDamage) {
         onHitDamage += ability.getValueAtLevel(
@@ -3121,8 +3244,7 @@ class Character {
         ability.damage.currentHealthRatio ||
         ability.damage.currentHealthRatioPerAP
       ) {
-        // Use 60% of max HP as average current HP during fight
-        const avgCurrentHP = targetMaxHP * 0.6;
+        const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
         let effectivePercent = ability.damage.currentHealthRatio
           ? ability.getValueAtLevel(ability.damage.currentHealthRatio, level)
           : 0;
@@ -3136,8 +3258,7 @@ class Character {
         ability.damage.missingHealthRatio ||
         ability.damage.missingHealthRatioPerAP
       ) {
-        // Use 40% of max HP as average missing HP during fight (1 - 0.6 = 0.4)
-        const avgMissingHP = targetMaxHP * 0.4;
+        const avgMissingHP = targetMaxHP * (1 - sim.avgCurrentHPRatio);
         let effectivePercent = ability.damage.missingHealthRatio
           ? ability.getValueAtLevel(ability.damage.missingHealthRatio, level)
           : 0;
@@ -3187,8 +3308,11 @@ class Character {
 
       const sustain =
         ONHIT_SUSTAINED_FACTOR[ability.name] ??
-        (ability.abilityType === "passive" ? 0.85 : 0.92);
-      const sustainedOnHit = onHitDamage * sustain;
+        (ability.abilityType === "passive"
+          ? sim.onHitPassiveFallbackSustain
+          : sim.onHitActiveFallbackSustain);
+      const rotationOnHitMultiplier = rotationProfile?.onHitSustainMultiplier ?? 1;
+      const sustainedOnHit = onHitDamage * sustain * rotationOnHitMultiplier;
       onHitDamagePerAttack += sustainedOnHit;
       if (sustain < 0.999) {
         breakdown.push(
@@ -3207,7 +3331,7 @@ class Character {
       const damage = this.calculateRuneDamage(
         effect.damage,
         stats,
-        18,
+        sim.level,
         targetMaxHP,
       );
 
@@ -3274,8 +3398,12 @@ class Character {
       )
         continue;
 
-      // Get base cooldown at max rank
-      const baseCooldown = ability.getCooldownAtLevel(5);
+      const abilityRank =
+        ability.abilityType === "R"
+          ? ultRankAtLevel(sim.level)
+          : basicAbilityRankAtLevel(sim.level);
+      if (abilityRank <= 0) continue;
+      const baseCooldown = ability.getCooldownAtLevel(abilityRank);
       if (baseCooldown === 0) continue;
 
       // Check if this ability has a static or ammo cooldown (not reduced by ability haste/Navori)
@@ -3287,12 +3415,10 @@ class Character {
 
       // Only apply ability haste if not a static cooldown
       if (!isStaticCooldown) {
-        // Cap modeled AH so extreme item/rune stacking cannot collapse CDs to cast-time-only spam.
-        const AH_CAP = 120;
         const effectiveAH =
           ability.abilityType === "R"
-            ? Math.min(stats.abilityHaste + stats.ultAbilityHaste, AH_CAP)
-            : Math.min(totalAbilityHaste, AH_CAP);
+            ? Math.min(stats.abilityHaste + stats.ultAbilityHaste, sim.abilityHasteCap)
+            : Math.min(totalAbilityHaste, sim.abilityHasteCap);
         const effectiveCDR = effectiveAH / (100 + effectiveAH);
         actualCooldown = baseCooldown * (1 - effectiveCDR);
 
@@ -3317,27 +3443,27 @@ class Character {
         // Floor cooldown using cast time and a fraction of base CD so sustained DPS does not
         // explode when AH + Navori drive effective CD toward zero (degenerate vs live League).
         const castFloor = ability.castInfo?.castTime ?? 0.5;
-        const rotationFloor = baseCooldown * 0.1;
+        const rotationFloor = baseCooldown * sim.cooldownFloorBaseRatio;
         actualCooldown = Math.max(actualCooldown, castFloor, rotationFloor);
       }
 
-      // Calculate ability damage at max rank
+      // Calculate ability damage at scenario rank
       let abilityDamage = 0;
       if (ability.damage.baseDamage) {
-        abilityDamage += ability.getValueAtLevel(ability.damage.baseDamage, 5);
+        abilityDamage += ability.getValueAtLevel(ability.damage.baseDamage, abilityRank);
       }
       if (ability.damage.adRatio) {
         abilityDamage +=
-          (stats.ad * ability.getValueAtLevel(ability.damage.adRatio, 5)) / 100;
+          (stats.ad * ability.getValueAtLevel(ability.damage.adRatio, abilityRank)) / 100;
       }
       if (ability.damage.apRatio) {
         abilityDamage +=
-          (stats.ap * ability.getValueAtLevel(ability.damage.apRatio, 5)) / 100;
+          (stats.ap * ability.getValueAtLevel(ability.damage.apRatio, abilityRank)) / 100;
       }
       if (ability.damage.bonusAdRatio) {
         const bonusAD = stats.ad - this.AD;
         abilityDamage +=
-          (bonusAD * ability.getValueAtLevel(ability.damage.bonusAdRatio, 5)) /
+          (bonusAD * ability.getValueAtLevel(ability.damage.bonusAdRatio, abilityRank)) /
           100;
       }
       if (
@@ -3347,7 +3473,7 @@ class Character {
         ability.damage.maxHealthRatioPerBonusAD
       ) {
         let effectiveMaxHPPercent = ability.damage.maxHealthRatio
-          ? ability.getValueAtLevel(ability.damage.maxHealthRatio, 5)
+          ? ability.getValueAtLevel(ability.damage.maxHealthRatio, abilityRank)
           : 0;
         if (ability.damage.maxHealthRatioPerAP) {
           effectiveMaxHPPercent +=
@@ -3368,10 +3494,9 @@ class Character {
         ability.damage.currentHealthRatio ||
         ability.damage.currentHealthRatioPerAP
       ) {
-        // Use 60% of max HP as average current HP during fight
-        const avgCurrentHP = targetMaxHP * 0.6;
+        const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
         let effectivePercent = ability.damage.currentHealthRatio
-          ? ability.getValueAtLevel(ability.damage.currentHealthRatio, 5)
+          ? ability.getValueAtLevel(ability.damage.currentHealthRatio, abilityRank)
           : 0;
         if (ability.damage.currentHealthRatioPerAP) {
           effectivePercent +=
@@ -3383,10 +3508,9 @@ class Character {
         ability.damage.missingHealthRatio ||
         ability.damage.missingHealthRatioPerAP
       ) {
-        // Use 40% of max HP as average missing HP during fight (1 - 0.6 = 0.4)
-        const avgMissingHP = targetMaxHP * 0.4;
+        const avgMissingHP = targetMaxHP * (1 - sim.avgCurrentHPRatio);
         let effectivePercent = ability.damage.missingHealthRatio
-          ? ability.getValueAtLevel(ability.damage.missingHealthRatio, 5)
+          ? ability.getValueAtLevel(ability.damage.missingHealthRatio, abilityRank)
           : 0;
         if (ability.damage.missingHealthRatioPerAP) {
           effectivePercent +=
@@ -3397,19 +3521,21 @@ class Character {
       if (ability.damage.bonusHPRatio) {
         const bonusHP = stats.hp - this.HP;
         abilityDamage +=
-          (bonusHP * ability.getValueAtLevel(ability.damage.bonusHPRatio, 5)) /
+          (bonusHP *
+            ability.getValueAtLevel(ability.damage.bonusHPRatio, abilityRank)) /
           100;
       }
       if (ability.damage.maxManaRatio) {
         abilityDamage +=
           (stats.mana *
-            ability.getValueAtLevel(ability.damage.maxManaRatio, 5)) /
+            ability.getValueAtLevel(ability.damage.maxManaRatio, abilityRank)) /
           100;
       }
       if (ability.damage.bonusMRRatio) {
         const bonusMR = stats.mr - this.MR;
         abilityDamage +=
-          (bonusMR * ability.getValueAtLevel(ability.damage.bonusMRRatio, 5)) /
+          (bonusMR *
+            ability.getValueAtLevel(ability.damage.bonusMRRatio, abilityRank)) /
           100;
       }
 
@@ -3433,13 +3559,23 @@ class Character {
 
       // DPS = damage / cooldown
       const dps = totalDamage / actualCooldown;
-      abilityDPS += dps;
+      const rotationMultiplier =
+        ability.abilityType === "passive"
+          ? 1
+          : (rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1);
+      const adjustedDps = dps * rotationMultiplier;
+      abilityDPS += adjustedDps;
 
       breakdown.push(
-        `${ability.name}: ${dps.toFixed(1)} DPS (${totalDamage.toFixed(
+        `${ability.name}: ${adjustedDps.toFixed(1)} DPS (${totalDamage.toFixed(
           0,
         )} dmg / ${actualCooldown.toFixed(1)}s CD)`,
       );
+      if (Math.abs(rotationMultiplier - 1) > 0.001) {
+        breakdown.push(
+          `${ability.name}: rotation weight ×${rotationMultiplier.toFixed(2)} (${this.Name})`,
+        );
+      }
     }
 
     // Process ability-triggered rune effects (Electrocute, Arcane Comet, etc.)
@@ -3448,7 +3584,7 @@ class Character {
         const damage = this.calculateRuneDamage(
           effect.damage,
           stats,
-          18,
+          sim.level,
           targetMaxHP,
         );
         const effectiveCooldown = effect.cooldown * (1 - abilityCDR);
@@ -3467,12 +3603,10 @@ class Character {
     let runeMultiplier = 1;
     for (const effect of runeEffects) {
       if (effect.statMultiplier && effect.conditions) {
-        // For DPS calc, assume condition is met with uptime weighting
-        const uptime = 0.3; // 30% of fight (for <40% HP effects)
+        const uptime = sim.conditionalLowHpUptime;
         runeMultiplier *= 1 + (effect.statMultiplier / 100) * uptime;
       } else if (effect.statMultiplier && effect.type === "conditional") {
-        // First Strike, etc. - assume 50% uptime
-        const uptime = 0.5;
+        const uptime = sim.conditionalGeneralUptime;
         runeMultiplier *= 1 + (effect.statMultiplier / 100) * uptime;
       }
     }
@@ -3561,7 +3695,12 @@ class Character {
     // Ability burst damage (abilities with burstDamage field)
     for (const ability of this.Abilities) {
       if (ability.burstDamage) {
-        const abilityLevel = 18; // Assume max level
+        const abilityLevel =
+          ability.abilityType === "passive"
+            ? sim.level
+            : ability.abilityType === "R"
+              ? Math.max(1, ultRankAtLevel(sim.level))
+              : basicAbilityRankAtLevel(sim.level);
 
         // Calculate burst damage from burstDamage field
         let abilityBurstDmg = 0;
