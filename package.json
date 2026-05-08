@@ -8,6 +8,7 @@
     "start": "next start",
     "compute-meta": "tsx scripts/compute-meta.ts",
     "regression:sim": "tsx scripts/regression-check.ts",
+    "rotation:coverage": "tsx scripts/rotation-coverage.ts",
     "meta:diff": "tsx scripts/meta-diff.ts",
     "lint": "biome check",
     "format": "biome format --write",

@@ -2656,20 +2656,74 @@ type ChampionRotationProfile = {
  * Champion-level rotation weighting for sustained 1v1 sims.
  * Values tune cast cadence realism without implementing full per-frame combat scripting.
  */
-const CHAMPION_ROTATION_PROFILES: Record<string, ChampionRotationProfile> = {
+export const CHAMPION_ROTATION_PROFILES: Record<string, ChampionRotationProfile> = {
   Ahri: { abilityTypeMultiplier: { Q: 1.0, W: 0.9, E: 0.65, R: 0.45 } },
   Aatrox: { abilityTypeMultiplier: { Q: 0.95, W: 0.6, E: 0.8, R: 0.35 } },
+  Akali: { abilityTypeMultiplier: { Q: 1.05, W: 0.4, E: 0.8, R: 0.55 } },
+  Akshan: { abilityTypeMultiplier: { Q: 0.85, W: 0.35, E: 0.9, R: 0.45 } },
+  Annie: { abilityTypeMultiplier: { Q: 1.0, W: 0.8, E: 0.5, R: 0.4 } },
+  Ashe: { abilityTypeMultiplier: { Q: 0.95, W: 0.8, E: 0.2, R: 0.35 } },
+  Azir: { abilityTypeMultiplier: { Q: 0.85, W: 1.2, E: 0.45, R: 0.3 } },
+  BelVeth: { abilityTypeMultiplier: { Q: 1.0, W: 0.55, E: 0.8, R: 0.45 } },
+  Briar: { abilityTypeMultiplier: { Q: 0.9, W: 1.15, E: 0.6, R: 0.35 } },
+  Caitlyn: { abilityTypeMultiplier: { Q: 0.75, W: 0.55, E: 0.6, R: 0.35 } },
+  Camille: { abilityTypeMultiplier: { Q: 1.15, W: 0.75, E: 0.65, R: 0.45 } },
   Cassiopeia: { abilityTypeMultiplier: { Q: 1.0, W: 0.45, E: 1.3, R: 0.3 } },
+  Darius: { abilityTypeMultiplier: { Q: 0.9, W: 0.95, E: 0.5, R: 0.45 } },
+  Diana: { abilityTypeMultiplier: { Q: 0.95, W: 0.85, E: 0.7, R: 0.55 } },
+  Draven: { abilityTypeMultiplier: { Q: 1.25, W: 0.8, E: 0.45, R: 0.25 } },
+  Ekko: { abilityTypeMultiplier: { Q: 0.95, W: 0.5, E: 0.95, R: 0.4 } },
   Ezreal: { abilityTypeMultiplier: { Q: 1.15, W: 0.7, E: 0.35, R: 0.15 } },
+  Fiora: { abilityTypeMultiplier: { Q: 1.2, W: 0.45, E: 0.9, R: 0.4 } },
+  Gangplank: { abilityTypeMultiplier: { Q: 1.2, W: 0.35, E: 0.95, R: 0.25 } },
+  Garen: { abilityTypeMultiplier: { Q: 0.8, W: 0.4, E: 1.15, R: 0.5 } },
+  Gwen: { abilityTypeMultiplier: { Q: 1.0, W: 0.35, E: 0.9, R: 0.6 } },
+  Hwei: { abilityTypeMultiplier: { Q: 1.0, W: 0.55, E: 0.85, R: 0.4 } },
+  Jax: { abilityTypeMultiplier: { Q: 0.95, W: 1.05, E: 0.75, R: 0.45 } },
+  Jayce: { abilityTypeMultiplier: { Q: 1.05, W: 0.9, E: 0.7, R: 0.35 } },
+  Jhin: { abilityTypeMultiplier: { Q: 0.8, W: 0.55, E: 0.45, R: 0.4 } },
   Jinx: { abilityTypeMultiplier: { Q: 0.8, W: 0.45, E: 0.35, R: 0.2 } },
+  KaiSa: { abilityTypeMultiplier: { Q: 1.0, W: 0.7, E: 0.65, R: 0.45 } },
+  Kalista: { abilityTypeMultiplier: { Q: 0.95, W: 0.25, E: 1.1, R: 0.2 } },
+  Kayle: { abilityTypeMultiplier: { Q: 0.8, W: 0.35, E: 1.15, R: 0.3 } },
+  KhaZix: { abilityTypeMultiplier: { Q: 1.2, W: 0.65, E: 0.55, R: 0.35 } },
+  Kled: { abilityTypeMultiplier: { Q: 0.95, W: 1.05, E: 0.85, R: 0.35 } },
+  KogMaw: { abilityTypeMultiplier: { Q: 0.7, W: 1.2, E: 0.6, R: 0.65 } },
+  LeBlanc: { abilityTypeMultiplier: { Q: 1.0, W: 0.95, E: 0.7, R: 0.6 } },
+  LeeSin: { abilityTypeMultiplier: { Q: 1.0, W: 0.55, E: 0.85, R: 0.45 } },
+  Lucian: { abilityTypeMultiplier: { Q: 0.95, W: 0.55, E: 1.0, R: 0.45 } },
+  MasterYi: { abilityTypeMultiplier: { Q: 0.85, W: 0.25, E: 1.2, R: 0.55 } },
+  MissFortune: { abilityTypeMultiplier: { Q: 0.8, W: 0.75, E: 0.55, R: 0.55 } },
+  Naafiri: { abilityTypeMultiplier: { Q: 1.0, W: 0.7, E: 0.85, R: 0.45 } },
+  Nasus: { abilityTypeMultiplier: { Q: 1.35, W: 0.3, E: 0.55, R: 0.45 } },
+  Nilah: { abilityTypeMultiplier: { Q: 1.1, W: 0.4, E: 0.85, R: 0.5 } },
+  Orianna: { abilityTypeMultiplier: { Q: 0.95, W: 0.85, E: 0.75, R: 0.45 } },
+  Pantheon: { abilityTypeMultiplier: { Q: 1.05, W: 0.85, E: 0.6, R: 0.25 } },
+  Quinn: { abilityTypeMultiplier: { Q: 0.85, W: 0.6, E: 0.65, R: 0.25 } },
+  RekSai: { abilityTypeMultiplier: { Q: 1.0, W: 0.6, E: 0.95, R: 0.45 } },
   Katarina: { abilityTypeMultiplier: { Q: 0.9, W: 0.9, E: 1.15, R: 0.55 } },
   Renekton: { abilityTypeMultiplier: { Q: 0.9, W: 0.95, E: 0.8, R: 0.6 } },
   Riven: { abilityTypeMultiplier: { Q: 1.2, W: 0.9, E: 0.75, R: 0.55 } },
+  Samira: { abilityTypeMultiplier: { Q: 1.0, W: 0.5, E: 0.85, R: 0.75 } },
+  Sivir: { abilityTypeMultiplier: { Q: 0.95, W: 0.8, E: 0.3, R: 0.45 } },
+  Tristana: { abilityTypeMultiplier: { Q: 0.95, W: 0.45, E: 1.05, R: 0.35 } },
+  Tryndamere: { abilityTypeMultiplier: { Q: 0.4, W: 0.45, E: 0.95, R: 0.4 } },
+  Twitch: { abilityTypeMultiplier: { Q: 0.5, W: 0.55, E: 1.1, R: 0.55 } },
+  Udyr: { abilityTypeMultiplier: { Q: 1.15, W: 0.7, E: 0.55, R: 1.0 } },
+  Varus: { abilityTypeMultiplier: { Q: 0.95, W: 0.7, E: 0.7, R: 0.4 } },
   Vayne: {
     abilityTypeMultiplier: { Q: 1.05, W: 1.0, E: 0.45, R: 0.35 },
     onHitSustainMultiplier: 1.08,
   },
+  Vi: { abilityTypeMultiplier: { Q: 0.95, W: 0.95, E: 0.9, R: 0.5 } },
+  Viktor: { abilityTypeMultiplier: { Q: 1.0, W: 0.35, E: 0.95, R: 0.55 } },
+  Vladimir: { abilityTypeMultiplier: { Q: 1.0, W: 0.4, E: 0.95, R: 0.4 } },
+  Warwick: { abilityTypeMultiplier: { Q: 1.05, W: 0.5, E: 0.7, R: 0.55 } },
+  Xayah: { abilityTypeMultiplier: { Q: 0.9, W: 1.0, E: 1.05, R: 0.4 } },
+  Yasuo: { abilityTypeMultiplier: { Q: 1.2, W: 0.25, E: 1.0, R: 0.6 } },
+  Yone: { abilityTypeMultiplier: { Q: 1.15, W: 0.8, E: 0.85, R: 0.55 } },
   Zed: { abilityTypeMultiplier: { Q: 0.95, W: 0.55, E: 0.9, R: 0.45 } },
+  Zeri: { abilityTypeMultiplier: { Q: 1.25, W: 0.55, E: 0.7, R: 0.55 } },
 };
 
 export type SimulationScenario = {
@@ -3560,9 +3614,7 @@ class Character {
       // DPS = damage / cooldown
       const dps = totalDamage / actualCooldown;
       const rotationMultiplier =
-        ability.abilityType === "passive"
-          ? 1
-          : (rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1);
+        rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
       const adjustedDps = dps * rotationMultiplier;
       abilityDPS += adjustedDps;
 
