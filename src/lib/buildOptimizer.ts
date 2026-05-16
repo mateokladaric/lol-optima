@@ -50,8 +50,9 @@ function candidatePriority(item: Item, melee: boolean): number {
   let score = 0;
 
   if (!token) score += 6;
-  if (token === "base") score += 10;
-  if (token === "melee") score += melee ? 8 : -6;
+  // Prefer melee/ranged variants over generic (Base) for melee/ranged champions.
+  if (token === "base") score += melee ? 4 : 10;
+  if (token === "melee") score += melee ? 10 : -6;
   if (token === "ranged") score += melee ? -6 : 8;
 
   // Keep stable tie-breaking close to baseline rows.
@@ -173,7 +174,7 @@ export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
     targetMR: clamp(overrides?.targetMR ?? DEFAULT_DUEL.targetMR, 0, 500),
     comboWindowSeconds: clamp(
       overrides?.comboWindowSeconds ?? DEFAULT_DUEL.comboWindowSeconds,
-      2,
+      1,
       30,
     ),
   };

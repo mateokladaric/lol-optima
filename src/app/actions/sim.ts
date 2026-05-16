@@ -2648,15 +2648,58 @@ const LETHAL_TEMPO_BOLT_UPTIME = 0.52;
 type AbilityType = "passive" | "Q" | "W" | "E" | "R";
 
 type ChampionRotationProfile = {
-  abilityTypeMultiplier?: Partial<Record<Exclude<AbilityType, "passive">, number>>;
+  abilityTypeMultiplier?: Partial<
+    Record<Exclude<AbilityType, "passive">, number>
+  >;
   onHitSustainMultiplier?: number;
+};
+
+/** Short-window all-in: cast priority, shadow hits, Death Mark pop, AA weight. */
+type ChampionComboProfile = {
+  castOrder: Exclude<AbilityType, "passive">[];
+  /** Extra effective hits from shadows / duplicates (e.g. Zed W on Q/E). */
+  abilityDupMultiplier?: Partial<
+    Record<Exclude<AbilityType, "passive">, number>
+  >;
+  /** Death Mark pop as fraction of pre-mark physical ability damage this window. */
+  deathMarkPopRatio?: number[];
+  /** 0–1: how much auto damage counts in a short all-in (assassins ≈ low). */
+  comboAutoWeight?: number;
+};
+
+export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
+  Akali: {
+    castOrder: ["R", "Q", "E", "W"],
+    comboAutoWeight: 0.25,
+  },
+  KhaZix: {
+    castOrder: ["R", "Q", "W", "E"],
+    comboAutoWeight: 0.3,
+  },
+  LeBlanc: {
+    castOrder: ["R", "W", "Q", "E"],
+    comboAutoWeight: 0.2,
+  },
+  Talon: {
+    castOrder: ["R", "W", "Q", "E"],
+    comboAutoWeight: 0.35,
+  },
+  Zed: {
+    castOrder: ["R", "Q", "E", "W"],
+    abilityDupMultiplier: { Q: 1.85, E: 1.85 },
+    deathMarkPopRatio: [0.25, 0.4, 0.55],
+    comboAutoWeight: 0.3,
+  },
 };
 
 /**
  * Champion-level rotation weighting for sustained 1v1 sims.
  * Values tune cast cadence realism without implementing full per-frame combat scripting.
  */
-export const CHAMPION_ROTATION_PROFILES: Record<string, ChampionRotationProfile> = {
+export const CHAMPION_ROTATION_PROFILES: Record<
+  string,
+  ChampionRotationProfile
+> = {
   Ahri: { abilityTypeMultiplier: { Q: 1.0, W: 0.9, E: 0.65, R: 0.45 } },
   Aatrox: { abilityTypeMultiplier: { Q: 0.95, W: 0.6, E: 0.8, R: 0.35 } },
   Akali: { abilityTypeMultiplier: { Q: 1.05, W: 0.4, E: 0.8, R: 0.55 } },
@@ -2777,15 +2820,20 @@ function resolveSimulationScenario(
   scenario?: SimulationScenario,
 ): ResolvedSimulationScenario {
   return {
-    level: Math.max(1, Math.min(18, Math.round(scenario?.level ?? DEFAULT_SIM_SCENARIO.level))),
+    level: Math.max(
+      1,
+      Math.min(18, Math.round(scenario?.level ?? DEFAULT_SIM_SCENARIO.level)),
+    ),
     avgCurrentHPRatio: clamp01(
       scenario?.avgCurrentHPRatio ?? DEFAULT_SIM_SCENARIO.avgCurrentHPRatio,
     ),
     conditionalLowHpUptime: clamp01(
-      scenario?.conditionalLowHpUptime ?? DEFAULT_SIM_SCENARIO.conditionalLowHpUptime,
+      scenario?.conditionalLowHpUptime ??
+        DEFAULT_SIM_SCENARIO.conditionalLowHpUptime,
     ),
     conditionalGeneralUptime: clamp01(
-      scenario?.conditionalGeneralUptime ?? DEFAULT_SIM_SCENARIO.conditionalGeneralUptime,
+      scenario?.conditionalGeneralUptime ??
+        DEFAULT_SIM_SCENARIO.conditionalGeneralUptime,
     ),
     onHitPassiveFallbackSustain: clamp01(
       scenario?.onHitPassiveFallbackSustain ??
@@ -2800,7 +2848,8 @@ function resolveSimulationScenario(
       scenario?.abilityHasteCap ?? DEFAULT_SIM_SCENARIO.abilityHasteCap,
     ),
     cooldownFloorBaseRatio: clamp01(
-      scenario?.cooldownFloorBaseRatio ?? DEFAULT_SIM_SCENARIO.cooldownFloorBaseRatio,
+      scenario?.cooldownFloorBaseRatio ??
+        DEFAULT_SIM_SCENARIO.cooldownFloorBaseRatio,
     ),
     enableChampionRotationProfiles:
       scenario?.enableChampionRotationProfiles ??
@@ -2840,7 +2889,7 @@ function resolveDpsMitigation(opts?: DpsMitigationOptions) {
     ),
     targetMR: Math.max(0, opts?.targetMR ?? DEFAULT_DPS_MITIGATION.targetMR),
     comboWindowSeconds: Math.max(
-      2,
+      1,
       opts?.comboWindowSeconds ?? DEFAULT_DPS_MITIGATION.comboWindowSeconds,
     ),
   };
@@ -2857,7 +2906,11 @@ export function lethalityToFlatArmorPen(
 
 type PenStats = Pick<
   ItemStats,
-  "lethality" | "armorPen" | "armorReduction" | "magicPen" | "magicResistReduction"
+  | "lethality"
+  | "armorPen"
+  | "armorReduction"
+  | "magicPen"
+  | "magicResistReduction"
 >;
 
 export function physicalMitigationMultiplier(
@@ -2886,6 +2939,123 @@ export function magicMitigationMultiplier(
   return 100 / (100 + mr);
 }
 
+type ComboCastSpec = {
+  abilityType: Exclude<AbilityType, "passive">;
+  singleCastDamage: number;
+  damageType: DamageScaling["damageType"];
+  actualCooldown: number;
+  castTime: number;
+  maxCasts: number;
+};
+
+const DEFAULT_COMBO_CAST_ORDER: Exclude<AbilityType, "passive">[] = [
+  "R",
+  "W",
+  "E",
+  "Q",
+];
+
+function mitigatedAbilityHit(
+  damage: number,
+  damageType: DamageScaling["damageType"],
+  stats: PenStats & { ad: number; ap: number },
+  abilityMultiplier: number,
+  physMit: number,
+  magicMit: number,
+): number {
+  const scaled = damage * abilityMultiplier;
+  const t = damageType ?? "physical";
+  if (t === "true") return scaled;
+  if (t === "magic") return scaled * magicMit;
+  if (t === "adaptive") {
+    return scaled * (stats.ad >= stats.ap ? physMit : magicMit);
+  }
+  return scaled * physMit;
+}
+
+function simulateComboWindowDamage(
+  window: number,
+  casts: ComboCastSpec[],
+  castOrder: Exclude<AbilityType, "passive">[],
+  comboProfile: ChampionComboProfile | undefined,
+  stats: PenStats & { ad: number; ap: number },
+  level: number,
+  abilityMultiplier: number,
+  physMit: number,
+  magicMit: number,
+  burstAfterMit: number,
+  autoHitAfterMit: number,
+  attackRate: number,
+): { total: number; preMarkPhys: number } {
+  const readyAt = new Map<Exclude<AbilityType, "passive">, number>();
+  const castCount = new Map<Exclude<AbilityType, "passive">, number>();
+  let t = 0;
+  let total = burstAfterMit;
+  let preMarkPhys = 0;
+  const autoWeight = comboProfile?.comboAutoWeight ?? 0.65;
+
+  while (t < window - 1e-6) {
+    let casted = false;
+    for (const type of castOrder) {
+      const spec = casts.find((c) => c.abilityType === type);
+      if (!spec) continue;
+      const used = castCount.get(type) ?? 0;
+      if (used >= spec.maxCasts) continue;
+      const ready = readyAt.get(type) ?? 0;
+      if (ready > t + 1e-6) continue;
+      const castTime = spec.castTime;
+      if (t + castTime > window + 1e-6) continue;
+
+      let hit = spec.singleCastDamage;
+      const dup = comboProfile?.abilityDupMultiplier?.[type];
+      if (dup) hit *= dup;
+
+      const mitigated = mitigatedAbilityHit(
+        hit,
+        spec.damageType,
+        stats,
+        abilityMultiplier,
+        physMit,
+        magicMit,
+      );
+      total += mitigated;
+      if (
+        type !== "R" &&
+        (spec.damageType === "physical" ||
+          spec.damageType === "adaptive" ||
+          !spec.damageType)
+      ) {
+        preMarkPhys += mitigated;
+      }
+
+      castCount.set(type, used + 1);
+      readyAt.set(type, t + castTime + spec.actualCooldown);
+      t += castTime;
+      casted = true;
+      break;
+    }
+
+    if (!casted) {
+      if (attackRate > 0 && autoWeight > 0) {
+        const gap = Math.min(1 / attackRate, window - t);
+        t += gap;
+        total += autoHitAfterMit * autoWeight * (gap * attackRate);
+      } else {
+        break;
+      }
+    }
+  }
+
+  const popRatios = comboProfile?.deathMarkPopRatio;
+  if (popRatios && preMarkPhys > 0) {
+    const rRank = ultRankAtLevel(level);
+    const idx = Math.max(0, Math.min(popRatios.length - 1, rRank - 1));
+    total += preMarkPhys * popRatios[idx];
+  }
+
+  return { total, preMarkPhys };
+}
+
 class Character {
   Name: string;
   HP: number;
@@ -2896,7 +3066,7 @@ class Character {
   CritDMG: number;
   MS: number;
   AttackRange: number;
-  AS: Number;
+  AS: number;
   Abilities: Ability[];
   Items: Item[];
   Runes?: RunePage;
@@ -3252,10 +3422,9 @@ class Character {
     breakdown.push(
       `Target resistances: ${mit.targetArmor} armor (${(physMit * 100).toFixed(1)}% phys dmg), ${mit.targetMR} MR (${(magicMit * 100).toFixed(1)}% magic dmg)`,
     );
-    const rotationProfile =
-      sim.enableChampionRotationProfiles
-        ? CHAMPION_ROTATION_PROFILES[this.Name]
-        : undefined;
+    const rotationProfile = sim.enableChampionRotationProfiles
+      ? CHAMPION_ROTATION_PROFILES[this.Name]
+      : undefined;
 
     // Calculate effective ability haste for cooldown reduction
     const totalAbilityHaste = stats.abilityHaste + stats.basicAbilityHaste;
@@ -3307,7 +3476,10 @@ class Character {
 
     // Physical on-hit
     if (stats.physicalOnHit) {
-      addOnHitPhys(stats.physicalOnHit, `Physical on-hit: +${stats.physicalOnHit}`);
+      addOnHitPhys(
+        stats.physicalOnHit,
+        `Physical on-hit: +${stats.physicalOnHit}`,
+      );
     }
     if (stats.physicalOnHitBaseADPercent) {
       const dmg = (this.AD * stats.physicalOnHitBaseADPercent) / 100;
@@ -3473,7 +3645,8 @@ class Character {
         (ability.abilityType === "passive"
           ? sim.onHitPassiveFallbackSustain
           : sim.onHitActiveFallbackSustain);
-      const rotationOnHitMultiplier = rotationProfile?.onHitSustainMultiplier ?? 1;
+      const rotationOnHitMultiplier =
+        rotationProfile?.onHitSustainMultiplier ?? 1;
       const sustainedOnHit = onHitDamage * sustain * rotationOnHitMultiplier;
       addOnHitTyped(
         sustainedOnHit,
@@ -3555,6 +3728,7 @@ class Character {
     let abilityPhysDPS = 0;
     let abilityMagicDPS = 0;
     let abilityTrueDPS = 0;
+    const abilityCasts: ComboCastSpec[] = [];
 
     for (const ability of abilities) {
       // Skip passives and on-hit abilities (already counted in on-hit DPS)
@@ -3584,7 +3758,10 @@ class Character {
       if (!isStaticCooldown) {
         const effectiveAH =
           ability.abilityType === "R"
-            ? Math.min(stats.abilityHaste + stats.ultAbilityHaste, sim.abilityHasteCap)
+            ? Math.min(
+                stats.abilityHaste + stats.ultAbilityHaste,
+                sim.abilityHasteCap,
+              )
             : Math.min(totalAbilityHaste, sim.abilityHasteCap);
         const effectiveCDR = effectiveAH / (100 + effectiveAH);
         actualCooldown = baseCooldown * (1 - effectiveCDR);
@@ -3603,7 +3780,7 @@ class Character {
           // Each attack reduces remaining CD by cdrPerAttack fraction
           // Effective CD reduction factor
           const cdrFromAttacks =
-            1 - Math.pow(1 - cdrPerAttack, attacksDuringCooldown);
+            1 - (1 - cdrPerAttack) ** attacksDuringCooldown;
           actualCooldown = actualCooldown * (1 - cdrFromAttacks);
         }
 
@@ -3617,20 +3794,28 @@ class Character {
       // Calculate ability damage at scenario rank
       let abilityDamage = 0;
       if (ability.damage.baseDamage) {
-        abilityDamage += ability.getValueAtLevel(ability.damage.baseDamage, abilityRank);
+        abilityDamage += ability.getValueAtLevel(
+          ability.damage.baseDamage,
+          abilityRank,
+        );
       }
       if (ability.damage.adRatio) {
         abilityDamage +=
-          (stats.ad * ability.getValueAtLevel(ability.damage.adRatio, abilityRank)) / 100;
+          (stats.ad *
+            ability.getValueAtLevel(ability.damage.adRatio, abilityRank)) /
+          100;
       }
       if (ability.damage.apRatio) {
         abilityDamage +=
-          (stats.ap * ability.getValueAtLevel(ability.damage.apRatio, abilityRank)) / 100;
+          (stats.ap *
+            ability.getValueAtLevel(ability.damage.apRatio, abilityRank)) /
+          100;
       }
       if (ability.damage.bonusAdRatio) {
         const bonusAD = stats.ad - this.AD;
         abilityDamage +=
-          (bonusAD * ability.getValueAtLevel(ability.damage.bonusAdRatio, abilityRank)) /
+          (bonusAD *
+            ability.getValueAtLevel(ability.damage.bonusAdRatio, abilityRank)) /
           100;
       }
       if (
@@ -3663,7 +3848,10 @@ class Character {
       ) {
         const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
         let effectivePercent = ability.damage.currentHealthRatio
-          ? ability.getValueAtLevel(ability.damage.currentHealthRatio, abilityRank)
+          ? ability.getValueAtLevel(
+              ability.damage.currentHealthRatio,
+              abilityRank,
+            )
           : 0;
         if (ability.damage.currentHealthRatioPerAP) {
           effectivePercent +=
@@ -3677,7 +3865,10 @@ class Character {
       ) {
         const avgMissingHP = targetMaxHP * (1 - sim.avgCurrentHPRatio);
         let effectivePercent = ability.damage.missingHealthRatio
-          ? ability.getValueAtLevel(ability.damage.missingHealthRatio, abilityRank)
+          ? ability.getValueAtLevel(
+              ability.damage.missingHealthRatio,
+              abilityRank,
+            )
           : 0;
         if (ability.damage.missingHealthRatioPerAP) {
           effectivePercent +=
@@ -3743,6 +3934,25 @@ class Character {
       abilityTrueDPS += trueDamage * scale;
       abilityPhysDPS += physBonusDamage * scale;
       const adjustedDps = totalDamage * scale;
+
+      if (
+        ability.abilityType === "Q" ||
+        ability.abilityType === "W" ||
+        ability.abilityType === "E" ||
+        ability.abilityType === "R"
+      ) {
+        const singleCastDamage =
+          (abilityDamage + onAbilityHitTrue + onAbilityHitPhys) *
+          rotationMultiplier;
+        abilityCasts.push({
+          abilityType: ability.abilityType,
+          singleCastDamage,
+          damageType: dmgType,
+          actualCooldown,
+          castTime: ability.castInfo?.castTime ?? 0.25,
+          maxCasts: castsPerWindow,
+        });
+      }
 
       breakdown.push(
         `${ability.name}: ${adjustedDps.toFixed(1)} DPS (${totalDamage.toFixed(
@@ -3960,9 +4170,7 @@ class Character {
 
     const finalAbilityDPS =
       abilityMultiplier *
-      (abilityPhysDPS * physMit +
-        abilityMagicDPS * magicMit +
-        abilityTrueDPS);
+      (abilityPhysDPS * physMit + abilityMagicDPS * magicMit + abilityTrueDPS);
 
     const onHitPhysDPS = onHitPhysPerAttack * attackRate;
     const onHitMagicDPS = onHitMagicPerAttack * attackRate;
@@ -3979,16 +4187,42 @@ class Character {
     const burstAfterMit =
       abilityMultiplier *
       (burstPhys * physMit + burstMagic * magicMit + burstTrue);
-    const burstSustainDPS = burstAfterMit / mit.comboWindowSeconds;
-    if (burstAfterMit > 0) {
-      breakdown.push(
-        `Burst: ${burstAfterMit.toFixed(0)} total (${burstSustainDPS.toFixed(1)} DPS over ${mit.comboWindowSeconds}s)`,
-      );
-    }
+
+    const autoHitAfterMit =
+      autoAttackDamagePerHit * totalPhysicalMultiplier * physMit;
+    const comboProfile = CHAMPION_COMBO_PROFILES[this.Name];
+    const castOrder = comboProfile?.castOrder ?? DEFAULT_COMBO_CAST_ORDER;
+    const comboResult = simulateComboWindowDamage(
+      mit.comboWindowSeconds,
+      abilityCasts,
+      castOrder,
+      comboProfile,
+      stats,
+      sim.level,
+      abilityMultiplier,
+      physMit,
+      magicMit,
+      burstAfterMit,
+      autoHitAfterMit,
+      attackRate,
+    );
 
     const sustainedDPS =
       finalAutoAttackDPS + finalOnHitDPS + finalDotDPS + finalAbilityDPS;
-    const totalDPS = sustainedDPS + burstSustainDPS;
+    const comboDPS = comboResult.total / mit.comboWindowSeconds;
+    const burstSustainDPS = burstAfterMit / mit.comboWindowSeconds;
+
+    breakdown.push(`Sustained (rotation): ${sustainedDPS.toFixed(1)} DPS`);
+    breakdown.push(
+      `Combo (${mit.comboWindowSeconds}s window): ${comboResult.total.toFixed(0)} total → ${comboDPS.toFixed(1)} DPS`,
+    );
+    if (burstAfterMit > 0) {
+      breakdown.push(
+        `Item burst in combo: ${burstAfterMit.toFixed(0)} (${burstSustainDPS.toFixed(1)} DPS if spread)`,
+      );
+    }
+
+    const totalDPS = comboDPS;
 
     return {
       autoAttackDPS: finalAutoAttackDPS,
@@ -28098,4 +28332,3 @@ export const Items: Item[] = [
   ZhonyasHourglass,
   SeraphsEmbrace,
 ];
-
