@@ -551,7 +551,7 @@ const SeraphsEmbrace = new Item(
     abilityDamagePerAPMultiplicative: 0.02,
   },
   [],
-  "Lifeline",
+  "Manaflow",
 );
 
 const ArdentCenser = new Item(
@@ -1092,7 +1092,7 @@ const DiademOfSongs = new Item(
     manaRegen: 100,
   },
   [],
-  "Diadem of Songs",
+  "Manaflow",
 );
 
 const DuskAndDawn = new Item(
@@ -1228,7 +1228,7 @@ const Fimbulwinter = new Item(
     hpPerBonusManaPercent: 8,
   },
   [],
-  "Fimbulwinter",
+  "Manaflow",
 );
 
 const ForceOfNature = new Item(
@@ -1788,7 +1788,7 @@ const MuramanaMelee = new Item(
     physicalOnAbilityHitMaxManaPercent: 4,
   },
   [],
-  "Muramana",
+  "Manaflow",
 );
 
 const MuramanaRanged = new Item(
@@ -1802,7 +1802,7 @@ const MuramanaRanged = new Item(
     physicalOnAbilityHitMaxManaPercent: 3,
   },
   [],
-  "Muramana",
+  "Manaflow",
 );
 
 const MercurialScimitar = new Item(
@@ -2667,6 +2667,36 @@ type ChampionComboProfile = {
   comboAutoWeight?: number;
 };
 
+/** Energy champs do not use mana; tear/Muramana/Seraph-style items do not apply. */
+export type ChampionResourceType = "mana" | "energy";
+
+export const CHAMPION_RESOURCE_TYPE: Record<string, ChampionResourceType> = {
+  Akali: "energy",
+  Kennen: "energy",
+  "Lee Sin": "energy",
+  Rengar: "energy",
+  Shen: "energy",
+  Zed: "energy",
+};
+
+export function championUsesMana(champion: Character): boolean {
+  return (CHAMPION_RESOURCE_TYPE[champion.Name] ?? "mana") === "mana";
+}
+
+/** Items whose power assumes a mana bar (tear line, Muramana, Actualizer, etc.). */
+export function isManaScalingItem(item: Item): boolean {
+  const s = item.stats;
+  if (item.getGroupName() === "Manaflow") return true;
+  if ((s.mana ?? 0) >= 150) return true;
+  if (s.adPerMaxManaPercent) return true;
+  if (s.apPerBonusManaPercent) return true;
+  if (s.hpPerBonusManaPercent && (s.mana ?? 0) > 0) return true;
+  if (s.physicalOnHitMaxManaPercent) return true;
+  if (s.physicalOnAbilityHitMaxManaPercent) return true;
+  if (s.abilityDamagePerManaMultiplicative) return true;
+  return false;
+}
+
 export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
   Akali: {
     castOrder: ["R", "Q", "E", "W"],
@@ -3309,6 +3339,12 @@ class Character {
           });
         }
       });
+    }
+
+    // Energy / manaless: item mana does not grant AD, AP, on-hit, or ability amp from mana.
+    if (!championUsesMana(this)) {
+      baseStats.mana = 0;
+      baseStats.manaRegen = 0;
     }
 
     // Calculate final AS with bonus attack speed percentage

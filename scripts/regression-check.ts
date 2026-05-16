@@ -1,4 +1,9 @@
-import { Characters, Items, physicalMitigationMultiplier } from "../src/app/actions/sim";
+import {
+  Characters,
+  isManaScalingItem,
+  Items,
+  physicalMitigationMultiplier,
+} from "../src/app/actions/sim";
 import {
   recommendBuildsForChampion,
   resolveDuel,
@@ -165,6 +170,36 @@ if (zed) {
     fail(
       `Zed: 6× lethality items should beat 6× AD on abilityDPS vs ${duel.targetArmor} armor (ad=${dpsAd.abilityDPS.toFixed(1)}, leth=${dpsLeth.abilityDPS.toFixed(1)})`,
     );
+  }
+
+  const recs = recommendBuildsForChampion(zed, Items, {
+    simulation: { level: 16, enableChampionRotationProfiles: true },
+    monteCarlo: { iterationsPerRestart: 200, restarts: 2, randomProbeSamples: 40 },
+  });
+  for (const rec of recs) {
+    if (hasDuplicateGroups(rec.items)) {
+      fail(
+        `Zed ${rec.profile}: duplicate item groups in ${rec.items.join(", ")}`,
+      );
+    }
+    const manaflowCount = rec.items.filter((n) => {
+      const it = Items.find((i) => i.name === n);
+      return it?.getGroupName() === "Manaflow";
+    }).length;
+    if (manaflowCount > 1) {
+      fail(
+        `Zed ${rec.profile}: at most one Manaflow item allowed, got ${manaflowCount} in ${rec.items.join(", ")}`,
+      );
+    }
+    const manaScaled = rec.items.filter((n) => {
+      const it = Items.find((i) => i.name === n);
+      return it && isManaScalingItem(it);
+    });
+    if (manaScaled.length > 0) {
+      fail(
+        `Zed ${rec.profile}: energy champ must not build mana items: ${manaScaled.join(", ")}`,
+      );
+    }
   }
 }
 

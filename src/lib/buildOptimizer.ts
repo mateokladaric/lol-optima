@@ -14,7 +14,13 @@ import type {
   RunePage,
   SimulationScenario,
 } from "@/app/actions/sim";
-import { AllKeystones, Item as ItemModel, Items } from "@/app/actions/sim";
+import {
+  AllKeystones,
+  championUsesMana,
+  isManaScalingItem,
+  Item as ItemModel,
+  Items,
+} from "@/app/actions/sim";
 import {
   goldEfficiencyTieBreak,
   sortItemsForPurchaseOrder,
@@ -94,8 +100,11 @@ function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
   const melee = isMeleeChampion(champion);
   const grouped = new Map<string, Item[]>();
 
+  const usesMana = championUsesMana(champion);
+
   for (const item of itemPool) {
     if (!isRealisticName(item.name)) continue;
+    if (!usesMana && isManaScalingItem(item)) continue;
     const group = item.getGroupName();
     if (!grouped.has(group)) grouped.set(group, []);
     grouped.get(group)?.push(item);
