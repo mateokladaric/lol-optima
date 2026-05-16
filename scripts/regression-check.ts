@@ -174,7 +174,11 @@ if (zed) {
 
   const recs = recommendBuildsForChampion(zed, Items, {
     simulation: { level: 16, enableChampionRotationProfiles: true },
-    monteCarlo: { iterationsPerRestart: 200, restarts: 2, randomProbeSamples: 40 },
+    monteCarloParams: {
+      iterationsPerRestart: 200,
+      restarts: 2,
+      randomProbeSamples: 40,
+    },
   });
   for (const rec of recs) {
     if (hasDuplicateGroups(rec.items)) {
