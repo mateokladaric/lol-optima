@@ -43,6 +43,9 @@ function BuildFinder(): React.ReactElement {
   const [busy, setBusy] = useState(false);
   const [targetMaxHP, setTargetMaxHP] = useState(3000);
   const [targetBonusHP, setTargetBonusHP] = useState(1000);
+  const [targetArmor, setTargetArmor] = useState(100);
+  const [targetMR, setTargetMR] = useState(100);
+  const [comboWindowSeconds, setComboWindowSeconds] = useState(8);
   const [incomingPhysPct, setIncomingPhysPct] = useState(50);
   const [simulationLevel, setSimulationLevel] = useState(18);
   const [useRotationProfiles, setUseRotationProfiles] = useState(true);
@@ -51,9 +54,19 @@ function BuildFinder(): React.ReactElement {
     () => ({
       targetMaxHP,
       targetBonusHP,
+      targetArmor,
+      targetMR,
+      comboWindowSeconds,
       incomingPhysShare: incomingPhysPct / 100,
     }),
-    [targetMaxHP, targetBonusHP, incomingPhysPct],
+    [
+      targetMaxHP,
+      targetBonusHP,
+      targetArmor,
+      targetMR,
+      comboWindowSeconds,
+      incomingPhysPct,
+    ],
   );
 
   const duelResolved = useMemo(() => resolveDuel(duelOptions), [duelOptions]);
@@ -132,6 +145,59 @@ function BuildFinder(): React.ReactElement {
               step={100}
               value={targetBonusHP}
               onChange={(e) => setTargetBonusHP(Number(e.target.value) || 0)}
+              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="duel-armor"
+              className="block text-gray-500 text-xs mb-1"
+            >
+              Opponent armor
+            </label>
+            <input
+              id="duel-armor"
+              type="number"
+              min={0}
+              max={500}
+              step={5}
+              value={targetArmor}
+              onChange={(e) => setTargetArmor(Number(e.target.value) || 0)}
+              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="duel-mr" className="block text-gray-500 text-xs mb-1">
+              Opponent MR
+            </label>
+            <input
+              id="duel-mr"
+              type="number"
+              min={0}
+              max={500}
+              step={5}
+              value={targetMR}
+              onChange={(e) => setTargetMR(Number(e.target.value) || 0)}
+              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="duel-combo-window"
+              className="block text-gray-500 text-xs mb-1"
+            >
+              Burst window (s)
+            </label>
+            <input
+              id="duel-combo-window"
+              type="number"
+              min={2}
+              max={30}
+              step={1}
+              value={comboWindowSeconds}
+              onChange={(e) =>
+                setComboWindowSeconds(Number(e.target.value) || 8)
+              }
               className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
             />
           </div>
@@ -243,7 +309,9 @@ function BuildFinder(): React.ReactElement {
             <div className="space-y-3">
               <p className="text-gray-500 text-xs">
                 Scores use opponent HP {duelResolved.targetMaxHP} (+{" "}
-                {duelResolved.targetBonusHP} bonus) and your Eff. HP weights{" "}
+                {duelResolved.targetBonusHP} bonus), {duelResolved.targetArmor}{" "}
+                armor / {duelResolved.targetMR} MR, burst window{" "}
+                {duelResolved.comboWindowSeconds}s, and your Eff. HP weights{" "}
                 {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical at
                 level {simulationLevel}. Rotation templates{" "}
                 {useRotationProfiles ? "enabled" : "disabled"}.
@@ -769,7 +837,9 @@ function MetaAnalysis(): React.ReactElement {
               {metaData.duel && (
                 <span className="block mt-1 text-[11px]">
                   Duel: target {metaData.duel.targetMaxHP} HP (+{" "}
-                  {metaData.duel.targetBonusHP} bonus), Eff. HP weight{" "}
+                  {metaData.duel.targetBonusHP} bonus),{" "}
+                  {metaData.duel.targetArmor} armor / {metaData.duel.targetMR}{" "}
+                  MR, burst {metaData.duel.comboWindowSeconds}s, Eff. HP weight{" "}
                   {(metaData.duel.incomingPhysShare * 100).toFixed(0)}% phys
                 </span>
               )}

@@ -2820,6 +2820,72 @@ function ultRankAtLevel(level: number): number {
   return 0;
 }
 
+export type DpsMitigationOptions = {
+  targetArmor?: number;
+  targetMR?: number;
+  comboWindowSeconds?: number;
+};
+
+const DEFAULT_DPS_MITIGATION: Required<DpsMitigationOptions> = {
+  targetArmor: 100,
+  targetMR: 100,
+  comboWindowSeconds: 8,
+};
+
+function resolveDpsMitigation(opts?: DpsMitigationOptions) {
+  return {
+    targetArmor: Math.max(
+      0,
+      opts?.targetArmor ?? DEFAULT_DPS_MITIGATION.targetArmor,
+    ),
+    targetMR: Math.max(0, opts?.targetMR ?? DEFAULT_DPS_MITIGATION.targetMR),
+    comboWindowSeconds: Math.max(
+      2,
+      opts?.comboWindowSeconds ?? DEFAULT_DPS_MITIGATION.comboWindowSeconds,
+    ),
+  };
+}
+
+/** Flat armor pen from lethality at a given champion level (League scaling). */
+export function lethalityToFlatArmorPen(
+  lethality: number,
+  level: number,
+): number {
+  const lv = Math.min(18, Math.max(1, level));
+  return lethality * (0.6 + (0.4 * lv) / 18);
+}
+
+type PenStats = Pick<
+  ItemStats,
+  "lethality" | "armorPen" | "armorReduction" | "magicPen" | "magicResistReduction"
+>;
+
+export function physicalMitigationMultiplier(
+  targetArmor: number,
+  stats: PenStats,
+  level: number,
+): number {
+  let armor = targetArmor;
+  if (stats.armorReduction) armor *= 1 - stats.armorReduction / 100;
+  if (stats.armorPen) armor *= 1 - stats.armorPen / 100;
+  if (stats.lethality) {
+    armor -= lethalityToFlatArmorPen(stats.lethality, level);
+  }
+  armor = Math.max(0, armor);
+  return 100 / (100 + armor);
+}
+
+export function magicMitigationMultiplier(
+  targetMR: number,
+  stats: PenStats,
+): number {
+  let mr = targetMR;
+  if (stats.magicResistReduction) mr *= 1 - stats.magicResistReduction / 100;
+  if (stats.magicPen) mr -= stats.magicPen;
+  mr = Math.max(0, mr);
+  return 100 / (100 + mr);
+}
+
 class Character {
   Name: string;
   HP: number;
@@ -3161,6 +3227,7 @@ class Character {
     targetMaxHP: number = 3000,
     targetBonusHP: number = 1000,
     scenario?: SimulationScenario,
+    mitigation?: DpsMitigationOptions,
   ): {
     autoAttackDPS: number;
     onHitDPS: number;
@@ -3171,10 +3238,20 @@ class Character {
     breakdown: string[];
   } {
     const sim = resolveSimulationScenario(scenario);
+    const mit = resolveDpsMitigation(mitigation);
     const stats = this.getTotalStats();
+    const physMit = physicalMitigationMultiplier(
+      mit.targetArmor,
+      stats,
+      sim.level,
+    );
+    const magicMit = magicMitigationMultiplier(mit.targetMR, stats);
     /** For spell-only scenarios: no AAs, no on-hit DPS, no Navori-style CDR from attacks. */
     const attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
     const breakdown: string[] = [];
+    breakdown.push(
+      `Target resistances: ${mit.targetArmor} armor (${(physMit * 100).toFixed(1)}% phys dmg), ${mit.targetMR} MR (${(magicMit * 100).toFixed(1)}% magic dmg)`,
+    );
     const rotationProfile =
       sim.enableChampionRotationProfiles
         ? CHAMPION_ROTATION_PROFILES[this.Name]
@@ -3198,67 +3275,88 @@ class Character {
 
     // 2. On-Hit Damage (per attack, multiplied by AS)
     let onHitDamagePerAttack = 0;
+    let onHitPhysPerAttack = 0;
+    let onHitMagicPerAttack = 0;
+    let onHitTruePerAttack = 0;
+
+    const addOnHitPhys = (dmg: number, label: string) => {
+      onHitDamagePerAttack += dmg;
+      onHitPhysPerAttack += dmg;
+      breakdown.push(label);
+    };
+    const addOnHitMagic = (dmg: number, label: string) => {
+      onHitDamagePerAttack += dmg;
+      onHitMagicPerAttack += dmg;
+      breakdown.push(label);
+    };
+    const addOnHitTyped = (
+      dmg: number,
+      label: string,
+      damageType: DamageScaling["damageType"] | undefined,
+    ) => {
+      onHitDamagePerAttack += dmg;
+      const t = damageType ?? "physical";
+      if (t === "magic") onHitMagicPerAttack += dmg;
+      else if (t === "true") onHitTruePerAttack += dmg;
+      else if (t === "adaptive") {
+        if (stats.ad >= stats.ap) onHitPhysPerAttack += dmg;
+        else onHitMagicPerAttack += dmg;
+      } else onHitPhysPerAttack += dmg;
+      breakdown.push(label);
+    };
 
     // Physical on-hit
     if (stats.physicalOnHit) {
-      onHitDamagePerAttack += stats.physicalOnHit;
-      breakdown.push(`Physical on-hit: +${stats.physicalOnHit}`);
+      addOnHitPhys(stats.physicalOnHit, `Physical on-hit: +${stats.physicalOnHit}`);
     }
     if (stats.physicalOnHitBaseADPercent) {
       const dmg = (this.AD * stats.physicalOnHitBaseADPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`Physical on-hit (base AD): +${dmg.toFixed(1)}`);
+      addOnHitPhys(dmg, `Physical on-hit (base AD): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitCurrentHealthPercent) {
       const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
       const dmg =
         (avgCurrentHP * stats.physicalOnHitCurrentHealthPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`Physical on-hit (current HP): +${dmg.toFixed(1)}`);
+      addOnHitPhys(dmg, `Physical on-hit (current HP): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitMaxHealthPercent) {
       const dmg = (targetMaxHP * stats.physicalOnHitMaxHealthPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`Physical on-hit (target max HP): +${dmg.toFixed(1)}`);
+      addOnHitPhys(dmg, `Physical on-hit (target max HP): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitMaxManaPercent) {
       const dmg = (stats.mana * stats.physicalOnHitMaxManaPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`Physical on-hit (max mana): +${dmg.toFixed(1)}`);
+      addOnHitPhys(dmg, `Physical on-hit (max mana): +${dmg.toFixed(1)}`);
     }
 
     // Magic on-hit
     if (stats.magicOnHit) {
-      onHitDamagePerAttack += stats.magicOnHit;
-      breakdown.push(`Magic on-hit: +${stats.magicOnHit}`);
+      addOnHitMagic(stats.magicOnHit, `Magic on-hit: +${stats.magicOnHit}`);
     }
     if (stats.magicOnHitBaseADPercent) {
       const dmg = (this.AD * stats.magicOnHitBaseADPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`Magic on-hit (base AD): +${dmg.toFixed(1)}`);
+      addOnHitMagic(dmg, `Magic on-hit (base AD): +${dmg.toFixed(1)}`);
     }
     if (stats.magicOnHitAPRatio) {
       const dmg = (stats.ap * stats.magicOnHitAPRatio) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`Magic on-hit (AP): +${dmg.toFixed(1)}`);
+      addOnHitMagic(dmg, `Magic on-hit (AP): +${dmg.toFixed(1)}`);
     }
 
     // Periodic on-hit (already averaged per attack)
     if (stats.magicPeriodicOnHit) {
-      onHitDamagePerAttack += stats.magicPeriodicOnHit;
-      breakdown.push(`Periodic magic on-hit: +${stats.magicPeriodicOnHit}`);
+      addOnHitMagic(
+        stats.magicPeriodicOnHit,
+        `Periodic magic on-hit: +${stats.magicPeriodicOnHit}`,
+      );
     }
 
     // AoE on-hit damage
     if (stats.physicalAoEOnHitADPercent) {
       const dmg = (stats.ad * stats.physicalAoEOnHitADPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`AoE physical on-hit: +${dmg.toFixed(1)}`);
+      addOnHitPhys(dmg, `AoE physical on-hit: +${dmg.toFixed(1)}`);
     }
     if (stats.physicalAoEOnHitMaxHealthPercent) {
       const dmg = (targetMaxHP * stats.physicalAoEOnHitMaxHealthPercent) / 100;
-      onHitDamagePerAttack += dmg;
-      breakdown.push(`AoE physical on-hit (max HP): +${dmg.toFixed(1)}`);
+      addOnHitPhys(dmg, `AoE physical on-hit (max HP): +${dmg.toFixed(1)}`);
     }
 
     // Process on-hit abilities (passives like Gwen's A Thousand Cuts, or buffs like Gwen E)
@@ -3377,14 +3475,13 @@ class Character {
           : sim.onHitActiveFallbackSustain);
       const rotationOnHitMultiplier = rotationProfile?.onHitSustainMultiplier ?? 1;
       const sustainedOnHit = onHitDamage * sustain * rotationOnHitMultiplier;
-      onHitDamagePerAttack += sustainedOnHit;
-      if (sustain < 0.999) {
-        breakdown.push(
-          `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit (×${sustain.toFixed(2)} sustained)`,
-        );
-      } else {
-        breakdown.push(`${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit`);
-      }
+      addOnHitTyped(
+        sustainedOnHit,
+        sustain < 0.999
+          ? `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit (×${sustain.toFixed(2)} sustained)`
+          : `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit`,
+        ability.damage?.damageType,
+      );
     }
 
     // Process on-hit rune effects (Press the Attack, Grasp, etc.)
@@ -3401,17 +3498,21 @@ class Character {
 
       if (effect.trigger === "perStack") {
         const avgPerHit = damage * LETHAL_TEMPO_BOLT_UPTIME;
-        onHitDamagePerAttack += avgPerHit;
-        breakdown.push(
+        addOnHitTyped(
+          avgPerHit,
           `Rune (Lethal Tempo bolt, sustained): +${avgPerHit.toFixed(1)} per hit`,
+          effect.damage?.damageType ?? "magic",
         );
         continue;
       }
 
       if (effect.cooldown) {
         const avgDamagePerHit = damage / effect.cooldown;
-        onHitDamagePerAttack += avgDamagePerHit;
-        breakdown.push(`Rune (on-hit): +${avgDamagePerHit.toFixed(1)} per hit`);
+        addOnHitTyped(
+          avgDamagePerHit,
+          `Rune (on-hit): +${avgDamagePerHit.toFixed(1)} per hit`,
+          effect.damage?.damageType,
+        );
       }
     }
 
@@ -3450,8 +3551,10 @@ class Character {
       breakdown.push(`Magic DoT (target max HP): +${dmg.toFixed(1)} DPS`);
     }
 
-    // 4. Ability DPS
-    let abilityDPS = 0;
+    // 4. Ability DPS (raw, before offensive multipliers and resistances)
+    let abilityPhysDPS = 0;
+    let abilityMagicDPS = 0;
+    let abilityTrueDPS = 0;
 
     for (const ability of abilities) {
       // Skip passives and on-hit abilities (already counted in on-hit DPS)
@@ -3604,29 +3707,42 @@ class Character {
       }
 
       // Add on-ability-hit damage from items (e.g., Muramana Shock)
-      let onAbilityHitDamage = 0;
+      let onAbilityHitTrue = 0;
+      let onAbilityHitPhys = 0;
       if (stats.trueOnAbilityHit) {
-        onAbilityHitDamage += stats.trueOnAbilityHit;
+        onAbilityHitTrue += stats.trueOnAbilityHit;
       }
       if (stats.trueOnAbilityHitPerLethality) {
-        onAbilityHitDamage +=
+        onAbilityHitTrue +=
           stats.lethality * stats.trueOnAbilityHitPerLethality;
       }
       if (stats.physicalOnAbilityHitMaxManaPercent) {
-        onAbilityHitDamage +=
+        onAbilityHitPhys +=
           (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
       }
 
       // Account for multiple casts (like Ahri R)
       const castsPerWindow = ability.maxCasts || 1;
-      const totalDamage = (abilityDamage + onAbilityHitDamage) * castsPerWindow;
+      const coreDamage = abilityDamage * castsPerWindow;
+      const trueDamage = onAbilityHitTrue * castsPerWindow;
+      const physBonusDamage = onAbilityHitPhys * castsPerWindow;
+      const totalDamage = coreDamage + trueDamage + physBonusDamage;
 
       // DPS = damage / cooldown
-      const dps = totalDamage / actualCooldown;
       const rotationMultiplier =
         rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
-      const adjustedDps = dps * rotationMultiplier;
-      abilityDPS += adjustedDps;
+      const scale = rotationMultiplier / actualCooldown;
+      const dmgType = ability.damage?.damageType ?? "physical";
+      const coreDps = coreDamage * scale;
+      if (dmgType === "magic") abilityMagicDPS += coreDps;
+      else if (dmgType === "true") abilityTrueDPS += coreDps;
+      else if (dmgType === "adaptive") {
+        if (stats.ad >= stats.ap) abilityPhysDPS += coreDps;
+        else abilityMagicDPS += coreDps;
+      } else abilityPhysDPS += coreDps;
+      abilityTrueDPS += trueDamage * scale;
+      abilityPhysDPS += physBonusDamage * scale;
+      const adjustedDps = totalDamage * scale;
 
       breakdown.push(
         `${ability.name}: ${adjustedDps.toFixed(1)} DPS (${totalDamage.toFixed(
@@ -3651,7 +3767,13 @@ class Character {
         );
         const effectiveCooldown = effect.cooldown * (1 - abilityCDR);
         const runeDPS = damage / effectiveCooldown;
-        abilityDPS += runeDPS;
+        const runeType = effect.damage?.damageType ?? "magic";
+        if (runeType === "magic") abilityMagicDPS += runeDPS;
+        else if (runeType === "true") abilityTrueDPS += runeDPS;
+        else if (runeType === "adaptive") {
+          if (stats.ad >= stats.ap) abilityPhysDPS += runeDPS;
+          else abilityMagicDPS += runeDPS;
+        } else abilityPhysDPS += runeDPS;
         breakdown.push(
           `Rune (ability): ${runeDPS.toFixed(
             1,
@@ -3724,34 +3846,34 @@ class Character {
       giantSlayerMultiplier *
       (1 +
         ((stats.abilityDamageMultiplicative || 0) + abilityDamageFromAP) / 100);
-    const finalAbilityDPS = abilityDPS * abilityMultiplier;
-
     // 6. Calculate Burst Damage (one-time damage at combat start)
-    let burstDamage = 0;
+    let burstPhys = 0;
+    let burstMagic = 0;
+    let burstTrue = 0;
 
     // Item burst damage
     if (stats.physicalBurstDamage) {
-      burstDamage += stats.physicalBurstDamage;
+      burstPhys += stats.physicalBurstDamage;
     }
     if (stats.physicalBurstDamagePerADRatio) {
-      burstDamage += (stats.ad * stats.physicalBurstDamagePerADRatio) / 100;
+      burstPhys += (stats.ad * stats.physicalBurstDamagePerADRatio) / 100;
     }
     if (stats.physicalBurstDamagePerBonusADRatio) {
       const bonusAD = stats.ad - this.AD;
-      burstDamage += (bonusAD * stats.physicalBurstDamagePerBonusADRatio) / 100;
+      burstPhys += (bonusAD * stats.physicalBurstDamagePerBonusADRatio) / 100;
     }
     if (stats.magicBurstDamage) {
-      burstDamage += stats.magicBurstDamage;
+      burstMagic += stats.magicBurstDamage;
     }
     if (stats.magicBurstDamagePerAPRatio) {
-      burstDamage += (stats.ap * stats.magicBurstDamagePerAPRatio) / 100;
+      burstMagic += (stats.ap * stats.magicBurstDamagePerAPRatio) / 100;
     }
     if (stats.magicBurstDamagePerTargetMaxHPRatio) {
-      burstDamage +=
+      burstMagic +=
         (targetMaxHP * stats.magicBurstDamagePerTargetMaxHPRatio) / 100;
     }
     if (stats.trueBurstDamage) {
-      burstDamage += stats.trueBurstDamage;
+      burstTrue += stats.trueBurstDamage;
     }
 
     // Ability burst damage (abilities with burstDamage field)
@@ -3824,34 +3946,56 @@ class Character {
           abilityBurstDmg += (targetMaxHP * ratio) / 100;
         }
 
-        burstDamage += abilityBurstDmg;
+        const burstType =
+          burst.damageType ?? ability.damage?.damageType ?? "physical";
+        if (burstType === "magic") burstMagic += abilityBurstDmg;
+        else if (burstType === "true") burstTrue += abilityBurstDmg;
+        else if (burstType === "adaptive") {
+          if (stats.ad >= stats.ap) burstPhys += abilityBurstDmg;
+          else burstMagic += abilityBurstDmg;
+        } else burstPhys += abilityBurstDmg;
         breakdown.push(`${ability.name} burst: ${abilityBurstDmg.toFixed(1)}`);
       }
     }
 
-    // Apply multipliers to burst damage
-    const finalBurstDamage = burstDamage * abilityMultiplier;
-    if (finalBurstDamage > 0) {
-      breakdown.push(`Total burst damage: ${finalBurstDamage.toFixed(1)}`);
+    const finalAbilityDPS =
+      abilityMultiplier *
+      (abilityPhysDPS * physMit +
+        abilityMagicDPS * magicMit +
+        abilityTrueDPS);
+
+    const onHitPhysDPS = onHitPhysPerAttack * attackRate;
+    const onHitMagicDPS = onHitMagicPerAttack * attackRate;
+    const onHitTrueDPS = onHitTruePerAttack * attackRate;
+    const finalOnHitDPS =
+      onHitPhysDPS * totalPhysicalMultiplier * physMit +
+      onHitMagicDPS * totalMagicMultiplier * magicMit +
+      onHitTrueDPS * totalMultiplier;
+
+    const finalAutoAttackDPS =
+      autoAttackDPS * totalPhysicalMultiplier * physMit;
+    const finalDotDPS = dotDPS * totalMagicMultiplier * magicMit;
+
+    const burstAfterMit =
+      abilityMultiplier *
+      (burstPhys * physMit + burstMagic * magicMit + burstTrue);
+    const burstSustainDPS = burstAfterMit / mit.comboWindowSeconds;
+    if (burstAfterMit > 0) {
+      breakdown.push(
+        `Burst: ${burstAfterMit.toFixed(0)} total (${burstSustainDPS.toFixed(1)} DPS over ${mit.comboWindowSeconds}s)`,
+      );
     }
 
-    // Apply damage type multipliers:
-    // - Auto attacks are physical
-    // - DoT is mostly magic (Liandry's, Blackfire, etc.)
-    // - On-hit is mixed, use base multiplier
-    const finalAutoAttackDPS = autoAttackDPS * totalPhysicalMultiplier;
-    const finalOnHitDPS = onHitDPS * totalMultiplier; // Mixed damage types
-    const finalDotDPS = dotDPS * totalMagicMultiplier;
-
-    const totalDPS =
+    const sustainedDPS =
       finalAutoAttackDPS + finalOnHitDPS + finalDotDPS + finalAbilityDPS;
+    const totalDPS = sustainedDPS + burstSustainDPS;
 
     return {
       autoAttackDPS: finalAutoAttackDPS,
       onHitDPS: finalOnHitDPS,
       dotDPS: finalDotDPS,
       abilityDPS: finalAbilityDPS,
-      burstDPS: finalBurstDamage,
+      burstDPS: burstSustainDPS,
       totalDPS,
       breakdown,
     };

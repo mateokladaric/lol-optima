@@ -129,6 +129,12 @@ export type ResolvedDuel = {
   targetBonusHP: number;
   /** Share of damage you expect to take as physical (rest magic); weights your effective HP. */
   incomingPhysShare: number;
+  /** Opponent armor — physical damage mitigation (lethality / % pen apply). */
+  targetArmor: number;
+  /** Opponent magic resist — magic damage mitigation. */
+  targetMR: number;
+  /** Seconds over which one-shot burst damage is amortized into total DPS. */
+  comboWindowSeconds: number;
 };
 
 export type DuelAssumptions = Partial<ResolvedDuel>;
@@ -137,6 +143,9 @@ const DEFAULT_DUEL: ResolvedDuel = {
   targetMaxHP: 3000,
   targetBonusHP: 1000,
   incomingPhysShare: 0.5,
+  targetArmor: 100,
+  targetMR: 100,
+  comboWindowSeconds: 8,
 };
 
 export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
@@ -156,6 +165,26 @@ export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
       0,
       1,
     ),
+    targetArmor: clamp(
+      overrides?.targetArmor ?? DEFAULT_DUEL.targetArmor,
+      0,
+      500,
+    ),
+    targetMR: clamp(overrides?.targetMR ?? DEFAULT_DUEL.targetMR, 0, 500),
+    comboWindowSeconds: clamp(
+      overrides?.comboWindowSeconds ?? DEFAULT_DUEL.comboWindowSeconds,
+      2,
+      30,
+    ),
+  };
+}
+
+/** Arguments for {@link Character.calculateDPS} from duel assumptions. */
+export function dpsMitigationFromDuel(duel: ResolvedDuel) {
+  return {
+    targetArmor: duel.targetArmor,
+    targetMR: duel.targetMR,
+    comboWindowSeconds: duel.comboWindowSeconds,
   };
 }
 
@@ -313,7 +342,12 @@ function scoreChampion(
   duel: ResolvedDuel,
   simulation?: SimulationScenario,
 ): number {
-  const dps = c.calculateDPS(duel.targetMaxHP, duel.targetBonusHP, simulation);
+  const dps = c.calculateDPS(
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    simulation,
+    dpsMitigationFromDuel(duel),
+  );
   const ehp = mixedEffectiveHP(c.getTotalStats(), duel.incomingPhysShare);
   return profileScore(profile, dps, ehp, build);
 }
@@ -685,6 +719,7 @@ export function recommendBuildsForChampion(
       duel.targetMaxHP,
       duel.targetBonusHP,
       profileSim,
+      dpsMitigationFromDuel(duel),
     );
     const gehp = mixedEffectiveHP(gc.getTotalStats(), duel.incomingPhysShare);
     const gscore = profileScore(profile, gd, gehp, primary);
@@ -742,6 +777,7 @@ export function recommendBuildsForChampion(
         duel.targetMaxHP,
         duel.targetBonusHP,
         profileSim,
+        dpsMitigationFromDuel(duel),
       );
       const ehp = mixedEffectiveHP(c.getTotalStats(), duel.incomingPhysShare);
       const sc = profileScore(profile, dps, ehp, bestAlt);

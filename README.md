@@ -9,6 +9,8 @@ simulated annealing to explore strong 6-item builds.
 - Duel assumptions (UI + compute script):
   - Target max HP
   - Target bonus HP
+  - Target armor / MR (defaults: 100 / 100)
+  - Burst combo window (seconds; burst damage is amortized into total DPS)
   - Incoming physical damage share
 - Simulation assumptions:
   - Scenario level (used for ability/rune scaling and ability ranks)
@@ -29,6 +31,9 @@ Used by `npm run compute-meta`:
 
 - `LOLOPTIMA_TARGET_MAX_HP`
 - `LOLOPTIMA_TARGET_BONUS_HP`
+- `LOLOPTIMA_TARGET_ARMOR`
+- `LOLOPTIMA_TARGET_MR`
+- `LOLOPTIMA_COMBO_WINDOW`
 - `LOLOPTIMA_INCOMING_PHYS_SHARE`
 - `LOLOPTIMA_SA_ITER`
 - `LOLOPTIMA_SA_RESTARTS`

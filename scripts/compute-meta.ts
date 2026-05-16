@@ -28,9 +28,15 @@ const duel: DuelAssumptions = {};
 const maxHp = envNum("LOLOPTIMA_TARGET_MAX_HP");
 const bonusHp = envNum("LOLOPTIMA_TARGET_BONUS_HP");
 const phys = envNum("LOLOPTIMA_INCOMING_PHYS_SHARE");
+const armor = envNum("LOLOPTIMA_TARGET_ARMOR");
+const mr = envNum("LOLOPTIMA_TARGET_MR");
+const comboWindow = envNum("LOLOPTIMA_COMBO_WINDOW");
 if (maxHp !== undefined) duel.targetMaxHP = maxHp;
 if (bonusHp !== undefined) duel.targetBonusHP = bonusHp;
 if (phys !== undefined) duel.incomingPhysShare = phys;
+if (armor !== undefined) duel.targetArmor = armor;
+if (mr !== undefined) duel.targetMR = mr;
+if (comboWindow !== undefined) duel.comboWindowSeconds = comboWindow;
 
 const mc: MonteCarloParams = {};
 const saIter = envNum("LOLOPTIMA_SA_ITER");

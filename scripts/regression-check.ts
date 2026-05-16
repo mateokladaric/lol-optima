@@ -1,5 +1,8 @@
-import { Characters, Items } from "../src/app/actions/sim";
-import { recommendBuildsForChampion } from "../src/lib/buildOptimizer";
+import { Characters, Items, physicalMitigationMultiplier } from "../src/app/actions/sim";
+import {
+  recommendBuildsForChampion,
+  resolveDuel,
+} from "../src/lib/buildOptimizer";
 
 type CheckCase = {
   champion: string;
@@ -83,6 +86,84 @@ if (lux) {
   if (bad) {
     fail(
       `Lux spell-only must not pick auto/on-hit items (Navori/BotRK/PD): ${luxSpell?.items.join(", ")}`,
+    );
+  }
+}
+
+const duel = resolveDuel();
+const noPen = physicalMitigationMultiplier(duel.targetArmor, {}, 18);
+const withLeth = physicalMitigationMultiplier(
+  duel.targetArmor,
+  { lethality: 54 },
+  18,
+);
+if (withLeth <= noPen) {
+  fail(
+    `Lethality should increase physical damage vs ${duel.targetArmor} armor (no pen=${noPen.toFixed(3)}, leth=${withLeth.toFixed(3)})`,
+  );
+}
+
+const zed = Characters.find((c) => c.Name === "Zed");
+if (zed) {
+  const mit = {
+    targetArmor: duel.targetArmor,
+    targetMR: duel.targetMR,
+    comboWindowSeconds: duel.comboWindowSeconds,
+  };
+  const lethalityItems = Items.filter((i) => (i.stats.lethality ?? 0) >= 15);
+  const adItems = Items.filter(
+    (i) =>
+      (i.stats.ad ?? 0) >= 50 &&
+      !i.stats.lethality &&
+      !i.stats.armorPen &&
+      !i.stats.physicalBurstDamage,
+  );
+  if (lethalityItems.length < 6 || adItems.length < 6) {
+    fail("Not enough items for lethality vs AD stack regression");
+  }
+  const groupsLeth = new Set<string>();
+  const lethBuild: typeof Items = [];
+  for (const it of lethalityItems) {
+    const g = it.getGroupName();
+    if (groupsLeth.has(g)) continue;
+    groupsLeth.add(g);
+    lethBuild.push(it);
+    if (lethBuild.length === 6) break;
+  }
+  const groupsAd = new Set<string>();
+  const adBuild: typeof Items = [];
+  for (const it of adItems) {
+    const g = it.getGroupName();
+    if (groupsAd.has(g)) continue;
+    groupsAd.add(g);
+    adBuild.push(it);
+    if (adBuild.length === 6) break;
+  }
+  const zLeth = Object.assign(
+    Object.create(Object.getPrototypeOf(zed)),
+    zed,
+  ) as typeof zed;
+  const zAd = Object.assign(
+    Object.create(Object.getPrototypeOf(zed)),
+    zed,
+  ) as typeof zed;
+  zLeth.Items = lethBuild;
+  zAd.Items = adBuild;
+  const dpsLeth = zLeth.calculateDPS(
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    { level: 16, enableChampionRotationProfiles: true },
+    mit,
+  );
+  const dpsAd = zAd.calculateDPS(
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    { level: 16, enableChampionRotationProfiles: true },
+    mit,
+  );
+  if (dpsLeth.abilityDPS <= dpsAd.abilityDPS) {
+    fail(
+      `Zed: 6× lethality items should beat 6× AD on abilityDPS vs ${duel.targetArmor} armor (ad=${dpsAd.abilityDPS.toFixed(1)}, leth=${dpsLeth.abilityDPS.toFixed(1)})`,
     );
   }
 }
