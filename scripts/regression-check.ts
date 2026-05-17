@@ -245,4 +245,23 @@ if (zed) {
   }
 }
 
+const aatrox = Characters.find((c) => c.Name === "Aatrox");
+if (aatrox) {
+  const aatroxRecs = recommendBuildsForChampion(aatrox, Items, {
+    simulation: { level: 16 },
+    monteCarloParams: { iterationsPerRestart: 150, restarts: 2, randomProbeSamples: 30 },
+  });
+  for (const rec of aatroxRecs) {
+    const manaItems = rec.items.filter((n) => {
+      const it = Items.find((i) => i.name === n);
+      return it && isManaScalingItem(it);
+    });
+    if (manaItems.length > 0) {
+      fail(
+        `Aatrox ${rec.profile}: manaless champ must not build mana items: ${manaItems.join(", ")}`,
+      );
+    }
+  }
+}
+
 console.log(`Regression checks passed (${CASES.length} champion scenarios).`);

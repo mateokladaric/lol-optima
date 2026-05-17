@@ -2696,6 +2696,7 @@ type ChampionComboProfile = {
 export type ChampionResourceType = "mana" | "energy" | "none";
 
 export const CHAMPION_RESOURCE_TYPE: Record<string, ChampionResourceType> = {
+  Aatrox: "none",
   Akali: "energy",
   "Bel'Veth": "none",
   "Dr. Mundo": "none",
@@ -2705,11 +2706,14 @@ export const CHAMPION_RESOURCE_TYPE: Record<string, ChampionResourceType> = {
   "K'Sante": "none",
   "Lee Sin": "energy",
   Mordekaiser: "none",
+  Olaf: "none",
   RekSai: "none",
   Renekton: "none",
   Rengar: "energy",
   Riven: "none",
   Rumble: "none",
+  Sett: "none",
+  Shyvana: "none",
   Shen: "energy",
   Tryndamere: "none",
   Vladimir: "none",
