@@ -16,6 +16,7 @@ import type {
 } from "@/app/actions/sim";
 import {
   AllKeystones,
+  CHAMPION_COMBO_PROFILES,
   championUsesMana,
   isManaScalingItem,
   Item as ItemModel,
@@ -132,6 +133,32 @@ function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
   return selected;
 }
 
+/** Crit/on-hit legendaries that dominate combo DPS but aren't assassin burst items. */
+const GLASS_ASSASSIN_ITEM_DENY =
+  /Infinity Edge|Blade of the Ruined King|Navori Flickerblade|Phantom Dancer|Guinsoo|Kraken Slayer|Runaan|Stormrazor|Terminus|Experimental Hexplate|Yun Tal Wildarrows|Wit's End|Warmog|Jak'Sho|Sunfire|Heartsteel|Rylai|Liandry/i;
+
+function isGlassAssassinExcluded(item: Item): boolean {
+  if (GLASS_ASSASSIN_ITEM_DENY.test(item.name)) return true;
+  const leth = item.stats.lethality ?? 0;
+  const pen = item.stats.armorPen ?? 0;
+  const crit = item.stats.critChance ?? 0;
+  const as = item.stats.attackSpeed ?? 0;
+  if (crit >= 20 && leth < 12 && pen < 20) return true;
+  if (as >= 40 && leth < 12 && pen < 20) return true;
+  return false;
+}
+
+function itemPoolForProfile(
+  champion: Character,
+  realisticPool: Item[],
+  profile: BuildProfileId,
+): Item[] {
+  if (profile !== "glass" || !CHAMPION_COMBO_PROFILES[champion.Name]) {
+    return realisticPool;
+  }
+  return realisticPool.filter((it) => !isGlassAssassinExcluded(it));
+}
+
 export type ResolvedDuel = {
   /** Opponent max HP — drives %HP ratios and on-hit assumptions in DPS. */
   targetMaxHP: number;
@@ -232,6 +259,8 @@ export interface BuildRecommendation {
   abilityDPS: number;
   dotDPS: number;
   burstDPS: number;
+  sustainedDPS: number;
+  comboDPS: number;
   effectiveHP: number;
   breakdown: string[];
   duel: ResolvedDuel;
@@ -296,7 +325,11 @@ export function mixedEffectiveHP(
   const vsPhys = (hp * (100 + stats.armor)) / 100;
   const vsMag = (hp * (100 + stats.mr)) / 100;
   const p = clamp(incomingPhysShare, 0, 1);
-  return vsPhys * p + vsMag * (1 - p);
+  const sustainHPS =
+    (stats.sustainHealPerSecond ?? 0) +
+    (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
+  const sustainEhp = sustainHPS * 12;
+  return vsPhys * p + vsMag * (1 - p) + sustainEhp;
 }
 
 function itemApTotal(build: Item[]): number {
@@ -329,9 +362,23 @@ function profileScore(
   const combo = dps.comboDPS;
   const mixed = blendedDps(dps, 0.55);
 
+  let lethalityFromItems = 0;
+  let critFromItems = 0;
+  for (const it of build) {
+    lethalityFromItems += it.stats.lethality ?? 0;
+    critFromItems += it.stats.critChance ?? 0;
+  }
+
   switch (profile) {
-    case "glass":
-      return combo;
+    case "glass": {
+      let s = combo + lethalityFromItems * 14 - critFromItems * 6;
+      const penFromItems = build.reduce(
+        (t, it) => t + (it.stats.armorPen ?? 0),
+        0,
+      );
+      s += penFromItems * 4;
+      return Math.max(0, s);
+    }
     case "tank":
       return (
         Math.log1p(ehp / 150) * 1.35 * Math.pow(Math.log1p(mixed / 40), 0.65)
@@ -470,13 +517,33 @@ export function greedySimPurchaseOrder(
   return ordered;
 }
 
+type KeystoneCacheEntry = { rune: Rune | null; score: number };
+type KeystoneCache = Map<string, KeystoneCacheEntry>;
+
+function keystoneCacheKey(
+  championName: string,
+  profile: BuildProfileId,
+  build: Item[],
+  duel: ResolvedDuel,
+  simulation?: SimulationScenario,
+): string {
+  const items = build
+    .map((i) => i.name)
+    .sort()
+    .join("|");
+  const simKey = simulation
+    ? `${simulation.level ?? ""}:${simulation.spellOnlyNoAutos ?? ""}:${simulation.enableChampionRotationProfiles ?? ""}`
+    : "";
+  return `${championName}\0${profile}\0${items}\0${duel.targetMaxHP}\0${duel.targetBonusHP}\0${duel.targetArmor}\0${duel.targetMR}\0${duel.comboWindowSeconds}\0${simKey}`;
+}
+
 function bestKeystoneForBuild(
   champion: Character,
   build: Item[],
   profile: BuildProfileId,
   duel: ResolvedDuel,
   simulation?: SimulationScenario,
-): { rune: Rune | null; score: number } {
+): KeystoneCacheEntry {
   let best: Rune | null = null;
   let bestS = -Infinity;
   for (const k of AllKeystones) {
@@ -490,6 +557,34 @@ function bestKeystoneForBuild(
   return { rune: best, score: bestS };
 }
 
+function getCachedKeystone(
+  cache: KeystoneCache,
+  champion: Character,
+  build: Item[],
+  profile: BuildProfileId,
+  duel: ResolvedDuel,
+  simulation?: SimulationScenario,
+): KeystoneCacheEntry {
+  const key = keystoneCacheKey(
+    champion.Name,
+    profile,
+    build,
+    duel,
+    simulation,
+  );
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const result = bestKeystoneForBuild(
+    champion,
+    build,
+    profile,
+    duel,
+    simulation,
+  );
+  cache.set(key, result);
+  return result;
+}
+
 function copyBuild(build: Item[]): Item[] {
   return build.slice();
 }
@@ -499,10 +594,17 @@ function scoreBuildFast(
   profile: BuildProfileId,
   build: Item[],
   duel: ResolvedDuel,
-  simulation?: SimulationScenario,
+  simulation: SimulationScenario | undefined,
+  keystoneCache: KeystoneCache,
 ): number {
-  const c = cloneChampionWithLoadout(champion, build, null);
-  return scoreChampion(profile, c, build, duel, simulation);
+  return getCachedKeystone(
+    keystoneCache,
+    champion,
+    build,
+    profile,
+    duel,
+    simulation,
+  ).score;
 }
 
 /** One-step neighbor: replace a random slot with any pool item whose group is unused elsewhere. */
@@ -579,6 +681,7 @@ export function simulatedAnnealingOptimize(
   simulation: SimulationScenario | undefined,
   mc: ResolvedMonteCarlo,
   greedySeed: Item[] | null,
+  keystoneCache: KeystoneCache,
 ): Item[] {
   let globalBest: Item[] = [];
   let globalBestScore = -Infinity;
@@ -597,14 +700,28 @@ export function simulatedAnnealingOptimize(
       if (current.length < 6) continue;
     }
 
-    let currentScore = scoreBuildFast(champion, profile, current, duel, simulation);
+    let currentScore = scoreBuildFast(
+      champion,
+      profile,
+      current,
+      duel,
+      simulation,
+      keystoneCache,
+    );
     let restartBest = copyBuild(current);
     let restartBestScore = currentScore;
     let T = mc.initialTemperature;
 
     for (let i = 0; i < mc.iterationsPerRestart; i++) {
       const neighbor = randomNeighbor(current, pool);
-      const ns = scoreBuildFast(champion, profile, neighbor, duel, simulation);
+      const ns = scoreBuildFast(
+        champion,
+        profile,
+        neighbor,
+        duel,
+        simulation,
+        keystoneCache,
+      );
       const delta = ns - currentScore;
       if (
         delta > 0 ||
@@ -635,6 +752,7 @@ function greedyFill(
   profile: BuildProfileId,
   duel: ResolvedDuel,
   simulation: SimulationScenario | undefined,
+  keystoneCache: KeystoneCache,
 ): Item[] {
   const build: Item[] = [];
   const used = new Set<string>();
@@ -647,10 +765,14 @@ function greedyFill(
       const g = item.getGroupName();
       if (used.has(g)) continue;
       const trial = [...build, item];
-      // Item pass without keystone keeps relative order close to final while staying fast;
-      // keystone is chosen once the 6-item set is known.
-      const c = cloneChampionWithLoadout(champion, trial, null);
-      const s = scoreChampion(profile, c, trial, duel, simulation);
+      const s = scoreBuildFast(
+        champion,
+        profile,
+        trial,
+        duel,
+        simulation,
+        keystoneCache,
+      );
       if (s > bestScore) {
         bestScore = s;
         bestItem = item;
@@ -752,6 +874,8 @@ export type RecommendBuildsOptions = {
   monteCarlo?: boolean;
   monteCarloParams?: MonteCarloParams;
   simulation?: SimulationScenario;
+  /** Optional progress hook (used by compute-meta). */
+  onProgress?: (message: string) => void;
 };
 
 export function recommendBuildsForChampion(
@@ -784,25 +908,56 @@ export function recommendBuildsForChampion(
   const results: BuildRecommendation[] = [];
   const seenItemSets: Item[][] = [];
 
-  for (const profile of profiles) {
+  for (let pi = 0; pi < profiles.length; pi++) {
+    const profile = profiles[pi];
+    options?.onProgress?.(
+      `profile ${profile} (${pi + 1}/${profiles.length})`,
+    );
     const profileSim = mergeProfileSimulation(profile, simulation);
-    const greedy = greedyFill(champion, realisticPool, profile, duel, profileSim);
+    const profilePool = itemPoolForProfile(champion, realisticPool, profile);
+    const keystoneCache: KeystoneCache = new Map();
+    const greedy = greedyFill(
+      champion,
+      profilePool,
+      profile,
+      duel,
+      profileSim,
+      keystoneCache,
+    );
     let primary: Item[] = [];
 
     if (useMC && greedy.length === 6) {
+      options?.onProgress?.(
+        `profile ${profile}: simulated annealing (${mc.iterationsPerRestart}×${mc.restarts})`,
+      );
       const saBest = simulatedAnnealingOptimize(
         champion,
-        realisticPool,
+        profilePool,
         profile,
         duel,
         profileSim,
         mc,
         greedy,
+        keystoneCache,
       );
-      const gFast = scoreBuildFast(champion, profile, greedy, duel, profileSim);
+      const gFast = scoreBuildFast(
+        champion,
+        profile,
+        greedy,
+        duel,
+        profileSim,
+        keystoneCache,
+      );
       const sFast =
         saBest.length === 6
-          ? scoreBuildFast(champion, profile, saBest, duel, profileSim)
+          ? scoreBuildFast(
+              champion,
+              profile,
+              saBest,
+              duel,
+              profileSim,
+              keystoneCache,
+            )
           : -Infinity;
       primary = sFast >= gFast && saBest.length === 6 ? saBest : greedy;
     } else if (greedy.length === 6) {
@@ -810,18 +965,20 @@ export function recommendBuildsForChampion(
     } else if (useMC) {
       primary = simulatedAnnealingOptimize(
         champion,
-        realisticPool,
+        profilePool,
         profile,
         duel,
         profileSim,
         mc,
         null,
+        keystoneCache,
       );
     }
 
     if (primary.length === 0) continue;
 
-    const { rune: gRune } = bestKeystoneForBuild(
+    const { rune: gRune } = getCachedKeystone(
+      keystoneCache,
       champion,
       primary,
       profile,
@@ -861,6 +1018,8 @@ export function recommendBuildsForChampion(
         rune: gRune?.name ?? "None",
         score: gscore,
         totalDPS: gd.totalDPS,
+        sustainedDPS: gd.sustainedDPS,
+        comboDPS: gd.comboDPS,
         autoAttackDPS: gd.autoAttackDPS,
         onHitDPS: gd.onHitDPS,
         abilityDPS: gd.abilityDPS,
@@ -876,17 +1035,25 @@ export function recommendBuildsForChampion(
     let bestAlt: Item[] | null = null;
     let bestAltScore = -Infinity;
     for (let i = 0; i < nProbes; i++) {
-      const b = sampleFullBuild(realisticPool);
+      const b = sampleFullBuild(profilePool);
       if (b.length < 6) continue;
       if (!isDistinct(b, [primary])) continue;
-      const s0 = scoreBuildFast(champion, profile, b, duel, profileSim);
+      const s0 = scoreBuildFast(
+        champion,
+        profile,
+        b,
+        duel,
+        profileSim,
+        keystoneCache,
+      );
       if (s0 > bestAltScore) {
         bestAltScore = s0;
         bestAlt = b;
       }
     }
     if (bestAlt && isDistinct(bestAlt, seenItemSets)) {
-      const { rune: aRune } = bestKeystoneForBuild(
+      const { rune: aRune } = getCachedKeystone(
+        keystoneCache,
         champion,
         bestAlt,
         profile,
@@ -925,6 +1092,8 @@ export function recommendBuildsForChampion(
           rune: aRune?.name ?? "None",
           score: sc,
           totalDPS: dps.totalDPS,
+          sustainedDPS: dps.sustainedDPS,
+          comboDPS: dps.comboDPS,
           autoAttackDPS: dps.autoAttackDPS,
           onHitDPS: dps.onHitDPS,
           abilityDPS: dps.abilityDPS,
@@ -964,6 +1133,8 @@ export type SerializedBuildResult = {
   totalGold: number;
   rune: string;
   totalDPS: number;
+  sustainedDPS: number;
+  comboDPS: number;
   autoAttackDPS: number;
   onHitDPS: number;
   dotDPS: number;
@@ -1022,6 +1193,17 @@ function classifyBuildFromItems(items: Item[]): string {
   return scores[0].score > 0 ? scores[0].type : "Standard";
 }
 
+export type ComputeMetaOptions = {
+  /** Log champion/profile progress (default true unless LOLOPTIMA_QUIET=1). */
+  verbose?: boolean;
+};
+
+function isEnvTruthy(key: string): boolean {
+  const v = process.env[key];
+  if (v === undefined || v === "") return false;
+  return ["1", "true", "yes", "on"].includes(v.trim().toLowerCase());
+}
+
 /** Used by compute-meta script: all champions, best row per profile + alts. */
 export function computeMetaForAllChampions(
   champions: Character[],
@@ -1029,21 +1211,45 @@ export function computeMetaForAllChampions(
   duelOverrides?: DuelAssumptions,
   monteCarloOverrides?: MonteCarloParams,
   simulation?: SimulationScenario,
+  metaOptions?: ComputeMetaOptions,
 ): SerializedMeta {
   const duel = resolveDuel(duelOverrides);
   const championBuilds: SerializedMeta["championBuilds"] = [];
   const itemByName = new Map(itemPool.map((i) => [i.name, i] as const));
+  const mcParams: MonteCarloParams = {
+    iterationsPerRestart: 1200,
+    restarts: 6,
+    randomProbeSamples: 320,
+    ...monteCarloOverrides,
+  };
+  const mc = resolveMonteCarloParams(mcParams);
+  const verbose = metaOptions?.verbose ?? !isEnvTruthy("LOLOPTIMA_QUIET");
+  const total = champions.length;
+  const log = (msg: string) => {
+    if (verbose) console.log(msg);
+  };
 
-  for (const champion of champions) {
+  log(
+    `[compute-meta] Starting ${total} champions | SA ${mc.iterationsPerRestart} iter × ${mc.restarts} restarts | ${mcParams.randomProbeSamples ?? 320} alt probes per profile`,
+  );
+  log(
+    `[compute-meta] Duel: ${duel.targetMaxHP} HP (+${duel.targetBonusHP} bonus), ${duel.targetArmor}/${duel.targetMR} armor/MR, ${duel.comboWindowSeconds}s combo`,
+  );
+  const runStarted = Date.now();
+
+  for (let i = 0; i < champions.length; i++) {
+    const champion = champions[i];
+    const label = `[${i + 1}/${total}]`;
+    const champStarted = Date.now();
+    log(`[compute-meta] ${label} ${champion.Name} — starting`);
+
     const recs = recommendBuildsForChampion(champion, itemPool, {
       duel,
       simulation,
-      monteCarloParams: {
-        iterationsPerRestart: 1200,
-        restarts: 6,
-        randomProbeSamples: 320,
-        ...monteCarloOverrides,
-      },
+      monteCarloParams: mcParams,
+      onProgress: verbose
+        ? (step) => log(`[compute-meta] ${label} ${champion.Name} — ${step}`)
+        : undefined,
     });
     const builds: SerializedBuildResult[] = recs.map((r) => {
       const its = r.items
@@ -1055,6 +1261,8 @@ export function computeMetaForAllChampions(
         totalGold: r.totalGold,
         rune: r.rune,
         totalDPS: r.totalDPS,
+        sustainedDPS: r.sustainedDPS,
+        comboDPS: r.comboDPS,
         autoAttackDPS: r.autoAttackDPS,
         onHitDPS: r.onHitDPS,
         dotDPS: r.dotDPS,
@@ -1065,10 +1273,21 @@ export function computeMetaForAllChampions(
       };
     });
 
+    const topDps = builds[0]?.totalDPS ?? 0;
+    const elapsedSec = ((Date.now() - champStarted) / 1000).toFixed(1);
+    log(
+      `[compute-meta] ${label} ${champion.Name} — done in ${elapsedSec}s (${builds.length} builds, top ${topDps.toFixed(0)} DPS)`,
+    );
+
     if (builds.length > 0) {
       championBuilds.push({ champion: champion.Name, builds });
     }
   }
+
+  const runMin = ((Date.now() - runStarted) / 60_000).toFixed(1);
+  log(
+    `[compute-meta] Finished ${championBuilds.length}/${total} champions with builds in ${runMin} min`,
+  );
 
   championBuilds.sort(
     (a, b) => (b.builds[0]?.totalDPS ?? 0) - (a.builds[0]?.totalDPS ?? 0),

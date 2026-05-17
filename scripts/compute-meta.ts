@@ -57,6 +57,7 @@ if (useRotation !== undefined) {
   simulation.enableChampionRotationProfiles = useRotation;
 }
 
+console.log("[compute-meta] Optimizing builds…");
 const meta = computeMetaForAllChampions(
   Characters,
   Items,
@@ -65,8 +66,9 @@ const meta = computeMetaForAllChampions(
   Object.keys(simulation).length > 0 ? simulation : undefined,
 );
 const outPath = join(process.cwd(), "public", "data", "metaBuilds.json");
+console.log(`[compute-meta] Writing ${outPath}…`);
 writeFileSync(outPath, JSON.stringify(meta, null, 2), "utf8");
-console.log(`Wrote ${outPath} (${meta.championBuilds.length} champions)`);
+console.log(`[compute-meta] Wrote ${outPath} (${meta.championBuilds.length} champions)`);
 console.log("Duel assumptions:", meta.duel);
 if (meta.simulation) {
   console.log("Simulation assumptions:", meta.simulation);

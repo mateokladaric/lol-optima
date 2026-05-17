@@ -209,6 +209,7 @@ export function effectiveAbilityCasts(ability: Ability): number {
   ) {
     return 1;
   }
+  if (ability.recastWindow != null && mc <= ability.recastWindow) return 1;
   if (notes.includes("recast window") && mc <= 6) return 1;
   if (notes.includes("nearsight:") && ability.abilityType === "R") return 1;
   if (mc > 10) return 1;
@@ -464,6 +465,14 @@ interface ItemStats {
   // Debuff damage amplification - applied to target
   damageAmplificationOnTarget?: number; // % increased damage target takes from all sources
   damagePerTargetBonusHPPercent?: number; // % increased damage per 100 target bonus HP (e.g., 1.5 = 1.5% per 100 bonus HP, max 15% at 1000 bonus HP)
+  /**
+   * Execute champions when post-mitigation damage would leave them at or below this
+   * % of **maximum** health (The Collector Death = 5).
+   */
+  executeMaxHealthThresholdPercent?: number;
+  /** Sustain from item passives (heal nova, etc.) — folded into EHP in optimizer. */
+  sustainHealPerSecond?: number;
+  sustainHealPerSecondAPPercent?: number;
 
   // Scaling multipliers - for stats that scale with other stats
   abilityDamagePerManaMultiplicative?: number; // % per mana point
@@ -1057,6 +1066,8 @@ const Cryptbloom = new Item(
     ap: 70,
     abilityHaste: 20,
     magicPen: 30,
+    sustainHealPerSecond: 50 / 60,
+    sustainHealPerSecondAPPercent: 50 / 60,
   },
   [],
   "Void Pen",
@@ -2410,6 +2421,7 @@ const TheCollector = new Item(
     ad: 50,
     lethality: 10,
     critChance: 25,
+    executeMaxHealthThresholdPercent: 5,
   },
   [],
   "The Collector",
@@ -2695,30 +2707,39 @@ type ChampionComboProfile = {
 /** Champions without a mana bar should not receive mana-scaling item recommendations. */
 export type ChampionResourceType = "mana" | "energy" | "none";
 
+const ENERGY_CHAMPIONS: readonly string[] = [
+  "Akali",
+  "Kennen",
+  "Lee Sin",
+  "Rengar",
+  "Shen",
+  "Zed",
+];
+
+/** Cooldown-only kits (no mana bar); cannot buy tear / Muramana / etc. */
+const MANALESS_CHAMPIONS: readonly string[] = [
+  "Aatrox",
+  "Bel'Veth",
+  "Dr. Mundo",
+  "Garen",
+  "Katarina",
+  "K'Sante",
+  "Mordekaiser",
+  "Olaf",
+  "RekSai",
+  "Renekton",
+  "Riven",
+  "Rumble",
+  "Sett",
+  "Shyvana",
+  "Tryndamere",
+  "Vladimir",
+  "Yone",
+];
+
 export const CHAMPION_RESOURCE_TYPE: Record<string, ChampionResourceType> = {
-  Aatrox: "none",
-  Akali: "energy",
-  "Bel'Veth": "none",
-  "Dr. Mundo": "none",
-  Garen: "none",
-  Kennen: "energy",
-  Katarina: "none",
-  "K'Sante": "none",
-  "Lee Sin": "energy",
-  Mordekaiser: "none",
-  Olaf: "none",
-  RekSai: "none",
-  Renekton: "none",
-  Rengar: "energy",
-  Riven: "none",
-  Rumble: "none",
-  Sett: "none",
-  Shyvana: "none",
-  Shen: "energy",
-  Tryndamere: "none",
-  Vladimir: "none",
-  Yone: "none",
-  Zed: "energy",
+  ...Object.fromEntries(ENERGY_CHAMPIONS.map((n) => [n, "energy" as const])),
+  ...Object.fromEntries(MANALESS_CHAMPIONS.map((n) => [n, "none" as const])),
 };
 
 export function championUsesMana(champion: Character): boolean {
@@ -2758,7 +2779,8 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
   },
   Zed: {
     castOrder: ["R", "Q", "E", "W"],
-    abilityDupMultiplier: { Q: 1.85, E: 1.85 },
+    // Q/E: shadow duplicate; Q second shuriken ~60% (averaged into dup mult)
+    abilityDupMultiplier: { Q: 1.55, E: 1.85 },
     deathMarkPopRatio: [0.25, 0.4, 0.55],
     comboAutoWeight: 0.3,
   },
@@ -3010,6 +3032,25 @@ export function magicMitigationMultiplier(
   return 100 / (100 + mr);
 }
 
+/**
+ * The Collector Death: if post-mitigation combo damage would leave the target at or
+ * below `executeThresholdPercent` of their **max** HP, they are executed. Returns
+ * the effective bonus damage credited to the combo (HP skipped on the kill).
+ */
+export function collectorExecuteBonusDamage(
+  mitigatedComboDamage: number,
+  targetTotalHP: number,
+  targetMaxHP: number,
+  executeThresholdPercent: number,
+): number {
+  if (executeThresholdPercent <= 0 || targetMaxHP <= 0) return 0;
+  const threshold = targetMaxHP * (executeThresholdPercent / 100);
+  const hpAfter = targetTotalHP - mitigatedComboDamage;
+  if (hpAfter <= 0) return 0;
+  if (hpAfter > threshold) return 0;
+  return hpAfter;
+}
+
 type ComboCastSpec = {
   abilityType: Exclude<AbilityType, "passive">;
   singleCastDamage: number;
@@ -3030,18 +3071,22 @@ function mitigatedAbilityHit(
   damage: number,
   damageType: DamageScaling["damageType"],
   stats: PenStats & { ad: number; ap: number },
-  abilityMultiplier: number,
+  abilityBaseMult: number,
+  abilityPhysMult: number,
+  abilityMagicMult: number,
   physMit: number,
   magicMit: number,
 ): number {
-  const scaled = damage * abilityMultiplier;
   const t = damageType ?? "physical";
-  if (t === "true") return scaled;
-  if (t === "magic") return scaled * magicMit;
+  if (t === "true") return damage * abilityBaseMult;
+  if (t === "magic") return damage * abilityMagicMult * magicMit;
   if (t === "adaptive") {
-    return scaled * (stats.ad >= stats.ap ? physMit : magicMit);
+    return (
+      damage *
+      (stats.ad >= stats.ap ? abilityPhysMult * physMit : abilityMagicMult * magicMit)
+    );
   }
-  return scaled * physMit;
+  return damage * abilityPhysMult * physMit;
 }
 
 function simulateComboWindowDamage(
@@ -3051,7 +3096,9 @@ function simulateComboWindowDamage(
   comboProfile: ChampionComboProfile | undefined,
   stats: PenStats & { ad: number; ap: number },
   level: number,
-  abilityMultiplier: number,
+  abilityBaseMult: number,
+  abilityPhysMult: number,
+  abilityMagicMult: number,
   physMit: number,
   magicMit: number,
   burstAfterMit: number,
@@ -3085,7 +3132,9 @@ function simulateComboWindowDamage(
         hit,
         spec.damageType,
         stats,
-        abilityMultiplier,
+        abilityBaseMult,
+        abilityPhysMult,
+        abilityMagicMult,
         physMit,
         magicMit,
       );
@@ -3349,6 +3398,8 @@ class Character {
       physicalDamageMultiplicative: 0,
       magicDamageMultiplicative: 0,
       damageMultiplicative: 0,
+      sustainHealPerSecond: 0,
+      sustainHealPerSecondAPPercent: 0,
     };
 
     // Add item stats - iterate through all keys
@@ -3891,6 +3942,9 @@ class Character {
         actualCooldown = Math.max(actualCooldown, castFloor, rotationFloor);
       }
 
+      const isAmmo = ability.cooldown.cooldownType === "ammo";
+      let ammoChargeDamage = 1;
+
       // Calculate ability damage at scenario rank
       let abilityDamage = 0;
       if (ability.damage.baseDamage) {
@@ -4012,8 +4066,17 @@ class Character {
           (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
       }
 
-      const castsPerWindow = effectiveAbilityCasts(ability);
-      const coreDamage = abilityDamage * castsPerWindow;
+      let castsPerWindow = effectiveAbilityCasts(ability);
+      if (isAmmo) {
+        const charges = Math.max(1, castsPerWindow);
+        const recharge = baseCooldown;
+        const castTime = ability.castInfo?.castTime ?? 0.25;
+        const dumpSeconds = castTime + recharge * Math.max(0, charges - 1);
+        actualCooldown = Math.max(dumpSeconds / charges, castTime);
+        ammoChargeDamage = charges;
+        castsPerWindow = 1;
+      }
+      const coreDamage = abilityDamage * castsPerWindow * ammoChargeDamage;
       const trueDamage = onAbilityHitTrue * castsPerWindow;
       const physBonusDamage = onAbilityHitPhys * castsPerWindow;
       const totalDamage = coreDamage + trueDamage + physBonusDamage;
@@ -4118,7 +4181,6 @@ class Character {
         (targetBonusHP / 100) * (stats.damagePerTargetBonusHPPercent || 0),
       ) /
         100;
-
     // Base multiplier (applies to all damage)
     const baseMultiplier =
       damageMultiplier *
@@ -4127,7 +4189,8 @@ class Character {
       runeMultiplier;
 
     // Physical multiplier (for auto attacks and physical on-hit)
-    const totalPhysicalMultiplier = baseMultiplier * physicalDamageMultiplier;
+    const totalPhysicalMultiplier =
+      baseMultiplier * physicalDamageMultiplier;
 
     // Magic multiplier (for magic on-hit and magic DoT)
     const totalMagicMultiplier = baseMultiplier * magicDamageMultiplier;
@@ -4145,16 +4208,19 @@ class Character {
       );
     }
 
-    // Apply ability damage multiplier (abilities benefit from general damage multiplier and ability-specific multipliers)
-    // abilityDamagePerAPMultiplicative: bonus % ability damage per AP (e.g., 0.04 = 0.04% per AP)
+    // Ability amps: base + ability-specific; physical/magic amps apply by damage type
     const abilityDamageFromAP =
       stats.ap * (stats.abilityDamagePerAPMultiplicative || 0);
-    const abilityMultiplier =
+    const abilityBaseMult =
       damageMultiplier *
       targetDamageAmp *
       giantSlayerMultiplier *
+      runeMultiplier *
       (1 +
         ((stats.abilityDamageMultiplicative || 0) + abilityDamageFromAP) / 100);
+    const abilityPhysMult =
+      abilityBaseMult * physicalDamageMultiplier;
+    const abilityMagicMult = abilityBaseMult * magicDamageMultiplier;
     // 6. Calculate Burst Damage (one-time damage at combat start)
     let burstPhys = 0;
     let burstMagic = 0;
@@ -4268,8 +4334,9 @@ class Character {
     }
 
     const finalAbilityDPS =
-      abilityMultiplier *
-      (abilityPhysDPS * physMit + abilityMagicDPS * magicMit + abilityTrueDPS);
+      abilityPhysMult * abilityPhysDPS * physMit +
+      abilityMagicMult * abilityMagicDPS * magicMit +
+      abilityBaseMult * abilityTrueDPS;
 
     const onHitPhysDPS = onHitPhysPerAttack * attackRate;
     const onHitMagicDPS = onHitMagicPerAttack * attackRate;
@@ -4284,8 +4351,9 @@ class Character {
     const finalDotDPS = dotDPS * totalMagicMultiplier * magicMit;
 
     const burstAfterMit =
-      abilityMultiplier *
-      (burstPhys * physMit + burstMagic * magicMit + burstTrue);
+      abilityPhysMult * burstPhys * physMit +
+      abilityMagicMult * burstMagic * magicMit +
+      abilityBaseMult * burstTrue;
 
     const autoHitAfterMit =
       autoAttackDamagePerHit * totalPhysicalMultiplier * physMit;
@@ -4298,7 +4366,9 @@ class Character {
       comboProfile,
       stats,
       sim.level,
-      abilityMultiplier,
+      abilityBaseMult,
+      abilityPhysMult,
+      abilityMagicMult,
       physMit,
       magicMit,
       burstAfterMit,
@@ -4306,15 +4376,37 @@ class Character {
       attackRate,
     );
 
+    let executeThresholdPercent = 0;
+    for (const item of this.Items) {
+      const t = item.stats.executeMaxHealthThresholdPercent;
+      if (t != null && t > executeThresholdPercent) {
+        executeThresholdPercent = t;
+      }
+    }
+
+    const targetTotalHP = targetMaxHP + targetBonusHP;
+    const executeBonus = collectorExecuteBonusDamage(
+      comboResult.total,
+      targetTotalHP,
+      targetMaxHP,
+      executeThresholdPercent,
+    );
+    const comboTotalWithExecute = comboResult.total + executeBonus;
+
     const sustainedDPS =
       finalAutoAttackDPS + finalOnHitDPS + finalDotDPS + finalAbilityDPS;
-    const comboDPS = comboResult.total / mit.comboWindowSeconds;
+    const comboDPS = comboTotalWithExecute / mit.comboWindowSeconds;
     const burstSustainDPS = burstAfterMit / mit.comboWindowSeconds;
 
     breakdown.push(`Sustained (rotation): ${sustainedDPS.toFixed(1)} DPS`);
     breakdown.push(
-      `Combo (${mit.comboWindowSeconds}s window): ${comboResult.total.toFixed(0)} total → ${comboDPS.toFixed(1)} DPS`,
+      `Combo (${mit.comboWindowSeconds}s window): ${comboResult.total.toFixed(0)} total → ${(comboResult.total / mit.comboWindowSeconds).toFixed(1)} DPS`,
     );
+    if (executeBonus > 0) {
+      breakdown.push(
+        `Collector execute (Death): +${executeBonus.toFixed(0)} vs ${targetTotalHP.toFixed(0)} HP (≤${executeThresholdPercent}% max HP)`,
+      );
+    }
     if (burstAfterMit > 0) {
       breakdown.push(
         `Item burst in combo: ${burstAfterMit.toFixed(0)} (${burstSustainDPS.toFixed(1)} DPS if spread)`,
@@ -6001,6 +6093,103 @@ const Brand = new Character(
   550, // Attack range
   0.681, // Base AS
   [BrandPassive, BrandQ, BrandW, BrandE, BrandR],
+  [],
+);
+
+// Braum
+const BraumPassive = new Ability(
+  "Concussive Blows",
+  "passive",
+  "Basic attacks apply stacks; at 4 stacks, target is stunned and takes magic damage.",
+  { cooldown: 0, cooldownType: "standard" },
+  { castTime: 0, range: 125 },
+  {
+    baseDamage: [70, 240],
+    maxHealthRatio: 4,
+    damageType: "magic",
+  },
+  {
+    ccType: "stun",
+    ccDuration: 1.5,
+  },
+  undefined,
+  undefined,
+  ["4 stacks from Braum or allies", "Stun: 1.25-1.5s"],
+  true,
+);
+
+const BraumQ = new Ability(
+  "Winter's Bite",
+  "Q",
+  "Throws shield, slowing and dealing magic damage. Stuns if target has Concussive Blows.",
+  { cooldown: [10, 9, 8, 7, 6], cooldownType: "standard" },
+  { castTime: 0.25, range: 1000 },
+  {
+    baseDamage: [75, 125, 175, 225, 275],
+    apRatio: 25,
+    damageType: "magic",
+  },
+  {
+    ccType: "slow",
+    ccDuration: 2,
+    slow: 70,
+  },
+);
+
+const BraumW = new Ability(
+  "Stand Behind Me!",
+  "W",
+  "Dashes to ally and grants both a shield.",
+  { cooldown: [12, 11, 10, 9, 8], cooldownType: "standard" },
+  { castTime: 0, range: 650 },
+  undefined,
+  { shield: [40, 70, 100, 130, 160] },
+);
+
+const BraumE = new Ability(
+  "Unbreakable",
+  "E",
+  "Raises shield, blocking projectiles and reducing damage from that direction.",
+  { cooldown: [14, 13, 12, 11, 10], cooldownType: "standard" },
+  { castTime: 0, range: 250 },
+  undefined,
+  { duration: 4 },
+  undefined,
+  undefined,
+  ["Damage reduction: 30-40%", "Blocks first projectile completely"],
+);
+
+const BraumR = new Ability(
+  "Glacial Fissure",
+  "R",
+  "Slams ground, knocking up enemies and leaving a slowing zone.",
+  { cooldown: [130, 105, 80], cooldownType: "standard" },
+  { castTime: 0.5, range: 1250, width: 200 },
+  {
+    baseDamage: [150, 250, 350],
+    apRatio: 60,
+    damageType: "magic",
+  },
+  {
+    ccType: "knockup",
+    ccDuration: 1,
+    slow: 60,
+    duration: 4,
+  },
+);
+
+const Braum = new Character(
+  "Braum",
+  610,
+  8.5,
+  47,
+  32,
+  55,
+  200,
+  335,
+  125,
+  0.644,
+  [BraumPassive, BraumQ, BraumW, BraumE, BraumR],
   [],
 );
 
@@ -11079,6 +11268,205 @@ const Illaoi = new Character(
   125,
   0.625,
   [IllaoiPassive, IllaoiQ, IllaoiW, IllaoiE, IllaoiR],
+  [],
+);
+
+// Irelia
+const IreliaPassive = new Ability(
+  "Ionian Fervor",
+  "passive",
+  "Abilities and attacks grant stacks; at max stacks, attacks deal bonus on-hit magic damage.",
+  { cooldown: 0, cooldownType: "standard" },
+  { castTime: 0, range: 200 },
+  {
+    baseDamage: [7, 67],
+    apRatio: 20,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  true,
+);
+
+const IreliaQ = new Ability(
+  "Bladesurge",
+  "Q",
+  "Dashes to target, dealing physical damage. Resets cooldown on kill.",
+  { cooldown: [10, 9, 8, 7, 6], cooldownType: "standard" },
+  { castTime: 0, range: 600 },
+  {
+    baseDamage: [20, 100],
+    adRatio: 70,
+    apRatio: 50,
+    damageType: "physical",
+  },
+  undefined,
+  undefined,
+  undefined,
+  ["Resets on kill", "Heals 17-27 (+12% bonus AD)"],
+);
+
+const IreliaW = new Ability(
+  "Defiant Dance",
+  "W",
+  "Charges then slashes, dealing magic damage. Reduces physical damage while charging.",
+  { cooldown: [20, 18, 16, 14, 12], cooldownType: "standard" },
+  { castTime: 0.75, range: 825 },
+  {
+    baseDamage: [30, 170],
+    apRatio: 80,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  ["40-80% physical damage reduction while charging"],
+);
+
+const IreliaE = new Ability(
+  "Flawless Duet",
+  "E",
+  "Places two blades; if they cross, roots and deals magic damage.",
+  { cooldown: [16, 15, 14, 13, 12], cooldownType: "standard" },
+  { castTime: 0.25, range: 850 },
+  {
+    baseDamage: [80, 280],
+    apRatio: 80,
+    damageType: "magic",
+  },
+  {
+    ccType: "root",
+    ccDuration: 1,
+  },
+  2,
+  undefined,
+  ["2 casts to place blades"],
+);
+
+const IreliaR = new Ability(
+  "Vanguard's Edge",
+  "R",
+  "Throws blades in a line, marking champions and dealing magic damage.",
+  { cooldown: [125, 105, 85], cooldownType: "standard" },
+  { castTime: 0.4, range: 1000, width: 160 },
+  {
+    baseDamage: [125, 225, 325],
+    apRatio: 70,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  ["Disarming wall after impact", "Mark: + magic damage on Q"],
+);
+
+const Irelia = new Character(
+  "Irelia",
+  630,
+  6,
+  36,
+  30,
+  65,
+  200,
+  335,
+  200,
+  0.656,
+  [IreliaPassive, IreliaQ, IreliaW, IreliaE, IreliaR],
+  [],
+);
+
+// Ivern
+const IvernPassive = new Ability(
+  "Friend of the Forest",
+  "passive",
+  "Cannot attack non-epic monsters; gains bonus gold and marks camps for allies.",
+  { cooldown: 0, cooldownType: "standard" },
+  undefined,
+  undefined,
+  undefined,
+);
+
+const IvernQ = new Ability(
+  "Rootcaller",
+  "Q",
+  "Fires a root that deals magic damage and roots.",
+  { cooldown: [14, 13, 12, 11, 10], cooldownType: "standard" },
+  { castTime: 0.25, range: 1125 },
+  {
+    baseDamage: [80, 180],
+    apRatio: 70,
+    damageType: "magic",
+  },
+  {
+    ccType: "root",
+    ccDuration: 1.5,
+  },
+);
+
+const IvernW = new Ability(
+  "Brushmaker",
+  "W",
+  "Creates brush and grants bonus attack range to Ivern and allies inside.",
+  { cooldown: [0.5], cooldownType: "standard" },
+  { castTime: 0, range: 1150 },
+  undefined,
+  undefined,
+  undefined,
+  ["Creates brush; +50-150 attack range in brush"],
+);
+
+const IvernE = new Ability(
+  "Triggerseed",
+  "E",
+  "Shields an ally; detonates after delay to slow and deal magic damage.",
+  { cooldown: [11, 10, 9, 8, 7], cooldownType: "standard" },
+  { castTime: 0.25, range: 750 },
+  {
+    baseDamage: [80, 180],
+    apRatio: 70,
+    damageType: "magic",
+  },
+  {
+    shield: [80, 230],
+    ccType: "slow",
+    slow: 40,
+    duration: 2,
+  },
+);
+
+const IvernR = new Ability(
+  "Daisy!",
+  "R",
+  "Summons Daisy to attack and knock up enemies.",
+  { cooldown: [140, 130, 120], cooldownType: "standard" },
+  { castTime: 0.5, range: 600 },
+  {
+    baseDamage: [150, 250, 350],
+    apRatio: 50,
+    damageType: "magic",
+  },
+  {
+    ccType: "knockup",
+    ccDuration: 1,
+  },
+  undefined,
+  undefined,
+  ["Daisy AA: 50-150 (+30% AP) magic per hit"],
+);
+
+const Ivern = new Character(
+  "Ivern",
+  655,
+  7,
+  34,
+  30,
+  61,
+  200,
+  330,
+  475,
+  0.644,
+  [IvernPassive, IvernQ, IvernW, IvernE, IvernR],
   [],
 );
 
@@ -22232,6 +22620,117 @@ const Skarner = new Character(
   [],
 );
 
+// Smolder
+const SmolderPassive = new Ability(
+  "Dragon Practice",
+  "passive",
+  "Abilities and attacks grant stacks; at 25 stacks, abilities evolve.",
+  { cooldown: 0, cooldownType: "standard" },
+  undefined,
+  {
+    baseDamage: [0],
+    adRatio: 15,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  true,
+);
+
+const SmolderQ = new Ability(
+  "Super Scorcher Breath",
+  "Q",
+  "Breathes fire dealing physical damage; bonus damage vs burning targets.",
+  { cooldown: [5.5, 5, 4.5, 4, 3.5], cooldownType: "standard" },
+  { castTime: 0.25, range: 550 },
+  {
+    baseDamage: [20, 90],
+    adRatio: 100,
+    apRatio: 30,
+    damageType: "physical",
+  },
+  undefined,
+  undefined,
+  undefined,
+  ["Burn: 2% max HP over 3s", "Evolved: explosion on hit"],
+  true,
+);
+
+const SmolderW = new Ability(
+  "Achooo!",
+  "W",
+  "Sends wave dealing magic damage and slowing.",
+  { cooldown: [14, 13, 12, 11, 10], cooldownType: "standard" },
+  { castTime: 0.25, range: 1500, width: 200 },
+  {
+    baseDamage: [60, 180],
+    adRatio: 60,
+    apRatio: 60,
+    damageType: "magic",
+  },
+  {
+    ccType: "slow",
+    ccDuration: 2,
+    slow: 30,
+  },
+);
+
+const SmolderE = new Ability(
+  "Flap, Flap, Flap",
+  "E",
+  "Flies over terrain, gaining vision and bombing enemies below.",
+  { cooldown: [24, 22, 20, 18, 16], cooldownType: "standard" },
+  { castTime: 0, range: 700 },
+  {
+    baseDamage: [50, 150],
+    adRatio: 50,
+    apRatio: 50,
+    damageType: "physical",
+  },
+  undefined,
+  undefined,
+  undefined,
+  ["3-5 bombs while flying"],
+);
+
+const SmolderR = new Ability(
+  "MOOOOM!",
+  "R",
+  "Mother dragon breaths fire in a line, dealing physical damage and slowing.",
+  { cooldown: [120, 100, 80], cooldownType: "standard" },
+  { castTime: 0.35, range: 4200, width: 400 },
+  {
+    baseDamage: [150, 300, 450],
+    adRatio: 100,
+    apRatio: 100,
+    damageType: "physical",
+  },
+  {
+    ccType: "slow",
+    ccDuration: 2,
+    slow: 30,
+  },
+  undefined,
+  undefined,
+  ["Center: true damage", "Burns for 6s"],
+);
+
+const Smolder = new Character(
+  "Smolder",
+  575,
+  3.5,
+  24,
+  30,
+  60,
+  200,
+  330,
+  550,
+  0.638,
+  [SmolderPassive, SmolderQ, SmolderW, SmolderE, SmolderR],
+  [],
+);
+
 // Sona
 const SonaPassive = new Ability(
   "Power Chord",
@@ -26304,6 +26803,109 @@ const Yuumi = new Character(
   500,
   0.625,
   [YuumiPassive, YuumiQ, YuumiW, YuumiE, YuumiR],
+  [],
+);
+
+// Yunara
+const YunaraPassive = new Ability(
+  "Way of the Hunter",
+  "passive",
+  "Attacks and abilities grant stacks; at max stacks, next ability is empowered.",
+  { cooldown: 0, cooldownType: "standard" },
+  undefined,
+  {
+    baseDamage: [10, 50],
+    adRatio: 25,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  true,
+);
+
+const YunaraQ = new Ability(
+  "Cultivation of Spirit",
+  "Q",
+  "Strikes in a line dealing physical damage; empowered form attacks faster.",
+  { cooldown: [9, 8.5, 8, 7.5, 7], cooldownType: "standard" },
+  { castTime: 0.25, range: 900, width: 120 },
+  {
+    baseDamage: [20, 100],
+    adRatio: 90,
+    damageType: "physical",
+  },
+  undefined,
+  undefined,
+  undefined,
+  ["Empowered: 3 rapid strikes"],
+  true,
+);
+
+const YunaraW = new Ability(
+  "Arc of Judgment",
+  "W",
+  "Creates a zone that grants attack speed and on-hit magic damage.",
+  { cooldown: [16, 15, 14, 13, 12], cooldownType: "standard" },
+  { castTime: 0.25, range: 900, radius: 400 },
+  {
+    baseDamage: [30, 110],
+    adRatio: 40,
+    apRatio: 40,
+    damageType: "magic",
+  },
+  {
+    bonusStats: { as: [25, 45] },
+    duration: 4,
+  },
+);
+
+const YunaraE = new Ability(
+  "Kanmei's Steps",
+  "E",
+  "Becomes untargetable and dashes, gaining movement speed.",
+  { cooldown: [18, 16, 14, 12, 10], cooldownType: "standard" },
+  { castTime: 0, range: 450 },
+  undefined,
+  {
+    bonusStats: { ms: [30, 50] },
+    duration: 2,
+  },
+);
+
+const YunaraR = new Ability(
+  "Transcend One's Self",
+  "R",
+  "Enters ascended state with bonus range, attack speed, and on-hit damage.",
+  { cooldown: [120, 100, 80], cooldownType: "standard" },
+  { castTime: 0.25, range: 0 },
+  {
+    baseDamage: [50, 150],
+    adRatio: 50,
+    damageType: "magic",
+  },
+  {
+    bonusStats: { as: [40, 60] },
+    duration: 10,
+  },
+  undefined,
+  undefined,
+  ["+100-150 attack range while ascended", "On-hit magic damage"],
+  true,
+);
+
+const Yunara = new Character(
+  "Yunara",
+  590,
+  6,
+  28,
+  30,
+  58,
+  200,
+  335,
+  550,
+  0.65,
+  [YunaraPassive, YunaraQ, YunaraW, YunaraE, YunaraR],
   [],
 );
 

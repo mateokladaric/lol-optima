@@ -1,11 +1,14 @@
 import {
   Characters,
+  collectorExecuteBonusDamage,
   isManaScalingItem,
+  Item,
   Items,
   magicMitigationMultiplier,
   physicalMitigationMultiplier,
 } from "../src/app/actions/sim";
 import {
+  dpsMitigationFromDuel,
   recommendBuildsForChampion,
   resolveDuel,
 } from "../src/lib/buildOptimizer";
@@ -112,7 +115,7 @@ if (withLeth <= noPen) {
 const mr = 100;
 const noMpen = magicMitigationMultiplier(mr, {});
 const withVoid = magicMitigationMultiplier(mr, { magicPen: 40 });
-if (withVoid >= noMpen) {
+if (withVoid <= noMpen) {
   fail(
     `40% magic pen should increase magic damage vs ${mr} MR (no pen=${noMpen.toFixed(3)}, void=${withVoid.toFixed(3)})`,
   );
@@ -192,9 +195,9 @@ if (zed) {
   const recs = recommendBuildsForChampion(zed, Items, {
     simulation: { level: 16, enableChampionRotationProfiles: true },
     monteCarloParams: {
-      iterationsPerRestart: 200,
-      restarts: 2,
-      randomProbeSamples: 40,
+      iterationsPerRestart: 400,
+      restarts: 3,
+      randomProbeSamples: 60,
     },
   });
   for (const rec of recs) {
@@ -225,22 +228,74 @@ if (zed) {
 
   const glass = recs.find((r) => r.profile === "glass");
   if (glass) {
-    const forbiddenGlass =
-      /Infinity Edge|Blade of the Ruined King|Navori Flickerblade|Phantom Dancer|Warmog|Jak'Sho/i;
-    const badGlass = glass.items.some((n) => forbiddenGlass.test(n));
-    if (badGlass) {
+    const tankForbidden = /Warmog|Jak'Sho|Heartsteel|Sunfire|Rylai|Liandry|Guinsoo|Kraken/i;
+    const tankHit = glass.items.filter((n) => tankForbidden.test(n));
+    if (tankHit.length > 0) {
       fail(
-        `Zed glass should favor lethality burst, not crit/on-hit/tank: ${glass.items.join(", ")}`,
+        `Zed glass must not include tank/on-hit farm items: ${tankHit.join(", ")} (full: ${glass.items.join(", ")})`,
       );
     }
-    const hasLethality = glass.items.some((n) => {
+
+    const lethalityOrPen = glass.items.filter((n) => {
       const it = Items.find((i) => i.name === n);
-      return (it?.stats.lethality ?? 0) >= 10;
+      if (!it) return false;
+      return (it.stats.lethality ?? 0) >= 10 || (it.stats.armorPen ?? 0) >= 20;
     });
-    if (!hasLethality) {
+    if (lethalityOrPen.length < 3) {
       fail(
-        `Zed glass should include at least one lethality item: ${glass.items.join(", ")}`,
+        `Zed glass needs at least 3 lethality or major armor-pen items, got ${lethalityOrPen.length}: ${glass.items.join(", ")}`,
       );
+    }
+
+    const pureCritFarm =
+      /Blade of the Ruined King|Navori Flickerblade|Phantom Dancer|Runaan|Terminus/i;
+    const critFarm = glass.items.filter((n) => pureCritFarm.test(n));
+    if (critFarm.length > 0) {
+      fail(
+        `Zed glass should not stack attack-speed/crit farm items: ${critFarm.join(", ")}`,
+      );
+    }
+  }
+
+  const collector = Items.find((i) => i.name === "The Collector");
+  if (collector) {
+    const mitZed = dpsMitigationFromDuel(duel);
+    const filler = Items.filter(
+      (i) =>
+        i.getGroupName() !== collector.getGroupName() &&
+        (i.stats.lethality ?? 0) >= 10,
+    ).slice(0, 5);
+    if (filler.length === 5) {
+      const withCollector = Object.assign(
+        Object.create(Object.getPrototypeOf(zed)),
+        zed,
+      ) as typeof zed;
+      const without = Object.assign(
+        Object.create(Object.getPrototypeOf(zed)),
+        zed,
+      ) as typeof zed;
+      withCollector.Items = [collector, ...filler];
+      without.Items = filler;
+      const dWith = withCollector.calculateDPS(
+        duel.targetMaxHP,
+        duel.targetBonusHP,
+        { level: 16, enableChampionRotationProfiles: true },
+        mitZed,
+      );
+      const dWithout = without.calculateDPS(
+        duel.targetMaxHP,
+        duel.targetBonusHP,
+        { level: 16, enableChampionRotationProfiles: true },
+        mitZed,
+      );
+      const hasExecuteLine = dWith.breakdown.some((l) =>
+        l.includes("Collector execute"),
+      );
+      if (dWith.comboDPS <= dWithout.comboDPS && !hasExecuteLine) {
+        fail(
+          `Collector should raise combo DPS or proc execute on near-lethal combo (with=${dWith.comboDPS.toFixed(1)}, without=${dWithout.comboDPS.toFixed(1)})`,
+        );
+      }
     }
   }
 }
@@ -261,6 +316,56 @@ if (aatrox) {
         `Aatrox ${rec.profile}: manaless champ must not build mana items: ${manaItems.join(", ")}`,
       );
     }
+  }
+}
+
+{
+  const bonus = collectorExecuteBonusDamage(1450, 1500, 1500, 5);
+  if (bonus <= 0 || bonus >= 75) {
+    fail(
+      `Collector execute bonus should be >0 and <5% max HP when leaving target sub-threshold (got ${bonus})`,
+    );
+  }
+  const noBonus = collectorExecuteBonusDamage(1200, 1500, 1500, 5);
+  if (noBonus !== 0) {
+    fail(`Collector execute should not proc when target remains above 5% max HP`);
+  }
+}
+
+const garen = Characters.find((c) => c.Name === "Garen");
+if (garen) {
+  const mit = dpsMitigationFromDuel(duel);
+  const ampItem = new Item(
+    "Regression Phys Amp",
+    { physicalDamageMultiplicative: 30 },
+    [],
+    "Regression Phys Amp",
+  );
+  const noItem = Object.assign(
+    Object.create(Object.getPrototypeOf(garen)),
+    garen,
+  ) as typeof garen;
+  const withAmp = Object.assign(
+    Object.create(Object.getPrototypeOf(garen)),
+    garen,
+  ) as typeof garen;
+  withAmp.Items = [ampItem];
+  const d0 = noItem.calculateDPS(
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    { level: 16 },
+    mit,
+  );
+  const d1 = withAmp.calculateDPS(
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    { level: 16 },
+    mit,
+  );
+  if (d1.abilityDPS <= d0.abilityDPS) {
+    fail(
+      `Physical damage amp should buff physical abilities (base=${d0.abilityDPS.toFixed(1)}, amp=${d1.abilityDPS.toFixed(1)})`,
+    );
   }
 }
 

@@ -47,6 +47,7 @@ const current = computeMetaForAllChampions(
   metaDuel,
   undefined,
   Object.keys(simulation).length > 0 ? simulation : undefined,
+  { verbose: false },
 );
 
 type Delta = {

@@ -15,6 +15,8 @@ type BuildResult = {
   totalGold?: number;
   rune: string; // Keystone rune name
   totalDPS: number;
+  sustainedDPS?: number;
+  comboDPS?: number;
   autoAttackDPS: number;
   onHitDPS: number;
   dotDPS: number;
@@ -344,11 +346,17 @@ function BuildFinder(): React.ReactElement {
                         {r.profile}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs mb-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs mb-2">
                       <div className="bg-gray-900/50 rounded p-1.5">
-                        <div className="text-gray-500">Total DPS</div>
+                        <div className="text-gray-500">Combo DPS</div>
                         <div className="font-bold text-blue-300">
-                          {r.totalDPS.toFixed(0)}
+                          {r.comboDPS.toFixed(0)}
+                        </div>
+                      </div>
+                      <div className="bg-gray-900/50 rounded p-1.5">
+                        <div className="text-gray-500">Sustained</div>
+                        <div className="font-bold text-sky-300">
+                          {r.sustainedDPS.toFixed(0)}
                         </div>
                       </div>
                       <div className="bg-gray-900/50 rounded p-1.5">
@@ -371,8 +379,8 @@ function BuildFinder(): React.ReactElement {
                       </div>
                     </div>
                     <div className="text-[10px] text-gray-500 mb-1">
-                      Items (rough buy order: best est. power/gold first;
-                      cheaper when tied)
+                      Items (buy order: best marginal sim spike per gold;
+                      expensive legendaries deferred)
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {r.items.map((name) => (
