@@ -27,7 +27,7 @@ plus a few manual overrides. It is used to:
 
 ### Meta generation env vars
 
-Used by `npm run compute-meta`:
+Used by `npm run compute-meta` (defaults: **1500** target HP, **0** bonus HP, **0** armor, **0** MR — squishy target for Meta Analysis):
 
 - `LOLOPTIMA_TARGET_MAX_HP`
 - `LOLOPTIMA_TARGET_BONUS_HP`

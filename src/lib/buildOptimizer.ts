@@ -22,8 +22,8 @@ import {
   Items,
 } from "@/app/actions/sim";
 import {
+  getItemGold,
   goldEfficiencyTieBreak,
-  sortItemsForPurchaseOrder,
   totalBuildGold,
 } from "@/lib/itemGold";
 
@@ -156,6 +156,16 @@ const DEFAULT_DUEL: ResolvedDuel = {
   targetArmor: 100,
   targetMR: 100,
   comboWindowSeconds: 8,
+};
+
+/** Duel assumptions for `npm run compute-meta` / Meta Analysis (squishy carry, short burst). */
+export const META_DUEL_DEFAULTS: ResolvedDuel = {
+  targetMaxHP: 1500,
+  targetBonusHP: 0,
+  incomingPhysShare: 0.5,
+  targetArmor: 50,
+  targetMR: 50,
+  comboWindowSeconds: 3,
 };
 
 export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
@@ -297,6 +307,16 @@ function itemApTotal(build: Item[]): number {
   return t;
 }
 
+function blendedDps(
+  dps: ReturnType<Character["calculateDPS"]>,
+  comboWeight: number,
+): number {
+  const sustained = dps.sustainedDPS;
+  const combo = dps.comboDPS;
+  const w = clamp(comboWeight, 0, 1);
+  return sustained * (1 - w) + combo * w;
+}
+
 function profileScore(
   profile: BuildProfileId,
   dps: ReturnType<Character["calculateDPS"]>,
@@ -306,16 +326,18 @@ function profileScore(
   const adLike = dps.autoAttackDPS + dps.onHitDPS;
   const apLike = dps.abilityDPS + dps.dotDPS;
   const apFromItems = itemApTotal(build);
+  const combo = dps.comboDPS;
+  const mixed = blendedDps(dps, 0.55);
 
   switch (profile) {
     case "glass":
-      return dps.totalDPS;
+      return combo;
     case "tank":
       return (
-        Math.log1p(ehp / 150) * 1.35 * Math.pow(Math.log1p(dps.totalDPS / 40), 0.65)
+        Math.log1p(ehp / 150) * 1.35 * Math.pow(Math.log1p(mixed / 40), 0.65)
       );
     case "ap": {
-      const apLean = apLike * 1.15 + dps.totalDPS * 0.25;
+      const apLean = apLike * 1.15 + combo * 0.25;
       const bonus =
         apFromItems >= 120 ? 1.15 : apFromItems >= 60 ? 1.05 : 0.72;
       return Math.log1p(apLean) * bonus * Math.pow(Math.log1p(ehp / 600), 0.25);
@@ -332,16 +354,14 @@ function profileScore(
     }
     case "ad":
       return (
-        Math.log1p(adLike * 1.1 + dps.abilityDPS * 0.45) *
+        Math.log1p(adLike * 1.1 + dps.abilityDPS * 0.45 + combo * 0.2) *
         Math.pow(Math.log1p(ehp / 700), 0.3)
       );
     case "bruiser":
-      return Math.log1p(dps.totalDPS / 45) * Math.log1p(ehp / 200);
+      return Math.log1p(mixed / 45) * Math.log1p(ehp / 200);
     case "balanced":
     default:
-      return (
-        Math.log1p(dps.totalDPS / 50) * Math.log1p(ehp / 400) * 1.15
-      );
+      return Math.log1p(mixed / 50) * Math.log1p(ehp / 400) * 1.15;
   }
 }
 
@@ -360,6 +380,94 @@ function scoreChampion(
   );
   const ehp = mixedEffectiveHP(c.getTotalStats(), duel.incomingPhysShare);
   return profileScore(profile, dps, ehp, build);
+}
+
+/**
+ * Priority for the next purchase: marginal sim power, discounted when the item
+ * costs more than a realistic single-buy budget for this slot (defers Rabadon-style
+ * all-or-nothing legendaries until you can afford them without being useless).
+ */
+function purchaseStepMetric(
+  marginal: number,
+  itemGold: number,
+  slotIndex: number,
+  totalSlots: number,
+  avgGoldPerSlot: number,
+): number {
+  if (marginal <= 0) return marginal - itemGold * 1e-6;
+
+  const mpg = marginal / Math.pow(Math.max(itemGold, 350), 0.5);
+  const lateGame = slotIndex >= totalSlots - 2;
+
+  // Typical gold available for this purchase (ramps up through the build).
+  const maxSingleBuy = avgGoldPerSlot * (0.8 + 0.45 * slotIndex);
+  let afford = 1;
+  if (!lateGame && itemGold > maxSingleBuy) {
+    afford = (maxSingleBuy / itemGold) ** 2;
+  }
+  if (!lateGame && itemGold > avgGoldPerSlot * 1.3) {
+    afford *= (avgGoldPerSlot / itemGold) ** 1.25;
+  }
+
+  return mpg * afford;
+}
+
+/**
+ * Greedy buy order: best marginal sim spike per gold at each step, with early-slot
+ * budgets so 3k+ legendaries are not shown as "buy first" while you're still weak.
+ */
+export function greedySimPurchaseOrder(
+  champion: Character,
+  finalBuild: Item[],
+  profile: BuildProfileId,
+  duel: ResolvedDuel,
+  simulation: SimulationScenario | undefined,
+  runePage: RunePage | null,
+): Item[] {
+  if (finalBuild.length <= 1) return finalBuild.slice();
+
+  const totalSlots = finalBuild.length;
+  const totalGold = totalBuildGold(finalBuild);
+  const avgGoldPerSlot = totalGold / totalSlots;
+
+  const remaining = finalBuild.slice();
+  const ordered: Item[] = [];
+
+  const scorePartial = (partial: Item[]): number => {
+    const c = cloneChampionWithLoadout(champion, partial, runePage);
+    return scoreChampion(profile, c, partial, duel, simulation);
+  };
+
+  while (remaining.length > 0) {
+    const slotIndex = ordered.length;
+    const baseScore = scorePartial(ordered);
+
+    let bestItem = remaining[0];
+    let bestMetric = -Infinity;
+
+    for (const candidate of remaining) {
+      const partial = [...ordered, candidate];
+      const marginal = scorePartial(partial) - baseScore;
+      const gold = getItemGold(candidate);
+      const metric = purchaseStepMetric(
+        marginal,
+        gold,
+        slotIndex,
+        totalSlots,
+        avgGoldPerSlot,
+      );
+      if (metric > bestMetric) {
+        bestMetric = metric;
+        bestItem = candidate;
+      }
+    }
+
+    ordered.push(bestItem);
+    const idx = remaining.indexOf(bestItem);
+    remaining.splice(idx, 1);
+  }
+
+  return ordered;
 }
 
 function bestKeystoneForBuild(
@@ -736,7 +844,14 @@ export function recommendBuildsForChampion(
 
     if (isDistinct(primary, seenItemSets)) {
       seenItemSets.push(primary);
-      const purchaseOrder = sortItemsForPurchaseOrder(primary);
+      const purchaseOrder = greedySimPurchaseOrder(
+        champion,
+        primary,
+        profile,
+        duel,
+        profileSim,
+        gRune ? makeRunePage(gRune) : null,
+      );
       results.push({
         profile,
         label: PROFILE_META[profile].label,
@@ -793,7 +908,14 @@ export function recommendBuildsForChampion(
       const sc = profileScore(profile, dps, ehp, bestAlt);
       if (sc > gscore * 0.88) {
         seenItemSets.push(bestAlt);
-        const altOrder = sortItemsForPurchaseOrder(bestAlt);
+        const altOrder = greedySimPurchaseOrder(
+          champion,
+          bestAlt,
+          profile,
+          duel,
+          profileSim,
+          aRune ? makeRunePage(aRune) : null,
+        );
         results.push({
           profile,
           label: `${PROFILE_META[profile].label} (alt)`,

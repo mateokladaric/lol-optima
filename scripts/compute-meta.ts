@@ -3,6 +3,8 @@ import { join } from "node:path";
 import { Characters, Items } from "../src/app/actions/sim";
 import {
   computeMetaForAllChampions,
+  META_DUEL_DEFAULTS,
+  resolveDuel,
   type DuelAssumptions,
   type MonteCarloParams,
   type SimulationScenario,
@@ -24,19 +26,20 @@ function envBool(key: string): boolean | undefined {
   return undefined;
 }
 
-const duel: DuelAssumptions = {};
+const duelOverrides: DuelAssumptions = { ...META_DUEL_DEFAULTS };
 const maxHp = envNum("LOLOPTIMA_TARGET_MAX_HP");
 const bonusHp = envNum("LOLOPTIMA_TARGET_BONUS_HP");
 const phys = envNum("LOLOPTIMA_INCOMING_PHYS_SHARE");
 const armor = envNum("LOLOPTIMA_TARGET_ARMOR");
 const mr = envNum("LOLOPTIMA_TARGET_MR");
 const comboWindow = envNum("LOLOPTIMA_COMBO_WINDOW");
-if (maxHp !== undefined) duel.targetMaxHP = maxHp;
-if (bonusHp !== undefined) duel.targetBonusHP = bonusHp;
-if (phys !== undefined) duel.incomingPhysShare = phys;
-if (armor !== undefined) duel.targetArmor = armor;
-if (mr !== undefined) duel.targetMR = mr;
-if (comboWindow !== undefined) duel.comboWindowSeconds = comboWindow;
+if (maxHp !== undefined) duelOverrides.targetMaxHP = maxHp;
+if (bonusHp !== undefined) duelOverrides.targetBonusHP = bonusHp;
+if (phys !== undefined) duelOverrides.incomingPhysShare = phys;
+if (armor !== undefined) duelOverrides.targetArmor = armor;
+if (mr !== undefined) duelOverrides.targetMR = mr;
+if (comboWindow !== undefined) duelOverrides.comboWindowSeconds = comboWindow;
+const duel = resolveDuel(duelOverrides);
 
 const mc: MonteCarloParams = {};
 const saIter = envNum("LOLOPTIMA_SA_ITER");
@@ -57,7 +60,7 @@ if (useRotation !== undefined) {
 const meta = computeMetaForAllChampions(
   Characters,
   Items,
-  Object.keys(duel).length > 0 ? duel : undefined,
+  duel,
   Object.keys(mc).length > 0 ? mc : undefined,
   Object.keys(simulation).length > 0 ? simulation : undefined,
 );

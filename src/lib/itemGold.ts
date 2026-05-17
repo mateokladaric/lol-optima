@@ -9,6 +9,10 @@ const GROUP_GOLD_OVERRIDES: Record<string, number> = {
   "Support / Jungle": 400,
   Bloodsong: 400,
   "Spellblade": 400,
+  "Rabadon's Deathcap": 3600,
+  "Infinity Edge": 3400,
+  "Bloodthirster": 3400,
+  "Void Staff": 3000,
 };
 
 function clamp(n: number, lo: number, hi: number): number {
@@ -98,10 +102,8 @@ export function sortItemsByGoldAscending(items: Item[]): Item[] {
 }
 
 /**
- * Suggested full-item buy order for a fixed build: higher estimated power/gold first
- * (earlier slots = better bang-for-buck), then cheaper items when efficiency ties
- * (smaller purchases reachable sooner). Not a real component path; for that you’d
- * need incremental sim or patch-accurate costs.
+ * Stat-based buy order (fallback / tests). Production recommendations use
+ * `greedySimPurchaseOrder` (marginal sim spike per gold + early-slot budgets).
  */
 export function sortItemsForPurchaseOrder(items: Item[]): Item[] {
   return items.slice().sort((a, b) => {

@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { Characters, Items } from "../src/app/actions/sim";
 import {
   computeMetaForAllChampions,
+  META_DUEL_DEFAULTS,
+  resolveDuel,
   type SerializedMeta,
   type SimulationScenario,
 } from "../src/lib/buildOptimizer";
@@ -37,10 +39,12 @@ if (level !== undefined) simulation.level = level;
 const rot = envBool("LOLOPTIMA_SIM_ROTATION_PROFILES");
 if (rot !== undefined) simulation.enableChampionRotationProfiles = rot;
 
+const metaDuel = resolveDuel(META_DUEL_DEFAULTS);
+
 const current = computeMetaForAllChampions(
   Characters,
   Items,
-  undefined,
+  metaDuel,
   undefined,
   Object.keys(simulation).length > 0 ? simulation : undefined,
 );

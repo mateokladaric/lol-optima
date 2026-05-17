@@ -2,6 +2,7 @@ import {
   Characters,
   isManaScalingItem,
   Items,
+  magicMitigationMultiplier,
   physicalMitigationMultiplier,
 } from "../src/app/actions/sim";
 import {
@@ -108,6 +109,22 @@ if (withLeth <= noPen) {
   );
 }
 
+const mr = 100;
+const noMpen = magicMitigationMultiplier(mr, {});
+const withVoid = magicMitigationMultiplier(mr, { magicPen: 40 });
+if (withVoid >= noMpen) {
+  fail(
+    `40% magic pen should increase magic damage vs ${mr} MR (no pen=${noMpen.toFixed(3)}, void=${withVoid.toFixed(3)})`,
+  );
+}
+// 40% pen → 60 MR; flat −40 would be harsher (wrong model)
+const wrongFlat = 100 / (100 + Math.max(0, mr - 40));
+if (withVoid < wrongFlat - 0.001) {
+  fail(
+    `Magic pen should use percentage, not flat subtraction (pct=${withVoid.toFixed(3)}, wrong flat=${wrongFlat.toFixed(3)})`,
+  );
+}
+
 const zed = Characters.find((c) => c.Name === "Zed");
 if (zed) {
   const mit = {
@@ -166,9 +183,9 @@ if (zed) {
     { level: 16, enableChampionRotationProfiles: true },
     mit,
   );
-  if (dpsLeth.abilityDPS <= dpsAd.abilityDPS) {
+  if (dpsLeth.totalDPS <= dpsAd.totalDPS) {
     fail(
-      `Zed: 6× lethality items should beat 6× AD on abilityDPS vs ${duel.targetArmor} armor (ad=${dpsAd.abilityDPS.toFixed(1)}, leth=${dpsLeth.abilityDPS.toFixed(1)})`,
+      `Zed: 6× lethality items should beat 6× AD on totalDPS vs ${duel.targetArmor} armor (ad=${dpsAd.totalDPS.toFixed(1)}, leth=${dpsLeth.totalDPS.toFixed(1)})`,
     );
   }
 
@@ -202,6 +219,27 @@ if (zed) {
     if (manaScaled.length > 0) {
       fail(
         `Zed ${rec.profile}: energy champ must not build mana items: ${manaScaled.join(", ")}`,
+      );
+    }
+  }
+
+  const glass = recs.find((r) => r.profile === "glass");
+  if (glass) {
+    const forbiddenGlass =
+      /Infinity Edge|Blade of the Ruined King|Navori Flickerblade|Phantom Dancer|Warmog|Jak'Sho/i;
+    const badGlass = glass.items.some((n) => forbiddenGlass.test(n));
+    if (badGlass) {
+      fail(
+        `Zed glass should favor lethality burst, not crit/on-hit/tank: ${glass.items.join(", ")}`,
+      );
+    }
+    const hasLethality = glass.items.some((n) => {
+      const it = Items.find((i) => i.name === n);
+      return (it?.stats.lethality ?? 0) >= 10;
+    });
+    if (!hasLethality) {
+      fail(
+        `Zed glass should include at least one lethality item: ${glass.items.join(", ")}`,
       );
     }
   }

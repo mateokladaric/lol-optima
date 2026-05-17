@@ -842,20 +842,44 @@ function MetaAnalysis(): React.ReactElement {
       <div className="mb-4">
         <h2 className="text-2xl font-bold mb-2">Meta Analysis</h2>
         <p className="text-gray-400 text-sm mb-4">
-          Diverse builds for each champion (showing {allBuilds.length} builds)
+          Diverse builds for each champion (showing {allBuilds.length} builds),
+          scored vs a{" "}
+          {metaData?.duel ? (
+            <>
+              {metaData.duel.targetMaxHP} HP target
+              {metaData.duel.targetBonusHP > 0
+                ? ` (+${metaData.duel.targetBonusHP} bonus)`
+                : ""}
+              , {metaData.duel.targetArmor} armor, {metaData.duel.targetMR} MR
+            </>
+          ) : (
+            "reference duel"
+          )}
+          .
           {metaData && (
-            <span className="text-gray-500 ml-2">
-              • Generated {new Date(metaData.generatedAt).toLocaleString()}
+            <span className="text-gray-500 block mt-1 text-[11px]">
+              Generated {new Date(metaData.generatedAt).toLocaleString()}
               {metaData.duel && (
-                <span className="block mt-1 text-[11px]">
-                  Duel: target {metaData.duel.targetMaxHP} HP (+{" "}
-                  {metaData.duel.targetBonusHP} bonus),{" "}
-                  {metaData.duel.targetArmor ?? 100} armor /{" "}
-                  {metaData.duel.targetMR ?? 100} MR, burst{" "}
-                  {metaData.duel.comboWindowSeconds ?? 8}s, Eff. HP weight{" "}
-                  {(metaData.duel.incomingPhysShare * 100).toFixed(0)}% phys
-                </span>
+                <>
+                  {" "}
+                  · burst window {metaData.duel.comboWindowSeconds}s · Eff. HP
+                  weight {(metaData.duel.incomingPhysShare * 100).toFixed(0)}%
+                  phys
+                </>
               )}
+              {metaData.duel &&
+                (metaData.duel.targetMaxHP !== 1500 ||
+                  metaData.duel.targetBonusHP !== 0 ||
+                  metaData.duel.targetArmor !== 0 ||
+                  metaData.duel.targetMR !== 0) && (
+                  <span className="block mt-1 text-amber-400/90">
+                    Stale duel assumptions — run{" "}
+                    <code className="bg-gray-800 px-1 rounded">
+                      npm run compute-meta
+                    </code>{" "}
+                    for 1500 HP / 0 bonus / 0 armor / 0 MR targets.
+                  </span>
+                )}
             </span>
           )}
         </p>

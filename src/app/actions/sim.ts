@@ -199,6 +199,31 @@ class Ability {
   }
 }
 
+/** How many damage instances to apply per rotation/combo (fixes mis-tagged durations). */
+export function effectiveAbilityCasts(ability: Ability): number {
+  const mc = ability.maxCasts ?? 1;
+  const notes = ability.specialMechanics?.join(" ").toLowerCase() ?? "";
+  if (
+    notes.includes("damage already totaled") ||
+    notes.includes("already totaled for all")
+  ) {
+    return 1;
+  }
+  if (notes.includes("recast window") && mc <= 6) return 1;
+  if (notes.includes("nearsight:") && ability.abilityType === "R") return 1;
+  if (mc > 10) return 1;
+  return Math.max(1, mc);
+}
+
+/** Sheen-line internal cooldown (~1.5s) limits on-hit proc uptime while attacking. */
+export function spellbladeOnHitUptime(attacksPerSecond: number): number {
+  if (attacksPerSecond <= 0) return 0;
+  const sheenCd = 1.5;
+  return (
+    (attacksPerSecond * sheenCd) / (1 + attacksPerSecond * sheenCd)
+  );
+}
+
 // Aatrox's Abilities
 const AatroxPassive = new Ability(
   "Deathbringer Stance",
@@ -257,7 +282,7 @@ const AatroxQ = new Ability(
     ccDuration: 0.25,
   },
   undefined, // damage already totaled
-  4,
+  1,
   [
     "3 casts, 1s between each",
     "Sweetspot: +70% damage, knockup",
@@ -527,7 +552,7 @@ const ArchangelsStaff = new Item(
     apPerBonusManaPercent: 1,
   },
   [],
-  "Manaflow",
+  "Lifeline",
 );
 
 const ArchangelsStaffMaxStacks = new Item(
@@ -539,7 +564,7 @@ const ArchangelsStaffMaxStacks = new Item(
     apPerBonusManaPercent: 1,
   },
   [],
-  "Manaflow",
+  "Lifeline",
 );
 
 const SeraphsEmbrace = new Item(
@@ -551,7 +576,7 @@ const SeraphsEmbrace = new Item(
     abilityDamagePerAPMultiplicative: 0.02,
   },
   [],
-  "Manaflow",
+  "Lifeline",
 );
 
 const ArdentCenser = new Item(
@@ -1029,12 +1054,12 @@ const CosmicDriveSpelldance = new Item(
 const Cryptbloom = new Item(
   "Cryptbloom",
   {
-    ap: 75,
+    ap: 70,
     abilityHaste: 20,
     magicPen: 30,
   },
   [],
-  "Blight",
+  "Void Pen",
 );
 
 const Dawncore = new Item(
@@ -1092,7 +1117,7 @@ const DiademOfSongs = new Item(
     manaRegen: 100,
   },
   [],
-  "Manaflow",
+  "Diadem of Songs",
 );
 
 const DuskAndDawn = new Item(
@@ -2667,15 +2692,28 @@ type ChampionComboProfile = {
   comboAutoWeight?: number;
 };
 
-/** Energy champs do not use mana; tear/Muramana/Seraph-style items do not apply. */
-export type ChampionResourceType = "mana" | "energy";
+/** Champions without a mana bar should not receive mana-scaling item recommendations. */
+export type ChampionResourceType = "mana" | "energy" | "none";
 
 export const CHAMPION_RESOURCE_TYPE: Record<string, ChampionResourceType> = {
   Akali: "energy",
+  "Bel'Veth": "none",
+  "Dr. Mundo": "none",
+  Garen: "none",
   Kennen: "energy",
+  Katarina: "none",
+  "K'Sante": "none",
   "Lee Sin": "energy",
+  Mordekaiser: "none",
+  RekSai: "none",
+  Renekton: "none",
   Rengar: "energy",
+  Riven: "none",
+  Rumble: "none",
   Shen: "energy",
+  Tryndamere: "none",
+  Vladimir: "none",
+  Yone: "none",
   Zed: "energy",
 };
 
@@ -2925,13 +2963,12 @@ function resolveDpsMitigation(opts?: DpsMitigationOptions) {
   };
 }
 
-/** Flat armor pen from lethality at a given champion level (League scaling). */
+/** Flat armor pen from lethality (full value since patch 14.1). */
 export function lethalityToFlatArmorPen(
   lethality: number,
-  level: number,
+  _level: number,
 ): number {
-  const lv = Math.min(18, Math.max(1, level));
-  return lethality * (0.6 + (0.4 * lv) / 18);
+  return lethality;
 }
 
 type PenStats = Pick<
@@ -2964,7 +3001,7 @@ export function magicMitigationMultiplier(
 ): number {
   let mr = targetMR;
   if (stats.magicResistReduction) mr *= 1 - stats.magicResistReduction / 100;
-  if (stats.magicPen) mr -= stats.magicPen;
+  if (stats.magicPen) mr *= 1 - stats.magicPen / 100;
   mr = Math.max(0, mr);
   return 100 / (100 + mr);
 }
@@ -3440,6 +3477,8 @@ class Character {
     dotDPS: number;
     abilityDPS: number;
     burstDPS: number; // One-time burst damage at combat start
+    sustainedDPS: number;
+    comboDPS: number;
     totalDPS: number;
     breakdown: string[];
   } {
@@ -3725,6 +3764,27 @@ class Character {
       }
     }
 
+    const hasSpellblade = this.Items.some(
+      (i) => i.getGroupName() === "Spellblade",
+    );
+    if (hasSpellblade && attackRate > 0) {
+      const sbUptime = spellbladeOnHitUptime(attackRate);
+      const sbPhys = stats.physicalOnHitBaseADPercent
+        ? (this.AD * stats.physicalOnHitBaseADPercent) / 100
+        : 0;
+      const sbMagicAd = stats.magicOnHitBaseADPercent
+        ? (this.AD * stats.magicOnHitBaseADPercent) / 100
+        : 0;
+      if (sbPhys > 0) {
+        onHitPhysPerAttack += sbPhys * (sbUptime - 1);
+        onHitDamagePerAttack += sbPhys * (sbUptime - 1);
+      }
+      if (sbMagicAd > 0) {
+        onHitMagicPerAttack += sbMagicAd * (sbUptime - 1);
+        onHitDamagePerAttack += sbMagicAd * (sbUptime - 1);
+      }
+    }
+
     const onHitDPS = onHitDamagePerAttack * attackRate;
     if (onHitDamagePerAttack > 0) {
       breakdown.push(
@@ -3948,8 +4008,7 @@ class Character {
           (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
       }
 
-      // Account for multiple casts (like Ahri R)
-      const castsPerWindow = ability.maxCasts || 1;
+      const castsPerWindow = effectiveAbilityCasts(ability);
       const coreDamage = abilityDamage * castsPerWindow;
       const trueDamage = onAbilityHitTrue * castsPerWindow;
       const physBonusDamage = onAbilityHitPhys * castsPerWindow;
@@ -4266,6 +4325,8 @@ class Character {
       dotDPS: finalDotDPS,
       abilityDPS: finalAbilityDPS,
       burstDPS: burstSustainDPS,
+      sustainedDPS,
+      comboDPS,
       totalDPS,
       breakdown,
     };
@@ -4429,7 +4490,7 @@ const AhriR = new Ability(
   },
   undefined,
   undefined, // damage already totaled for 3 casts
-  15,
+  1,
   [
     "Per cast: 60/120/180 (+35% AP)",
     "3 casts = 180/360/540 (+105% AP) total",
@@ -14261,7 +14322,7 @@ const LeBlancW = new Ability(
   },
   undefined,
   undefined,
-  4,
+  1,
   [
     "Cost: 60/70/80/90/100 mana",
     "Recast window: 4s",
@@ -17087,7 +17148,7 @@ const NaafiriR = new Ability(
     shield: [100, 150, 200],
   },
   undefined,
-  12,
+  1,
   [
     "Cost: 100 mana",
     "Damage: 150-350 (+120% bonus AD)",
@@ -18226,7 +18287,7 @@ const NocturneR = new Ability(
   },
   undefined,
   undefined,
-  6,
+  1,
   [
     "Cost: 100 mana",
     "Damage: 150-400 (+120% bonus AD)",
