@@ -220,9 +220,9 @@ export function effectiveAbilityCasts(ability: Ability): number {
 export function spellbladeOnHitUptime(attacksPerSecond: number): number {
   if (attacksPerSecond <= 0) return 0;
   const sheenCd = 1.5;
-  return (
-    (attacksPerSecond * sheenCd) / (1 + attacksPerSecond * sheenCd)
-  );
+  // Fraction of autos that carry Spellblade, capped by the 1.5s ICD.
+  // At low AS every auto can proc; at high AS only 1 proc per 1.5s.
+  return Math.min(1, 1 / (attacksPerSecond * sheenCd));
 }
 
 // Aatrox's Abilities
@@ -561,7 +561,7 @@ const ArchangelsStaff = new Item(
     apPerBonusManaPercent: 1,
   },
   [],
-  "Lifeline",
+  "Manaflow",
 );
 
 const ArchangelsStaffMaxStacks = new Item(
@@ -573,7 +573,7 @@ const ArchangelsStaffMaxStacks = new Item(
     apPerBonusManaPercent: 1,
   },
   [],
-  "Lifeline",
+  "Manaflow",
 );
 
 const SeraphsEmbrace = new Item(
@@ -585,7 +585,7 @@ const SeraphsEmbrace = new Item(
     abilityDamagePerAPMultiplicative: 0.02,
   },
   [],
-  "Lifeline",
+  "Manaflow",
 );
 
 const ArdentCenser = new Item(
@@ -720,7 +720,7 @@ const BlackCleaver = new Item(
     hp: 400,
   },
   [],
-  "Fatality",
+  "Black Cleaver",
 );
 
 const BlackCleaverCarve = new Item(
@@ -732,7 +732,7 @@ const BlackCleaverCarve = new Item(
     armorReduction: 30,
   },
   [],
-  "Fatality",
+  "Black Cleaver",
 );
 
 const BlackCleaverFervor = new Item(
@@ -744,7 +744,7 @@ const BlackCleaverFervor = new Item(
     ms: 20,
   },
   [],
-  "Fatality",
+  "Black Cleaver",
 );
 
 const BlackCleaverCarveFervor = new Item(
@@ -757,7 +757,7 @@ const BlackCleaverCarveFervor = new Item(
     ms: 20,
   },
   [],
-  "Fatality",
+  "Black Cleaver",
 );
 
 const BlackfireTorch = new Item(
@@ -1697,7 +1697,7 @@ const LordDominiksRegards = new Item(
     damagePerTargetBonusHPPercent: 1.5,
   },
   [],
-  "Fatality",
+  "Last Whisper",
 );
 
 const LudensEcho = new Item(
@@ -1744,7 +1744,7 @@ const MortalReminder = new Item(
     critChance: 25,
   },
   [],
-  "Fatality",
+  "Last Whisper",
 );
 
 const MawOfMalmortius = new Item(
@@ -2163,7 +2163,7 @@ const SeryldasGrudge = new Item(
     armorPen: 35,
   },
   [],
-  "Fatality",
+  "Last Whisper",
 );
 
 const Shadowflame = new Item(
@@ -2370,7 +2370,7 @@ const Terminus = new Item(
     magicOnHit: 30,
   },
   [],
-  "Fatality",
+  "Terminus",
 );
 
 const TerminusMaxStacks = new Item(
@@ -2385,7 +2385,7 @@ const TerminusMaxStacks = new Item(
     percentMagicPen: 30,
   },
   [],
-  "Fatality",
+  "Terminus",
 );
 
 const TheCollector = new Item(
@@ -2499,7 +2499,7 @@ const VoidStaff = new Item(
     percentMagicPen: 40,
   },
   [],
-  "Blight",
+  "Void Staff",
 );
 
 const VoltaicCyclosword = new Item(
@@ -3952,7 +3952,7 @@ class Character {
       addOnHitPhys(dmg, `Physical on-hit (target max HP): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitMaxManaPercent) {
-      const maxMana = this.BaseMana + stats.mana;
+      const maxMana = stats.mana;
       const dmg = (maxMana * stats.physicalOnHitMaxManaPercent) / 100;
       addOnHitPhys(dmg, `Physical on-hit (max mana): +${dmg.toFixed(1)}`);
     }
@@ -4093,7 +4093,7 @@ class Character {
           100;
       }
       if (ability.damage.maxManaRatio) {
-        const maxMana = this.BaseMana + stats.mana;
+        const maxMana = stats.mana;
         onHitDamage +=
           (maxMana *
             ability.getValueAtLevel(ability.damage.maxManaRatio, level)) /
@@ -4375,7 +4375,7 @@ class Character {
           100;
       }
       if (ability.damage.maxManaRatio) {
-        const maxMana = this.BaseMana + stats.mana;
+        const maxMana = stats.mana;
         abilityDamage +=
           (maxMana *
             ability.getValueAtLevel(ability.damage.maxManaRatio, abilityRank)) /
@@ -4400,7 +4400,7 @@ class Character {
           stats.lethality * stats.trueOnAbilityHitPerLethality;
       }
       if (stats.physicalOnAbilityHitMaxManaPercent) {
-        const maxMana = this.BaseMana + stats.mana;
+        const maxMana = stats.mana;
         onAbilityHitPhys +=
           (maxMana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
       }
@@ -28267,7 +28267,7 @@ const Conqueror: Rune = {
   path: "Precision",
   slot: "keystone",
   description:
-    "Stacks to 12 giving 2-4.5 AD/stack. Modeled at ~50% avg uptime in sustained combat.",
+    "Stacks to 12 giving 1.8-4 AD/stack. At max stacks heals 8% of dmg dealt. ~50% avg uptime.",
   effects: [
     {
       type: "conditional",
@@ -28276,9 +28276,11 @@ const Conqueror: Rune = {
     },
   ],
   stats: {
-    // 12 stacks × 2-4.5 AD per stack (level-scaling), ~50% avg uptime
-    // Level 1: 12×2×0.5 = 12 AD, Level 18: 12×4.5×0.5 = 27 AD
-    ad: 18,
+    // 12 stacks × 1.8-4 AD per stack (level-scaling), ~50% avg uptime
+    // Mid-level (~9): 12×2.9×0.5 ≈ 17 AD
+    ad: 17,
+    // 8% healing at max stacks, ~50% uptime → ~4% avg omnivamp
+    omnivamp: 4,
   },
 };
 
@@ -28287,11 +28289,12 @@ const ConquerorAP: Rune = {
   path: "Precision",
   slot: "keystone",
   description:
-    "Stacks to 12 giving 3.3-7.5 AP/stack. Modeled at ~50% avg uptime in sustained combat.",
+    "Stacks to 12 giving 3-6.75 AP/stack. At max stacks heals 8% of dmg dealt. ~50% avg uptime.",
   stats: {
-    // 12 stacks × 3.3-7.5 AP per stack (level-scaling), ~50% avg uptime
-    // Level 1: 12×3.3×0.5 ≈ 20 AP, Level 18: 12×7.5×0.5 = 45 AP
-    ap: 30,
+    // 12 stacks × 3-6.75 AP per stack (level-scaling), ~50% avg uptime
+    // Mid-level (~9): 12×4.9×0.5 ≈ 29 AP
+    ap: 29,
+    omnivamp: 4,
   },
 };
 

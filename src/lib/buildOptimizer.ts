@@ -308,6 +308,7 @@ export function mixedEffectiveHP(
   incomingPhysShare = 0.5,
   ownDPS = 0,
   fightDurationSeconds = 8,
+  autoAttackDPS = 0,
 ): number {
   const hp = stats.hp;
   const vsPhys = (hp * (100 + stats.armor)) / 100;
@@ -320,22 +321,21 @@ export function mixedEffectiveHP(
     (stats.sustainHealPerSecond ?? 0) +
     (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
 
-  // Sustain from lifesteal (% of physical DPS dealt, post-mitigation)
-  const lifeStealHPS = ownDPS > 0
-    ? (ownDPS * (stats.lifeSteal ?? 0)) / 100
+  // Lifesteal only heals from basic attacks + on-hit (physical auto damage)
+  const lifeStealHPS = autoAttackDPS > 0
+    ? (autoAttackDPS * (stats.lifeSteal ?? 0)) / 100
     : 0;
 
-  // Sustain from omnivamp (% of all damage dealt, 33% effective for AoE — use ~67% avg)
+  // Omnivamp heals from all damage (33% effective for AoE — use ~67% avg for single-target blend)
   const omnivampHPS = ownDPS > 0
     ? (ownDPS * (stats.omnivamp ?? 0) * 0.67) / 100
     : 0;
 
   const totalHealingEHP = (sustainHPS + lifeStealHPS + omnivampHPS) * fightDurationSeconds;
 
-  // Shield value from items (shieldValue stat if present)
+  // Shield value: shields absorb post-mitigation damage, so they benefit from
+  // resistances the same way HP does — multiply by the same resistance factor
   const shieldHP = stats.shieldValue ?? 0;
-
-  // Shields benefit from resistances too
   const shieldEHP = shieldHP > 0
     ? ((shieldHP * (100 + stats.armor)) / 100) * p +
       ((shieldHP * (100 + stats.mr)) / 100) * (1 - p)
@@ -512,40 +512,26 @@ function scoreChampion(
   );
   const stats = c.getTotalStats();
   const ownTotalDPS = dps.totalDPS;
+  const ownAutoAttackDPS = dps.autoAttackDPS + dps.onHitDPS;
   const ehp = mixedEffectiveHP(
     stats,
     duel.incomingPhysShare,
     ownTotalDPS,
     duel.comboWindowSeconds,
+    ownAutoAttackDPS,
   );
 
-  // For duel-oriented profiles, compute a mutual TTK score
-  // Estimate enemy DPS into us based on duel target stats as proxy for enemy output
-  // Enemy DPS ≈ target stats imply an enemy of similar power level
+  // Duel ratio: your TTL vs enemy TTD.
+  // Sustain (lifesteal/omnivamp) is already in mixedEffectiveHP — NOT double-counted here.
+  // Estimate enemy DPS as a proxy from duel target stats.
   const estimatedEnemyDPS = duel.targetMaxHP / (duel.comboWindowSeconds * 2.5);
 
-  // Sustain from lifesteal/omnivamp
-  const physDPS = dps.autoAttackDPS + dps.onHitDPS;
-  const lsHPS = (physDPS * (stats.lifeSteal ?? 0)) / 100;
-  const ovHPS = (ownTotalDPS * (stats.omnivamp ?? 0) * 0.67) / 100;
-  const passiveHPS =
-    (stats.sustainHealPerSecond ?? 0) +
-    (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
-  const totalHealHPS = lsHPS + ovHPS + passiveHPS;
-
-  // Net DPS into you (enemy DPS minus your healing, floored at 10%)
-  const netEnemyDPS = Math.max(estimatedEnemyDPS * 0.1, estimatedEnemyDPS - totalHealHPS);
-
-  // Your effective HP pool (raw HP + shields)
+  // Your raw HP pool (shields included; sustain is in EHP already)
   const yourHP = stats.hp + (stats.shieldValue ?? 0);
 
-  // Your time-to-live
-  const yourTTL = netEnemyDPS > 0 ? yourHP / netEnemyDPS : 100;
-
-  // Enemy time-to-die (their HP / your DPS)
+  const yourTTL = estimatedEnemyDPS > 0 ? yourHP / estimatedEnemyDPS : 100;
   const enemyTTD = ownTotalDPS > 0 ? duel.targetMaxHP / ownTotalDPS : 100;
 
-  // Duel score: how much longer you live vs how fast you kill them
   const duelRatio = yourTTL / Math.max(enemyTTD, 0.1);
 
   return profileScore(profile, dps, ehp, build, duelRatio);
@@ -1152,6 +1138,7 @@ export function recommendBuildsForChampion(
       duel.incomingPhysShare,
       gd.totalDPS,
       duel.comboWindowSeconds,
+      gd.autoAttackDPS + gd.onHitDPS,
     );
     const gscore = scoreChampion(profile, gc, primary, duel, profileSim);
 
@@ -1233,6 +1220,7 @@ export function recommendBuildsForChampion(
         duel.incomingPhysShare,
         altDps.totalDPS,
         duel.comboWindowSeconds,
+        altDps.autoAttackDPS + altDps.onHitDPS,
       );
       const sc = scoreChampion(profile, c, bestAlt, duel, profileSim);
       if (sc > gscore * 0.88) {
