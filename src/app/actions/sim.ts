@@ -2784,6 +2784,18 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     deathMarkPopRatio: [0.25, 0.4, 0.55],
     comboAutoWeight: 0.3,
   },
+  Irelia: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.45,
+  },
+  Smolder: {
+    castOrder: ["R", "Q", "E", "W"],
+    comboAutoWeight: 0.55,
+  },
+  Yunara: {
+    castOrder: ["R", "Q", "W", "E"],
+    comboAutoWeight: 0.7,
+  },
 };
 
 /**
@@ -11286,6 +11298,7 @@ const IreliaPassive = new Ability(
   undefined,
   undefined,
   undefined,
+  undefined,
   true,
 );
 
@@ -11410,6 +11423,7 @@ const IvernW = new Ability(
   "Creates brush and grants bonus attack range to Ivern and allies inside.",
   { cooldown: [0.5], cooldownType: "standard" },
   { castTime: 0, range: 1150 },
+  undefined,
   undefined,
   undefined,
   undefined,
@@ -22635,6 +22649,7 @@ const SmolderPassive = new Ability(
   undefined,
   undefined,
   undefined,
+  undefined,
   true,
 );
 
@@ -26821,6 +26836,7 @@ const YunaraPassive = new Ability(
   undefined,
   undefined,
   undefined,
+  undefined,
   true,
 );
 
@@ -28698,6 +28714,7 @@ export const Characters: Character[] = [
   BelVeth,
   Blitzcrank,
   Brand,
+  Braum,
   Briar,
   Caitlyn,
   Camille,
@@ -28726,6 +28743,8 @@ export const Characters: Character[] = [
   Heimerdinger,
   Hwei,
   Illaoi,
+  Irelia,
+  Ivern,
   Janna,
   JarvanIV,
   Jax,
@@ -28802,6 +28821,7 @@ export const Characters: Character[] = [
   Sion,
   Sivir,
   Skarner,
+  Smolder,
   Sona,
   Soraka,
   Swain,
@@ -28839,6 +28859,7 @@ export const Characters: Character[] = [
   Yone,
   Yorick,
   Yuumi,
+  Yunara,
   Zaahen,
   Zac,
   Zed,

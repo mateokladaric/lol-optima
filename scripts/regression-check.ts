@@ -369,4 +369,13 @@ if (garen) {
   }
 }
 
-console.log(`Regression checks passed (${CASES.length} champion scenarios).`);
+const EXPECTED_CHAMPION_COUNT = 172;
+if (Characters.length !== EXPECTED_CHAMPION_COUNT) {
+  fail(
+    `Expected ${EXPECTED_CHAMPION_COUNT} champions in roster, got ${Characters.length}`,
+  );
+}
+
+console.log(
+  `Regression checks passed (${CASES.length} champion scenarios, ${Characters.length} champions).`,
+);

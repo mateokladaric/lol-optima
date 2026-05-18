@@ -1,3 +1,4 @@
+import { availableParallelism } from "node:os";
 import { readFileSync } from "node:fs";
 import { Characters, Items } from "../src/app/actions/sim";
 import {
@@ -7,6 +8,7 @@ import {
   type SerializedMeta,
   type SimulationScenario,
 } from "../src/lib/buildOptimizer";
+import { computeMetaParallel } from "./compute-meta-parallel";
 
 function envNum(key: string): number | undefined {
   const v = process.env[key];
@@ -40,15 +42,33 @@ const rot = envBool("LOLOPTIMA_SIM_ROTATION_PROFILES");
 if (rot !== undefined) simulation.enableChampionRotationProfiles = rot;
 
 const metaDuel = resolveDuel(META_DUEL_DEFAULTS);
+const simOverrides =
+  Object.keys(simulation).length > 0 ? simulation : undefined;
 
-const current = computeMetaForAllChampions(
-  Characters,
-  Items,
-  metaDuel,
-  undefined,
-  Object.keys(simulation).length > 0 ? simulation : undefined,
-  { verbose: false },
-);
+const workersEnv = envNum("LOLOPTIMA_WORKERS");
+const workerCount =
+  workersEnv === 0
+    ? 1
+    : workersEnv ?? Math.max(1, (availableParallelism() ?? 4) - 1);
+
+async function main() {
+const current =
+  workerCount <= 1
+    ? computeMetaForAllChampions(
+        Characters,
+        Items,
+        metaDuel,
+        undefined,
+        simOverrides,
+        { verbose: false },
+      )
+    : await computeMetaParallel(
+        Characters,
+        metaDuel,
+        undefined,
+        simOverrides,
+        { workerCount, verbose: false },
+      );
 
 type Delta = {
   champion: string;
@@ -100,3 +120,9 @@ for (const row of deltas.slice(0, topN)) {
     `${row.champion} | ${row.baselineTopDps.toFixed(1)} | ${row.currentTopDps.toFixed(1)} | ${row.delta.toFixed(1)} | ${row.deltaPct.toFixed(2)}%`,
   );
 }
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

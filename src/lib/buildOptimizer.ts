@@ -1198,10 +1198,67 @@ export type ComputeMetaOptions = {
   verbose?: boolean;
 };
 
+export type ChampionMetaEntry = {
+  champion: string;
+  builds: SerializedBuildResult[];
+};
+
+/** Serializable payload for compute-meta parallel workers (stdio subprocess). */
+export type ComputeMetaWorkerJob = {
+  championNames: string[];
+  duelOverrides: DuelAssumptions;
+  monteCarloParams: MonteCarloParams;
+  simulation?: SimulationScenario;
+};
+
+export type ComputeMetaWorkerResult = {
+  championBuilds: ChampionMetaEntry[];
+  errors: { champion: string; message: string }[];
+};
+
 function isEnvTruthy(key: string): boolean {
   const v = process.env[key];
   if (v === undefined || v === "") return false;
   return ["1", "true", "yes", "on"].includes(v.trim().toLowerCase());
+}
+
+/** Optimize one champion for meta JSON (all profiles + alts). */
+export function computeMetaForChampion(
+  champion: Character,
+  itemPool: Item[],
+  duel: ResolvedDuel,
+  mcParams: MonteCarloParams,
+  simulation: SimulationScenario | undefined,
+  itemByName: Map<string, Item>,
+): ChampionMetaEntry | null {
+  const recs = recommendBuildsForChampion(champion, itemPool, {
+    duel,
+    simulation,
+    monteCarloParams: mcParams,
+  });
+  const builds: SerializedBuildResult[] = recs.map((r) => {
+    const its = r.items
+      .map((n) => itemByName.get(n))
+      .filter((x): x is Item => Boolean(x));
+    return {
+      champion: champion.Name,
+      items: r.items,
+      totalGold: r.totalGold,
+      rune: r.rune,
+      totalDPS: r.totalDPS,
+      sustainedDPS: r.sustainedDPS,
+      comboDPS: r.comboDPS,
+      autoAttackDPS: r.autoAttackDPS,
+      onHitDPS: r.onHitDPS,
+      abilityDPS: r.abilityDPS,
+      dotDPS: r.dotDPS,
+      burstDPS: r.burstDPS,
+      breakdown: r.breakdown,
+      buildType: `${r.profile} · ${classifyBuildFromItems(its)}`,
+    };
+  });
+  if (builds.length === 0) return null;
+  return { champion: champion.Name, builds };
 }
 
 /** Used by compute-meta script: all champions, best row per profile + alts. */
@@ -1243,45 +1300,55 @@ export function computeMetaForAllChampions(
     const champStarted = Date.now();
     log(`[compute-meta] ${label} ${champion.Name} — starting`);
 
-    const recs = recommendBuildsForChampion(champion, itemPool, {
-      duel,
-      simulation,
-      monteCarloParams: mcParams,
-      onProgress: verbose
-        ? (step) => log(`[compute-meta] ${label} ${champion.Name} — ${step}`)
-        : undefined,
-    });
-    const builds: SerializedBuildResult[] = recs.map((r) => {
-      const its = r.items
-        .map((n) => itemByName.get(n))
-        .filter((x): x is Item => Boolean(x));
-      return {
-        champion: champion.Name,
-        items: r.items,
-        totalGold: r.totalGold,
-        rune: r.rune,
-        totalDPS: r.totalDPS,
-        sustainedDPS: r.sustainedDPS,
-        comboDPS: r.comboDPS,
-        autoAttackDPS: r.autoAttackDPS,
-        onHitDPS: r.onHitDPS,
-        dotDPS: r.dotDPS,
-        abilityDPS: r.abilityDPS,
-        burstDPS: r.burstDPS,
-        breakdown: r.breakdown,
-        buildType: `${r.profile} · ${classifyBuildFromItems(its)}`,
-      };
-    });
+    let entry: ChampionMetaEntry | null;
+    if (verbose) {
+      const recs = recommendBuildsForChampion(champion, itemPool, {
+        duel,
+        simulation,
+        monteCarloParams: mcParams,
+        onProgress: (step) =>
+          log(`[compute-meta] ${label} ${champion.Name} — ${step}`),
+      });
+      const builds: SerializedBuildResult[] = recs.map((r) => {
+        const its = r.items
+          .map((n) => itemByName.get(n))
+          .filter((x): x is Item => Boolean(x));
+        return {
+          champion: champion.Name,
+          items: r.items,
+          totalGold: r.totalGold,
+          rune: r.rune,
+          totalDPS: r.totalDPS,
+          sustainedDPS: r.sustainedDPS,
+          comboDPS: r.comboDPS,
+          autoAttackDPS: r.autoAttackDPS,
+          onHitDPS: r.onHitDPS,
+          dotDPS: r.dotDPS,
+          abilityDPS: r.abilityDPS,
+          burstDPS: r.burstDPS,
+          breakdown: r.breakdown,
+          buildType: `${r.profile} · ${classifyBuildFromItems(its)}`,
+        };
+      });
+      entry = builds.length > 0 ? { champion: champion.Name, builds } : null;
+    } else {
+      entry = computeMetaForChampion(
+        champion,
+        itemPool,
+        duel,
+        mcParams,
+        simulation,
+        itemByName,
+      );
+    }
 
-    const topDps = builds[0]?.totalDPS ?? 0;
+    const topDps = entry?.builds[0]?.totalDPS ?? 0;
     const elapsedSec = ((Date.now() - champStarted) / 1000).toFixed(1);
     log(
-      `[compute-meta] ${label} ${champion.Name} — done in ${elapsedSec}s (${builds.length} builds, top ${topDps.toFixed(0)} DPS)`,
+      `[compute-meta] ${label} ${champion.Name} — done in ${elapsedSec}s (${entry?.builds.length ?? 0} builds, top ${topDps.toFixed(0)} DPS)`,
     );
 
-    if (builds.length > 0) {
-      championBuilds.push({ champion: champion.Name, builds });
-    }
+    if (entry) championBuilds.push(entry);
   }
 
   const runMin = ((Date.now() - runStarted) / 60_000).toFixed(1);

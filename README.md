@@ -48,6 +48,8 @@ armor, **50** MR, **3s** combo window):
 - `LOLOPTIMA_SIM_LEVEL`
 - `LOLOPTIMA_SIM_ROTATION_PROFILES` (`true/false`, `1/0`, `yes/no`)
 - `LOLOPTIMA_QUIET=1` — disable per-champion progress logs during meta generation
+- `LOLOPTIMA_WORKERS` — parallel champion threads for `compute-meta` (default:
+  CPU count − 1; set `1` or `0` for single-threaded sequential run)
 
 ## Quality scripts
 

@@ -1,14 +1,15 @@
+import { availableParallelism } from "node:os";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Characters, Items } from "../src/app/actions/sim";
 import {
   computeMetaForAllChampions,
   META_DUEL_DEFAULTS,
-  resolveDuel,
   type DuelAssumptions,
   type MonteCarloParams,
   type SimulationScenario,
 } from "../src/lib/buildOptimizer";
+import { computeMetaParallel } from "./compute-meta-parallel";
 
 function envNum(key: string): number | undefined {
   const v = process.env[key];
@@ -39,7 +40,6 @@ if (phys !== undefined) duelOverrides.incomingPhysShare = phys;
 if (armor !== undefined) duelOverrides.targetArmor = armor;
 if (mr !== undefined) duelOverrides.targetMR = mr;
 if (comboWindow !== undefined) duelOverrides.comboWindowSeconds = comboWindow;
-const duel = resolveDuel(duelOverrides);
 
 const mc: MonteCarloParams = {};
 const saIter = envNum("LOLOPTIMA_SA_ITER");
@@ -57,19 +57,58 @@ if (useRotation !== undefined) {
   simulation.enableChampionRotationProfiles = useRotation;
 }
 
-console.log("[compute-meta] Optimizing builds…");
-const meta = computeMetaForAllChampions(
-  Characters,
-  Items,
-  duel,
-  Object.keys(mc).length > 0 ? mc : undefined,
-  Object.keys(simulation).length > 0 ? simulation : undefined,
+const mcOverrides =
+  Object.keys(mc).length > 0 ? mc : undefined;
+const simOverrides =
+  Object.keys(simulation).length > 0 ? simulation : undefined;
+
+const workersEnv = envNum("LOLOPTIMA_WORKERS");
+const parallelDisabled = envBool("LOLOPTIMA_WORKERS") === 0;
+const workerCount =
+  workersEnv !== undefined
+    ? workersEnv
+    : parallelDisabled
+      ? 1
+      : Math.max(1, (availableParallelism() ?? 4) - 1);
+
+const verbose = !["1", "true", "yes", "on"].includes(
+  (process.env.LOLOPTIMA_QUIET ?? "").trim().toLowerCase(),
 );
-const outPath = join(process.cwd(), "public", "data", "metaBuilds.json");
-console.log(`[compute-meta] Writing ${outPath}…`);
-writeFileSync(outPath, JSON.stringify(meta, null, 2), "utf8");
-console.log(`[compute-meta] Wrote ${outPath} (${meta.championBuilds.length} champions)`);
-console.log("Duel assumptions:", meta.duel);
-if (meta.simulation) {
-  console.log("Simulation assumptions:", meta.simulation);
+
+async function main() {
+  console.log("[compute-meta] Optimizing builds…");
+
+  const meta =
+    workerCount <= 1
+      ? computeMetaForAllChampions(
+          Characters,
+          Items,
+          duelOverrides,
+          mcOverrides,
+          simOverrides,
+          { verbose },
+        )
+      : await computeMetaParallel(
+          Characters,
+          duelOverrides,
+          mcOverrides,
+          simOverrides,
+          { workerCount, verbose },
+        );
+
+  const outPath = join(process.cwd(), "public", "data", "metaBuilds.json");
+  console.log(`[compute-meta] Writing ${outPath}…`);
+  writeFileSync(outPath, JSON.stringify(meta, null, 2), "utf8");
+  console.log(
+    `[compute-meta] Wrote ${outPath} (${meta.championBuilds.length} champions)`,
+  );
+  console.log("Duel assumptions:", meta.duel);
+  if (meta.simulation) {
+    console.log("Simulation assumptions:", meta.simulation);
+  }
 }
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
