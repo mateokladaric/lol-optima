@@ -1888,36 +1888,6 @@ const NavoriFlickerblade = new Item(
   "Navori Flickerblade",
 );
 
-const Opportunity = new Item(
-  "Opportunity",
-  {
-    ad: 55,
-    lethality: 18,
-  },
-  [],
-  "Opportunity",
-);
-
-const OpportunityPreparationMelee = new Item(
-  "Opportunity (Prep Melee)",
-  {
-    ad: 55,
-    lethality: 29,
-  },
-  [],
-  "Opportunity",
-);
-
-const OpportunityPreparationRanged = new Item(
-  "Opportunity (Prep Ranged)",
-  {
-    ad: 55,
-    lethality: 23,
-  },
-  [],
-  "Opportunity",
-);
-
 const OverlordsBloodmail = new Item(
   "Overlord's Bloodmail (Full HP)",
   {
@@ -28986,9 +28956,6 @@ export const Items: Item[] = [
   MuramanaRanged,
   NashorsTooth,
   NavoriFlickerblade,
-  Opportunity,
-  OpportunityPreparationMelee,
-  OpportunityPreparationRanged,
   OverlordsBloodmail,
   OverlordsBloodmail25MissingHP,
   OverlordsBloodmail50MissingHP,

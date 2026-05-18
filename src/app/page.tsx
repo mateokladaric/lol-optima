@@ -6,7 +6,11 @@ import type {
   ResolvedDuel,
   SimulationScenario,
 } from "@/lib/buildOptimizer";
-import { recommendBuildsForChampion, resolveDuel } from "@/lib/buildOptimizer";
+import {
+  INTERACTIVE_RECOMMEND_OPTIONS,
+  recommendBuildsForChampion,
+  resolveDuel,
+} from "@/lib/buildOptimizer";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
 
 type BuildResult = {
@@ -84,12 +88,14 @@ function BuildFinder(): React.ReactElement {
   useEffect(() => {
     if (!selectedChampion) {
       setRecs([]);
+      setBusy(false);
       return;
     }
     setBusy(true);
     const t = window.setTimeout(() => {
       setRecs(
         recommendBuildsForChampion(selectedChampion, Items, {
+          ...INTERACTIVE_RECOMMEND_OPTIONS,
           duel: duelOptions,
           simulation: {
             level: simulationLevel,
@@ -98,7 +104,7 @@ function BuildFinder(): React.ReactElement {
         }),
       );
       setBusy(false);
-    }, 0);
+    }, 400);
     return () => window.clearTimeout(t);
   }, [selectedChampion, duelOptions, simulationLevel, useRotationProfiles]);
 

@@ -63,13 +63,10 @@ const simOverrides =
   Object.keys(simulation).length > 0 ? simulation : undefined;
 
 const workersEnv = envNum("LOLOPTIMA_WORKERS");
-const parallelDisabled = envBool("LOLOPTIMA_WORKERS") === 0;
 const workerCount =
   workersEnv !== undefined
-    ? workersEnv
-    : parallelDisabled
-      ? 1
-      : Math.max(1, (availableParallelism() ?? 4) - 1);
+    ? Math.max(1, workersEnv)
+    : Math.max(1, (availableParallelism() ?? 4) - 1);
 
 const verbose = !["1", "true", "yes", "on"].includes(
   (process.env.LOLOPTIMA_QUIET ?? "").trim().toLowerCase(),

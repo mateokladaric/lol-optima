@@ -589,16 +589,25 @@ function copyBuild(build: Item[]): Item[] {
   return build.slice();
 }
 
+type BuildSearchCtx = {
+  optimizeKeystones: boolean;
+  keystoneCache: KeystoneCache;
+};
+
 function scoreBuildFast(
   champion: Character,
   profile: BuildProfileId,
   build: Item[],
   duel: ResolvedDuel,
   simulation: SimulationScenario | undefined,
-  keystoneCache: KeystoneCache,
+  search: BuildSearchCtx,
 ): number {
+  if (!search.optimizeKeystones) {
+    const c = cloneChampionWithLoadout(champion, build, null);
+    return scoreChampion(profile, c, build, duel, simulation);
+  }
   return getCachedKeystone(
-    keystoneCache,
+    search.keystoneCache,
     champion,
     build,
     profile,
@@ -681,7 +690,7 @@ export function simulatedAnnealingOptimize(
   simulation: SimulationScenario | undefined,
   mc: ResolvedMonteCarlo,
   greedySeed: Item[] | null,
-  keystoneCache: KeystoneCache,
+  search: BuildSearchCtx,
 ): Item[] {
   let globalBest: Item[] = [];
   let globalBestScore = -Infinity;
@@ -706,7 +715,7 @@ export function simulatedAnnealingOptimize(
       current,
       duel,
       simulation,
-      keystoneCache,
+      search,
     );
     let restartBest = copyBuild(current);
     let restartBestScore = currentScore;
@@ -720,7 +729,7 @@ export function simulatedAnnealingOptimize(
         neighbor,
         duel,
         simulation,
-        keystoneCache,
+        search,
       );
       const delta = ns - currentScore;
       if (
@@ -752,7 +761,7 @@ function greedyFill(
   profile: BuildProfileId,
   duel: ResolvedDuel,
   simulation: SimulationScenario | undefined,
-  keystoneCache: KeystoneCache,
+  search: BuildSearchCtx,
 ): Item[] {
   const build: Item[] = [];
   const used = new Set<string>();
@@ -771,7 +780,7 @@ function greedyFill(
         trial,
         duel,
         simulation,
-        keystoneCache,
+        search,
       );
       if (s > bestScore) {
         bestScore = s;
@@ -874,8 +883,22 @@ export type RecommendBuildsOptions = {
   monteCarlo?: boolean;
   monteCarloParams?: MonteCarloParams;
   simulation?: SimulationScenario;
+  /**
+   * When true (default), score every candidate build with all keystones (compute-meta).
+   * When false, search uses no keystone; best keystone is chosen once per final build (live UI).
+   */
+  optimizeKeystones?: boolean;
   /** Optional progress hook (used by compute-meta). */
   onProgress?: (message: string) => void;
+};
+
+/** Defaults for the 1v1 build finder — fast search, keystone resolved on final builds only. */
+export const INTERACTIVE_RECOMMEND_OPTIONS: Pick<
+  RecommendBuildsOptions,
+  "optimizeKeystones" | "monteCarloParams"
+> = {
+  optimizeKeystones: false,
+  monteCarloParams: { randomProbeSamples: 180 },
 };
 
 export function recommendBuildsForChampion(
@@ -887,14 +910,20 @@ export function recommendBuildsForChampion(
   const duel = resolveDuel(options?.duel);
   const useMC = options?.monteCarlo !== false;
   const simulation = options?.simulation;
+  const optimizeKeystones = options?.optimizeKeystones !== false;
   const mc = resolveMonteCarloParams(options?.monteCarloParams);
+  const defaultProbes = optimizeKeystones ? 400 : 180;
   const nProbes = clamp(
     options?.monteCarloParams?.randomProbeSamples ??
       options?.samples ??
-      (useMC ? 400 : 180),
+      (useMC ? defaultProbes : 180),
     0,
     50_000,
   );
+  const search: BuildSearchCtx = {
+    optimizeKeystones,
+    keystoneCache: new Map(),
+  };
   const profiles: BuildProfileId[] = [
     "balanced",
     "glass",
@@ -915,14 +944,13 @@ export function recommendBuildsForChampion(
     );
     const profileSim = mergeProfileSimulation(profile, simulation);
     const profilePool = itemPoolForProfile(champion, realisticPool, profile);
-    const keystoneCache: KeystoneCache = new Map();
     const greedy = greedyFill(
       champion,
       profilePool,
       profile,
       duel,
       profileSim,
-      keystoneCache,
+      search,
     );
     let primary: Item[] = [];
 
@@ -938,7 +966,7 @@ export function recommendBuildsForChampion(
         profileSim,
         mc,
         greedy,
-        keystoneCache,
+        search,
       );
       const gFast = scoreBuildFast(
         champion,
@@ -946,7 +974,7 @@ export function recommendBuildsForChampion(
         greedy,
         duel,
         profileSim,
-        keystoneCache,
+        search,
       );
       const sFast =
         saBest.length === 6
@@ -956,7 +984,7 @@ export function recommendBuildsForChampion(
               saBest,
               duel,
               profileSim,
-              keystoneCache,
+              search,
             )
           : -Infinity;
       primary = sFast >= gFast && saBest.length === 6 ? saBest : greedy;
@@ -971,14 +999,14 @@ export function recommendBuildsForChampion(
         profileSim,
         mc,
         null,
-        keystoneCache,
+        search,
       );
     }
 
     if (primary.length === 0) continue;
 
     const { rune: gRune } = getCachedKeystone(
-      keystoneCache,
+      search.keystoneCache,
       champion,
       primary,
       profile,
@@ -1044,7 +1072,7 @@ export function recommendBuildsForChampion(
         b,
         duel,
         profileSim,
-        keystoneCache,
+        search,
       );
       if (s0 > bestAltScore) {
         bestAltScore = s0;
@@ -1053,7 +1081,7 @@ export function recommendBuildsForChampion(
     }
     if (bestAlt && isDistinct(bestAlt, seenItemSets)) {
       const { rune: aRune } = getCachedKeystone(
-        keystoneCache,
+        search.keystoneCache,
         champion,
         bestAlt,
         profile,
@@ -1235,6 +1263,7 @@ export function computeMetaForChampion(
     duel,
     simulation,
     monteCarloParams: mcParams,
+    optimizeKeystones: true,
   });
   const builds: SerializedBuildResult[] = recs.map((r) => {
     const its = r.items
@@ -1306,6 +1335,7 @@ export function computeMetaForAllChampions(
         duel,
         simulation,
         monteCarloParams: mcParams,
+        optimizeKeystones: true,
         onProgress: (step) =>
           log(`[compute-meta] ${label} ${champion.Name} — ${step}`),
       });
