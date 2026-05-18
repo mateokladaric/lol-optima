@@ -17,7 +17,6 @@ import type {
 import {
   AllKeystones,
   BLENDED_DPS_COMBO_WEIGHT,
-  CHAMPION_COMBO_PROFILES,
   championUsesMana,
   isManaScalingItem,
   Item as ItemModel,
@@ -134,30 +133,12 @@ function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
   return selected;
 }
 
-/** Crit/on-hit legendaries that dominate combo DPS but aren't assassin burst items. */
-const GLASS_ASSASSIN_ITEM_DENY =
-  /Infinity Edge|Blade of the Ruined King|Navori Flickerblade|Phantom Dancer|Guinsoo|Kraken Slayer|Runaan|Stormrazor|Terminus|Experimental Hexplate|Yun Tal Wildarrows|Wit's End|Warmog|Jak'Sho|Sunfire|Heartsteel|Rylai|Liandry/i;
-
-function isGlassAssassinExcluded(item: Item): boolean {
-  if (GLASS_ASSASSIN_ITEM_DENY.test(item.name)) return true;
-  const leth = item.stats.lethality ?? 0;
-  const pen = item.stats.armorPen ?? 0;
-  const crit = item.stats.critChance ?? 0;
-  const as = item.stats.attackSpeed ?? 0;
-  if (crit >= 20 && leth < 12 && pen < 20) return true;
-  if (as >= 40 && leth < 12 && pen < 20) return true;
-  return false;
-}
-
 function itemPoolForProfile(
-  champion: Character,
+  _champion: Character,
   realisticPool: Item[],
-  profile: BuildProfileId,
+  _profile: BuildProfileId,
 ): Item[] {
-  if (profile !== "glass" || !CHAMPION_COMBO_PROFILES[champion.Name]) {
-    return realisticPool;
-  }
-  return realisticPool.filter((it) => !isGlassAssassinExcluded(it));
+  return realisticPool;
 }
 
 export type ResolvedDuel = {
@@ -317,28 +298,132 @@ export function cloneChampionWithLoadout(
   return c;
 }
 
-/** Incoming damage split — simple 1v1 durability index vs mixed damage. */
+/**
+ * Effective HP index for 1v1 durability.
+ * Accounts for HP × resistances, lifesteal/omnivamp sustain over fight duration,
+ * and item shield value.
+ */
 export function mixedEffectiveHP(
   stats: ReturnType<Character["getTotalStats"]>,
   incomingPhysShare = 0.5,
+  ownDPS = 0,
+  fightDurationSeconds = 8,
 ): number {
   const hp = stats.hp;
   const vsPhys = (hp * (100 + stats.armor)) / 100;
   const vsMag = (hp * (100 + stats.mr)) / 100;
   const p = clamp(incomingPhysShare, 0, 1);
+  const baseEHP = vsPhys * p + vsMag * (1 - p);
+
+  // Sustain from item healPerSecond passives (e.g. Cryptbloom)
   const sustainHPS =
     (stats.sustainHealPerSecond ?? 0) +
     (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
-  const sustainEhp = sustainHPS * 12;
-  return vsPhys * p + vsMag * (1 - p) + sustainEhp;
+
+  // Sustain from lifesteal (% of physical DPS dealt, post-mitigation)
+  const lifeStealHPS = ownDPS > 0
+    ? (ownDPS * (stats.lifeSteal ?? 0)) / 100
+    : 0;
+
+  // Sustain from omnivamp (% of all damage dealt, 33% effective for AoE — use ~67% avg)
+  const omnivampHPS = ownDPS > 0
+    ? (ownDPS * (stats.omnivamp ?? 0) * 0.67) / 100
+    : 0;
+
+  const totalHealingEHP = (sustainHPS + lifeStealHPS + omnivampHPS) * fightDurationSeconds;
+
+  // Shield value from items (shieldValue stat if present)
+  const shieldHP = stats.shieldValue ?? 0;
+
+  // Shields benefit from resistances too
+  const shieldEHP = shieldHP > 0
+    ? ((shieldHP * (100 + stats.armor)) / 100) * p +
+      ((shieldHP * (100 + stats.mr)) / 100) * (1 - p)
+    : 0;
+
+  return baseEHP + totalHealingEHP + shieldEHP;
 }
 
-function itemApTotal(build: Item[]): number {
-  let t = 0;
-  for (const it of build) {
-    t += it.stats.ap ?? 0;
-  }
-  return t;
+/**
+ * Simulate a mutual 1v1 duel between two Characters.
+ * Each side's DPS is calculated against the other's resistances,
+ * and healing (lifesteal/omnivamp) extends effective HP over the fight.
+ * Returns a duel score > 1 if attacker wins, < 1 if defender wins.
+ */
+export function simulateDuel(
+  attacker: Character,
+  defender: Character,
+  simulation?: SimulationScenario,
+  comboWindowSeconds = 8,
+): { score: number; attackerTTK: number; defenderTTK: number } {
+  const attackerStats = attacker.getTotalStats();
+  const defenderStats = defender.getTotalStats();
+
+  // Attacker DPS into defender's resistances
+  const attackerDps = attacker.calculateDPS(
+    defenderStats.hp,
+    Math.max(0, defenderStats.hp - defender.HP),
+    simulation,
+    {
+      targetArmor: defenderStats.armor,
+      targetMR: defenderStats.mr,
+      comboWindowSeconds,
+    },
+  );
+
+  // Defender DPS into attacker's resistances
+  const defenderDps = defender.calculateDPS(
+    attackerStats.hp,
+    Math.max(0, attackerStats.hp - attacker.HP),
+    simulation,
+    {
+      targetArmor: attackerStats.armor,
+      targetMR: attackerStats.mr,
+      comboWindowSeconds,
+    },
+  );
+
+  const attackerRawDPS = attackerDps.totalDPS;
+  const defenderRawDPS = defenderDps.totalDPS;
+
+  // Compute effective HP for each side including sustain
+  // Lifesteal heals based on physical damage dealt (post-mitigation auto+onhit DPS)
+  // Omnivamp heals based on all damage dealt (67% effectiveness avg for AoE blend)
+  const attackerPhysDPS = attackerDps.autoAttackDPS + attackerDps.onHitDPS;
+  const attackerLifestealHPS = (attackerPhysDPS * (attackerStats.lifeSteal ?? 0)) / 100;
+  const attackerOmnivampHPS = (attackerRawDPS * (attackerStats.omnivamp ?? 0) * 0.67) / 100;
+  const attackerSustainHPS =
+    (attackerStats.sustainHealPerSecond ?? 0) +
+    (attackerStats.ap * (attackerStats.sustainHealPerSecondAPPercent ?? 0)) / 100;
+  const attackerTotalHealHPS = attackerLifestealHPS + attackerOmnivampHPS + attackerSustainHPS;
+
+  const defenderPhysDPS = defenderDps.autoAttackDPS + defenderDps.onHitDPS;
+  const defenderLifestealHPS = (defenderPhysDPS * (defenderStats.lifeSteal ?? 0)) / 100;
+  const defenderOmnivampHPS = (defenderRawDPS * (defenderStats.omnivamp ?? 0) * 0.67) / 100;
+  const defenderSustainHPS =
+    (defenderStats.sustainHealPerSecond ?? 0) +
+    (defenderStats.ap * (defenderStats.sustainHealPerSecondAPPercent ?? 0)) / 100;
+  const defenderTotalHealHPS = defenderLifestealHPS + defenderOmnivampHPS + defenderSustainHPS;
+
+  // Shield value
+  const attackerShield = attackerStats.shieldValue ?? 0;
+  const defenderShield = defenderStats.shieldValue ?? 0;
+
+  // Net DPS each side takes (incoming DPS minus healing, floored at 10% of raw to avoid immortality)
+  const netDPSIntoAttacker = Math.max(defenderRawDPS * 0.1, defenderRawDPS - attackerTotalHealHPS);
+  const netDPSIntoDefender = Math.max(attackerRawDPS * 0.1, attackerRawDPS - defenderTotalHealHPS);
+
+  // TTK = (HP + shield) / net incoming DPS
+  const attackerHP = attackerStats.hp + attackerShield;
+  const defenderHP = defenderStats.hp + defenderShield;
+
+  const attackerTTK = netDPSIntoAttacker > 0 ? attackerHP / netDPSIntoAttacker : Infinity;
+  const defenderTTK = netDPSIntoDefender > 0 ? defenderHP / netDPSIntoDefender : Infinity;
+
+  // Score > 1 means attacker wins (attacker lives longer than defender)
+  const score = attackerTTK > 0 ? defenderTTK > 0 ? attackerTTK / defenderTTK : 0 : Infinity;
+
+  return { score, attackerTTK: defenderTTK, defenderTTK: attackerTTK };
 }
 
 function blendedDps(
@@ -354,65 +439,61 @@ function blendedDps(
 /** Default combo weight — kept in sync with sim `totalDPS` headline metric. */
 export const DEFAULT_COMBO_DPS_WEIGHT = BLENDED_DPS_COMBO_WEIGHT;
 
+/**
+ * Profile scoring — all profiles use the sim's actual DPS/EHP numbers.
+ * The only knob is the DPS-vs-EHP weighting, which is what profiles are for.
+ * No artificial stat-type bonuses (lethality, AP thresholds, etc.).
+ */
 function profileScore(
   profile: BuildProfileId,
   dps: ReturnType<Character["calculateDPS"]>,
   ehp: number,
-  build: Item[],
+  _build: Item[],
+  duelRatio = 1,
 ): number {
-  const adLike = dps.autoAttackDPS + dps.onHitDPS;
-  const apLike = dps.abilityDPS + dps.dotDPS;
-  const apFromItems = itemApTotal(build);
   const combo = dps.comboDPS;
   const mixed = blendedDps(dps, DEFAULT_COMBO_DPS_WEIGHT);
 
-  let lethalityFromItems = 0;
-  let critFromItems = 0;
-  for (const it of build) {
-    lethalityFromItems += it.stats.lethality ?? 0;
-    critFromItems += it.stats.critChance ?? 0;
-  }
+  const duelFactor = Math.sqrt(Math.max(0.1, duelRatio));
 
   switch (profile) {
-    case "glass": {
-      let s = combo + lethalityFromItems * 14 - critFromItems * 6;
-      const penFromItems = build.reduce(
-        (t, it) => t + (it.stats.armorPen ?? 0),
-        0,
-      );
-      s += penFromItems * 4;
-      return Math.max(0, s);
-    }
+    case "glass":
+      return Math.max(0, combo);
+
     case "tank":
       return (
-        Math.log1p(ehp / 150) * 1.35 * Math.pow(Math.log1p(mixed / 40), 0.65)
+        Math.log1p(ehp / 150) * 1.35 *
+        Math.pow(Math.log1p(mixed / 40), 0.65) *
+        duelFactor
       );
-    case "ap": {
-      const apLean = apLike * 1.15 + combo * 0.25;
-      const bonus =
-        apFromItems >= 120 ? 1.15 : apFromItems >= 60 ? 1.05 : 0.72;
-      return Math.log1p(apLean) * bonus * Math.pow(Math.log1p(ehp / 600), 0.25);
-    }
-    case "spell": {
-      const spellOnly = dps.abilityDPS + dps.dotDPS + dps.burstDPS;
-      const bonus =
-        apFromItems >= 120 ? 1.15 : apFromItems >= 60 ? 1.05 : 0.72;
+
+    case "ap":
       return (
-        Math.log1p(spellOnly) *
-        bonus *
-        Math.pow(Math.log1p(ehp / 650), 0.2)
+        Math.log1p(mixed) *
+        Math.pow(Math.log1p(ehp / 600), 0.25) *
+        duelFactor
       );
-    }
+
+    case "spell":
+      return (
+        Math.log1p(dps.abilityDPS + dps.dotDPS + dps.burstDPS) *
+        Math.pow(Math.log1p(ehp / 650), 0.2) *
+        duelFactor
+      );
+
     case "ad":
       return (
-        Math.log1p(adLike * 1.1 + dps.abilityDPS * 0.45 + combo * 0.2) *
-        Math.pow(Math.log1p(ehp / 700), 0.3)
+        Math.log1p(mixed) *
+        Math.pow(Math.log1p(ehp / 700), 0.3) *
+        duelFactor
       );
+
     case "bruiser":
-      return Math.log1p(mixed / 45) * Math.log1p(ehp / 200);
+      return Math.log1p(mixed / 45) * Math.log1p(ehp / 200) * duelFactor;
+
     case "balanced":
     default:
-      return Math.log1p(mixed / 50) * Math.log1p(ehp / 400) * 1.15;
+      return Math.log1p(mixed / 50) * Math.log1p(ehp / 400) * duelFactor;
   }
 }
 
@@ -429,8 +510,45 @@ function scoreChampion(
     simulation,
     dpsMitigationFromDuel(duel),
   );
-  const ehp = mixedEffectiveHP(c.getTotalStats(), duel.incomingPhysShare);
-  return profileScore(profile, dps, ehp, build);
+  const stats = c.getTotalStats();
+  const ownTotalDPS = dps.totalDPS;
+  const ehp = mixedEffectiveHP(
+    stats,
+    duel.incomingPhysShare,
+    ownTotalDPS,
+    duel.comboWindowSeconds,
+  );
+
+  // For duel-oriented profiles, compute a mutual TTK score
+  // Estimate enemy DPS into us based on duel target stats as proxy for enemy output
+  // Enemy DPS ≈ target stats imply an enemy of similar power level
+  const estimatedEnemyDPS = duel.targetMaxHP / (duel.comboWindowSeconds * 2.5);
+
+  // Sustain from lifesteal/omnivamp
+  const physDPS = dps.autoAttackDPS + dps.onHitDPS;
+  const lsHPS = (physDPS * (stats.lifeSteal ?? 0)) / 100;
+  const ovHPS = (ownTotalDPS * (stats.omnivamp ?? 0) * 0.67) / 100;
+  const passiveHPS =
+    (stats.sustainHealPerSecond ?? 0) +
+    (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
+  const totalHealHPS = lsHPS + ovHPS + passiveHPS;
+
+  // Net DPS into you (enemy DPS minus your healing, floored at 10%)
+  const netEnemyDPS = Math.max(estimatedEnemyDPS * 0.1, estimatedEnemyDPS - totalHealHPS);
+
+  // Your effective HP pool (raw HP + shields)
+  const yourHP = stats.hp + (stats.shieldValue ?? 0);
+
+  // Your time-to-live
+  const yourTTL = netEnemyDPS > 0 ? yourHP / netEnemyDPS : 100;
+
+  // Enemy time-to-die (their HP / your DPS)
+  const enemyTTD = ownTotalDPS > 0 ? duel.targetMaxHP / ownTotalDPS : 100;
+
+  // Duel score: how much longer you live vs how fast you kill them
+  const duelRatio = yourTTL / Math.max(enemyTTD, 0.1);
+
+  return profileScore(profile, dps, ehp, build, duelRatio);
 }
 
 /**
@@ -1028,8 +1146,14 @@ export function recommendBuildsForChampion(
       profileSim,
       dpsMitigationFromDuel(duel),
     );
-    const gehp = mixedEffectiveHP(gc.getTotalStats(), duel.incomingPhysShare);
-    const gscore = profileScore(profile, gd, gehp, primary);
+    const gStats = gc.getTotalStats();
+    const gehp = mixedEffectiveHP(
+      gStats,
+      duel.incomingPhysShare,
+      gd.totalDPS,
+      duel.comboWindowSeconds,
+    );
+    const gscore = scoreChampion(profile, gc, primary, duel, profileSim);
 
     if (isDistinct(primary, seenItemSets)) {
       seenItemSets.push(primary);
@@ -1097,14 +1221,20 @@ export function recommendBuildsForChampion(
         bestAlt,
         aRune ? makeRunePage(aRune) : null,
       );
-      const dps = c.calculateDPS(
+      const altDps = c.calculateDPS(
         duel.targetMaxHP,
         duel.targetBonusHP,
         profileSim,
         dpsMitigationFromDuel(duel),
       );
-      const ehp = mixedEffectiveHP(c.getTotalStats(), duel.incomingPhysShare);
-      const sc = profileScore(profile, dps, ehp, bestAlt);
+      const altStats = c.getTotalStats();
+      const altEhp = mixedEffectiveHP(
+        altStats,
+        duel.incomingPhysShare,
+        altDps.totalDPS,
+        duel.comboWindowSeconds,
+      );
+      const sc = scoreChampion(profile, c, bestAlt, duel, profileSim);
       if (sc > gscore * 0.88) {
         seenItemSets.push(bestAlt);
         const altOrder = greedySimPurchaseOrder(
@@ -1123,16 +1253,16 @@ export function recommendBuildsForChampion(
           totalGold: totalBuildGold(altOrder),
           rune: aRune?.name ?? "None",
           score: sc,
-          totalDPS: dps.totalDPS,
-          sustainedDPS: dps.sustainedDPS,
-          comboDPS: dps.comboDPS,
-          autoAttackDPS: dps.autoAttackDPS,
-          onHitDPS: dps.onHitDPS,
-          abilityDPS: dps.abilityDPS,
-          dotDPS: dps.dotDPS,
-          burstDPS: dps.burstDPS,
-          effectiveHP: ehp,
-          breakdown: dps.breakdown,
+          totalDPS: altDps.totalDPS,
+          sustainedDPS: altDps.sustainedDPS,
+          comboDPS: altDps.comboDPS,
+          autoAttackDPS: altDps.autoAttackDPS,
+          onHitDPS: altDps.onHitDPS,
+          abilityDPS: altDps.abilityDPS,
+          dotDPS: altDps.dotDPS,
+          burstDPS: altDps.burstDPS,
+          effectiveHP: altEhp,
+          breakdown: altDps.breakdown,
           duel: { ...duel },
           simulation: { ...profileSim },
         });

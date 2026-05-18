@@ -472,6 +472,7 @@ interface ItemStats {
   /** Sustain from item passives (heal nova, etc.) — folded into EHP in optimizer. */
   sustainHealPerSecond?: number;
   sustainHealPerSecondAPPercent?: number;
+  shieldValue?: number; // Effective shield HP from item passives (e.g., Sterak's, Shieldbow)
 
   // Scaling multipliers - for stats that scale with other stats
   abilityDamagePerManaMultiplicative?: number; // % per mana point
@@ -1554,6 +1555,7 @@ const ImmortalShieldbow = new Item(
   {
     ad: 55,
     critChance: 25,
+    shieldValue: 350,
   },
   [],
   "Lifeline",
@@ -1751,6 +1753,7 @@ const MawOfMalmortius = new Item(
     ad: 60,
     abilityHaste: 15,
     mr: 40,
+    shieldValue: 300,
   },
   [],
   "Lifeline",
@@ -2270,6 +2273,7 @@ const SteraksGage = new Item(
   {
     hp: 400,
     adPerBaseADPercent: 45,
+    shieldValue: 350,
   },
   [],
   "Lifeline",
@@ -3707,6 +3711,7 @@ class Character {
       damageMultiplicative: 0,
       sustainHealPerSecond: 0,
       sustainHealPerSecondAPPercent: 0,
+      shieldValue: 0,
     };
 
     // Add item stats - iterate through all keys

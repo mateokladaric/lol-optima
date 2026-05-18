@@ -1,0 +1,28 @@
+---
+description: Prohibits hardcoded stat/item preferences in the optimizer. The simulator's numbers are the only source of truth.
+globs: src/lib/buildOptimizer.ts
+alwaysApply: false
+---
+
+# No Hardcoded Build Preferences
+
+The build optimizer must NEVER contain hardcoded preferences for item stats, item types, or damage profiles. The simulator (`sim.ts`) computes actual damage numbers — those numbers are the sole basis for scoring.
+
+## Prohibited patterns
+
+- Flat score bonuses for specific stats (e.g., `+14 per lethality`, `+4 per armor pen`)
+- Score penalties for specific stats (e.g., `-6 per crit chance`)
+- AP/AD threshold multipliers (e.g., `apFromItems >= 120 ? 1.15 : 0.72`)
+- Item deny-lists that exclude items from the pool based on stat patterns
+- Weighted DPS formulas that artificially boost one damage type over another (e.g., `adLike * 1.1 + abilityDPS * 0.45`)
+- Any logic that inspects `item.stats.*` to decide if an item "belongs" in a profile
+
+## What profiles ARE allowed to control
+
+- The **weighting between DPS and EHP** (glass = pure DPS, tank = heavy EHP, balanced = both)
+- The **DPS metric used** (combo vs sustained vs blended)
+- The **duel factor** influence (glass can skip it)
+
+## If the optimizer recommends bad builds
+
+Fix the **simulator** (`sim.ts`), not the optimizer. If Akali's best glass build comes out as full crit, that means the sim is overvaluing crit on Akali — fix the ability scaling, damage calculation, or item modeling in the sim. Never patch it by telling the optimizer to avoid crit.
