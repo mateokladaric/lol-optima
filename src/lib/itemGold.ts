@@ -36,7 +36,8 @@ export function estimateItemPowerIndex(stats: ItemStats): number {
   p += (stats.critDmg ?? 0) * 0.06;
   p += (stats.lethality ?? 0) * 2.2;
   p += (stats.armorPen ?? 0) * 2.0;
-  p += (stats.magicPen ?? 0) * 2.4;
+  p += (stats.flatMagicPen ?? 0) * 2.4;
+  p += (stats.percentMagicPen ?? 0) * 2.4;
   p += (stats.lifeSteal ?? 0) * 0.35;
   p += (stats.omnivamp ?? 0) * 0.4;
   p += (stats.ms ?? 0) * 0.35;
@@ -73,7 +74,8 @@ export function estimateGoldFromStats(stats: ItemStats): number {
   g += (stats.msPercent ?? 0) * 24;
   g += (stats.lethality ?? 0) * 11;
   g += (stats.armorPen ?? 0) * 22;
-  g += (stats.magicPen ?? 0) * 30;
+  g += (stats.flatMagicPen ?? 0) * 30;
+  g += (stats.percentMagicPen ?? 0) * 30;
   g += (stats.lifeSteal ?? 0) * 45;
   g += (stats.omnivamp ?? 0) * 50;
   g += (stats.physicalOnHit ?? 0) * 8;

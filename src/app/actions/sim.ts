@@ -229,19 +229,19 @@ export function spellbladeOnHitUptime(attacksPerSecond: number): number {
 const AatroxPassive = new Ability(
   "Deathbringer Stance",
   "passive",
-  "Periodically empowers basic attack with bonus range and damage based on target's max HP",
+  "Periodically empowers basic attack to deal bonus physical damage based on target's max HP",
   {
-    cooldown: (level: number) => 22 - ((level - 1) * 12) / 17, // 22 at level 1, 10 at level 18
-    staticCooldown: 22,
+    cooldown: (level: number) => 24 - ((level - 1) * 12) / 17,
+    staticCooldown: 24,
     cooldownType: "static",
   },
   {
-    range: 225, // 175 base + 50 bonus range
+    range: 225,
   },
   {
-    baseDamage: (level: number) => 100 + ((level - 1) * 220) / 17, // 100 at lvl 1, 320 at lvl 18
-    maxHealthRatio: (level: number) => 4 + ((level - 1) * 4) / 17, // 4% at lvl 1, 8% at lvl 18
-    damageType: "magic",
+    baseDamage: 0,
+    maxHealthRatio: (level: number) => 4 + ((level - 1) * 8) / 17,
+    damageType: "physical",
   },
   {
     heal: 100, // Heals for 100% of post-mitigation damage dealt (25% vs minions)
@@ -368,20 +368,18 @@ const AatroxR = new Ability(
   undefined,
   {
     duration: 10,
-    ccType: "fear",
-    ccDuration: 3,
     bonusStats: {
-      ad: [20, 30, 40], // % of AD
-      ms: [60, 80, 100], // % bonus MS
+      ad: [20, 30, 40],
+      ms: [60, 80, 100],
     },
   },
   undefined,
   undefined,
   [
+    "Self-buff only, no CC",
     "Extends 5s on takedown",
     "50/75/100% increased self-healing",
     "Ghosted",
-    "5% increased size",
   ],
 );
 
@@ -407,7 +405,8 @@ interface ItemStats {
   lethality?: number;
   armorPen?: number;
   armorReduction?: number; // % armor reduction on target
-  magicPen?: number;
+  flatMagicPen?: number; // Flat magic penetration (e.g., Shadowflame 15)
+  percentMagicPen?: number; // % magic penetration (e.g., Void Staff 40%)
   magicResistReduction?: number; // % MR reduction on target
   healthRegen?: number;
   manaRegen?: number;
@@ -1065,7 +1064,7 @@ const Cryptbloom = new Item(
   {
     ap: 70,
     abilityHaste: 20,
-    magicPen: 30,
+    percentMagicPen: 30,
     sustainHealPerSecond: 50 / 60,
     sustainHealPerSecondAPPercent: 50 / 60,
   },
@@ -1729,7 +1728,7 @@ const Morellonomicon = new Item(
   {
     ap: 80,
     hp: 350,
-    magicPen: 15,
+    flatMagicPen: 15,
   },
   [],
   "Morellonomicon",
@@ -2168,7 +2167,7 @@ const Shadowflame = new Item(
   "Shadowflame",
   {
     ap: 110,
-    magicPen: 15,
+    flatMagicPen: 15,
   },
   [],
   "Shadowflame",
@@ -2304,7 +2303,7 @@ const Stormsurge = new Item(
   "Stormsurge",
   {
     ap: 90,
-    magicPen: 15,
+    flatMagicPen: 15,
     msPercent: 6,
   },
   [],
@@ -2379,7 +2378,7 @@ const TerminusMaxStacks = new Item(
     armor: 24,
     mr: 24,
     armorPen: 30,
-    magicPen: 30,
+    percentMagicPen: 30,
   },
   [],
   "Fatality",
@@ -2493,7 +2492,7 @@ const VoidStaff = new Item(
   "Void Staff",
   {
     ap: 95,
-    magicPen: 40,
+    percentMagicPen: 40,
   },
   [],
   "Blight",
@@ -2679,9 +2678,9 @@ export type ChampionResourceType = "mana" | "energy" | "none";
 
 const ENERGY_CHAMPIONS: readonly string[] = [
   "Akali",
+  "Ambessa",
   "Kennen",
   "Lee Sin",
-  "Rengar",
   "Shen",
   "Zed",
 ];
@@ -2689,22 +2688,26 @@ const ENERGY_CHAMPIONS: readonly string[] = [
 /** Cooldown-only kits (no mana bar); cannot buy tear / Muramana / etc. */
 const MANALESS_CHAMPIONS: readonly string[] = [
   "Aatrox",
-  "Bel'Veth",
+  "Briar",
   "Dr. Mundo",
   "Garen",
+  "Gnar",
   "Katarina",
-  "K'Sante",
+  "Kled",
   "Mordekaiser",
-  "Olaf",
-  "RekSai",
+  "Rek'Sai",
   "Renekton",
+  "Rengar",
   "Riven",
   "Rumble",
   "Sett",
   "Shyvana",
   "Tryndamere",
+  "Viego",
   "Vladimir",
+  "Yasuo",
   "Yone",
+  "Zac",
 ];
 
 export const CHAMPION_RESOURCE_TYPE: Record<string, ChampionResourceType> = {
@@ -2849,6 +2852,8 @@ export type SimulationScenario = {
   level?: number;
   avgCurrentHPRatio?: number;
   conditionalLowHpUptime?: number;
+  /** Cut Down vs high bonus-HP targets (default ~0.75 in 1v1 vs bruiser/tank). */
+  conditionalHighHpUptime?: number;
   conditionalGeneralUptime?: number;
   onHitPassiveFallbackSustain?: number;
   onHitActiveFallbackSustain?: number;
@@ -2866,6 +2871,7 @@ type ResolvedSimulationScenario = {
   level: number;
   avgCurrentHPRatio: number;
   conditionalLowHpUptime: number;
+  conditionalHighHpUptime: number;
   conditionalGeneralUptime: number;
   onHitPassiveFallbackSustain: number;
   onHitActiveFallbackSustain: number;
@@ -2879,6 +2885,7 @@ const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
   level: 18,
   avgCurrentHPRatio: 0.6,
   conditionalLowHpUptime: 0.3,
+  conditionalHighHpUptime: 0.75,
   conditionalGeneralUptime: 0.5,
   onHitPassiveFallbackSustain: 0.85,
   onHitActiveFallbackSustain: 0.92,
@@ -2907,6 +2914,10 @@ function resolveSimulationScenario(
       scenario?.conditionalLowHpUptime ??
         DEFAULT_SIM_SCENARIO.conditionalLowHpUptime,
     ),
+    conditionalHighHpUptime: clamp01(
+      scenario?.conditionalHighHpUptime ??
+        DEFAULT_SIM_SCENARIO.conditionalHighHpUptime,
+    ),
     conditionalGeneralUptime: clamp01(
       scenario?.conditionalGeneralUptime ??
         DEFAULT_SIM_SCENARIO.conditionalGeneralUptime,
@@ -2932,6 +2943,106 @@ function resolveSimulationScenario(
       DEFAULT_SIM_SCENARIO.enableChampionRotationProfiles,
     spellOnlyNoAutos: Boolean(scenario?.spellOnlyNoAutos),
   };
+}
+
+/** Matches buildOptimizer `blendedDps` combo weight for headline totalDPS. */
+export const BLENDED_DPS_COMBO_WEIGHT = 0.55;
+
+const PTA_AMP_DURATION_SECONDS = 5;
+
+/** ICD / cadence-based rune proc DPS (not multiplied by attack speed again). */
+export function runeProcSustainedDPS(
+  procDamage: number,
+  effect: RuneEffect,
+  attackRate: number,
+): { dps: number; label: string } {
+  if (!effect.cooldown || effect.cooldown <= 0 || procDamage <= 0) {
+    return { dps: 0, label: "" };
+  }
+  if (effect.trigger === "onThirdHit") {
+    const secondsBetweenProcs = Math.max(
+      effect.cooldown,
+      3 / Math.max(attackRate, 0.1),
+    );
+    const dps = procDamage / secondsBetweenProcs;
+    return {
+      dps,
+      label: `Rune (PTA proc): ${dps.toFixed(1)} DPS (${procDamage.toFixed(0)} / ${secondsBetweenProcs.toFixed(2)}s)`,
+    };
+  }
+  const dps = procDamage / effect.cooldown;
+  return {
+    dps,
+    label: `Rune (ICD ${effect.cooldown}s): ${dps.toFixed(1)} DPS`,
+  };
+}
+
+/** Uptime for conditional rune amps from duel target shape + scenario knobs. */
+export function runeConditionUptime(
+  conditions: RuneCondition[] | undefined,
+  sim: ResolvedSimulationScenario,
+  targetBonusHP: number,
+): number {
+  if (!conditions || conditions.length === 0) {
+    return sim.conditionalGeneralUptime;
+  }
+  let uptime = 1;
+  for (const c of conditions) {
+    if (c.type === "targetHealthPercent" && c.threshold != null) {
+      const op = c.operator ?? "<";
+      const threshold = c.threshold / 100;
+      if (op === "<" || op === "<=") {
+        uptime *=
+          sim.avgCurrentHPRatio <= threshold
+            ? 1
+            : sim.conditionalLowHpUptime;
+      } else if (op === ">" || op === ">=") {
+        uptime *= sim.avgCurrentHPRatio >= threshold ? 1 : 0.15;
+      }
+    } else if (c.type === "targetHealthDifference" && c.threshold != null) {
+      const op = c.operator ?? ">";
+      if (op === ">") {
+        uptime *=
+          targetBonusHP > c.threshold
+            ? sim.conditionalHighHpUptime
+            : 0.2;
+      }
+    }
+  }
+  return clamp01(uptime);
+}
+
+function collectRuneDamageMultipliers(
+  runeEffects: RuneEffect[],
+  sim: ResolvedSimulationScenario,
+  targetBonusHP: number,
+  attackRate: number,
+): { runeMultiplier: number; ptaAmpMultiplier: number } {
+  let runeMultiplier = 1;
+  let ptaAmpMultiplier = 1;
+
+  for (const effect of runeEffects) {
+    if (effect.type === "statBuff" && effect.statMultiplier) {
+      if (effect.trigger === "onThirdHit" && effect.cooldown) {
+        const secondsBetween = Math.max(
+          effect.cooldown,
+          3 / Math.max(attackRate, 0.1),
+        );
+        const ampUptime = Math.min(1, PTA_AMP_DURATION_SECONDS / secondsBetween);
+        ptaAmpMultiplier *= 1 + (effect.statMultiplier / 100) * ampUptime;
+      }
+      continue;
+    }
+    if (!effect.statMultiplier || effect.type !== "conditional") continue;
+    if (effect.cooldown === 12 && effect.statMultiplier === 7) continue;
+
+    const uptime = effect.conditions
+      ? runeConditionUptime(effect.conditions, sim, targetBonusHP)
+      : sim.conditionalGeneralUptime;
+    runeMultiplier *= 1 + (effect.statMultiplier / 100) * uptime;
+  }
+
+  return { runeMultiplier, ptaAmpMultiplier };
 }
 
 function basicAbilityRankAtLevel(level: number): number {
@@ -2984,7 +3095,8 @@ type PenStats = Pick<
   | "lethality"
   | "armorPen"
   | "armorReduction"
-  | "magicPen"
+  | "flatMagicPen"
+  | "percentMagicPen"
   | "magicResistReduction"
 >;
 
@@ -3008,8 +3120,10 @@ export function magicMitigationMultiplier(
   stats: PenStats,
 ): number {
   let mr = targetMR;
+  // Order: flat MR reduction (none in current items) -> % MR reduction -> % magic pen -> flat magic pen
   if (stats.magicResistReduction) mr *= 1 - stats.magicResistReduction / 100;
-  if (stats.magicPen) mr *= 1 - stats.magicPen / 100;
+  if (stats.percentMagicPen) mr *= 1 - stats.percentMagicPen / 100;
+  if (stats.flatMagicPen) mr -= stats.flatMagicPen;
   mr = Math.max(0, mr);
   return 100 / (100 + mr);
 }
@@ -3085,6 +3199,7 @@ function simulateComboWindowDamage(
   magicMit: number,
   burstAfterMit: number,
   autoHitAfterMit: number,
+  onHitPerAutoMit: number,
   attackRate: number,
 ): { total: number; preMarkPhys: number } {
   const readyAt = new Map<Exclude<AbilityType, "passive">, number>();
@@ -3141,7 +3256,9 @@ function simulateComboWindowDamage(
       if (attackRate > 0 && autoWeight > 0) {
         const gap = Math.min(1 / attackRate, window - t);
         t += gap;
-        total += autoHitAfterMit * autoWeight * (gap * attackRate);
+        const autosInGap = gap * attackRate;
+        total +=
+          (autoHitAfterMit + onHitPerAutoMit) * autoWeight * autosInGap;
       } else {
         break;
       }
@@ -3327,7 +3444,8 @@ class Character {
       lethality: 0,
       armorPen: 0,
       armorReduction: 0,
-      magicPen: 0,
+      flatMagicPen: 0,
+      percentMagicPen: 0,
       magicResistReduction: 0,
       healthRegen: this.HP5,
       manaRegen: 0,
@@ -3421,8 +3539,8 @@ class Character {
       baseStats.manaRegen = 0;
     }
 
-    // Calculate final AS with bonus attack speed percentage
-    const finalAS = baseStats.baseAS * (1 + baseStats.attackSpeed / 100);
+    // Calculate final AS with bonus attack speed percentage, capped at 2.5
+    const finalAS = Math.min(2.5, baseStats.baseAS * (1 + baseStats.attackSpeed / 100));
 
     // Calculate final MS with bonus movement speed percentage
     const finalMS = baseStats.ms * (1 + baseStats.msPercent / 100);
@@ -3544,8 +3662,9 @@ class Character {
 
     // 1. Base Auto Attack DPS
     const baseAutoAttackDamage = stats.ad;
+    const effectiveCritChance = Math.min(100, stats.critChance);
     const critMultiplier =
-      1 + (stats.critChance / 100) * ((stats.critDmg - 100) / 100);
+      1 + (effectiveCritChance / 100) * ((stats.critDmg - 100) / 100);
     const autoAttackDamagePerHit = baseAutoAttackDamage * critMultiplier;
     const autoAttackDPS = autoAttackDamagePerHit * attackRate;
     breakdown.push(
@@ -3771,6 +3890,25 @@ class Character {
 
     // Process on-hit rune effects (Press the Attack, Grasp, etc.)
     const runeEffects = this.getAllRuneEffects();
+    let runeTimedPhysDPS = 0;
+    let runeTimedMagicDPS = 0;
+    let runeTimedTrueDPS = 0;
+    const addRuneTimedDPS = (
+      dps: number,
+      dtype: DamageScaling["damageType"] | undefined,
+      label: string,
+    ) => {
+      if (dps <= 0) return;
+      const t = dtype ?? "physical";
+      if (t === "magic") runeTimedMagicDPS += dps;
+      else if (t === "true") runeTimedTrueDPS += dps;
+      else if (t === "adaptive") {
+        if (stats.ad >= stats.ap) runeTimedPhysDPS += dps;
+        else runeTimedMagicDPS += dps;
+      } else runeTimedPhysDPS += dps;
+      breakdown.push(label);
+    };
+
     for (const effect of runeEffects) {
       if (effect.type !== "onHit" || !effect.damage) continue;
 
@@ -3792,12 +3930,12 @@ class Character {
       }
 
       if (effect.cooldown) {
-        const avgDamagePerHit = damage / effect.cooldown;
-        addOnHitTyped(
-          avgDamagePerHit,
-          `Rune (on-hit): +${avgDamagePerHit.toFixed(1)} per hit`,
-          effect.damage?.damageType,
+        const { dps, label } = runeProcSustainedDPS(
+          damage,
+          effect,
+          attackRate,
         );
+        addRuneTimedDPS(dps, effect.damage?.damageType, label);
       }
     }
 
@@ -4110,6 +4248,10 @@ class Character {
       }
     }
 
+    abilityPhysDPS += runeTimedPhysDPS;
+    abilityMagicDPS += runeTimedMagicDPS;
+    abilityTrueDPS += runeTimedTrueDPS;
+
     // Process ability-triggered rune effects (Electrocute, Arcane Comet, etc.)
     for (const effect of runeEffects) {
       if (effect.type === "onAbilityHit" && effect.damage && effect.cooldown) {
@@ -4120,7 +4262,14 @@ class Character {
           targetMaxHP,
         );
         const effectiveCooldown = effect.cooldown * (1 - abilityCDR);
-        const runeDPS = damage / effectiveCooldown;
+        const condUptime = effect.conditions
+          ? runeConditionUptime(
+              effect.conditions,
+              sim,
+              targetBonusHP,
+            )
+          : 1;
+        const runeDPS = (damage / effectiveCooldown) * condUptime;
         const runeType = effect.damage?.damageType ?? "magic";
         if (runeType === "magic") abilityMagicDPS += runeDPS;
         else if (runeType === "true") abilityTrueDPS += runeDPS;
@@ -4136,18 +4285,12 @@ class Character {
       }
     }
 
-    // 5. Apply damage multipliers
-    // Calculate conditional rune multipliers (Coup de Grace, Cut Down, First Strike)
-    let runeMultiplier = 1;
-    for (const effect of runeEffects) {
-      if (effect.statMultiplier && effect.conditions) {
-        const uptime = sim.conditionalLowHpUptime;
-        runeMultiplier *= 1 + (effect.statMultiplier / 100) * uptime;
-      } else if (effect.statMultiplier && effect.type === "conditional") {
-        const uptime = sim.conditionalGeneralUptime;
-        runeMultiplier *= 1 + (effect.statMultiplier / 100) * uptime;
-      }
-    }
+  const { runeMultiplier, ptaAmpMultiplier } = collectRuneDamageMultipliers(
+      runeEffects,
+      sim,
+      targetBonusHP,
+      attackRate,
+    );
 
     // 5. Apply damage multipliers
     const damageMultiplier = 1 + (stats.damageMultiplicative || 0) / 100;
@@ -4168,7 +4311,8 @@ class Character {
       damageMultiplier *
       targetDamageAmp *
       giantSlayerMultiplier *
-      runeMultiplier;
+      runeMultiplier *
+      ptaAmpMultiplier;
 
     // Physical multiplier (for auto attacks and physical on-hit)
     const totalPhysicalMultiplier =
@@ -4198,6 +4342,7 @@ class Character {
       targetDamageAmp *
       giantSlayerMultiplier *
       runeMultiplier *
+      ptaAmpMultiplier *
       (1 +
         ((stats.abilityDamageMultiplicative || 0) + abilityDamageFromAP) / 100);
     const abilityPhysMult =
@@ -4339,6 +4484,10 @@ class Character {
 
     const autoHitAfterMit =
       autoAttackDamagePerHit * totalPhysicalMultiplier * physMit;
+    const onHitPerAutoMit =
+      onHitPhysPerAttack * totalPhysicalMultiplier * physMit +
+      onHitMagicPerAttack * totalMagicMultiplier * magicMit +
+      onHitTruePerAttack * totalMultiplier;
     const comboProfile = CHAMPION_COMBO_PROFILES[this.Name];
     const castOrder = comboProfile?.castOrder ?? DEFAULT_COMBO_CAST_ORDER;
     const comboResult = simulateComboWindowDamage(
@@ -4355,6 +4504,7 @@ class Character {
       magicMit,
       burstAfterMit,
       autoHitAfterMit,
+      onHitPerAutoMit,
       attackRate,
     );
 
@@ -4366,18 +4516,36 @@ class Character {
       }
     }
 
-    const targetTotalHP = targetMaxHP + targetBonusHP;
+    // targetMaxHP already represents the target's full max HP (base + bonus)
     const executeBonus = collectorExecuteBonusDamage(
       comboResult.total,
-      targetTotalHP,
+      targetMaxHP,
       targetMaxHP,
       executeThresholdPercent,
     );
     const comboTotalWithExecute = comboResult.total + executeBonus;
 
-    const sustainedDPS =
+    let sustainedDPS =
       finalAutoAttackDPS + finalOnHitDPS + finalDotDPS + finalAbilityDPS;
-    const comboDPS = comboTotalWithExecute / mit.comboWindowSeconds;
+    let comboDPS = comboTotalWithExecute / mit.comboWindowSeconds;
+
+    const hasFirstStrike = runeEffects.some(
+      (e) =>
+        e.type === "conditional" &&
+        e.statMultiplier === 7 &&
+        e.cooldown === 12,
+    );
+    if (hasFirstStrike) {
+      const fsUptime = sim.conditionalGeneralUptime * (5 / 12);
+      const fsSustainedBonus = sustainedDPS * 0.07 * fsUptime;
+      const fsComboBonus = comboDPS * 0.07 * fsUptime;
+      sustainedDPS += fsSustainedBonus;
+      comboDPS += fsComboBonus;
+      breakdown.push(
+        `First Strike (bonus true, ~${(fsUptime * 100).toFixed(0)}% uptime): +${(fsSustainedBonus + fsComboBonus).toFixed(1)} DPS`,
+      );
+    }
+
     const burstSustainDPS = burstAfterMit / mit.comboWindowSeconds;
 
     breakdown.push(`Sustained (rotation): ${sustainedDPS.toFixed(1)} DPS`);
@@ -4386,7 +4554,7 @@ class Character {
     );
     if (executeBonus > 0) {
       breakdown.push(
-        `Collector execute (Death): +${executeBonus.toFixed(0)} vs ${targetTotalHP.toFixed(0)} HP (≤${executeThresholdPercent}% max HP)`,
+        `Collector execute (Death): +${executeBonus.toFixed(0)} vs ${targetMaxHP.toFixed(0)} HP (≤${executeThresholdPercent}% max HP)`,
       );
     }
     if (burstAfterMit > 0) {
@@ -4395,7 +4563,9 @@ class Character {
       );
     }
 
-    const totalDPS = comboDPS;
+    const totalDPS =
+      sustainedDPS * (1 - BLENDED_DPS_COMBO_WEIGHT) +
+      comboDPS * BLENDED_DPS_COMBO_WEIGHT;
 
     return {
       autoAttackDPS: finalAutoAttackDPS,
@@ -4450,7 +4620,7 @@ const AhriPassive = new Ability(
 const AhriQ = new Ability(
   "Orb of Deception",
   "Q",
-  "Sends orb that deals magic damage outward and true damage on return",
+  "Sends orb outward dealing magic damage",
   {
     cooldown: 7,
     cooldownType: "standard",
@@ -4462,18 +4632,42 @@ const AhriQ = new Ability(
     speed: 1550,
   },
   {
-    // Per pass: 40-140 + 45% AP (magic out, true back)
-    // Total (both passes): 80-280 + 90% AP
-    baseDamage: [80, 130, 180, 230, 280],
-    apRatio: 90,
-    damageType: "magic", // Mixed magic/true but averaged
+    baseDamage: [40, 65, 90, 115, 140],
+    apRatio: 45,
+    damageType: "magic",
   },
   undefined,
   undefined,
   undefined,
   [
-    "Outward: 40/65/90/115/140 (+45% AP) magic",
-    "Return: 40/65/90/115/140 (+45% AP) true damage",
+    "Outward pass: 40/65/90/115/140 (+45% AP) magic damage",
+  ],
+);
+
+const AhriQReturn = new Ability(
+  "Orb of Deception (Return)",
+  "Q",
+  "Return pass of orb dealing true damage",
+  {
+    cooldown: 7,
+    cooldownType: "standard",
+  },
+  {
+    castTime: 0,
+    range: 900,
+    width: 200,
+    speed: 1550,
+  },
+  {
+    baseDamage: [40, 65, 90, 115, 140],
+    apRatio: 45,
+    damageType: "true",
+  },
+  undefined,
+  undefined,
+  undefined,
+  [
+    "Return pass: 40/65/90/115/140 (+45% AP) true damage",
   ],
 );
 
@@ -4587,7 +4781,7 @@ const Ahri = new Character(
   330, // MS
   550, // Attack range
   0.668, // Base AS
-  [AhriPassive, AhriQ, AhriW, AhriE, AhriR],
+  [AhriPassive, AhriQ, AhriQReturn, AhriW, AhriE, AhriR],
   [], // Items (can be added later)
 );
 
@@ -6162,15 +6356,15 @@ const BraumR = new Ability(
 
 const Braum = new Character(
   "Braum",
-  610,
-  8.5,
-  47,
-  32,
-  55,
-  200,
-  335,
-  125,
-  0.644,
+  610, // HP
+  8.5, // HP5
+  35, // AR
+  32, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.644, // Base AS
   [BraumPassive, BraumQ, BraumW, BraumE, BraumR],
   [],
 );
@@ -6886,15 +7080,15 @@ const AmumuR = new Ability(
 
 const Amumu = new Character(
   "Amumu",
-  685,
-  8.5,
-  40,
-  32,
-  53,
-  200,
-  335,
-  125,
-  0.638,
+  685, // HP
+  9, // HP5
+  33, // AR
+  32, // MR
+  57, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.736, // Base AS
   [AmumuPassive, AmumuQ, AmumuW, AmumuE, AmumuR],
   [],
 );
@@ -6972,15 +7166,15 @@ const AniviaR = new Ability(
 
 const Anivia = new Character(
   "Anivia",
-  550,
-  5.5,
-  21,
-  30,
-  51,
-  200,
-  325,
-  600,
-  0.625,
+  550, // HP
+  5.5, // HP5
+  19, // AR
+  30, // MR
+  51, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  600, // Attack range
+  0.658, // Base AS
   [AniviaPassive, AniviaQ, AniviaW, AniviaE, AniviaR],
   [],
 );
@@ -7060,15 +7254,15 @@ const AnnieR = new Ability(
 
 const Annie = new Character(
   "Annie",
-  560,
-  5.5,
-  19,
-  30,
-  50,
-  200,
-  335,
-  625,
-  0.579,
+  560, // HP
+  5.5, // HP5
+  23, // AR
+  30, // MR
+  50, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  625, // Attack range
+  0.61, // Base AS
   [AnniePassive, AnnieQ, AnnieW, AnnieE, AnnieR],
   [],
 );
@@ -7161,15 +7355,15 @@ const ApheliosR = new Ability(
 
 const Aphelios = new Character(
   "Aphelios",
-  600,
-  3.25,
-  26,
-  30,
-  55,
-  200,
-  325,
-  550,
-  0.64,
+  600, // HP
+  3.25, // HP5
+  26, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.665, // Base AS
   [ApheliosPassive, ApheliosQ, ApheliosW, ApheliosE, ApheliosR],
   [],
 );
@@ -9931,15 +10125,15 @@ const GarenR = new Ability(
 
 const Garen = new Character(
   "Garen",
-  690,
-  0,
-  38,
-  69,
-  32,
-  200,
-  340,
-  175,
-  0.625,
+  690, // HP
+  8, // HP5
+  38, // AR
+  32, // MR
+  69, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.625, // Base AS
   [GarenPassive, GarenQ, GarenW, GarenE, GarenR],
   [],
 );
@@ -10097,15 +10291,15 @@ const GnarR = new Ability(
 
 const Gnar = new Character(
   "Gnar",
-  540,
-  0,
-  32,
-  60,
-  30,
-  200,
-  335,
-  175,
-  0.625,
+  540, // HP
+  4.5, // HP5
+  32, // AR
+  30, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  175, // Attack range
+  0.625, // Base AS
   [GnarPassive, GnarQ1, GnarW1, GnarE1, GnarR],
   [],
 );
@@ -10261,15 +10455,15 @@ const GragasR = new Ability(
 
 const Gragas = new Character(
   "Gragas",
-  640,
-  400,
-  38,
-  64,
-  32,
-  200,
-  330,
-  125,
-  0.675,
+  640, // HP
+  5.5, // HP5
+  38, // AR
+  32, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  125, // Attack range
+  0.675, // Base AS
   [GragasPassive, GragasQ, GragasW, GragasE, GragasR],
   [],
 );
@@ -10424,15 +10618,15 @@ const GravesR = new Ability(
 
 const Graves = new Character(
   "Graves",
-  625,
-  325,
-  33,
-  68,
-  30,
-  200,
-  340,
-  425,
-  0.475,
+  625, // HP
+  8, // HP5
+  33, // AR
+  30, // MR
+  66, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  425, // Attack range
+  0.475, // Base AS
   [GravesPassive, GravesQ, GravesW, GravesE, GravesR],
   [],
 );
@@ -10604,15 +10798,15 @@ const GwenR = new Ability(
 
 const Gwen = new Character(
   "Gwen",
-  620,
-  330,
-  39,
-  63,
-  32,
-  200,
-  340,
-  150,
-  0.69,
+  620, // HP
+  9, // HP5
+  39, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  150, // Attack range
+  0.69, // Base AS
   [GwenPassive, GwenQ, GwenW, GwenE, GwenR],
   [],
 );
@@ -10764,15 +10958,15 @@ const HecarimR = new Ability(
 
 const Hecarim = new Character(
   "Hecarim",
-  625,
-  280,
-  32,
-  66,
-  32,
-  200,
-  345,
-  175,
-  0.67,
+  625, // HP
+  7, // HP5
+  32, // AR
+  32, // MR
+  66, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.67, // Base AS
   [HecarimPassive, HecarimQ, HecarimW, HecarimE, HecarimR],
   [],
 );
@@ -10912,15 +11106,15 @@ const HeimerdingerR = new Ability(
 
 const Heimerdinger = new Character(
   "Heimerdinger",
-  558,
-  385,
-  19,
-  56,
-  30,
-  200,
-  340,
-  550,
-  0.658,
+  558, // HP
+  7, // HP5
+  19, // AR
+  30, // MR
+  56, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  550, // Attack range
+  0.658, // Base AS
   [
     HeimerdingerPassive,
     HeimerdingerQ,
@@ -11085,15 +11279,15 @@ const HweiR = new Ability(
 
 const Hwei = new Character(
   "Hwei",
-  580,
-  480,
-  21,
-  54,
-  30,
-  200,
-  330,
-  550,
-  0.69,
+  580, // HP
+  5.5, // HP5
+  21, // AR
+  30, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.69, // Base AS
   [HweiPassive, HweiQ, HweiW, HweiE, HweiR],
   [],
 );
@@ -11240,15 +11434,15 @@ const IllaoiR = new Ability(
 
 const Illaoi = new Character(
   "Illaoi",
-  656,
-  350,
-  35,
-  65,
-  32,
-  200,
-  350,
-  125,
-  0.625,
+  656, // HP
+  9.5, // HP5
+  35, // AR
+  32, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  125, // Attack range
+  0.625, // Base AS
   [IllaoiPassive, IllaoiQ, IllaoiW, IllaoiE, IllaoiR],
   [],
 );
@@ -11346,15 +11540,15 @@ const IreliaR = new Ability(
 
 const Irelia = new Character(
   "Irelia",
-  630,
-  6,
-  36,
-  30,
-  65,
-  200,
-  335,
-  200,
-  0.656,
+  630, // HP
+  3.5, // HP5
+  36, // AR
+  30, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  200, // Attack range
+  0.656, // Base AS
   [IreliaPassive, IreliaQ, IreliaW, IreliaE, IreliaR],
   [],
 );
@@ -11441,15 +11635,15 @@ const IvernR = new Ability(
 
 const Ivern = new Character(
   "Ivern",
-  655,
-  7,
-  34,
-  30,
-  61,
-  200,
-  330,
-  475,
-  0.644,
+  630, // HP
+  7, // HP5
+  27, // AR
+  30, // MR
+  50, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  475, // Attack range
+  0.644, // Base AS
   [IvernPassive, IvernQ, IvernW, IvernE, IvernR],
   [],
 );
@@ -11606,15 +11800,15 @@ const JannaR = new Ability(
 
 const Janna = new Character(
   "Janna",
-  570,
-  350,
-  28,
-  46,
-  30,
-  200,
-  320,
-  550,
-  0.63,
+  570, // HP
+  5.5, // HP5
+  28, // AR
+  30, // MR
+  47, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.625, // Base AS
   [JannaPassive, JannaQ, JannaW, JannaE, JannaR],
   [],
 );
@@ -11763,15 +11957,15 @@ const JarvanIVR = new Ability(
 
 const JarvanIV = new Character(
   "Jarvan IV",
-  640,
-  350,
-  36,
-  64,
-  32,
-  200,
-  340,
-  175,
-  0.66,
+  640, // HP
+  8, // HP5
+  36, // AR
+  32, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.658, // Base AS
   [JarvanIVPassive, JarvanIVQ, JarvanIVW, JarvanIVE, JarvanIVR],
   [],
 );
@@ -11917,15 +12111,15 @@ const JaxR = new Ability(
 
 const Jax = new Character(
   "Jax",
-  665,
-  350,
-  36,
-  68,
-  32,
-  200,
-  325,
-  125,
-  0.64,
+  650, // HP
+  8.5, // HP5
+  36, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  125, // Attack range
+  0.638, // Base AS
   [JaxPassive, JaxQ, JaxW, JaxE, JaxR],
   [],
 );
@@ -12081,15 +12275,15 @@ const JayceR = new Ability(
 
 const Jayce = new Character(
   "Jayce",
-  520,
-  350,
-  22,
-  54,
-  28,
-  200,
-  330,
-  500,
-  0.658,
+  590, // HP
+  6, // HP5
+  22, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.658, // Base AS
   [JaycePassive, JayceQ, JayceW, JayceE, JayceR],
   [],
 );
@@ -12255,15 +12449,15 @@ const JhinR = new Ability(
 
 const Jhin = new Character(
   "Jhin",
-  655,
-  350,
-  29,
-  61,
-  30,
-  200,
-  330,
-  550,
-  0.625,
+  655, // HP
+  3.75, // HP5
+  24, // AR
+  30, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.625, // Base AS
   [JhinPassive, JhinQ, JhinW, JhinE, JhinR],
   [],
 );
@@ -12418,15 +12612,15 @@ const JinxR = new Ability(
 
 const Jinx = new Character(
   "Jinx",
-  560,
-  350,
-  26,
-  57,
-  30,
-  200,
-  325,
-  525,
-  0.625,
+  630, // HP
+  3.75, // HP5
+  26, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  525, // Attack range
+  0.625, // Base AS
   [JinxPassive, JinxQ, JinxW, JinxE, JinxR],
   [],
 );
@@ -12581,15 +12775,15 @@ const KSanteR = new Ability(
 
 const KSante = new Character(
   "K'Sante",
-  570,
-  350,
-  36,
-  64,
-  32,
-  200,
-  330,
-  150,
-  0.688,
+  625, // HP
+  9.5, // HP5
+  36, // AR
+  30, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  150, // Attack range
+  0.688, // Base AS
   [KSantePassive, KSanteQ, KSanteW, KSanteE, KSanteR],
   [],
 );
@@ -12740,15 +12934,15 @@ const KaiSaR = new Ability(
 
 const KaiSa = new Character(
   "Kai'Sa",
-  640,
-  350,
-  25,
-  65,
-  30,
-  200,
-  335,
-  525,
-  0.64,
+  640, // HP
+  4, // HP5
+  25, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  525, // Attack range
+  0.644, // Base AS
   [KaiSaPassive, KaiSaQ, KaiSaW, KaiSaE, KaiSaR],
   [],
 );
@@ -12900,15 +13094,15 @@ const KalistaR = new Ability(
 
 const Kalista = new Character(
   "Kalista",
-  574,
-  350,
-  21,
-  66,
-  30,
-  200,
-  325,
-  525,
-  0.69,
+  560, // HP
+  4, // HP5
+  24, // AR
+  30, // MR
+  57, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.694, // Base AS
   [KalistaPassive, KalistaQ, KalistaW, KalistaE, KalistaR],
   [],
 );
@@ -13052,15 +13246,15 @@ const KarmaR = new Ability(
 
 const Karma = new Character(
   "Karma",
-  604,
-  350,
-  26,
-  51,
-  30,
-  200,
-  335,
-  525,
-  0.625,
+  630, // HP
+  5.5, // HP5
+  28, // AR
+  30, // MR
+  49, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  525, // Attack range
+  0.625, // Base AS
   [KarmaPassive, KarmaQ, KarmaW, KarmaE, KarmaR],
   [],
 );
@@ -13203,15 +13397,15 @@ const KarthusR = new Ability(
 
 const Karthus = new Character(
   "Karthus",
-  620,
-  350,
-  18,
-  46,
-  30,
-  200,
-  335,
-  450,
-  0.625,
+  620, // HP
+  6.5, // HP5
+  21, // AR
+  30, // MR
+  46, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  450, // Attack range
+  0.625, // Base AS
   [KarthusPassive, KarthusQ, KarthusW, KarthusE, KarthusR],
   [],
 );
@@ -13353,15 +13547,15 @@ const KassadinR = new Ability(
 
 const Kassadin = new Character(
   "Kassadin",
-  646,
-  350,
-  19,
-  59,
-  30,
-  200,
-  335,
-  150,
-  0.64,
+  646, // HP
+  6, // HP5
+  21, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  150, // Attack range
+  0.64, // Base AS
   [KassadinPassive, KassadinQ, KassadinW, KassadinE, KassadinR],
   [],
 );
@@ -13497,15 +13691,15 @@ const KatarinaR = new Ability(
 
 const Katarina = new Character(
   "Katarina",
-  672,
-  350,
-  28,
-  58,
-  32,
-  200,
-  340,
-  125,
-  0.658,
+  672, // HP
+  7.5, // HP5
+  32, // AR
+  32, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.658, // Base AS
   [KatarinaPassive, KatarinaQ, KatarinaW, KatarinaE, KatarinaR],
   [],
 );
@@ -13653,15 +13847,15 @@ const KayleR = new Ability(
 
 const Kayle = new Character(
   "Kayle",
-  600,
-  350,
-  26,
-  52,
-  26,
-  200,
-  335,
-  175,
-  0.667,
+  670, // HP
+  5, // HP5
+  26, // AR
+  22, // MR
+  50, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  175, // Attack range
+  0.625, // Base AS
   [KaylePassive, KayleQ, KayleW, KayleE, KayleR],
   [],
 );
@@ -13813,15 +14007,15 @@ const KaynR = new Ability(
 
 const Kayn = new Character(
   "Kayn",
-  655,
-  350,
-  38,
-  68,
-  32,
-  200,
-  340,
-  175,
-  0.67,
+  655, // HP
+  8, // HP5
+  38, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.669, // Base AS
   [KaynPassive, KaynQ, KaynW, KaynE, KaynR],
   [],
 );
@@ -13968,15 +14162,15 @@ const KennenR = new Ability(
 
 const Kennen = new Character(
   "Kennen",
-  541,
-  350,
-  29,
-  48,
-  30,
-  200,
-  335,
-  550,
-  0.69,
+  580, // HP
+  5.5, // HP5
+  29, // AR
+  30, // MR
+  48, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  550, // Attack range
+  0.625, // Base AS
   [KennenPassive, KennenQ, KennenW, KennenE, KennenR],
   [],
 );
@@ -14124,15 +14318,15 @@ const KhaZixR = new Ability(
 
 const KhaZix = new Character(
   "Kha'Zix",
-  593,
-  350,
-  36,
-  63,
-  32,
-  200,
-  350,
-  175,
-  0.67,
+  643, // HP
+  7.5, // HP5
+  32, // AR
+  32, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.668, // Base AS
   [KhaZixPassive, KhaZixQ, KhaZixW, KhaZixE, KhaZixR],
   [],
 );
@@ -14289,15 +14483,15 @@ const KindredR = new Ability(
 
 const Kindred = new Character(
   "Kindred",
-  580,
-  350,
-  26,
-  65,
-  30,
-  200,
-  325,
-  500,
-  0.625,
+  595, // HP
+  7, // HP5
+  29, // AR
+  30, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  500, // Attack range
+  0.625, // Base AS
   [KindredPassive, KindredQ, KindredW, KindredE, KindredR],
   [],
 );
@@ -14457,15 +14651,15 @@ const KledR = new Ability(
 
 const Kled = new Character(
   "Kled",
-  400,
-  350,
-  35,
-  65,
-  32,
-  200,
-  345,
-  125,
-  0.625,
+  410, // HP
+  6, // HP5
+  35, // AR
+  28, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.625, // Base AS
   [KledPassive, KledQ, KledW, KledE, KledR],
   [],
 );
@@ -14614,15 +14808,15 @@ const KogMawR = new Ability(
 
 const KogMaw = new Character(
   "Kog'Maw",
-  635,
-  350,
-  19,
-  61,
-  30,
-  200,
-  330,
-  500,
-  0.665,
+  635, // HP
+  3.75, // HP5
+  24, // AR
+  30, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  500, // Attack range
+  0.665, // Base AS
   [KogMawPassive, KogMawQ, KogMawW, KogMawE, KogMawR],
   [],
 );
@@ -14765,15 +14959,15 @@ const LeBlancR = new Ability(
 
 const LeBlanc = new Character(
   "LeBlanc",
-  598,
-  350,
-  22,
-  55,
-  30,
-  200,
-  340,
-  525,
-  0.658,
+  598, // HP
+  7.5, // HP5
+  22, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  525, // Attack range
+  0.658, // Base AS
   [LeBlancPassive, LeBlancQ, LeBlancW, LeBlancE, LeBlancR],
   [],
 );
@@ -14920,15 +15114,15 @@ const LeeSinR = new Ability(
 
 const LeeSin = new Character(
   "Lee Sin",
-  645,
-  350,
-  36,
-  69,
-  32,
-  200,
-  345,
-  125,
-  0.651,
+  645, // HP
+  7.5, // HP5
+  36, // AR
+  32, // MR
+  66, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.651, // Base AS
   [LeeSinPassive, LeeSinQ, LeeSinW, LeeSinE, LeeSinR],
   [],
 );
@@ -15091,15 +15285,15 @@ const LeonaR = new Ability(
 
 const Leona = new Character(
   "Leona",
-  646,
-  350,
-  43,
-  60,
-  32,
-  200,
-  335,
-  125,
-  0.625,
+  646, // HP
+  8.5, // HP5
+  43, // AR
+  32, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.625, // Base AS
   [LeonaPassive, LeonaQ, LeonaW, LeonaE, LeonaR],
   [],
 );
@@ -15264,15 +15458,15 @@ const LilliaR = new Ability(
 
 const Lillia = new Character(
   "Lillia",
-  605,
-  350,
-  22,
-  61,
-  32,
-  200,
-  330,
-  325,
-  0.625,
+  605, // HP
+  2.5, // HP5
+  22, // AR
+  32, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  325, // Attack range
+  0.625, // Base AS
   [LilliaPassive, LilliaQ, LilliaW, LilliaE, LilliaR],
   [],
 );
@@ -15434,15 +15628,15 @@ const LissandraR = new Ability(
 
 const Lissandra = new Character(
   "Lissandra",
-  620,
-  350,
-  22,
-  55,
-  30,
-  200,
-  325,
-  550,
-  0.656,
+  620, // HP
+  7, // HP5
+  22, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.656, // Base AS
   [LissandraPassive, LissandraQ, LissandraW, LissandraE, LissandraR],
   [],
 );
@@ -15609,15 +15803,15 @@ const LucianR = new Ability(
 
 const Lucian = new Character(
   "Lucian",
-  641,
-  350,
-  28,
-  60,
-  30,
-  200,
-  335,
-  500,
-  0.638,
+  641, // HP
+  3.75, // HP5
+  28, // AR
+  30, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  500, // Attack range
+  0.638, // Base AS
   [LucianPassive, LucianVigilance, LucianQ, LucianW, LucianE, LucianR],
   [],
 );
@@ -15779,15 +15973,15 @@ const LuluR = new Ability(
 
 const Lulu = new Character(
   "Lulu",
-  595,
-  350,
-  26,
-  47,
-  30,
-  200,
-  330,
-  550,
-  0.625,
+  565, // HP
+  6, // HP5
+  26, // AR
+  30, // MR
+  47, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.625, // Base AS
   [LuluPassive, LuluQ, LuluW, LuluE, LuluR],
   [],
 );
@@ -15943,15 +16137,15 @@ const LuxR = new Ability(
 
 const Lux = new Character(
   "Lux",
-  580,
-  350,
-  21,
-  54,
-  30,
-  200,
-  330,
-  550,
-  0.669,
+  580, // HP
+  5.5, // HP5
+  21, // AR
+  30, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.669, // Base AS
   [LuxPassive, LuxQ, LuxW, LuxE, LuxR],
   [],
 );
@@ -16106,15 +16300,15 @@ const MalphiteR = new Ability(
 
 const Malphite = new Character(
   "Malphite",
-  665,
-  350,
-  37,
-  62,
-  28,
-  200,
-  335,
-  125,
-  0.736,
+  665, // HP
+  7, // HP5
+  40, // AR
+  28, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.736, // Base AS
   [MalphitePassive, MalphiteQ, MalphiteW, MalphiteE, MalphiteR],
   [],
 );
@@ -16264,15 +16458,15 @@ const MalzaharR = new Ability(
 
 const Malzahar = new Character(
   "Malzahar",
-  580,
-  350,
-  18,
-  55,
-  30,
-  200,
-  335,
-  500,
-  0.625,
+  580, // HP
+  6, // HP5
+  18, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  500, // Attack range
+  0.625, // Base AS
   [MalzaharPassive, MalzaharQ, MalzaharW, MalzaharE, MalzaharR],
   [],
 );
@@ -16433,15 +16627,15 @@ const MaokaiR = new Ability(
 
 const Maokai = new Character(
   "Maokai",
-  665,
-  350,
-  35,
-  64,
-  32,
-  200,
-  335,
-  125,
-  0.8,
+  665, // HP
+  5, // HP5
+  35, // AR
+  32, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.8, // Base AS
   [MaokaiPassive, MaokaiQ, MaokaiW, MaokaiE, MaokaiR],
   [],
 );
@@ -16580,15 +16774,15 @@ const MasterYiR = new Ability(
 
 const MasterYi = new Character(
   "Master Yi",
-  669,
-  350,
-  33,
-  65,
-  32,
-  200,
-  355,
-  175,
-  0.679,
+  640, // HP
+  7.5, // HP5
+  33, // AR
+  32, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  355, // MS
+  175, // Attack range
+  0.679, // Base AS
   [MasterYiPassive, MasterYiQ, MasterYiW, MasterYiE, MasterYiR],
   [],
 );
@@ -16737,15 +16931,15 @@ const MelR = new Ability(
 
 const Mel = new Character(
   "Mel",
-  590,
-  350,
-  21,
-  53,
-  30,
-  200,
-  330,
-  550,
-  0.668,
+  630, // HP
+  6, // HP5
+  21, // AR
+  30, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.625, // Base AS
   [MelPassive, MelQ, MelW, MelE, MelR],
   [],
 );
@@ -16893,15 +17087,15 @@ const MilioR = new Ability(
 
 const Milio = new Character(
   "Milio",
-  560,
-  350,
-  26,
-  48,
-  30,
-  200,
-  330,
-  525,
-  0.625,
+  560, // HP
+  5, // HP5
+  26, // AR
+  30, // MR
+  48, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.625, // Base AS
   [MilioPassive, MilioQ, MilioW, MilioE, MilioR],
   [],
 );
@@ -17054,15 +17248,15 @@ const MissFortuneR = new Ability(
 
 const MissFortune = new Character(
   "Miss Fortune",
-  640,
-  350,
-  28,
-  53,
-  30,
-  200,
-  325,
-  550,
-  0.656,
+  625, // HP
+  3.75, // HP5
+  25, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.656, // Base AS
   [MissFortunePassive, MissFortuneQ, MissFortuneW, MissFortuneE, MissFortuneR],
   [],
 );
@@ -17216,15 +17410,15 @@ const MordekaiserR = new Ability(
 
 const Mordekaiser = new Character(
   "Mordekaiser",
-  645,
-  350,
-  37,
-  61,
-  32,
-  200,
-  335,
-  175,
-  0.625,
+  645, // HP
+  5, // HP5
+  37, // AR
+  32, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  175, // Attack range
+  0.625, // Base AS
   [MordekaiserPassive, MordekaiserQ, MordekaiserW, MordekaiserE, MordekaiserR],
   [],
 );
@@ -17373,15 +17567,15 @@ const MorganaR = new Ability(
 
 const Morgana = new Character(
   "Morgana",
-  630,
-  350,
-  25,
-  56,
-  30,
-  200,
-  330,
-  450,
-  0.625,
+  630, // HP
+  5.5, // HP5
+  25, // AR
+  30, // MR
+  56, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  450, // Attack range
+  0.625, // Base AS
   [MorganaPassive, MorganaQ, MorganaW, MorganaE, MorganaR],
   [],
 );
@@ -17536,15 +17730,15 @@ const NaafiriR = new Ability(
 
 const Naafiri = new Character(
   "Naafiri",
-  610,
-  350,
-  32,
-  57,
-  32,
-  200,
-  340,
-  125,
-  0.688,
+  610, // HP
+  6.25, // HP5
+  28, // AR
+  32, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  125, // Attack range
+  0.663, // Base AS
   [NaafiriPassive, NaafiriQ, NaafiriW, NaafiriE, NaafiriR],
   [],
 );
@@ -17704,15 +17898,15 @@ const NamiR = new Ability(
 
 const Nami = new Character(
   "Nami",
-  560,
-  350,
-  29,
-  52,
-  30,
-  200,
-  335,
-  550,
-  0.644,
+  560, // HP
+  5.5, // HP5
+  29, // AR
+  30, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  550, // Attack range
+  0.644, // Base AS
   [NamiPassive, NamiQ, NamiW, NamiE, NamiR],
   [],
 );
@@ -17859,15 +18053,15 @@ const NasusR = new Ability(
 
 const Nasus = new Character(
   "Nasus",
-  631,
-  350,
-  36,
-  67,
-  32,
-  200,
-  350,
-  125,
-  0.638,
+  650, // HP
+  9, // HP5
+  34, // AR
+  32, // MR
+  67, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  125, // Attack range
+  0.638, // Base AS
   [NasusPassive, NasusQ, NasusW, NasusE, NasusR],
   [],
 );
@@ -18029,15 +18223,15 @@ const NautilusR = new Ability(
 
 const Nautilus = new Character(
   "Nautilus",
-  646,
-  350,
-  39,
-  61,
-  32,
-  200,
-  325,
-  175,
-  0.706,
+  646, // HP
+  8.5, // HP5
+  39, // AR
+  32, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  175, // Attack range
+  0.706, // Base AS
   [NautilusPassive, NautilusQ, NautilusW, NautilusE, NautilusR],
   [],
 );
@@ -18189,15 +18383,15 @@ const NeekoR = new Ability(
 
 const Neeko = new Character(
   "Neeko",
-  610,
-  350,
-  21,
-  48,
-  30,
-  200,
-  340,
-  550,
-  0.645,
+  610, // HP
+  7.5, // HP5
+  21, // AR
+  30, // MR
+  48, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  550, // Attack range
+  0.625, // Base AS
   [NeekoPassive, NeekoQ, NeekoW, NeekoE, NeekoR],
   [],
 );
@@ -18350,15 +18544,15 @@ const NidaleeR = new Ability(
 
 const Nidalee = new Character(
   "Nidalee",
-  610,
-  350,
-  28,
-  58,
-  30,
-  200,
-  335,
-  525,
-  0.638,
+  610, // HP
+  6, // HP5
+  32, // AR
+  30, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  525, // Attack range
+  0.638, // Base AS
   [NidaleePassive, NidaleeQ, NidaleeW, NidaleeE, NidaleeR],
   [],
 );
@@ -18509,15 +18703,15 @@ const NilahR = new Ability(
 
 const Nilah = new Character(
   "Nilah",
-  570,
-  350,
-  27,
-  58,
-  32,
-  200,
-  340,
-  225,
-  0.697,
+  570, // HP
+  6, // HP5
+  27, // AR
+  32, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  225, // Attack range
+  0.697, // Base AS
   [NilahPassive, NilahQ, NilahW, NilahE, NilahR],
   [],
 );
@@ -18674,15 +18868,15 @@ const NocturneR = new Ability(
 
 const Nocturne = new Character(
   "Nocturne",
-  655,
-  350,
-  38,
-  65,
-  32,
-  200,
-  345,
-  125,
-  0.668,
+  655, // HP
+  7, // HP5
+  38, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.721, // Base AS
   [NocturnePassive, NocturneQ, NocturneW, NocturneE, NocturneR],
   [],
 );
@@ -18851,15 +19045,15 @@ const NunuR = new Ability(
 
 const Nunu = new Character(
   "Nunu & Willump",
-  610,
-  350,
-  29,
-  57,
-  32,
-  200,
-  345,
-  125,
-  0.625,
+  610, // HP
+  5, // HP5
+  29, // AR
+  32, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.625, // Base AS
   [NunuPassive, NunuQ, NunuW, NunuE, NunuR],
   [],
 );
@@ -19006,15 +19200,15 @@ const OlafR = new Ability(
 
 const Olaf = new Character(
   "Olaf",
-  645,
-  350,
-  36,
-  68,
-  32,
-  200,
-  350,
-  125,
-  0.694,
+  645, // HP
+  6.5, // HP5
+  35, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  125, // Attack range
+  0.72, // Base AS
   [OlafPassive, OlafQ, OlafW, OlafE, OlafR],
   [],
 );
@@ -19175,15 +19369,15 @@ const OriannaR = new Ability(
 
 const Orianna = new Character(
   "Orianna",
-  600,
-  350,
-  17,
-  40,
-  26,
-  200,
-  325,
-  525,
-  0.658,
+  585, // HP
+  7, // HP5
+  20, // AR
+  26, // MR
+  44, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  525, // Attack range
+  0.658, // Base AS
   [OriannaPassive, OriannaQ, OriannaW, OriannaE, OriannaR],
   [],
 );
@@ -19343,15 +19537,15 @@ const OrnnR = new Ability(
 
 const Ornn = new Character(
   "Ornn",
-  660,
-  350,
-  36,
-  69,
-  32,
-  200,
-  335,
-  175,
-  0.625,
+  660, // HP
+  9, // HP5
+  33, // AR
+  32, // MR
+  69, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  175, // Attack range
+  0.625, // Base AS
   [OrnnPassive, OrnnQ, OrnnW, OrnnE, OrnnR],
   [],
 );
@@ -19505,15 +19699,15 @@ const PantheonR = new Ability(
 
 const Pantheon = new Character(
   "Pantheon",
-  650,
-  350,
-  40,
-  64,
-  28,
-  200,
-  345,
-  175,
-  0.644,
+  650, // HP
+  6, // HP5
+  40, // AR
+  28, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.658, // Base AS
   [PantheonPassive, PantheonQ, PantheonW, PantheonE, PantheonR],
   [],
 );
@@ -19683,15 +19877,15 @@ const PoppyR = new Ability(
 
 const Poppy = new Character(
   "Poppy",
-  610,
-  350,
-  38,
-  64,
-  32,
-  200,
-  345,
-  125,
-  0.625,
+  610, // HP
+  8, // HP5
+  35, // AR
+  32, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.658, // Base AS
   [PoppyPassive, PoppyQ, PoppyW, PoppyE, PoppyR],
   [],
 );
@@ -19841,15 +20035,15 @@ const PykeR = new Ability(
 
 const Pyke = new Character(
   "Pyke",
-  600,
-  350,
-  45,
-  62,
-  32,
-  200,
-  330,
-  150,
-  0.667,
+  670, // HP
+  7, // HP5
+  37, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  150, // Attack range
+  0.667, // Base AS
   [PykePassive, PykeQ, PykeW, PykeE, PykeR],
   [],
 );
@@ -19958,15 +20152,15 @@ const QiyanaR = new Ability(
 
 const Qiyana = new Character(
   "Qiyana",
-  590,
-  350,
-  28,
-  64,
-  32,
-  200,
-  335,
-  150,
-  0.688,
+  590, // HP
+  8, // HP5
+  31, // AR
+  32, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  150, // Attack range
+  0.688, // Base AS
   [QiyanaPassive, QiyanaQ, QiyanaW, QiyanaE, QiyanaR],
   [],
 );
@@ -20066,15 +20260,15 @@ const QuinnR = new Ability(
 
 const Quinn = new Character(
   "Quinn",
-  565,
-  350,
-  28,
-  59,
-  30,
-  200,
-  335,
-  525,
-  0.668,
+  565, // HP
+  5.5, // HP5
+  28, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.668, // Base AS
   [QuinnPassive, QuinnQ, QuinnW, QuinnE, QuinnR],
   [],
 );
@@ -20176,15 +20370,15 @@ const RakanR = new Ability(
 
 const Rakan = new Character(
   "Rakan",
-  590,
-  350,
-  32,
-  62,
-  32,
-  200,
-  335,
-  300,
-  0.635,
+  610, // HP
+  5, // HP5
+  30, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  300, // Attack range
+  0.635, // Base AS
   [RakanPassive, RakanQ, RakanW, RakanE, RakanR],
   [],
 );
@@ -20291,15 +20485,15 @@ const RammusR = new Ability(
 
 const Rammus = new Character(
   "Rammus",
-  645,
-  450,
-  36,
-  55,
-  32,
-  200,
-  335,
-  125,
-  0.656,
+  645, // HP
+  8, // HP5
+  35, // AR
+  32, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.7, // Base AS
   [RammusPassive, RammusQ, RammusW, RammusE, RammusR],
   [],
 );
@@ -20404,15 +20598,15 @@ const RekSaiR = new Ability(
 
 const RekSai = new Character(
   "Rek'Sai",
-  600,
-  450,
-  36,
-  64,
-  32,
-  200,
-  335,
-  175,
-  0.667,
+  600, // HP
+  2.5, // HP5
+  35, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.667, // Base AS
   [RekSaiPassive, RekSaiQ, RekSaiW, RekSaiE, RekSaiR],
   [],
 );
@@ -20531,15 +20725,15 @@ const RellR = new Ability(
 
 const Rell = new Character(
   "Rell",
-  610,
-  450,
-  39,
-  55,
-  32,
-  200,
-  335,
-  175,
-  0.55,
+  620, // HP
+  7.5, // HP5
+  30, // AR
+  28, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  315, // MS
+  175, // Attack range
+  0.625, // Base AS
   [RellPassive, RellQ, RellW, RellE, RellR],
   [],
 );
@@ -20647,15 +20841,15 @@ const RenataR = new Ability(
 
 const Renata = new Character(
   "Renata Glasc",
-  545,
-  300,
-  27,
-  49,
-  30,
-  200,
-  330,
-  550,
-  0.625,
+  545, // HP
+  5.5, // HP5
+  27, // AR
+  30, // MR
+  49, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.625, // Base AS
   [RenataPassive, RenataQ, RenataW, RenataE, RenataR],
   [],
 );
@@ -20762,15 +20956,15 @@ const RenektonR = new Ability(
 
 const Renekton = new Character(
   "Renekton",
-  660,
-  500,
-  35,
-  69,
-  32,
-  200,
-  345,
-  125,
-  0.665,
+  660, // HP
+  8, // HP5
+  35, // AR
+  28, // MR
+  69, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.665, // Base AS
   [RenektonPassive, RenektonQ, RenektonW, RenektonE, RenektonR],
   [],
 );
@@ -20886,15 +21080,15 @@ const RengarR = new Ability(
 
 const Rengar = new Character(
   "Rengar",
-  620,
-  450,
-  34,
-  68,
-  32,
-  200,
-  345,
-  125,
-  0.667,
+  590, // HP
+  6, // HP5
+  34, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.667, // Base AS
   [RengarPassive, RengarQ, RengarW, RengarE, RengarR],
   [],
 );
@@ -21004,15 +21198,15 @@ const RivenR = new Ability(
 
 const Riven = new Character(
   "Riven",
-  630,
-  450,
-  33,
-  64,
-  32,
-  200,
-  340,
-  125,
-  0.625,
+  630, // HP
+  8.5, // HP5
+  33, // AR
+  32, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  125, // Attack range
+  0.625, // Base AS
   [RivenPassive, RivenQ, RivenW, RivenE, RivenR],
   [],
 );
@@ -21133,15 +21327,15 @@ const RumbleR = new Ability(
 
 const Rumble = new Character(
   "Rumble",
-  659,
-  450,
-  31,
-  61,
-  32,
-  200,
-  345,
-  125,
-  0.644,
+  640, // HP
+  7, // HP5
+  36, // AR
+  28, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.644, // Base AS
   [RumblePassive, RumbleQ, RumbleW, RumbleE, RumbleR],
   [],
 );
@@ -21244,15 +21438,15 @@ const RyzeR = new Ability(
 
 const Ryze = new Character(
   "Ryze",
-  645,
-  350,
-  22,
-  58,
-  36,
-  200,
-  340,
-  550,
-  0.658,
+  645, // HP
+  8, // HP5
+  22, // AR
+  32, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  550, // Attack range
+  0.658, // Base AS
   [RyzePassive, RyzeQ, RyzeW, RyzeE, RyzeR],
   [],
 );
@@ -21353,15 +21547,15 @@ const SamiraR = new Ability(
 
 const Samira = new Character(
   "Samira",
-  600,
-  350,
-  26,
-  59,
-  30,
-  200,
-  335,
-  500,
-  0.658,
+  630, // HP
+  3.25, // HP5
+  26, // AR
+  30, // MR
+  57, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  500, // Attack range
+  0.658, // Base AS
   [SamiraPassive, SamiraQ, SamiraW, SamiraE, SamiraR],
   [],
 );
@@ -21469,15 +21663,15 @@ const SejuaniR = new Ability(
 
 const Sejuani = new Character(
   "Sejuani",
-  625,
-  450,
-  34,
-  66,
-  32,
-  200,
-  330,
-  150,
-  0.688,
+  630, // HP
+  8.5, // HP5
+  34, // AR
+  32, // MR
+  66, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  150, // Attack range
+  0.688, // Base AS
   [SejuaniPassive, SejuaniQ, SejuaniW, SejuaniE, SejuaniR],
   [],
 );
@@ -21578,15 +21772,15 @@ const SennaR = new Ability(
 
 const Senna = new Character(
   "Senna",
-  530,
-  350,
-  28,
-  50,
-  30,
-  200,
-  330,
-  600,
-  0.625,
+  530, // HP
+  3.5, // HP5
+  25, // AR
+  30, // MR
+  50, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  600, // Attack range
+  0.625, // Base AS
   [SennaPassive, SennaQ, SennaW, SennaE, SennaR],
   [],
 );
@@ -21689,15 +21883,15 @@ const SeraphineR = new Ability(
 
 const Seraphine = new Character(
   "Seraphine",
-  550,
-  350,
-  19,
-  52,
-  30,
-  200,
-  325,
-  525,
-  0.669,
+  570, // HP
+  6.5, // HP5
+  26, // AR
+  30, // MR
+  50, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.669, // Base AS
   [SeraphinePassive, SeraphineQ, SeraphineW, SeraphineE, SeraphineR],
   [],
 );
@@ -21813,15 +22007,15 @@ const SettR = new Ability(
 
 const Sett = new Character(
   "Sett",
-  670,
-  550,
-  33,
-  60,
-  32,
-  200,
-  340,
-  125,
-  0.625,
+  670, // HP
+  7, // HP5
+  33, // AR
+  28, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  125, // Attack range
+  0.625, // Base AS
   [SettPassive, SettQ, SettW, SettE, SettR],
   [],
 );
@@ -21927,15 +22121,15 @@ const ShacoR = new Ability(
 
 const Shaco = new Character(
   "Shaco",
-  630,
-  450,
-  30,
-  63,
-  32,
-  200,
-  345,
-  125,
-  0.694,
+  630, // HP
+  8.5, // HP5
+  30, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.694, // Base AS
   [ShacoPassive, ShacoQ, ShacoW, ShacoE, ShacoR],
   [],
 );
@@ -22033,15 +22227,15 @@ const ShenR = new Ability(
 
 const Shen = new Character(
   "Shen",
-  610,
-  450,
-  34,
-  60,
-  32,
-  200,
-  340,
-  125,
-  0.751,
+  610, // HP
+  8.5, // HP5
+  34, // AR
+  32, // MR
+  64, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  125, // Attack range
+  0.751, // Base AS
   [ShenPassive, ShenQ, ShenW, ShenE, ShenR],
   [],
 );
@@ -22144,15 +22338,15 @@ const ShyvanaR = new Ability(
 
 const Shyvana = new Character(
   "Shyvana",
-  665,
-  450,
-  38,
-  66,
-  32,
-  200,
-  350,
-  125,
-  0.658,
+  625, // HP
+  7, // HP5
+  35, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  150, // Attack range
+  0.638, // Base AS
   [ShyvanaPassive, ShyvanaQ, ShyvanaW, ShyvanaE, ShyvanaR],
   [],
 );
@@ -22251,15 +22445,15 @@ const SingedR = new Ability(
 
 const Singed = new Character(
   "Singed",
-  650,
-  450,
-  35,
-  63,
-  32,
-  200,
-  345,
-  125,
-  0.613,
+  650, // HP
+  9.5, // HP5
+  34, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.7, // Base AS
   [SingedPassive, SingedQ, SingedW, SingedE, SingedR],
   [],
 );
@@ -22370,15 +22564,15 @@ const SionR = new Ability(
 
 const Sion = new Character(
   "Sion",
-  655,
-  550,
-  32,
-  68,
-  32,
-  200,
-  345,
-  175,
-  0.679,
+  655, // HP
+  9, // HP5
+  36, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.679, // Base AS
   [SionPassive, SionQ, SionW, SionE, SionR],
   [],
 );
@@ -22472,15 +22666,15 @@ const SivirR = new Ability(
 
 const Sivir = new Character(
   "Sivir",
-  600,
-  350,
-  26,
-  58,
-  30,
-  200,
-  335,
-  500,
-  0.625,
+  600, // HP
+  3.25, // HP5
+  30, // AR
+  30, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  500, // Attack range
+  0.625, // Base AS
   [SivirPassive, SivirQ, SivirW, SivirE, SivirR],
   [],
 );
@@ -22591,15 +22785,15 @@ const SkarnerR = new Ability(
 
 const Skarner = new Character(
   "Skarner",
-  685,
-  500,
-  38,
-  65,
-  32,
-  200,
-  335,
-  125,
-  0.625,
+  630, // HP
+  7.5, // HP5
+  33, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  150, // Attack range
+  0.625, // Base AS
   [SkarnerPassive, SkarnerQ, SkarnerW, SkarnerE, SkarnerR],
   [],
 );
@@ -22703,15 +22897,15 @@ const SmolderR = new Ability(
 
 const Smolder = new Character(
   "Smolder",
-  575,
-  3.5,
-  24,
-  30,
-  60,
-  200,
-  330,
-  550,
-  0.638,
+  575, // HP
+  3.75, // HP5
+  24, // AR
+  30, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.638, // Base AS
   [SmolderPassive, SmolderQ, SmolderW, SmolderE, SmolderR],
   [],
 );
@@ -22812,15 +23006,15 @@ const SonaR = new Ability(
 
 const Sona = new Character(
   "Sona",
-  550,
-  300,
-  26,
-  48,
-  30,
-  200,
-  325,
-  550,
-  0.644,
+  550, // HP
+  5.5, // HP5
+  26, // AR
+  30, // MR
+  49, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.644, // Base AS
   [SonaPassive, SonaQ, SonaW, SonaE, SonaR],
   [],
 );
@@ -22927,15 +23121,15 @@ const SorakaR = new Ability(
 
 const Soraka = new Character(
   "Soraka",
-  600,
-  275,
-  32,
-  50,
-  30,
-  200,
-  325,
-  550,
-  0.625,
+  605, // HP
+  2.5, // HP5
+  32, // AR
+  30, // MR
+  50, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.625, // Base AS
   [SorakaPassive, SorakaQ, SorakaW, SorakaE, SorakaR],
   [],
 );
@@ -23045,15 +23239,15 @@ const SwainR = new Ability(
 
 const Swain = new Character(
   "Swain",
-  625,
-  400,
-  26,
-  58,
-  30,
-  200,
-  335,
-  525,
-  0.625,
+  595, // HP
+  3, // HP5
+  25, // AR
+  31, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.625, // Base AS
   [SwainPassive, SwainQ, SwainW, SwainE, SwainR],
   [],
 );
@@ -23155,15 +23349,15 @@ const SylasR = new Ability(
 
 const Sylas = new Character(
   "Sylas",
-  600,
-  350,
-  27,
-  61,
-  32,
-  200,
-  340,
-  175,
-  0.645,
+  600, // HP
+  9, // HP5
+  29, // AR
+  32, // MR
+  61, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.645, // Base AS
   [SylasPassive, SylasQ, SylasW, SylasE, SylasR],
   [],
 );
@@ -23264,15 +23458,15 @@ const SyndraR = new Ability(
 
 const Syndra = new Character(
   "Syndra",
-  593,
-  325,
-  25,
-  53,
-  30,
-  200,
-  330,
-  550,
-  0.625,
+  563, // HP
+  6.5, // HP5
+  25, // AR
+  30, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.658, // Base AS
   [SyndraPassive, SyndraQ, SyndraW, SyndraE, SyndraR],
   [],
 );
@@ -23378,15 +23572,15 @@ const TahmKenchR = new Ability(
 
 const TahmKench = new Character(
   "Tahm Kench",
-  670,
-  550,
-  42,
-  56,
-  32,
-  200,
-  335,
-  175,
-  0.658,
+  640, // HP
+  6.5, // HP5
+  39, // AR
+  32, // MR
+  56, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  175, // Attack range
+  0.658, // Base AS
   [TahmKenchPassive, TahmKenchQ, TahmKenchW, TahmKenchE, TahmKenchR],
   [],
 );
@@ -23488,15 +23682,15 @@ const TaliyahR = new Ability(
 
 const Taliyah = new Character(
   "Taliyah",
-  550,
-  325,
-  20,
-  58,
-  30,
-  200,
-  335,
-  525,
-  0.625,
+  550, // HP
+  6.5, // HP5
+  18, // AR
+  28, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.658, // Base AS
   [TaliyahPassive, TaliyahQ, TaliyahW, TaliyahE, TaliyahR],
   [],
 );
@@ -23599,15 +23793,15 @@ const TalonR = new Ability(
 
 const Talon = new Character(
   "Talon",
-  670,
-  475,
-  30,
-  68,
-  39,
-  200,
-  335,
-  175,
-  0.625,
+  658, // HP
+  8.5, // HP5
+  30, // AR
+  36, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.625, // Base AS
   [TalonPassive, TalonQ, TalonW, TalonE, TalonR],
   [],
 );
@@ -23700,15 +23894,15 @@ const TaricR = new Ability(
 
 const Taric = new Character(
   "Taric",
-  625,
-  500,
-  40,
-  55,
-  32,
-  200,
-  335,
-  150,
-  0.625,
+  645, // HP
+  6, // HP5
+  40, // AR
+  28, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  150, // Attack range
+  0.625, // Base AS
   [TaricPassive, TaricQ, TaricW, TaricE, TaricR],
   [],
 );
@@ -23813,15 +24007,15 @@ const TeemoR = new Ability(
 
 const Teemo = new Character(
   "Teemo",
-  610,
-  350,
-  24,
-  54,
-  30,
-  200,
-  330,
-  500,
-  0.69,
+  615, // HP
+  5.5, // HP5
+  24, // AR
+  30, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  500, // Attack range
+  0.69, // Base AS
   [TeemoPassive, TeemoQ, TeemoW, TeemoE, TeemoR],
   [],
 );
@@ -23921,15 +24115,15 @@ const ThreshR = new Ability(
 
 const Thresh = new Character(
   "Thresh",
-  635,
-  450,
-  28,
-  56,
-  30,
-  200,
-  335,
-  450,
-  0.625,
+  620, // HP
+  7, // HP5
+  33, // AR
+  30, // MR
+  56, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  450, // Attack range
+  0.625, // Base AS
   [ThreshPassive, ThreshQ, ThreshW, ThreshE, ThreshR],
   [],
 );
@@ -24028,15 +24222,15 @@ const TristanaR = new Ability(
 
 const Tristana = new Character(
   "Tristana",
-  640,
-  350,
-  30,
-  61,
-  30,
-  200,
-  325,
-  550,
-  0.656,
+  640, // HP
+  4, // HP5
+  30, // AR
+  28, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.656, // Base AS
   [TristanaPassive, TristanaQ, TristanaW, TristanaE, TristanaR],
   [],
 );
@@ -24126,15 +24320,15 @@ const TrundleR = new Ability(
 
 const Trundle = new Character(
   "Trundle",
-  726,
-  600,
-  38,
-  68,
-  32,
-  200,
-  350,
-  175,
-  0.67,
+  650, // HP
+  6, // HP5
+  37, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  175, // Attack range
+  0.67, // Base AS
   [TrundlePassive, TrundleQ, TrundleW, TrundleE, TrundleR],
   [],
 );
@@ -24225,15 +24419,15 @@ const TryndamereR = new Ability(
 
 const Tryndamere = new Character(
   "Tryndamere",
-  720,
-  490,
-  33,
-  72,
-  32,
-  200,
-  345,
-  175,
-  0.67,
+  696, // HP
+  8.5, // HP5
+  33, // AR
+  32, // MR
+  66, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.67, // Base AS
   [TryndamerePassive, TryndamereQ, TryndamereW, TryndamereE, TryndamereR],
   [],
 );
@@ -24335,15 +24529,15 @@ const TwistedFateR = new Ability(
 
 const TwistedFate = new Character(
   "Twisted Fate",
-  600,
-  350,
-  21,
-  56,
-  30,
-  200,
-  335,
-  525,
-  0.651,
+  604, // HP
+  5.5, // HP5
+  24, // AR
+  30, // MR
+  52, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.625, // Base AS
   [TwistedFatePassive, TwistedFateQ, TwistedFateW, TwistedFateE, TwistedFateR],
   [],
 );
@@ -24448,15 +24642,15 @@ const TwitchR = new Ability(
 
 const Twitch = new Character(
   "Twitch",
-  680,
-  425,
-  28,
-  63,
-  30,
-  200,
-  330,
-  550,
-  0.679,
+  630, // HP
+  3.75, // HP5
+  27, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.679, // Base AS
   [TwitchPassive, TwitchQ, TwitchW, TwitchE, TwitchR],
   [],
 );
@@ -24562,15 +24756,15 @@ const UdyrR = new Ability(
 
 const Udyr = new Character(
   "Udyr",
-  600,
-  350,
-  30,
-  62,
-  32,
-  200,
-  345,
-  125,
-  0.658,
+  664, // HP
+  6, // HP5
+  31, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  350, // MS
+  125, // Attack range
+  0.65, // Base AS
   [UdyrPassive, UdyrQ, UdyrW, UdyrE, UdyrR],
   [],
 );
@@ -24675,15 +24869,15 @@ const UrgotR = new Ability(
 
 const Urgot = new Character(
   "Urgot",
-  655,
-  380,
-  36,
-  64,
-  32,
-  200,
-  330,
-  350,
-  0.625,
+  655, // HP
+  7.5, // HP5
+  36, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  350, // Attack range
+  0.625, // Base AS
   [UrgotPassive, UrgotQ, UrgotW, UrgotE, UrgotR],
   [],
 );
@@ -24790,15 +24984,15 @@ const VarusR = new Ability(
 
 const Varus = new Character(
   "Varus",
-  600,
-  350,
-  27,
-  59,
-  30,
-  200,
-  330,
-  575,
-  0.658,
+  600, // HP
+  3.5, // HP5
+  24, // AR
+  30, // MR
+  59, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  575, // Attack range
+  0.658, // Base AS
   [VarusPassive, VarusQ, VarusW, VarusE, VarusR],
   [],
 );
@@ -24896,15 +25090,15 @@ const VayneR = new Ability(
 
 const Vayne = new Character(
   "Vayne",
-  550,
-  350,
-  23,
-  60,
-  30,
-  200,
-  330,
-  550,
-  0.658,
+  550, // HP
+  3.5, // HP5
+  23, // AR
+  30, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.658, // Base AS
   [VaynePassive, VayneQ, VayneW, VayneE, VayneR],
   [],
 );
@@ -24994,15 +25188,15 @@ const VeigarR = new Ability(
 
 const Veigar = new Character(
   "Veigar",
-  550,
-  325,
-  18,
-  52,
-  32,
-  200,
-  340,
-  550,
-  0.625,
+  580, // HP
+  6.5, // HP5
+  18, // AR
+  32, // MR
+  52, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  550, // Attack range
+  0.625, // Base AS
   [VeigarPassive, VeigarQ, VeigarW, VeigarE, VeigarR],
   [],
 );
@@ -25108,15 +25302,15 @@ const VelKozR = new Ability(
 
 const VelKoz = new Character(
   "Vel'Koz",
-  550,
-  340,
-  18,
-  55,
-  30,
-  200,
-  335,
-  525,
-  0.625,
+  590, // HP
+  5.5, // HP5
+  22, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  525, // Attack range
+  0.643, // Base AS
   [VelKozPassive, VelKozQ, VelKozW, VelKozE, VelKozR],
   [],
 );
@@ -25228,15 +25422,15 @@ const VexR = new Ability(
 
 const Vex = new Character(
   "Vex",
-  520,
-  340,
-  23,
-  52,
-  28,
-  200,
-  335,
-  550,
-  0.669,
+  590, // HP
+  6.5, // HP5
+  23, // AR
+  28, // MR
+  54, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  550, // Attack range
+  0.669, // Base AS
   [VexPassive, VexQ, VexW, VexE, VexR],
   [],
 );
@@ -25342,15 +25536,15 @@ const ViR = new Ability(
 
 const Vi = new Character(
   "Vi",
-  650,
-  400,
-  32,
-  63,
-  32,
-  200,
-  340,
-  125,
-  0.644,
+  655, // HP
+  10, // HP5
+  30, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  125, // Attack range
+  0.644, // Base AS
   [ViPassive, ViQ, ViW, ViE, ViR],
   [],
 );
@@ -25449,15 +25643,15 @@ const ViegoR = new Ability(
 
 const Viego = new Character(
   "Viego",
-  630,
-  400,
-  34,
-  57,
-  32,
-  200,
-  345,
-  225,
-  0.658,
+  630, // HP
+  7, // HP5
+  34, // AR
+  32, // MR
+  57, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  200, // Attack range
+  0.658, // Base AS
   [ViegoPassive, ViegoQ, ViegoW, ViegoE, ViegoR],
   [],
 );
@@ -25552,15 +25746,15 @@ const ViktorR = new Ability(
 
 const Viktor = new Character(
   "Viktor",
-  600,
-  350,
-  23,
-  53,
-  32,
-  200,
-  335,
-  525,
-  0.658,
+  600, // HP
+  8, // HP5
+  23, // AR
+  30, // MR
+  53, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  525, // Attack range
+  0.658, // Base AS
   [ViktorPassive, ViktorQ, ViktorW, ViktorE, ViktorR],
   [],
 );
@@ -25666,15 +25860,15 @@ const VladimirR = new Ability(
 
 const Vladimir = new Character(
   "Vladimir",
-  607,
-  350,
-  27,
-  55,
-  30,
-  200,
-  330,
-  450,
-  0.658,
+  600, // HP
+  7, // HP5
+  24, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  450, // Attack range
+  0.658, // Base AS
   [VladimirPassive, VladimirQ, VladimirW, VladimirE, VladimirR],
   [],
 );
@@ -25785,15 +25979,15 @@ const VolibearR = new Ability(
 
 const Volibear = new Character(
   "Volibear",
-  650,
-  425,
-  31,
-  60,
-  32,
-  200,
-  340,
-  150,
-  0.625,
+  650, // HP
+  9, // HP5
+  35, // AR
+  32, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  150, // Attack range
+  0.625, // Base AS
   [VolibearPassive, VolibearQ, VolibearW, VolibearE, VolibearR],
   [],
 );
@@ -25892,15 +26086,15 @@ const WarwickR = new Ability(
 
 const Warwick = new Character(
   "Warwick",
-  620,
-  400,
-  30,
-  68,
-  32,
-  200,
-  335,
-  125,
-  0.638,
+  620, // HP
+  4, // HP5
+  33, // AR
+  32, // MR
+  65, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  125, // Attack range
+  0.638, // Base AS
   [WarwickPassive, WarwickQ, WarwickW, WarwickE, WarwickR],
   [],
 );
@@ -26000,15 +26194,15 @@ const WukongR = new Ability(
 
 const Wukong = new Character(
   "Wukong",
-  610,
-  375,
-  34,
-  68,
-  32,
-  200,
-  345,
-  175,
-  0.711,
+  610, // HP
+  3.5, // HP5
+  31, // AR
+  28, // MR
+  66, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.69, // Base AS
   [WukongPassive, WukongQ, WukongW, WukongE, WukongR],
   [],
 );
@@ -26105,15 +26299,15 @@ const XayahR = new Ability(
 
 const Xayah = new Character(
   "Xayah",
-  660,
-  350,
-  25,
-  63,
-  30,
-  200,
-  330,
-  525,
-  0.625,
+  630, // HP
+  3.25, // HP5
+  25, // AR
+  30, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  525, // Attack range
+  0.658, // Base AS
   [XayahPassive, XayahQ, XayahW, XayahE, XayahR],
   [],
 );
@@ -26210,15 +26404,15 @@ const XerathR = new Ability(
 
 const Xerath = new Character(
   "Xerath",
-  596,
-  350,
-  18,
-  56,
-  30,
-  200,
-  340,
-  550,
-  0.625,
+  596, // HP
+  5.5, // HP5
+  22, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  525, // Attack range
+  0.658, // Base AS
   [XerathPassive, XerathQ, XerathW, XerathE, XerathR],
   [],
 );
@@ -26332,15 +26526,15 @@ const XinZhaoR = new Ability(
 
 const XinZhao = new Character(
   "Xin Zhao",
-  640,
-  390,
-  35,
-  66,
-  32,
-  200,
-  345,
-  175,
-  0.645,
+  620, // HP
+  8, // HP5
+  35, // AR
+  32, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.645, // Base AS
   [XinZhaoPassive, XinZhaoQ, XinZhaoW, XinZhaoE, XinZhaoR],
   [],
 );
@@ -26439,15 +26633,15 @@ const YasuoR = new Ability(
 
 const Yasuo = new Character(
   "Yasuo",
-  550,
-  350,
-  25,
-  60,
-  32,
-  200,
-  345,
-  175,
-  0.697,
+  590, // HP
+  6.5, // HP5
+  32, // AR
+  32, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.697, // Base AS
   [YasuoPassive, YasuoQ, YasuoW, YasuoE, YasuoR],
   [],
 );
@@ -26550,15 +26744,15 @@ const YoneR = new Ability(
 
 const Yone = new Character(
   "Yone",
-  650,
-  360,
-  28,
-  60,
-  32,
-  200,
-  345,
-  175,
-  0.625,
+  620, // HP
+  7.5, // HP5
+  33, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  175, // Attack range
+  0.625, // Base AS
   [YonePassive, YoneQ, YoneW, YoneE, YoneR],
   [],
 );
@@ -26664,15 +26858,15 @@ const YorickR = new Ability(
 
 const Yorick = new Character(
   "Yorick",
-  640,
-  400,
-  39,
-  62,
-  32,
-  200,
-  340,
-  175,
-  0.625,
+  650, // HP
+  8, // HP5
+  36, // AR
+  32, // MR
+  62, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.625, // Base AS
   [YorickPassive, YorickQ, YorickW, YorickE, YorickR],
   [],
 );
@@ -26778,15 +26972,15 @@ const YuumiR = new Ability(
 
 const Yuumi = new Character(
   "Yuumi",
-  500,
-  400,
-  20,
-  55,
-  25,
-  200,
-  330,
-  500,
-  0.625,
+  500, // HP
+  5, // HP5
+  25, // AR
+  25, // MR
+  49, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  425, // Attack range
+  0.625, // Base AS
   [YuumiPassive, YuumiQ, YuumiW, YuumiE, YuumiR],
   [],
 );
@@ -26882,15 +27076,15 @@ const YunaraR = new Ability(
 
 const Yunara = new Character(
   "Yunara",
-  590,
-  6,
-  28,
-  30,
-  58,
-  200,
-  335,
-  550,
-  0.65,
+  590, // HP
+  4, // HP5
+  25, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  575, // Attack range
+  0.65, // Base AS
   [YunaraPassive, YunaraQ, YunaraW, YunaraE, YunaraR],
   [],
 );
@@ -27028,11 +27222,11 @@ const ZaahenR = new Ability(
 const Zaahen = new Character(
   "Zaahen",
   640, // HP
-  350, // Mana
-  36, // Armor
-  63, // AD
+  7.5, // HP5
+  36, // AR
   32, // MR
-  200, // Crit damage %
+  63, // AD
+  200, // Crit DMG (%)
   345, // MS
   175, // Attack range
   0.625, // Base AS
@@ -27136,15 +27330,15 @@ const ZacR = new Ability(
 
 const Zac = new Character(
   "Zac",
-  685,
-  425,
-  33,
-  60,
-  32,
-  200,
-  340,
-  175,
-  0.638,
+  685, // HP
+  5, // HP5
+  33, // AR
+  32, // MR
+  60, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.736, // Base AS
   [ZacPassive, ZacQ, ZacW, ZacE, ZacR],
   [],
 );
@@ -27243,15 +27437,15 @@ const ZedR = new Ability(
 
 const Zed = new Character(
   "Zed",
-  654,
-  363,
-  32,
-  63,
-  32,
-  200,
-  345,
-  125,
-  0.651,
+  654, // HP
+  7, // HP5
+  32, // AR
+  29, // MR
+  63, // AD
+  200, // Crit DMG (%)
+  345, // MS
+  125, // Attack range
+  0.651, // Base AS
   [ZedPassive, ZedQ, ZedW, ZedE, ZedR],
   [],
 );
@@ -27359,15 +27553,15 @@ const ZeriR = new Ability(
 
 const Zeri = new Character(
   "Zeri",
-  630,
-  350,
-  20,
-  53,
-  28,
-  200,
-  330,
-  500,
-  0.658,
+  600, // HP
+  3.25, // HP5
+  24, // AR
+  30, // MR
+  56, // AD
+  200, // Crit DMG (%)
+  330, // MS
+  550, // Attack range
+  0.658, // Base AS
   [ZeriPassive, ZeriQ, ZeriW, ZeriE, ZeriR],
   [],
 );
@@ -27467,15 +27661,15 @@ const ZiggsR = new Ability(
 
 const Ziggs = new Character(
   "Ziggs",
-  606,
-  360,
-  27,
-  54,
-  30,
-  200,
-  325,
-  550,
-  0.656,
+  606, // HP
+  6.5, // HP5
+  21, // AR
+  30, // MR
+  55, // AD
+  200, // Crit DMG (%)
+  325, // MS
+  550, // Attack range
+  0.656, // Base AS
   [ZiggsPassive, ZiggsQ, ZiggsW, ZiggsE, ZiggsR],
   [],
 );
@@ -27565,15 +27759,15 @@ const ZileanR = new Ability(
 
 const Zilean = new Character(
   "Zilean",
-  596,
-  360,
-  24,
-  52,
-  30,
-  200,
-  335,
-  550,
-  0.625,
+  574, // HP
+  5.5, // HP5
+  24, // AR
+  30, // MR
+  52, // AD
+  200, // Crit DMG (%)
+  335, // MS
+  550, // Attack range
+  0.658, // Base AS
   [ZileanPassive, ZileanQ, ZileanW, ZileanE, ZileanR],
   [],
 );
@@ -27673,15 +27867,15 @@ const ZoeR = new Ability(
 
 const Zoe = new Character(
   "Zoe",
-  600,
-  340,
-  20,
-  53,
-  30,
-  200,
-  340,
-  550,
-  0.625,
+  630, // HP
+  7.5, // HP5
+  21, // AR
+  30, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  550, // Attack range
+  0.658, // Base AS
   [ZoePassive, ZoeQ, ZoeW, ZoeE, ZoeR],
   [],
 );
@@ -27776,15 +27970,15 @@ const ZyraR = new Ability(
 
 const Zyra = new Character(
   "Zyra",
-  574,
-  350,
-  20,
-  53,
-  30,
-  200,
-  340,
-  575,
-  0.625,
+  574, // HP
+  5.5, // HP5
+  29, // AR
+  30, // MR
+  53, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  575, // Attack range
+  0.681, // Base AS
   [ZyraPassive, ZyraQ, ZyraW, ZyraE, ZyraR],
   [],
 );
@@ -27853,10 +28047,19 @@ const Conqueror: Rune = {
   name: "Conqueror",
   path: "Precision",
   slot: "keystone",
-  description: "Gain AD/AP per stack, heal at max stacks",
+  description:
+    "Stacks to 12 giving 2-4.5 AD/stack. Modeled at ~50% avg uptime in sustained combat.",
+  effects: [
+    {
+      type: "conditional",
+      trigger: "conditional",
+      statMultiplier: 0,
+    },
+  ],
   stats: {
-    // Max stacks ~28.8 AD; sustained 1v1 closer to ~40–45% of peak than 50%
-    ad: 12,
+    // 12 stacks × 2-4.5 AD per stack (level-scaling), ~50% avg uptime
+    // Level 1: 12×2×0.5 = 12 AD, Level 18: 12×4.5×0.5 = 27 AD
+    ad: 18,
   },
 };
 
@@ -27864,9 +28067,12 @@ const ConquerorAP: Rune = {
   name: "Conqueror (AP)",
   path: "Precision",
   slot: "keystone",
-  description: "Gain AD/AP per stack, heal at max stacks",
+  description:
+    "Stacks to 12 giving 3.3-7.5 AP/stack. Modeled at ~50% avg uptime in sustained combat.",
   stats: {
-    ap: 20,
+    // 12 stacks × 3.3-7.5 AP per stack (level-scaling), ~50% avg uptime
+    // Level 1: 12×3.3×0.5 ≈ 20 AP, Level 18: 12×7.5×0.5 = 45 AP
+    ap: 30,
   },
 };
 
@@ -27883,37 +28089,39 @@ const Electrocute: Rune = {
   name: "Electrocute",
   path: "Domination",
   slot: "keystone",
-  description: "3 unique hits deal 70-240 adaptive damage",
+  description: "3 unique hits deal 50-190 (+25% bAD)(+15% AP) adaptive damage",
   effects: [
     {
       type: "onAbilityHit",
       trigger: "on3UniqueHits",
       damage: {
-        baseDamage: (level: number) => 70 + ((level - 1) * 170) / 17,
+        baseDamage: (level: number) => 50 + ((level - 1) * 140) / 17,
+        bonusAdRatio: 25,
+        apRatio: 15,
         damageType: "adaptive",
       },
-      cooldown: 8,
+      cooldown: 20,
     },
   ],
 };
 
 const DarkHarvest: Rune = {
-  name: "Dark Harvest (avg souls)",
+  name: "Dark Harvest (~5 souls)",
   path: "Domination",
   slot: "keystone",
   description:
-    "Damaging low HP champions deals bonus damage and reaps a soul — modeled ~5 souls by mid duel, not 10.",
+    "Damaging low HP champions deals 20-60 (+9/soul)(+25% bAD)(+15% AP) adaptive. Modeled at ~5 souls.",
   effects: [
     {
       type: "onAbilityHit",
       trigger: "conditional",
       damage: {
-        baseDamage: 85, // ~30 + 11×5 souls (sustained, not stacked snapshot)
-        bonusAdRatio: 10,
-        apRatio: 5,
+        baseDamage: (level: number) => 20 + ((level - 1) * 40) / 17 + 9 * 5,
+        bonusAdRatio: 25,
+        apRatio: 15,
         damageType: "adaptive",
       },
-      cooldown: 35,
+      cooldown: 45,
       conditions: [
         {
           type: "targetHealthPercent",
@@ -27929,8 +28137,9 @@ const HailOfBlades: Rune = {
   name: "Hail of Blades",
   path: "Domination",
   slot: "keystone",
-  description: "140% attack speed for first 3 attacks",
-  stats: {}, // Burst AS, not sustained DPS
+  description:
+    "140% AS for first 3 attacks — modeled as ~30% avg AS over short trades",
+  stats: { attackSpeed: 30 },
 };
 
 // SORCERY KEYSTONES
@@ -28033,7 +28242,8 @@ const FirstStrike: Rune = {
   name: "First Strike",
   path: "Inspiration",
   slot: "keystone",
-  description: "Striking first grants 7% bonus true damage",
+  description:
+    "7% bonus true damage while active (~5s, 12s CD) — not a flat % amp on all damage",
   effects: [
     {
       type: "conditional",
@@ -28231,7 +28441,7 @@ const SuddenImpact: Rune = {
   description: "9 Lethality + 7 Magic Pen after dash/blink for 5s",
   stats: {
     lethality: 9,
-    magicPen: 7,
+    flatMagicPen: 7,
   },
 };
 

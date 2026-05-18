@@ -1,4 +1,5 @@
 import {
+  BLENDED_DPS_COMBO_WEIGHT,
   Characters,
   collectorExecuteBonusDamage,
   isManaScalingItem,
@@ -6,6 +7,8 @@ import {
   Items,
   magicMitigationMultiplier,
   physicalMitigationMultiplier,
+  runeConditionUptime,
+  runeProcSustainedDPS,
 } from "../src/app/actions/sim";
 import {
   dpsMitigationFromDuel,
@@ -114,7 +117,7 @@ if (withLeth <= noPen) {
 
 const mr = 100;
 const noMpen = magicMitigationMultiplier(mr, {});
-const withVoid = magicMitigationMultiplier(mr, { magicPen: 40 });
+const withVoid = magicMitigationMultiplier(mr, { percentMagicPen: 40 });
 if (withVoid <= noMpen) {
   fail(
     `40% magic pen should increase magic damage vs ${mr} MR (no pen=${noMpen.toFixed(3)}, void=${withVoid.toFixed(3)})`,
@@ -366,6 +369,96 @@ if (garen) {
     fail(
       `Physical damage amp should buff physical abilities (base=${d0.abilityDPS.toFixed(1)}, amp=${d1.abilityDPS.toFixed(1)})`,
     );
+  }
+}
+
+{
+  const graspEffect = {
+    type: "onHit" as const,
+    trigger: "conditional" as const,
+    cooldown: 4,
+    damage: { maxHealthRatio: 4, damageType: "magic" as const },
+  };
+  const slow = runeProcSustainedDPS(80, graspEffect, 1.0);
+  const fast = runeProcSustainedDPS(80, graspEffect, 2.5);
+  if (Math.abs(slow.dps - fast.dps) > 0.05) {
+    fail(
+      `ICD rune DPS must not double with AS (1.0 AS=${slow.dps.toFixed(2)}, 2.5 AS=${fast.dps.toFixed(2)})`,
+    );
+  }
+  const ptaEffect = {
+    type: "onHit" as const,
+    trigger: "onThirdHit" as const,
+    cooldown: 6,
+    damage: { baseDamage: 100, damageType: "physical" as const },
+  };
+  // At 0.4 AS, 3 hits take 7.5s > 6s ICD, so DPS = 100/7.5
+  // At 0.8 AS, 3 hits take 3.75s < 6s ICD, so DPS = 100/6
+  const ptaSlow = runeProcSustainedDPS(100, ptaEffect, 0.4);
+  const ptaFast = runeProcSustainedDPS(100, ptaEffect, 0.8);
+  if (ptaFast.dps <= ptaSlow.dps) {
+    fail("PTA proc DPS should rise with attack speed when 3-hit time exceeds ICD");
+  }
+}
+
+{
+  const sim = {
+    avgCurrentHPRatio: 0.6,
+    conditionalLowHpUptime: 0.3,
+    conditionalHighHpUptime: 0.8,
+    conditionalGeneralUptime: 0.5,
+    level: 18,
+    onHitPassiveFallbackSustain: 0.85,
+    onHitActiveFallbackSustain: 0.92,
+    abilityHasteCap: 120,
+    cooldownFloorBaseRatio: 0.1,
+    enableChampionRotationProfiles: true,
+    spellOnlyNoAutos: false,
+  };
+  const cutDownUptime = runeConditionUptime(
+    [{ type: "targetHealthDifference", threshold: 1000, operator: ">" }],
+    sim,
+    2000,
+  );
+  const cutDownLowBonus = runeConditionUptime(
+    [{ type: "targetHealthDifference", threshold: 1000, operator: ">" }],
+    sim,
+    200,
+  );
+  if (cutDownUptime <= cutDownLowBonus) {
+    fail("Cut Down uptime should be higher vs high bonus-HP targets");
+  }
+}
+
+const jinx = Characters.find((c) => c.Name === "Jinx");
+if (jinx) {
+  const mit = dpsMitigationFromDuel(duel);
+  const botrk = Items.find((i) => i.name.includes("Blade of the Ruined King"));
+  if (botrk) {
+    const withOnHit = Object.assign(
+      Object.create(Object.getPrototypeOf(jinx)),
+      jinx,
+    ) as typeof jinx;
+    withOnHit.Items = [botrk];
+    const d = withOnHit.calculateDPS(
+      duel.targetMaxHP,
+      duel.targetBonusHP,
+      { level: 16, enableChampionRotationProfiles: true },
+      mit,
+    );
+    if (d.comboDPS <= d.autoAttackDPS * 0.5) {
+      fail(
+        `On-hit items should contribute to combo DPS (combo=${d.comboDPS.toFixed(1)}, aa=${d.autoAttackDPS.toFixed(1)})`,
+      );
+    }
+    const blended =
+      d.sustainedDPS * (1 - BLENDED_DPS_COMBO_WEIGHT) +
+      d.comboDPS * BLENDED_DPS_COMBO_WEIGHT;
+    if (Math.abs(d.totalDPS - blended) > 0.5) {
+      fail(
+        `totalDPS should match blended sustained/combo (got ${d.totalDPS.toFixed(2)}, expected ${blended.toFixed(2)})`,
+      );
+    }
   }
 }
 

@@ -16,6 +16,7 @@ import type {
 } from "@/app/actions/sim";
 import {
   AllKeystones,
+  BLENDED_DPS_COMBO_WEIGHT,
   CHAMPION_COMBO_PROFILES,
   championUsesMana,
   isManaScalingItem,
@@ -350,6 +351,9 @@ function blendedDps(
   return sustained * (1 - w) + combo * w;
 }
 
+/** Default combo weight — kept in sync with sim `totalDPS` headline metric. */
+export const DEFAULT_COMBO_DPS_WEIGHT = BLENDED_DPS_COMBO_WEIGHT;
+
 function profileScore(
   profile: BuildProfileId,
   dps: ReturnType<Character["calculateDPS"]>,
@@ -360,7 +364,7 @@ function profileScore(
   const apLike = dps.abilityDPS + dps.dotDPS;
   const apFromItems = itemApTotal(build);
   const combo = dps.comboDPS;
-  const mixed = blendedDps(dps, 0.55);
+  const mixed = blendedDps(dps, DEFAULT_COMBO_DPS_WEIGHT);
 
   let lethalityFromItems = 0;
   let critFromItems = 0;
