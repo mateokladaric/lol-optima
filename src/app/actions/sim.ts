@@ -255,6 +255,7 @@ const AatroxPassive = new Ability(
 );
 
 // Q ability - All 3 casts combined for DPS
+const AATROX_Q_SWEETSPOT_RATE = 0.65;
 const AatroxQ = new Ability(
   "The Darkin Blade",
   "Q",
@@ -268,14 +269,13 @@ const AatroxQ = new Ability(
     range: 625,
   },
   {
-    // Q1: 10-70 + 60-90% AD
-    // Q2: 12.5-87.5 + 75-112.5% AD (25% more)
-    // Q3: 15-105 + 90-135% AD (50% more)
-    // Total (no sweetspot): 37.5-262.5 + 225-337.5% AD
-    // With sweetspot (×1.7 each): 63.75-446.25 + 382.5-573.75% AD
-    // Using sweetspot values for max DPS:
-    baseDamage: [64, 160, 256, 352, 446],
-    adRatio: 574,
+    // Q1: 10-70 + 60-90% AD, Q2: ×1.25, Q3: ×1.5
+    // Total base (no sweetspot): 37.5-262.5, Total AD ratio (no sweetspot): 225-337.5%
+    // Sweetspot multiplier: ×1.7 per hit; blended = 1 + 0.7 × sweetspot_rate
+    // At 65% sweetspot rate: blended = 1.455
+    // Total base: [55, 137, 219, 300, 382], Total AD ratio: ~327-491%
+    baseDamage: [55, 137, 219, 300, 382],
+    adRatio: Math.round(337.5 * (1 + 0.7 * AATROX_Q_SWEETSPOT_RATE)),
     damageType: "physical",
   },
   {
@@ -3045,8 +3045,212 @@ function collectRuneDamageMultipliers(
   return { runeMultiplier, ptaAmpMultiplier };
 }
 
-function basicAbilityRankAtLevel(level: number): number {
-  return Math.min(5, Math.max(1, Math.floor((level + 1) / 2)));
+/**
+ * Standard League skill point allocation following a max order.
+ * Returns the rank (1-5) of a basic ability at a given champion level.
+ *
+ * In a typical game, the max-first ability gets points at levels 1,3,5,7,9;
+ * second-max gets points at 2,8,10,12,14; third gets 4,13,15,17,18.
+ * Ult takes levels 6,11,16.
+ */
+const SKILL_POINT_TABLE: Record<number, number[]> = {
+  // priority 0 (max first): levels at which you get each rank
+  0: [1, 3, 5, 7, 9],
+  // priority 1 (second max):
+  1: [2, 8, 10, 12, 14],
+  // priority 2 (third max):
+  2: [4, 13, 15, 17, 18],
+};
+
+type SkillOrder = ["Q" | "W" | "E", "Q" | "W" | "E", "Q" | "W" | "E"];
+
+const CHAMPION_SKILL_ORDER: Record<string, SkillOrder> = {
+  Aatrox: ["Q", "E", "W"],
+  Ahri: ["Q", "W", "E"],
+  Akali: ["Q", "E", "W"],
+  Akshan: ["Q", "E", "W"],
+  Alistar: ["E", "Q", "W"],
+  Ambessa: ["Q", "E", "W"],
+  Amumu: ["E", "Q", "W"],
+  Anivia: ["Q", "E", "W"],
+  Annie: ["Q", "W", "E"],
+  Aphelios: ["Q", "W", "E"],
+  Ashe: ["W", "Q", "E"],
+  "Aurelion Sol": ["Q", "W", "E"],
+  Aurora: ["Q", "E", "W"],
+  Azir: ["W", "Q", "E"],
+  Bard: ["Q", "W", "E"],
+  "Bel'Veth": ["Q", "E", "W"],
+  Blitzcrank: ["Q", "W", "E"],
+  Brand: ["W", "Q", "E"],
+  Braum: ["Q", "E", "W"],
+  Briar: ["Q", "W", "E"],
+  Caitlyn: ["Q", "W", "E"],
+  Camille: ["Q", "E", "W"],
+  Cassiopeia: ["E", "Q", "W"],
+  "Cho'Gath": ["E", "Q", "W"],
+  Corki: ["Q", "E", "W"],
+  Darius: ["Q", "E", "W"],
+  Diana: ["Q", "W", "E"],
+  "Dr. Mundo": ["Q", "E", "W"],
+  Draven: ["Q", "W", "E"],
+  Ekko: ["Q", "E", "W"],
+  Elise: ["Q", "W", "E"],
+  Evelynn: ["Q", "E", "W"],
+  Ezreal: ["Q", "W", "E"],
+  Fiddlesticks: ["W", "E", "Q"],
+  Fiora: ["Q", "E", "W"],
+  Fizz: ["E", "Q", "W"],
+  Galio: ["Q", "W", "E"],
+  Gangplank: ["Q", "E", "W"],
+  Garen: ["E", "Q", "W"],
+  Gnar: ["Q", "W", "E"],
+  Gragas: ["Q", "W", "E"],
+  Graves: ["Q", "E", "W"],
+  Gwen: ["Q", "E", "W"],
+  Hecarim: ["Q", "W", "E"],
+  Heimerdinger: ["Q", "W", "E"],
+  Hwei: ["Q", "W", "E"],
+  Illaoi: ["Q", "W", "E"],
+  Irelia: ["Q", "E", "W"],
+  Ivern: ["E", "W", "Q"],
+  Janna: ["W", "E", "Q"],
+  "Jarvan IV": ["Q", "E", "W"],
+  Jax: ["Q", "W", "E"],
+  Jayce: ["Q", "W", "E"],
+  Jhin: ["Q", "W", "E"],
+  Jinx: ["Q", "W", "E"],
+  "K'Sante": ["Q", "W", "E"],
+  "Kai'Sa": ["Q", "E", "W"],
+  Kalista: ["Q", "E", "W"],
+  Karma: ["Q", "E", "W"],
+  Karthus: ["Q", "E", "W"],
+  Kassadin: ["Q", "E", "W"],
+  Katarina: ["Q", "E", "W"],
+  Kayle: ["E", "Q", "W"],
+  Kayn: ["Q", "W", "E"],
+  Kennen: ["Q", "W", "E"],
+  "Kha'Zix": ["Q", "W", "E"],
+  Kindred: ["Q", "W", "E"],
+  Kled: ["Q", "W", "E"],
+  "Kog'Maw": ["W", "Q", "E"],
+  LeBlanc: ["Q", "W", "E"],
+  "Lee Sin": ["Q", "W", "E"],
+  Leona: ["W", "E", "Q"],
+  Lillia: ["Q", "W", "E"],
+  Lissandra: ["Q", "W", "E"],
+  Lucian: ["Q", "E", "W"],
+  Lulu: ["E", "W", "Q"],
+  Lux: ["E", "Q", "W"],
+  Malphite: ["Q", "E", "W"],
+  Malzahar: ["E", "Q", "W"],
+  Maokai: ["Q", "E", "W"],
+  "Master Yi": ["Q", "E", "W"],
+  Mel: ["Q", "W", "E"],
+  Milio: ["W", "E", "Q"],
+  "Miss Fortune": ["Q", "W", "E"],
+  Mordekaiser: ["Q", "E", "W"],
+  Morgana: ["W", "Q", "E"],
+  Naafiri: ["Q", "W", "E"],
+  Nami: ["W", "E", "Q"],
+  Nasus: ["Q", "E", "W"],
+  Nautilus: ["E", "W", "Q"],
+  Neeko: ["Q", "E", "W"],
+  Nidalee: ["Q", "W", "E"],
+  Nilah: ["Q", "E", "W"],
+  Nocturne: ["Q", "W", "E"],
+  "Nunu & Willump": ["Q", "W", "E"],
+  Olaf: ["Q", "E", "W"],
+  Orianna: ["Q", "W", "E"],
+  Ornn: ["Q", "W", "E"],
+  Pantheon: ["Q", "E", "W"],
+  Poppy: ["Q", "E", "W"],
+  Pyke: ["Q", "E", "W"],
+  Qiyana: ["Q", "E", "W"],
+  Quinn: ["Q", "E", "W"],
+  Rakan: ["W", "Q", "E"],
+  Rammus: ["W", "Q", "E"],
+  "Rek'Sai": ["Q", "E", "W"],
+  Rell: ["Q", "W", "E"],
+  "Renata Glasc": ["Q", "E", "W"],
+  Renekton: ["Q", "E", "W"],
+  Rengar: ["Q", "W", "E"],
+  Riven: ["Q", "E", "W"],
+  Rumble: ["Q", "E", "W"],
+  Ryze: ["Q", "E", "W"],
+  Samira: ["Q", "E", "W"],
+  Sejuani: ["W", "Q", "E"],
+  Senna: ["Q", "W", "E"],
+  Seraphine: ["Q", "W", "E"],
+  Sett: ["Q", "W", "E"],
+  Shaco: ["E", "Q", "W"],
+  Shen: ["Q", "E", "W"],
+  Shyvana: ["W", "E", "Q"],
+  Singed: ["Q", "E", "W"],
+  Sion: ["Q", "E", "W"],
+  Sivir: ["Q", "W", "E"],
+  Skarner: ["Q", "E", "W"],
+  Smolder: ["Q", "W", "E"],
+  Sona: ["Q", "W", "E"],
+  Soraka: ["W", "Q", "E"],
+  Swain: ["Q", "E", "W"],
+  Sylas: ["Q", "W", "E"],
+  Syndra: ["Q", "W", "E"],
+  "Tahm Kench": ["Q", "W", "E"],
+  Taliyah: ["Q", "E", "W"],
+  Talon: ["W", "Q", "E"],
+  Taric: ["Q", "W", "E"],
+  Teemo: ["E", "Q", "W"],
+  Thresh: ["E", "Q", "W"],
+  Tristana: ["E", "Q", "W"],
+  Trundle: ["Q", "W", "E"],
+  Tryndamere: ["Q", "E", "W"],
+  "Twisted Fate": ["Q", "W", "E"],
+  Twitch: ["E", "Q", "W"],
+  Udyr: ["Q", "W", "E"],
+  Urgot: ["W", "Q", "E"],
+  Varus: ["Q", "W", "E"],
+  Vayne: ["W", "Q", "E"],
+  Veigar: ["Q", "W", "E"],
+  "Vel'Koz": ["Q", "W", "E"],
+  Vex: ["Q", "W", "E"],
+  Vi: ["Q", "E", "W"],
+  Viego: ["Q", "E", "W"],
+  Viktor: ["Q", "E", "W"],
+  Vladimir: ["Q", "E", "W"],
+  Volibear: ["Q", "W", "E"],
+  Warwick: ["Q", "W", "E"],
+  Wukong: ["Q", "E", "W"],
+  Xayah: ["Q", "E", "W"],
+  Xerath: ["Q", "W", "E"],
+  "Xin Zhao": ["Q", "W", "E"],
+  Yasuo: ["Q", "E", "W"],
+  Yone: ["Q", "E", "W"],
+  Yorick: ["Q", "E", "W"],
+  Yuumi: ["E", "W", "Q"],
+  Zac: ["Q", "W", "E"],
+  Zed: ["Q", "W", "E"],
+  Zeri: ["Q", "E", "W"],
+  Ziggs: ["Q", "E", "W"],
+  Zilean: ["Q", "W", "E"],
+  Zoe: ["Q", "E", "W"],
+  Zyra: ["Q", "W", "E"],
+};
+
+function abilityRankAtLevel(
+  level: number,
+  abilityType: "Q" | "W" | "E",
+  championName: string,
+): number {
+  const order = CHAMPION_SKILL_ORDER[championName];
+  const priority = order ? order.indexOf(abilityType) : 0;
+  // Fallback: if ability not found in order (shouldn't happen), treat as first-max
+  const levels = SKILL_POINT_TABLE[priority >= 0 ? priority : 0];
+  let rank = 0;
+  for (const lvl of levels) {
+    if (level >= lvl) rank++;
+  }
+  return Math.max(1, rank);
 }
 
 function ultRankAtLevel(level: number): number {
@@ -3286,6 +3490,7 @@ class Character {
   MS: number;
   AttackRange: number;
   AS: number;
+  BaseMana: number;
   Abilities: Ability[];
   Items: Item[];
   Runes?: RunePage;
@@ -3304,6 +3509,7 @@ class Character {
     abilities: Ability[] = [],
     items: Item[] = [],
     runes?: RunePage,
+    baseMana: number = 0,
   ) {
     this.Name = name;
     this.HP = hp;
@@ -3315,6 +3521,7 @@ class Character {
     this.MS = movementSpeed;
     this.AttackRange = attackRange;
     this.AS = attackSpeed;
+    this.BaseMana = baseMana;
     this.Abilities = abilities;
     this.Items = items;
     this.Runes = runes;
@@ -3546,7 +3753,9 @@ class Character {
     const finalMS = baseStats.ms * (1 + baseStats.msPercent / 100);
 
     // Calculate bonus HP from bonus mana (e.g., Winter's Approach/Fimbulwinter Awe: 15% bonus mana as HP)
-    const bonusMana = baseStats.mana; // All mana is bonus mana (no base mana on champions)
+    // Total mana pool = base mana + item mana. Bonus mana = item mana only.
+    const totalMana = this.BaseMana + baseStats.mana;
+    const bonusMana = baseStats.mana;
     const bonusHPFromMana = (bonusMana * baseStats.hpPerBonusManaPercent) / 100;
 
     // Apply bonus HP multiplier (e.g., Warmog's Vitality: 12% increased bonus HP)
@@ -3557,7 +3766,7 @@ class Character {
 
     // Calculate bonus AD from max mana (e.g., Manamune/Muramana Awe passive)
     const bonusADFromMana =
-      (baseStats.mana * baseStats.adPerMaxManaPercent) / 100;
+      (totalMana * baseStats.adPerMaxManaPercent) / 100;
 
     // Calculate bonus AD from bonus HP (e.g., Overlord's Bloodmail Tyranny passive)
     const bonusADFromHP = (bonusHP * baseStats.adPerBonusHPPercent) / 100;
@@ -3606,13 +3815,14 @@ class Character {
 
     // Calculate ability damage multiplier from mana (e.g., Actualizer passive: 0.005% per mana)
     const abilityDamageFromMana =
-      bonusMana * (baseStats.abilityDamagePerManaMultiplicative || 0);
+      totalMana * (baseStats.abilityDamagePerManaMultiplicative || 0);
     const finalAbilityDamageMultiplicative =
       (baseStats.abilityDamageMultiplicative || 0) + abilityDamageFromMana;
 
     return {
       ...baseStats,
       hp: finalHP,
+      mana: totalMana,
       as: finalAS,
       ms: finalMS,
       ad: finalAD,
@@ -3713,8 +3923,18 @@ class Character {
       );
     }
     if (stats.physicalOnHitBaseADPercent) {
-      const dmg = (this.AD * stats.physicalOnHitBaseADPercent) / 100;
-      addOnHitPhys(dmg, `Physical on-hit (base AD): +${dmg.toFixed(1)}`);
+      const hasSpellbladeItem = this.Items.some(
+        (i) => i.getGroupName() === "Spellblade",
+      );
+      const rawDmg = (this.AD * stats.physicalOnHitBaseADPercent) / 100;
+      if (hasSpellbladeItem && attackRate > 0) {
+        // Spellblade has a 1.5s ICD — scale damage by proc uptime
+        const uptime = spellbladeOnHitUptime(attackRate);
+        const dmg = rawDmg * uptime;
+        addOnHitPhys(dmg, `Spellblade on-hit (${(uptime * 100).toFixed(0)}% uptime): +${dmg.toFixed(1)}`);
+      } else {
+        addOnHitPhys(rawDmg, `Physical on-hit (base AD): +${rawDmg.toFixed(1)}`);
+      }
     }
     if (stats.physicalOnHitCurrentHealthPercent) {
       const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
@@ -3727,7 +3947,8 @@ class Character {
       addOnHitPhys(dmg, `Physical on-hit (target max HP): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitMaxManaPercent) {
-      const dmg = (stats.mana * stats.physicalOnHitMaxManaPercent) / 100;
+      const maxMana = this.BaseMana + stats.mana;
+      const dmg = (maxMana * stats.physicalOnHitMaxManaPercent) / 100;
       addOnHitPhys(dmg, `Physical on-hit (max mana): +${dmg.toFixed(1)}`);
     }
 
@@ -3736,8 +3957,17 @@ class Character {
       addOnHitMagic(stats.magicOnHit, `Magic on-hit: +${stats.magicOnHit}`);
     }
     if (stats.magicOnHitBaseADPercent) {
-      const dmg = (this.AD * stats.magicOnHitBaseADPercent) / 100;
-      addOnHitMagic(dmg, `Magic on-hit (base AD): +${dmg.toFixed(1)}`);
+      const hasSpellbladeItemMagic = this.Items.some(
+        (i) => i.getGroupName() === "Spellblade",
+      );
+      const rawDmg = (this.AD * stats.magicOnHitBaseADPercent) / 100;
+      if (hasSpellbladeItemMagic && attackRate > 0) {
+        const uptime = spellbladeOnHitUptime(attackRate);
+        const dmg = rawDmg * uptime;
+        addOnHitMagic(dmg, `Spellblade magic on-hit (${(uptime * 100).toFixed(0)}% uptime): +${dmg.toFixed(1)}`);
+      } else {
+        addOnHitMagic(rawDmg, `Magic on-hit (base AD): +${rawDmg.toFixed(1)}`);
+      }
     }
     if (stats.magicOnHitAPRatio) {
       const dmg = (stats.ap * stats.magicOnHitAPRatio) / 100;
@@ -3773,7 +4003,7 @@ class Character {
           ? sim.level
           : ability.abilityType === "R"
             ? Math.max(1, ultRankAtLevel(sim.level))
-            : basicAbilityRankAtLevel(sim.level);
+            : abilityRankAtLevel(sim.level, ability.abilityType as "Q" | "W" | "E", this.Name);
 
       if (ability.damage.baseDamage) {
         onHitDamage += ability.getValueAtLevel(
@@ -3858,8 +4088,9 @@ class Character {
           100;
       }
       if (ability.damage.maxManaRatio) {
+        const maxMana = this.BaseMana + stats.mana;
         onHitDamage +=
-          (stats.mana *
+          (maxMana *
             ability.getValueAtLevel(ability.damage.maxManaRatio, level)) /
           100;
       }
@@ -3939,26 +4170,7 @@ class Character {
       }
     }
 
-    const hasSpellblade = this.Items.some(
-      (i) => i.getGroupName() === "Spellblade",
-    );
-    if (hasSpellblade && attackRate > 0) {
-      const sbUptime = spellbladeOnHitUptime(attackRate);
-      const sbPhys = stats.physicalOnHitBaseADPercent
-        ? (this.AD * stats.physicalOnHitBaseADPercent) / 100
-        : 0;
-      const sbMagicAd = stats.magicOnHitBaseADPercent
-        ? (this.AD * stats.magicOnHitBaseADPercent) / 100
-        : 0;
-      if (sbPhys > 0) {
-        onHitPhysPerAttack += sbPhys * (sbUptime - 1);
-        onHitDamagePerAttack += sbPhys * (sbUptime - 1);
-      }
-      if (sbMagicAd > 0) {
-        onHitMagicPerAttack += sbMagicAd * (sbUptime - 1);
-        onHitDamagePerAttack += sbMagicAd * (sbUptime - 1);
-      }
-    }
+    // (Spellblade ICD uptime already applied above at the add-site)
 
     const onHitDPS = onHitDamagePerAttack * attackRate;
     if (onHitDamagePerAttack > 0) {
@@ -4013,7 +4225,7 @@ class Character {
       const abilityRank =
         ability.abilityType === "R"
           ? ultRankAtLevel(sim.level)
-          : basicAbilityRankAtLevel(sim.level);
+          : abilityRankAtLevel(sim.level, ability.abilityType as "Q" | "W" | "E", this.Name);
       if (abilityRank <= 0) continue;
       const baseCooldown = ability.getCooldownAtLevel(abilityRank);
       if (baseCooldown === 0) continue;
@@ -4158,8 +4370,9 @@ class Character {
           100;
       }
       if (ability.damage.maxManaRatio) {
+        const maxMana = this.BaseMana + stats.mana;
         abilityDamage +=
-          (stats.mana *
+          (maxMana *
             ability.getValueAtLevel(ability.damage.maxManaRatio, abilityRank)) /
           100;
       }
@@ -4182,8 +4395,9 @@ class Character {
           stats.lethality * stats.trueOnAbilityHitPerLethality;
       }
       if (stats.physicalOnAbilityHitMaxManaPercent) {
+        const maxMana = this.BaseMana + stats.mana;
         onAbilityHitPhys +=
-          (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
+          (maxMana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
       }
 
       let castsPerWindow = effectiveAbilityCasts(ability);
@@ -4386,7 +4600,7 @@ class Character {
             ? sim.level
             : ability.abilityType === "R"
               ? Math.max(1, ultRankAtLevel(sim.level))
-              : basicAbilityRankAtLevel(sim.level);
+              : abilityRankAtLevel(sim.level, ability.abilityType as "Q" | "W" | "E", this.Name);
 
         // Calculate burst damage from burstDamage field
         let abilityBurstDmg = 0;
@@ -28874,6 +29088,38 @@ const HealthScalingShard: Rune = {
   },
 };
 
+// Base mana values from Data Dragon (level 1). Only set for actual mana users.
+const CHAMPION_BASE_MANA: Record<string, number> = {
+  Ahri: 418, Akshan: 350, Alistar: 350, Amumu: 285, Anivia: 495, Annie: 418,
+  Aphelios: 348, Ashe: 280, "Aurelion Sol": 530, Aurora: 475, Azir: 320,
+  Bard: 350, Blitzcrank: 267, Brand: 469, Braum: 311, Caitlyn: 315,
+  Camille: 339, Cassiopeia: 480, "Cho'Gath": 270, Corki: 350, Darius: 263,
+  Diana: 375, Draven: 361, Ekko: 280, Elise: 324, Evelynn: 315, Ezreal: 375,
+  Fiddlesticks: 500, Fiora: 300, Fizz: 317, Galio: 410, Gangplank: 280,
+  Gragas: 400, Graves: 325, Gwen: 330, Hecarim: 280, Heimerdinger: 385,
+  Hwei: 480, Illaoi: 350, Irelia: 350, Ivern: 450, Janna: 360,
+  "Jarvan IV": 300, Jax: 339, Jayce: 375, Jhin: 300, Jinx: 260,
+  "Kai'Sa": 345, Kalista: 300, Karma: 374, Karthus: 467, Kassadin: 400,
+  Kayle: 330, Kayn: 410, Kindred: 300, "Kog'Maw": 325, "K'Sante": 320,
+  LeBlanc: 400, Leona: 302, Lillia: 410, Lissandra: 475, Lucian: 320,
+  Lulu: 350, Lux: 440, Malphite: 280, Malzahar: 375, Maokai: 375,
+  "Master Yi": 251, Mel: 480, Milio: 365, "Miss Fortune": 300, Morgana: 340,
+  Naafiri: 400, Nami: 365, Nasus: 326, Nautilus: 400, Neeko: 450,
+  Nidalee: 295, Nilah: 350, Nocturne: 275, "Nunu & Willump": 280, Olaf: 316,
+  Orianna: 418, Ornn: 341, Pantheon: 317, Poppy: 280, Pyke: 415,
+  Qiyana: 375, Quinn: 269, Rakan: 315, Rammus: 310, Rell: 320,
+  "Renata Glasc": 350, Ryze: 300, Samira: 349, Sejuani: 400, Senna: 350,
+  Seraphine: 360, Shaco: 297, Singed: 330, Sion: 400, Sivir: 340,
+  Skarner: 320, Smolder: 300, Sona: 340, Soraka: 425, Swain: 400,
+  Sylas: 400, Syndra: 480, "Tahm Kench": 325, Taliyah: 470, Talon: 400,
+  Taric: 300, Teemo: 334, Thresh: 274, Tristana: 300, Trundle: 340,
+  "Twisted Fate": 333, Twitch: 300, Udyr: 271, Urgot: 340, Varus: 320,
+  Vayne: 232, Veigar: 490, "Vel'Koz": 469, Vex: 490, Vi: 295, Viktor: 405,
+  Volibear: 350, Warwick: 280, Wukong: 330, Xayah: 340, Xerath: 400,
+  "Xin Zhao": 274, Yorick: 300, Yunara: 275, Yuumi: 440, Zaahen: 350,
+  Zeri: 250, Ziggs: 480, Zilean: 452, Zoe: 425, Zyra: 418,
+};
+
 // Export arrays for easy import
 export const Characters: Character[] = [
   Aatrox,
@@ -29049,6 +29295,13 @@ export const Characters: Character[] = [
   Zoe,
   Zyra,
 ];
+
+// Apply base mana from Data Dragon to all mana-using champions
+for (const champ of Characters) {
+  const bm = CHAMPION_BASE_MANA[champ.Name];
+  if (bm !== undefined) champ.BaseMana = bm;
+}
+
 export const Items: Item[] = [
   AbyssalMask,
   AbyssalMaskDistanced,
