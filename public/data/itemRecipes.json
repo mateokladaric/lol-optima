@@ -1,0 +1,715 @@
+{
+  "patch": "16.10.1",
+  "generatedAt": "2026-05-20T19:30:38.057Z",
+  "byGroup": {
+    "Abyssal Mask": {
+      "totalGold": 2850,
+      "components": [
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Negatron Cloak",
+          "gold": 850,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Actualizer": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Manaflow": {
+      "totalGold": 2900,
+      "components": [
+        {
+          "name": "Tear of the Goddess",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Fiendish Codex",
+          "gold": 850,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Lost Chapter",
+          "gold": 1200,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Ardent Censer": {
+      "totalGold": 2600,
+      "components": [
+        {
+          "name": "Amplifying Tome",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Aether Wisp",
+          "gold": 900,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Axiom Arc": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Bandlepipes": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Annul": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Bastionbreaker": {
+      "totalGold": 3200,
+      "components": [
+        {
+          "name": "Serrated Dirk",
+          "gold": 1000,
+          "powerPerGold": 0
+        },
+        {
+          "name": "The Brutalizer",
+          "gold": 1337,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Black Cleaver": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Blackfire Torch": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Blade of the Ruined King": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Blight": {
+      "totalGold": 2900,
+      "components": [
+        {
+          "name": "Fiendish Codex",
+          "gold": 850,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Haunting Guise",
+          "gold": 1300,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Spellblade": {
+      "totalGold": 400,
+      "components": [
+        {
+          "name": "Bounty of Worlds",
+          "gold": 400,
+          "powerPerGold": 0.0325
+        }
+      ]
+    },
+    "Bloodthirster": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Support / Jungle": {
+      "totalGold": 400,
+      "components": [
+        {
+          "name": "Bounty of Worlds",
+          "gold": 400,
+          "powerPerGold": 0.0325
+        }
+      ]
+    },
+    "Chempunk Chainsword": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Cosmic Drive": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Void Pen": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Dawncore": {
+      "totalGold": 2900,
+      "components": [
+        {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Blasting Wand",
+          "gold": 850,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Momentum": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Death's Dance": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Echoes of Helia": {
+      "totalGold": 2600,
+      "components": [
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Bandleglass Mirror",
+          "gold": 900,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Eclipse": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Endless Hunger": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Experimental Hexplate": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Fiendhunter Bolts": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Force of Nature": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Frozen Heart": {
+      "totalGold": 2700,
+      "components": [
+        {
+          "name": "Glacial Buckler",
+          "gold": 900,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Warden's Mail",
+          "gold": 1000,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Guardian Angel": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Guinsoo's Rageblade": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Heartsteel": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Hexoptics C44": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Hextech Gunblade": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Hextech Rocketbelt": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Immolate": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Horizon Focus": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Hubris": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Hullbreaker": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Lifeline": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Imperial Mandate": {
+      "totalGold": 2750,
+      "components": [
+        {
+          "name": "Amplifying Tome",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Fiendish Codex",
+          "gold": 850,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Bandleglass Mirror",
+          "gold": 900,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Infinity Edge": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Jak'Sho, The Protean": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Kaenic Rookern": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Knight's Vow": {
+      "totalGold": 2900,
+      "components": [
+        {
+          "name": "Rejuvenation Bead",
+          "gold": 300,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Chain Vest",
+          "gold": 800,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Kraken Slayer": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Liandry's Torment": {
+      "totalGold": 3000,
+      "components": [
+        {
+          "name": "Fated Ashes",
+          "gold": 900,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Haunting Guise",
+          "gold": 1300,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Locket of the Iron Solari": {
+      "totalGold": 2600,
+      "components": [
+        {
+          "name": "Cloth Armor",
+          "gold": 300,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Null-Magic Mantle",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Last Whisper": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Luden's Echo": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Malignance": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Glory": {
+      "totalGold": 1500,
+      "components": [
+        {
+          "name": "Dark Seal",
+          "gold": 350,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Quicksilver": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Mikael's Blessing": {
+      "totalGold": 2800,
+      "components": [
+        {
+          "name": "Ruby Crystal",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Moonstone Renewer": {
+      "totalGold": 2900,
+      "components": [
+        {
+          "name": "Ruby Crystal",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Bandleglass Mirror",
+          "gold": 900,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Morellonomicon": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Nashor's Tooth": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Navori Flickerblade": {
+      "totalGold": 2650,
+      "components": [
+        {
+          "name": "Dagger",
+          "gold": 250,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Dagger",
+          "gold": 250,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Zeal",
+          "gold": 1200,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Overlord's Bloodmail": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Phantom Dancer": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Hydra": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Rabadon's Deathcap": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Randuin's Omen": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Rapid Firecannon": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Redemption": {
+      "totalGold": 2800,
+      "components": [
+        {
+          "name": "Ruby Crystal",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Riftmaker": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Eternity": {
+      "totalGold": 2600,
+      "components": [
+        {
+          "name": "Blasting Wand",
+          "gold": 850,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Catalyst of Aeons",
+          "gold": 1300,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Runaan's Hurricane": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Rylai's Crystal Scepter": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Serpent's Fang": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Shadowflame": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Shurelya's Battlesong": {
+      "totalGold": 2600,
+      "components": [
+        {
+          "name": "Aether Wisp",
+          "gold": 900,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Bandleglass Mirror",
+          "gold": 900,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Spear of Shojin": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Spectral Cutlass": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Spirit Visage": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Staff of Flowing Water": {
+      "totalGold": 2600,
+      "components": [
+        {
+          "name": "Amplifying Tome",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Fiendish Codex",
+          "gold": 850,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Statikk Shiv": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Stormrazor": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Stormsurge": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Sundered Sky": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Terminus": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "The Collector": {
+      "totalGold": 3000,
+      "components": [
+        {
+          "name": "Cloak of Agility",
+          "gold": 600,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Pickaxe",
+          "gold": 875,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Serrated Dirk",
+          "gold": 1000,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Thornmail": {
+      "totalGold": 2650,
+      "components": [
+        {
+          "name": "Ruby Crystal",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Bramble Vest",
+          "gold": 800,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Chain Vest",
+          "gold": 800,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Umbral Glaive": {
+      "totalGold": 2800,
+      "components": [
+        {
+          "name": "Serrated Dirk",
+          "gold": 1000,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Caulfield's Warhammer",
+          "gold": 1050,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Unending Despair": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Void Staff": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Voltaic Cyclosword": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Warmog's Armor": {
+      "totalGold": 2750,
+      "components": []
+    },
+    "Wit's End": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Youmuu's Ghostblade": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Yun Tal Wildarrows": {
+      "totalGold": 2500,
+      "components": []
+    },
+    "Zeke's Convergence": {
+      "totalGold": 2300,
+      "components": [
+        {
+          "name": "Cloth Armor",
+          "gold": 300,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Null-Magic Mantle",
+          "gold": 400,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Kindlegem",
+          "gold": 800,
+          "powerPerGold": 0
+        }
+      ]
+    },
+    "Stasis": {
+      "totalGold": 2500,
+      "components": []
+    }
+  }
+}

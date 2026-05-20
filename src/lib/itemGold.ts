@@ -105,7 +105,7 @@ export function sortItemsByGoldAscending(items: Item[]): Item[] {
 
 /**
  * Stat-based buy order (fallback / tests). Production recommendations use
- * `greedySimPurchaseOrder` (marginal sim spike per gold + early-slot budgets).
+ * `greedySimPurchaseOrder` (sim marginal spikes + shop gold + component graph).
  */
 export function sortItemsForPurchaseOrder(items: Item[]): Item[] {
   return items.slice().sort((a, b) => {

@@ -22,11 +22,8 @@ import {
   Item as ItemModel,
   Items,
 } from "@/app/actions/sim";
-import {
-  getItemGold,
-  goldEfficiencyTieBreak,
-  totalBuildGold,
-} from "@/lib/itemGold";
+import { goldEfficiencyTieBreak, totalBuildGold } from "@/lib/itemGold";
+import { greedyPurchaseOrder } from "@/lib/purchaseOrder";
 import { extractDefensiveStats } from "@/lib/itemNameMap";
 
 export type { SimulationScenario };
@@ -543,38 +540,43 @@ function scoreChampion(
 }
 
 /**
- * Priority for the next purchase: marginal sim power, discounted when the item
- * costs more than a realistic single-buy budget for this slot (defers Rabadon-style
- * all-or-nothing legendaries until you can afford them without being useless).
+ * Damage-relevant power for buy-order steps. Intentionally ignores EHP, duel ratio,
+ * and meta paths — only "how much does this item spike my damage right now?"
  */
-function purchaseStepMetric(
-  marginal: number,
-  itemGold: number,
-  slotIndex: number,
-  totalSlots: number,
-  avgGoldPerSlot: number,
+function purchasePowerScore(
+  profile: BuildProfileId,
+  dps: ReturnType<Character["calculateDPS"]>,
+  stats: ReturnType<Character["getTotalStats"]>,
 ): number {
-  if (marginal <= 0) return marginal - itemGold * 1e-6;
-
-  const mpg = marginal / Math.pow(Math.max(itemGold, 350), 0.5);
-  const lateGame = slotIndex >= totalSlots - 2;
-
-  // Typical gold available for this purchase (ramps up through the build).
-  const maxSingleBuy = avgGoldPerSlot * (0.8 + 0.45 * slotIndex);
-  let afford = 1;
-  if (!lateGame && itemGold > maxSingleBuy) {
-    afford = (maxSingleBuy / itemGold) ** 2;
+  switch (profile) {
+    case "glass":
+    case "ability_burst":
+      return dps.comboDPS;
+    case "spell":
+      return dps.abilityDPS + dps.dotDPS + dps.burstDPS;
+    case "ad":
+      return (
+        dps.autoAttackDPS + dps.onHitDPS + dps.sustainedDPS * 0.25
+      );
+    case "ap":
+      return dps.abilityDPS + dps.dotDPS + dps.burstDPS;
+    case "tank":
+      return (
+        blendedDps(dps, 0.35) + Math.log1p((stats.hp ?? 0) / 500) * 8
+      );
+    case "bruiser":
+      return (
+        blendedDps(dps, 0.45) + Math.log1p((stats.hp ?? 0) / 800) * 6
+      );
+    case "balanced":
+    default:
+      return blendedDps(dps, DEFAULT_COMBO_DPS_WEIGHT);
   }
-  if (!lateGame && itemGold > avgGoldPerSlot * 1.3) {
-    afford *= (avgGoldPerSlot / itemGold) ** 1.25;
-  }
-
-  return mpg * afford;
 }
 
 /**
- * Greedy buy order: best marginal sim spike per gold at each step, with early-slot
- * budgets so 3k+ legendaries are not shown as "buy first" while you're still weak.
+ * Buy order for a finalized 6-item build: greedy marginal sim spikes per gold,
+ * income ramp, component tie-breaks (itemRecipes.json). No meta/statistical paths.
  */
 export function greedySimPurchaseOrder(
   champion: Character,
@@ -584,50 +586,16 @@ export function greedySimPurchaseOrder(
   simulation: SimulationScenario | undefined,
   runePage: RunePage | null,
 ): Item[] {
-  if (finalBuild.length <= 1) return finalBuild.slice();
-
-  const totalSlots = finalBuild.length;
-  const totalGold = totalBuildGold(finalBuild);
-  const avgGoldPerSlot = totalGold / totalSlots;
-
-  const remaining = finalBuild.slice();
-  const ordered: Item[] = [];
-
-  const scorePartial = (partial: Item[]): number => {
+  return greedyPurchaseOrder(finalBuild, (partial) => {
     const c = cloneChampionWithLoadout(champion, partial, runePage);
-    return scoreChampion(profile, c, partial, duel, simulation);
-  };
-
-  while (remaining.length > 0) {
-    const slotIndex = ordered.length;
-    const baseScore = scorePartial(ordered);
-
-    let bestItem = remaining[0];
-    let bestMetric = -Infinity;
-
-    for (const candidate of remaining) {
-      const partial = [...ordered, candidate];
-      const marginal = scorePartial(partial) - baseScore;
-      const gold = getItemGold(candidate);
-      const metric = purchaseStepMetric(
-        marginal,
-        gold,
-        slotIndex,
-        totalSlots,
-        avgGoldPerSlot,
-      );
-      if (metric > bestMetric) {
-        bestMetric = metric;
-        bestItem = candidate;
-      }
-    }
-
-    ordered.push(bestItem);
-    const idx = remaining.indexOf(bestItem);
-    remaining.splice(idx, 1);
-  }
-
-  return ordered;
+    const dps = c.calculateDPS(
+      duel.targetMaxHP,
+      duel.targetBonusHP,
+      simulation,
+      dpsMitigationFromDuel(duel),
+    );
+    return purchasePowerScore(profile, dps, c.getTotalStats());
+  });
 }
 
 type KeystoneCacheEntry = { rune: Rune | null; score: number };

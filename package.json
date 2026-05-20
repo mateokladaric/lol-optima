@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "scrape-builds": "tsx scripts/scrape-opgg-builds.ts",
+    "generate-item-recipes": "tsx scripts/generate-item-recipes.ts",
     "compute-meta": "tsx scripts/compute-meta.ts",
     "compute-all": "npm run scrape-builds && npm run compute-meta",
     "regression:sim": "tsx scripts/regression-check.ts",

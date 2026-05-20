@@ -176,10 +176,10 @@ async function main() {
       patchVersion = itemsData.meta.version;
     }
 
-    // Build the 6-item loadout:
-    // 1) Top core_items entry (3 items)
-    // 2) Top boots entry (1 boot)
-    // 3) Fill remaining from last_items (highest pick rate, not already picked)
+    // Build the 6-item loadout for duel/meta reference (not purchase order in-app):
+    // 1) Top core_items entry (3 items, API order = typical completion 1→3)
+    // 2) Top boots entry
+    // 3) Fill from last_items by play rate
     const coreIds: number[] =
       itemsData.data.core_items.length > 0
         ? itemsData.data.core_items[0].ids
