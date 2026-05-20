@@ -89,16 +89,25 @@ for (const test of CASES) {
 
 const lux = Characters.find((c) => c.Name === "Lux");
 if (lux) {
-  const luxSpell = recommendBuildsForChampion(lux, Items, {
+  const luxOpts = {
     simulation: { level: 18 },
-    monteCarlo: false,
-  }).find((r) => r.profile === "spell");
+    monteCarlo: false as const,
+  };
+  const luxRecs = recommendBuildsForChampion(lux, Items, luxOpts);
   const forbidden = /Blade of the Ruined King|Navori Flickerblade|Phantom Dancer/i;
-  const bad = (luxSpell?.items ?? []).some((n) => forbidden.test(n));
-  if (bad) {
-    fail(
-      `Lux spell-only must not pick auto/on-hit items (Navori/BotRK/PD): ${luxSpell?.items.join(", ")}`,
-    );
+  for (const profile of ["spell", "ability_burst"] as const) {
+    const rec = luxRecs.find((r) => r.profile === profile);
+    const bad = (rec?.items ?? []).some((n) => forbidden.test(n));
+    if (bad) {
+      fail(
+        `Lux ${profile} must not pick auto/on-hit items (Navori/BotRK/PD): ${rec?.items.join(", ")}`,
+      );
+    }
+    if (rec && (rec.autoAttackDPS > 0.5 || rec.onHitDPS > 0.5)) {
+      fail(
+        `Lux ${profile} sim must have no AA/on-hit DPS (aa=${rec.autoAttackDPS}, onHit=${rec.onHitDPS})`,
+      );
+    }
   }
 }
 

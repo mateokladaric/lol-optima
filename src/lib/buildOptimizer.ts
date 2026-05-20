@@ -94,7 +94,9 @@ function mergeProfileSimulation(
   simulation: SimulationScenario | undefined,
 ): SimulationScenario {
   const base: SimulationScenario = simulation ? { ...simulation } : {};
-  if (profile === "spell") return { ...base, spellOnlyNoAutos: true };
+  if (profile === "spell" || profile === "ability_burst") {
+    return { ...base, spellOnlyNoAutos: true };
+  }
   return base;
 }
 
@@ -221,6 +223,7 @@ export function dpsMitigationFromDuel(duel: ResolvedDuel) {
 export type BuildProfileId =
   | "balanced"
   | "glass"
+  | "ability_burst"
   | "tank"
   | "ap"
   | "spell"
@@ -459,6 +462,7 @@ function profileScore(
 
   switch (profile) {
     case "glass":
+    case "ability_burst":
       return Math.max(0, combo);
 
     case "tank":
@@ -961,6 +965,11 @@ const PROFILE_META: Record<
     label: "Maximum damage",
     description: "Pure damage focus — lowest survivability tradeoff.",
   },
+  ability_burst: {
+    label: "Maximum ability damage",
+    description:
+      "Same combo burst goal as Maximum damage, but the sim never basic-attacks (no AA/on-hit DPS in the combo window).",
+  },
   tank: {
     label: "Tanky",
     description: "Emphasizes effective HP while keeping meaningful threat.",
@@ -1036,6 +1045,7 @@ export function recommendBuildsForChampion(
   const profiles: BuildProfileId[] = [
     "balanced",
     "glass",
+    "ability_burst",
     "tank",
     "ap",
     "spell",
@@ -1264,6 +1274,7 @@ export function recommendBuildsForChampion(
       const order: BuildProfileId[] = [
         "balanced",
         "glass",
+        "ability_burst",
         "tank",
         "ap",
         "spell",

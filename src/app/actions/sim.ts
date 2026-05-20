@@ -3468,7 +3468,20 @@ function simulateComboWindowDamage(
         total +=
           (autoHitAfterMit + onHitPerAutoMit) * autoWeight * autosInGap;
       } else {
-        break;
+        let nextReady = window;
+        for (const type of castOrder) {
+          const spec = casts.find((c) => c.abilityType === type);
+          if (!spec) continue;
+          const used = castCount.get(type) ?? 0;
+          if (used >= spec.maxCasts) continue;
+          if (t + spec.castTime > window + 1e-6) continue;
+          const ready = readyAt.get(type) ?? 0;
+          if (ready > t + 1e-6) {
+            nextReady = Math.min(nextReady, ready);
+          }
+        }
+        if (nextReady >= window - 1e-6 || nextReady <= t + 1e-6) break;
+        t = nextReady;
       }
     }
   }

@@ -1,6 +1,6 @@
 {
   "patch": "16.10",
-  "scrapedAt": "2026-05-20T14:33:16.692Z",
+  "scrapedAt": "2026-05-20T18:48:46.794Z",
   "champions": {
     "Garen": {
       "position": "TOP",
@@ -603,16 +603,16 @@
       "items": [
         "Umbral Glaive",
         "Profane Hydra",
-        "Lord Dominik's Regards"
+        "Edge of Night"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Umbral Glaive",
         "Profane Hydra",
-        "Lord Dominik's Regards",
-        "Ionian Boots of Lucidity",
         "Edge of Night",
-        "Voltaic Cyclosword"
+        "Ionian Boots of Lucidity",
+        "Voltaic Cyclosword",
+        "Lord Dominik's Regards"
       ],
       "baseStatsLv18": {
         "hp": 2358,
@@ -1604,8 +1604,8 @@
         "Dusk and Dawn",
         "Bandlepipes",
         "Plated Steelcaps",
-        "Bramble Vest",
-        "Thornmail"
+        "Thornmail",
+        "Bramble Vest"
       ],
       "baseStatsLv18": {
         "hp": 2293,
@@ -2391,12 +2391,12 @@
         "Blade of The Ruined King",
         "Thornmail"
       ],
-      "boots": "Mercury's Treads",
+      "boots": "Plated Steelcaps",
       "fullBuild": [
         "Stridebreaker",
         "Blade of The Ruined King",
         "Thornmail",
-        "Mercury's Treads",
+        "Plated Steelcaps",
         "Kraken Slayer",
         "Spirit Visage"
       ],
@@ -3260,8 +3260,8 @@
         "The Collector",
         "Edge of Night",
         "Boots of Swiftness",
-        "Youmuu's Ghostblade",
-        "Infinity Edge"
+        "Infinity Edge",
+        "Youmuu's Ghostblade"
       ],
       "baseStatsLv18": {
         "hp": 2384,
@@ -3681,7 +3681,7 @@
         "Zhonya's Hourglass",
         "Lich Bane",
         "Sorcerer's Shoes",
-        "Rabadon's Deathcap"
+        "Shadowflame"
       ],
       "baseStatsLv18": {
         "hp": 2442,
