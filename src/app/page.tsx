@@ -1,17 +1,33 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   BuildRecommendation,
   DuelAssumptions,
+  EnemyChampionInput,
   ResolvedDuel,
   SimulationScenario,
 } from "@/lib/buildOptimizer";
 import {
+  averageEnemyTeamStats,
   INTERACTIVE_RECOMMEND_OPTIONS,
   recommendBuildsForChampion,
   resolveDuel,
 } from "@/lib/buildOptimizer";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
+
+type ScrapedChampionBuild = {
+  position: string;
+  items: string[];
+  boots: string | null;
+  fullBuild: string[];
+  baseStatsLv18: { hp: number; armor: number; mr: number };
+};
+
+type ScrapedBuildsFile = {
+  patch: string;
+  scrapedAt: string;
+  champions: Record<string, ScrapedChampionBuild>;
+};
 
 type BuildResult = {
   champion: string;
@@ -40,6 +56,131 @@ type SortConfig = {
   direction: "asc" | "desc";
 };
 
+function EnemyTeamPicker({
+  opggBuilds,
+  enemyTeam,
+  setEnemyTeam,
+}: {
+  opggBuilds: ScrapedBuildsFile | null;
+  enemyTeam: string[];
+  setEnemyTeam: (team: string[]) => void;
+}): React.ReactElement {
+  const [search, setSearch] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const availableChamps = useMemo(() => {
+    if (!opggBuilds) return [];
+    return Object.keys(opggBuilds.champions).sort();
+  }, [opggBuilds]);
+
+  const filtered = useMemo(
+    () =>
+      availableChamps.filter(
+        (name) =>
+          !enemyTeam.includes(name) &&
+          name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [availableChamps, enemyTeam, search],
+  );
+
+  const addChamp = useCallback(
+    (name: string) => {
+      if (enemyTeam.length >= 5 || enemyTeam.includes(name)) return;
+      setEnemyTeam([...enemyTeam, name]);
+      setSearch("");
+    },
+    [enemyTeam, setEnemyTeam],
+  );
+
+  const removeChamp = useCallback(
+    (name: string) => {
+      setEnemyTeam(enemyTeam.filter((n) => n !== name));
+    },
+    [enemyTeam, setEnemyTeam],
+  );
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      <div className="flex flex-wrap gap-1.5 mb-1.5">
+        {enemyTeam.map((name) => {
+          const data = opggBuilds?.champions[name];
+          return (
+            <span
+              key={name}
+              className="inline-flex items-center gap-1 text-xs bg-red-900/40 border border-red-700/60 text-red-200 px-2 py-1 rounded"
+            >
+              {name}
+              {data && (
+                <span className="text-red-400/70 text-[10px]">
+                  {data.position}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => removeChamp(name)}
+                className="ml-0.5 text-red-400 hover:text-red-200 font-bold"
+              >
+                x
+              </button>
+            </span>
+          );
+        })}
+      </div>
+      {enemyTeam.length < 5 && (
+        <input
+          type="text"
+          placeholder={
+            opggBuilds
+              ? `Add enemy champion (${5 - enemyTeam.length} slots)…`
+              : "Loading OP.GG data…"
+          }
+          disabled={!opggBuilds}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setDropdownOpen(true);
+          }}
+          onFocus={() => setDropdownOpen(true)}
+          className="w-full px-2 py-1 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:border-red-500 focus:outline-none disabled:opacity-50"
+        />
+      )}
+      {dropdownOpen && filtered.length > 0 && (
+        <div className="absolute z-30 mt-1 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded shadow-lg">
+          {filtered.slice(0, 30).map((name) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => {
+                addChamp(name);
+                setDropdownOpen(false);
+              }}
+              className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-700 transition-colors"
+            >
+              {name}
+              {opggBuilds?.champions[name] && (
+                <span className="text-gray-500 ml-2">
+                  {opggBuilds.champions[name].position}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function BuildFinder(): React.ReactElement {
   const [championSearch, setChampionSearch] = useState("");
   const [selectedChampion, setSelectedChampion] = useState<Character | null>(
@@ -55,6 +196,45 @@ function BuildFinder(): React.ReactElement {
   const [incomingPhysPct, setIncomingPhysPct] = useState(50);
   const [simulationLevel, setSimulationLevel] = useState(18);
   const [useRotationProfiles, setUseRotationProfiles] = useState(true);
+
+  const [opggBuilds, setOpggBuilds] = useState<ScrapedBuildsFile | null>(null);
+  const [enemyTeam, setEnemyTeam] = useState<string[]>([]);
+  const [useAutoStats, setUseAutoStats] = useState(true);
+
+  useEffect(() => {
+    fetch("/data/opggBuilds.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: ScrapedBuildsFile | null) => {
+        if (data) setOpggBuilds(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  const autoStats = useMemo(() => {
+    if (!opggBuilds || enemyTeam.length === 0) return null;
+    const inputs: EnemyChampionInput[] = enemyTeam
+      .map((name) => {
+        const data = opggBuilds.champions[name];
+        if (!data) return null;
+        return {
+          champion: name,
+          items: data.fullBuild,
+          baseStatsLv18: data.baseStatsLv18,
+        };
+      })
+      .filter((x): x is EnemyChampionInput => x !== null);
+    if (inputs.length === 0) return null;
+    return averageEnemyTeamStats(inputs);
+  }, [opggBuilds, enemyTeam]);
+
+  useEffect(() => {
+    if (autoStats && useAutoStats) {
+      setTargetMaxHP(autoStats.targetMaxHP);
+      setTargetBonusHP(autoStats.targetBonusHP);
+      setTargetArmor(autoStats.targetArmor);
+      setTargetMR(autoStats.targetMR);
+    }
+  }, [autoStats, useAutoStats]);
 
   const duelOptions = useMemo<DuelAssumptions>(
     () => ({
@@ -108,21 +288,61 @@ function BuildFinder(): React.ReactElement {
     return () => window.clearTimeout(t);
   }, [selectedChampion, duelOptions, simulationLevel, useRotationProfiles]);
 
+  const isAutoActive = useAutoStats && enemyTeam.length > 0 && autoStats !== null;
+
   return (
     <div className="flex flex-1 flex-col min-h-0 p-4 overflow-hidden">
       <div className="mb-4 shrink-0">
         <h1 className="text-2xl font-bold text-white mb-1">1v1 build finder</h1>
         <p className="text-gray-400 text-sm max-w-3xl">
           Picks a balanced mix of damage and effective HP for a reference duel.
-          Tune opponent HP and how much damage you expect to take as physical vs
-          magic. Builds are refined with simulated annealing (Monte Carlo
-          search), so the first computation for a champion can take a few
-          seconds. Press <kbd className="px-1 bg-gray-800 rounded">F4</kbd> for
-          Random / Meta / manual Planner.
+          Select enemy team champions to auto-compute their average stats from
+          OP.GG most-common builds, or set values manually. Press{" "}
+          <kbd className="px-1 bg-gray-800 rounded">F4</kbd> for Random / Meta
+          / manual Planner.
         </p>
+
+        <fieldset className="mt-3 border border-red-900/50 rounded-lg p-3 bg-red-950/20 text-sm">
+          <legend className="text-red-400 px-1 text-xs font-medium">
+            Enemy team{" "}
+            {opggBuilds && (
+              <span className="text-gray-500 font-normal">
+                (patch {opggBuilds.patch})
+              </span>
+            )}
+          </legend>
+          <EnemyTeamPicker
+            opggBuilds={opggBuilds}
+            enemyTeam={enemyTeam}
+            setEnemyTeam={setEnemyTeam}
+          />
+          {autoStats && enemyTeam.length > 0 && (
+            <div className="mt-2 flex items-center gap-3 text-xs">
+              <span className="text-gray-400">
+                Avg: {autoStats.targetMaxHP} HP (+{autoStats.targetBonusHP}{" "}
+                bonus), {autoStats.targetArmor} armor, {autoStats.targetMR} MR
+              </span>
+              <button
+                type="button"
+                onClick={() => setUseAutoStats((prev) => !prev)}
+                className={`px-2 py-0.5 rounded border text-[10px] font-medium transition-colors ${
+                  useAutoStats
+                    ? "bg-red-900/50 border-red-600 text-red-200"
+                    : "bg-gray-900 border-gray-600 text-gray-400"
+                }`}
+              >
+                {useAutoStats ? "Auto-fill ON" : "Auto-fill OFF"}
+              </button>
+            </div>
+          )}
+        </fieldset>
+
         <fieldset className="mt-3 flex flex-wrap gap-4 items-end text-sm border border-gray-700 rounded-lg p-3 bg-gray-800/30">
           <legend className="text-gray-500 px-1 text-xs">
             Duel assumptions
+            {isAutoActive && (
+              <span className="text-red-400 ml-1">(auto-filled from team)</span>
+            )}
           </legend>
           <div>
             <label
@@ -138,8 +358,11 @@ function BuildFinder(): React.ReactElement {
               max={12000}
               step={100}
               value={targetMaxHP}
-              onChange={(e) => setTargetMaxHP(Number(e.target.value) || 3000)}
-              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+              onChange={(e) => {
+                setTargetMaxHP(Number(e.target.value) || 3000);
+                if (isAutoActive) setUseAutoStats(false);
+              }}
+              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
             />
           </div>
           <div>
@@ -156,8 +379,11 @@ function BuildFinder(): React.ReactElement {
               max={8000}
               step={100}
               value={targetBonusHP}
-              onChange={(e) => setTargetBonusHP(Number(e.target.value) || 0)}
-              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+              onChange={(e) => {
+                setTargetBonusHP(Number(e.target.value) || 0);
+                if (isAutoActive) setUseAutoStats(false);
+              }}
+              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
             />
           </div>
           <div>
@@ -174,8 +400,11 @@ function BuildFinder(): React.ReactElement {
               max={500}
               step={5}
               value={targetArmor}
-              onChange={(e) => setTargetArmor(Number(e.target.value) || 0)}
-              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+              onChange={(e) => {
+                setTargetArmor(Number(e.target.value) || 0);
+                if (isAutoActive) setUseAutoStats(false);
+              }}
+              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
             />
           </div>
           <div>
@@ -192,8 +421,11 @@ function BuildFinder(): React.ReactElement {
               max={500}
               step={5}
               value={targetMR}
-              onChange={(e) => setTargetMR(Number(e.target.value) || 0)}
-              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+              onChange={(e) => {
+                setTargetMR(Number(e.target.value) || 0);
+                if (isAutoActive) setUseAutoStats(false);
+              }}
+              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
             />
           </div>
           <div>

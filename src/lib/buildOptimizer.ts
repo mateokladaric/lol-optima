@@ -27,6 +27,7 @@ import {
   goldEfficiencyTieBreak,
   totalBuildGold,
 } from "@/lib/itemGold";
+import { extractDefensiveStats } from "@/lib/itemNameMap";
 
 export type { SimulationScenario };
 
@@ -1517,5 +1518,65 @@ export function computeMetaForAllChampions(
     generatedAt: new Date().toISOString(),
     duel,
     simulation,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Enemy team stats from scraped OP.GG builds
+// ---------------------------------------------------------------------------
+
+export type EnemyChampionInput = {
+  champion: string;
+  items: string[];
+  baseStatsLv18: { hp: number; armor: number; mr: number };
+};
+
+/**
+ * Compute total stats for a single enemy champion given their scraped build.
+ * Combines level-18 base stats (from Data Dragon) with item stats.
+ */
+export function computeEnemyStatsFromBuild(enemy: EnemyChampionInput): {
+  maxHP: number;
+  bonusHP: number;
+  armor: number;
+  mr: number;
+} {
+  const itemStats = extractDefensiveStats(enemy.items);
+  const maxHP = enemy.baseStatsLv18.hp + itemStats.hp;
+  const bonusHP = itemStats.hp;
+  const armor = enemy.baseStatsLv18.armor + itemStats.armor;
+  const mr = enemy.baseStatsLv18.mr + itemStats.mr;
+  return { maxHP, bonusHP, armor, mr };
+}
+
+/**
+ * Average the stats of 1-5 enemy champions into DuelAssumptions fields.
+ */
+export function averageEnemyTeamStats(
+  enemies: EnemyChampionInput[],
+): { targetMaxHP: number; targetBonusHP: number; targetArmor: number; targetMR: number } {
+  if (enemies.length === 0) {
+    return { targetMaxHP: 3000, targetBonusHP: 1000, targetArmor: 100, targetMR: 100 };
+  }
+
+  let totalHP = 0;
+  let totalBonusHP = 0;
+  let totalArmor = 0;
+  let totalMR = 0;
+
+  for (const enemy of enemies) {
+    const s = computeEnemyStatsFromBuild(enemy);
+    totalHP += s.maxHP;
+    totalBonusHP += s.bonusHP;
+    totalArmor += s.armor;
+    totalMR += s.mr;
+  }
+
+  const n = enemies.length;
+  return {
+    targetMaxHP: Math.round(totalHP / n),
+    targetBonusHP: Math.round(totalBonusHP / n),
+    targetArmor: Math.round(totalArmor / n),
+    targetMR: Math.round(totalMR / n),
   };
 }

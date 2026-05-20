@@ -51,6 +51,15 @@ armor, **50** MR, **3s** combo window):
 - `LOLOPTIMA_WORKERS` — parallel champion threads for `compute-meta` (default:
   CPU count − 1; set `1` or `0` for single-threaded sequential run)
 
+## Enemy team builds (OP.GG scraper)
+
+`npm run scrape-builds` fetches the most common build per champion from OP.GG
+and writes `public/data/opggBuilds.json`. The 1v1 Build Finder UI reads this
+file to let you select 1–5 enemy champions; their level-18 stats (base + items)
+are averaged and auto-filled into the duel assumptions.
+
+`npm run compute-all` runs `scrape-builds` then `compute-meta` in sequence.
+
 ## Quality scripts
 
 - `npm run regression:sim` — simulation regression (pen, manaless champs, etc.)

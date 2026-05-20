@@ -116,20 +116,20 @@
           "champion": "Corki",
           "items": [
             "Infinity Edge",
+            "Hubris",
             "Bastionbreaker",
-            "Umbral Glaive (Base)",
             "The Collector",
             "Phantom Dancer",
             "Stormrazor (Ranged)"
           ],
-          "totalGold": 21065,
+          "totalGold": 20935,
           "rune": "Hail of Blades",
-          "totalDPS": 2409.7060985442818,
-          "sustainedDPS": 4107.46654368254,
+          "totalDPS": 2408.04315211571,
+          "sustainedDPS": 4103.7711071746035,
           "comboDPS": 1020.6293707038889,
           "autoAttackDPS": 1089.12636,
           "onHitDPS": 85.11597733333335,
-          "abilityDPS": 2933.2242063492063,
+          "abilityDPS": 2929.52876984127,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -138,11 +138,11 @@
             "Periodic magic on-hit: +5",
             "Hextech Munitions: +58.1 on-hit (×0.85 sustained)",
             "On-hit total: 87.4 DPS (63.1 * 1.38 AS)",
-            "Phosphorus Bomb: 111.9 DPS (603 dmg / 5.4s CD)",
-            "Valkyrie: 22.3 DPS (206 dmg / 9.2s CD)",
-            "Gatling Gun: 6.6 DPS (61 dmg / 9.2s CD)",
+            "Phosphorus Bomb: 107.6 DPS (603 dmg / 5.6s CD)",
+            "Valkyrie: 21.5 DPS (206 dmg / 9.6s CD)",
+            "Gatling Gun: 6.4 DPS (61 dmg / 9.6s CD)",
             "Missile Barrage: 2837.1 DPS (497 dmg / 0.2s CD)",
-            "Sustained (rotation): 4107.5 DPS",
+            "Sustained (rotation): 4103.8 DPS",
             "Combo (3s window): 3062 total → 1020.6 DPS"
           ],
           "buildType": "glass · Crit/Lethality"
@@ -520,80 +520,6 @@
             "Combo (3s window): 1795 total → 598.3 DPS"
           ],
           "buildType": "spell · Lethality"
-        }
-      ]
-    },
-    {
-      "champion": "Syndra",
-      "builds": [
-        {
-          "champion": "Syndra",
-          "items": [
-            "Heartsteel",
-            "Warmog's Armor",
-            "Navori Flickerblade",
-            "Morellonomicon",
-            "Nashor's Tooth",
-            "Rabadon's Deathcap"
-          ],
-          "totalGold": 20596,
-          "rune": "Hail of Blades",
-          "totalDPS": 999.629506420217,
-          "sustainedDPS": 1161.3256869763397,
-          "comboDPS": 867.3326314197529,
-          "autoAttackDPS": 65.142,
-          "onHitDPS": 76.7228,
-          "abilityDPS": 1019.4608869763398,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
-            "Base AA: 97.7 DPS (54.0 AD * 1.25 crit * 1.45 AS)",
-            "Magic on-hit: +15",
-            "Magic on-hit (AP): +56.5",
-            "On-hit total: 103.6 DPS (71.5 * 1.45 AS)",
-            "Dark Sphere: 303.1 DPS (465 dmg / 1.5s CD)",
-            "Force of Will: 657.4 DPS (890 dmg / 1.4s CD)",
-            "Scatter the Weak: 393.6 DPS (472 dmg / 1.2s CD)",
-            "Unleashed Power: 22.2 DPS (1545 dmg / 69.6s CD)",
-            "Sustained (rotation): 1161.3 DPS",
-            "Combo (3s window): 2602 total → 867.3 DPS"
-          ],
-          "buildType": "balanced · AP/On-Hit"
-        },
-        {
-          "champion": "Syndra",
-          "items": [
-            "Void Staff",
-            "Actualizer",
-            "Rabadon's Deathcap",
-            "Shadowflame",
-            "Stormsurge",
-            "Luden's Echo"
-          ],
-          "totalGold": 20714,
-          "rune": "Press the Attack",
-          "totalDPS": 1431.2850969755555,
-          "sustainedDPS": 770.0766875999998,
-          "comboDPS": 1972.2737955555551,
-          "autoAttackDPS": 25.267200000000003,
-          "onHitDPS": 0,
-          "abilityDPS": 744.8094875999998,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 35.5 DPS (54.0 AD * 1.00 crit * 0.66 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Dark Sphere: 221.9 DPS (740 dmg / 3.3s CD)",
-            "Force of Will: 215.9 DPS (1439 dmg / 6.7s CD)",
-            "Scatter the Weak: 70.5 DPS (705 dmg / 10.0s CD)",
-            "Unleashed Power: 35.5 DPS (2369 dmg / 66.7s CD)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 770.1 DPS",
-            "Combo (3s window): 5917 total → 1972.3 DPS"
-          ],
-          "buildType": "glass · AP"
         }
       ]
     },
@@ -1194,6 +1120,80 @@
       ]
     },
     {
+      "champion": "Syndra",
+      "builds": [
+        {
+          "champion": "Syndra",
+          "items": [
+            "Heartsteel",
+            "Warmog's Armor",
+            "Navori Flickerblade",
+            "Morellonomicon",
+            "Nashor's Tooth",
+            "Riftmaker"
+          ],
+          "totalGold": 20536,
+          "rune": "Hail of Blades",
+          "totalDPS": 873.4862070984911,
+          "sustainedDPS": 1004.4594245633136,
+          "comboDPS": 766.3263019,
+          "autoAttackDPS": 65.142,
+          "onHitDPS": 62.44624711111112,
+          "abilityDPS": 876.8711774522026,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
+            "Base AA: 97.7 DPS (54.0 AD * 1.25 crit * 1.45 AS)",
+            "Magic on-hit: +15",
+            "Magic on-hit (AP): +43.2",
+            "On-hit total: 84.3 DPS (58.2 * 1.45 AS)",
+            "Dark Sphere: 273.0 DPS (407 dmg / 1.5s CD)",
+            "Force of Will: 535.5 DPS (775 dmg / 1.4s CD)",
+            "Scatter the Weak: 352.9 DPS (424 dmg / 1.2s CD)",
+            "Unleashed Power: 22.3 DPS (1372 dmg / 61.5s CD)",
+            "Sustained (rotation): 1004.5 DPS",
+            "Combo (3s window): 2299 total → 766.3 DPS"
+          ],
+          "buildType": "balanced · AP/On-Hit"
+        },
+        {
+          "champion": "Syndra",
+          "items": [
+            "Void Staff",
+            "Actualizer",
+            "Rabadon's Deathcap",
+            "Shadowflame",
+            "Stormsurge",
+            "Luden's Echo"
+          ],
+          "totalGold": 20714,
+          "rune": "Press the Attack",
+          "totalDPS": 1431.2850969755555,
+          "sustainedDPS": 770.0766875999998,
+          "comboDPS": 1972.2737955555551,
+          "autoAttackDPS": 25.267200000000003,
+          "onHitDPS": 0,
+          "abilityDPS": 744.8094875999998,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
+            "Base AA: 35.5 DPS (54.0 AD * 1.00 crit * 0.66 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Dark Sphere: 221.9 DPS (740 dmg / 3.3s CD)",
+            "Force of Will: 215.9 DPS (1439 dmg / 6.7s CD)",
+            "Scatter the Weak: 70.5 DPS (705 dmg / 10.0s CD)",
+            "Unleashed Power: 35.5 DPS (2369 dmg / 66.7s CD)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 770.1 DPS",
+            "Combo (3s window): 5917 total → 1972.3 DPS"
+          ],
+          "buildType": "glass · AP"
+        }
+      ]
+    },
+    {
       "champion": "Kalista",
       "builds": [
         {
@@ -1241,36 +1241,34 @@
             "Actualizer",
             "Bastionbreaker",
             "Hubris",
-            "Luden's Echo",
-            "Muramana (Ranged)"
+            "Umbral Glaive (Base)",
+            "Hextech Gunblade"
           ],
-          "totalGold": 20961,
+          "totalGold": 20873,
           "rune": "Press the Attack",
-          "totalDPS": 1563.0828409098995,
-          "sustainedDPS": 1649.2916845898994,
-          "comboDPS": 1492.5483324444447,
-          "autoAttackDPS": 167.03107878787876,
-          "onHitDPS": 16.635810909090907,
-          "abilityDPS": 1465.6247948929297,
+          "totalDPS": 1546.3242346666666,
+          "sustainedDPS": 1613.484231111111,
+          "comboDPS": 1491.3751466666665,
+          "autoAttackDPS": 201.3525333333333,
+          "onHitDPS": 0,
+          "abilityDPS": 1412.1316977777778,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
-            "Target resistances: 50 armor (90.9% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 172.3 DPS (248.2 AD * 1.00 crit * 0.69 AS)",
-            "Physical on-hit (max mana): +24.7",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 188.8 DPS (272.0 AD * 1.00 crit * 0.69 AS)",
             "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 17.2 DPS (24.7 * 0.69 AS)",
-            "Pierce: 100.1 DPS (592 dmg / 5.6s CD)",
+            "Pierce: 88.0 DPS (556 dmg / 6.0s CD)",
             "Pierce: rotation weight ×0.95 (Kalista)",
-            "Sentinel: 165.9 DPS (332 dmg / 0.5s CD)",
+            "Sentinel: 135.0 DPS (270 dmg / 0.5s CD)",
             "Sentinel: rotation weight ×0.25 (Kalista)",
-            "Rend: 955.0 DPS (2605 dmg / 3.0s CD)",
+            "Rend: 924.6 DPS (2522 dmg / 3.0s CD)",
             "Rend: rotation weight ×1.10 (Kalista)",
             "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 1649.3 DPS",
-            "Combo (3s window): 4478 total → 1492.5 DPS"
+            "Sustained (rotation): 1613.5 DPS",
+            "Combo (3s window): 4474 total → 1491.4 DPS"
           ],
-          "buildType": "glass · AP/Lethality"
+          "buildType": "glass · Lethality/AP"
         }
       ]
     },
@@ -2307,20 +2305,20 @@
           "champion": "Smolder",
           "items": [
             "Bastionbreaker",
-            "Umbral Glaive (Base)",
+            "Hubris",
             "The Collector",
             "Kraken Slayer (Averaged)",
             "Infinity Edge",
             "Phantom Dancer"
           ],
-          "totalGold": 21065,
+          "totalGold": 20935,
           "rune": "Hail of Blades",
-          "totalDPS": 1485.17464139,
-          "sustainedDPS": 1807.2020450000002,
+          "totalDPS": 1483.9170320150001,
+          "sustainedDPS": 1804.4073575000002,
           "comboDPS": 1221.6976748000002,
           "autoAttackDPS": 1021.5855375000001,
           "onHitDPS": 712.9546325000001,
-          "abilityDPS": 72.66187500000001,
+          "abilityDPS": 69.8671875,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -2330,10 +2328,10 @@
             "Dragon Practice: +44.0 on-hit (×0.85 sustained)",
             "Super Scorcher Breath: +400.2 on-hit (×0.92 sustained)",
             "On-hit total: 734.9 DPS (490.2 * 1.50 AS)",
-            "Achooo!: 50.3 DPS (387 dmg / 7.7s CD)",
-            "Flap, Flap, Flap: 26.2 DPS (323 dmg / 12.3s CD)",
-            "MOOOOM!: 12.9 DPS (795 dmg / 61.5s CD)",
-            "Sustained (rotation): 1807.2 DPS",
+            "Achooo!: 48.4 DPS (387 dmg / 8.0s CD)",
+            "Flap, Flap, Flap: 25.2 DPS (323 dmg / 12.8s CD)",
+            "MOOOOM!: 12.4 DPS (795 dmg / 64.0s CD)",
+            "Sustained (rotation): 1804.4 DPS",
             "Combo (3s window): 3665 total → 1221.7 DPS"
           ],
           "buildType": "glass · Lethality/Crit"
@@ -2524,34 +2522,35 @@
           "champion": "Skarner",
           "items": [
             "Warmog's Armor",
-            "Spear of Shojin (Base)",
-            "Heartsteel",
             "Navori Flickerblade",
             "Experimental Hexplate",
+            "Profane Hydra (Melee)",
+            "Chempunk Chainsword",
             "Kraken Slayer (Averaged)"
           ],
-          "totalGold": 20796,
+          "totalGold": 20749,
           "rune": "Hail of Blades",
-          "totalDPS": 774.1356988670358,
-          "sustainedDPS": 1028.231757513166,
-          "comboDPS": 566.2389236111111,
-          "autoAttackDPS": 231.19791666666666,
-          "onHitDPS": 55.58333333333333,
-          "abilityDPS": 741.450507513166,
+          "totalDPS": 1035.4892900280095,
+          "sustainedDPS": 1367.8157062350829,
+          "comboDPS": 763.5858585858585,
+          "autoAttackDPS": 337.59469696969694,
+          "onHitDPS": 171.1931818181818,
+          "abilityDPS": 859.027827447204,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 346.8 DPS (193.0 AD * 1.25 crit * 1.44 AS)",
+            "Target resistances: 50 armor (75.8% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 445.6 DPS (248.0 AD * 1.25 crit * 1.44 AS)",
             "Physical on-hit: +58",
-            "On-hit total: 83.4 DPS (58.0 * 1.44 AS)",
-            "Shattered Earth: 867.4 DPS (1188 dmg / 1.4s CD)",
-            "Ixtal's Impact: 239.8 DPS (296 dmg / 1.2s CD)",
-            "Impale: 5.0 DPS (450 dmg / 90.0s CD)",
-            "Sustained (rotation): 1028.2 DPS",
-            "Combo (3s window): 1699 total → 566.2 DPS"
+            "AoE physical on-hit: +99.2",
+            "On-hit total: 226.0 DPS (157.2 * 1.44 AS)",
+            "Shattered Earth: 909.5 DPS (1246 dmg / 1.4s CD)",
+            "Ixtal's Impact: 248.7 DPS (307 dmg / 1.2s CD)",
+            "Impale: 6.3 DPS (450 dmg / 72.0s CD)",
+            "Sustained (rotation): 1367.8 DPS",
+            "Combo (3s window): 2291 total → 763.6 DPS"
           ],
-          "buildType": "tank · Tank/Crit"
+          "buildType": "ap · Lethality/Crit"
         }
       ]
     },
@@ -2971,6 +2970,46 @@
             "Combo (3s window): 1620 total → 540.1 DPS"
           ],
           "buildType": "balanced · Lethality/Tank"
+        },
+        {
+          "champion": "Camille",
+          "items": [
+            "Heartsteel",
+            "Profane Hydra (Melee)",
+            "Navori Flickerblade",
+            "Warmog's Armor",
+            "Stormrazor (Melee)",
+            "The Collector"
+          ],
+          "totalGold": 19789,
+          "rune": "Hail of Blades",
+          "totalDPS": 658.2587930409752,
+          "sustainedDPS": 851.6862067577229,
+          "comboDPS": 500,
+          "autoAttackDPS": 391.4015573770492,
+          "onHitDPS": 94.35761311475412,
+          "abilityDPS": 365.9270362659195,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (82.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 477.5 DPS (223.0 AD * 1.75 crit * 1.22 AS)",
+            "Periodic magic on-hit: +6",
+            "AoE physical on-hit: +89.2",
+            "On-hit total: 116.5 DPS (95.2 * 1.22 AS)",
+            "Precision Protocol: 55.7 DPS (89 dmg / 1.8s CD)",
+            "Precision Protocol: rotation weight ×1.15 (Camille)",
+            "Tactical Sweep: 236.2 DPS (431 dmg / 1.4s CD)",
+            "Tactical Sweep: rotation weight ×0.75 (Camille)",
+            "Hookshot / Wall Dive: 154.5 DPS (296 dmg / 1.2s CD)",
+            "Hookshot / Wall Dive: rotation weight ×0.65 (Camille)",
+            "The Hextech Ultimatum: 0.0 DPS (0 dmg / 81.8s CD)",
+            "The Hextech Ultimatum: rotation weight ×0.45 (Camille)",
+            "Sustained (rotation): 851.7 DPS",
+            "Combo (3s window): 1454 total → 484.7 DPS",
+            "Collector execute (Death): +46 vs 1500 HP (≤5% max HP)"
+          ],
+          "buildType": "balanced · Crit/Lethality"
         },
         {
           "champion": "Camille",
@@ -4830,19 +4869,19 @@
           "items": [
             "Bastionbreaker",
             "Infinity Edge",
-            "Hubris",
+            "Umbral Glaive (Base)",
             "The Collector",
             "Phantom Dancer",
             "Stormrazor (Ranged)"
           ],
-          "totalGold": 20935,
+          "totalGold": 21065,
           "rune": "Hail of Blades",
-          "totalDPS": 1126.7238907490078,
-          "sustainedDPS": 1239.4883432539682,
+          "totalDPS": 1129.204962177579,
+          "sustainedDPS": 1245.00183531746,
           "comboDPS": 1034.4620659722223,
           "autoAttackDPS": 1097.1718749999998,
           "onHitDPS": 4.479166666666666,
-          "abilityDPS": 137.83730158730157,
+          "abilityDPS": 143.35079365079366,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -4850,10 +4889,10 @@
             "Base AA: 1097.2 DPS (355.0 AD * 2.30 crit * 1.34 AS)",
             "Periodic magic on-hit: +5",
             "On-hit total: 6.7 DPS (5.0 * 1.34 AS)",
-            "Dance of Arrows: 49.7 DPS (358 dmg / 7.2s CD)",
-            "Wolf's Frenzy: 10.4 DPS (117 dmg / 11.2s CD)",
-            "Mounting Dread: 81.3 DPS (520 dmg / 6.4s CD)",
-            "Sustained (rotation): 1239.5 DPS",
+            "Dance of Arrows: 51.6 DPS (358 dmg / 6.9s CD)",
+            "Wolf's Frenzy: 10.8 DPS (117 dmg / 10.8s CD)",
+            "Mounting Dread: 84.5 DPS (520 dmg / 6.2s CD)",
+            "Sustained (rotation): 1245.0 DPS",
             "Combo (3s window): 3103 total → 1034.5 DPS"
           ],
           "buildType": "glass · Crit/Lethality"
@@ -6716,19 +6755,19 @@
           "items": [
             "Infinity Edge",
             "Bastionbreaker",
-            "Umbral Glaive (Base)",
+            "Hubris",
             "The Collector",
             "Phantom Dancer",
             "Stormrazor (Ranged)"
           ],
-          "totalGold": 21065,
+          "totalGold": 20935,
           "rune": "Hail of Blades",
-          "totalDPS": 1166.1844655456348,
-          "sustainedDPS": 1406.279663095238,
+          "totalDPS": 1164.8755534920635,
+          "sustainedDPS": 1403.370969642857,
           "comboDPS": 969.742940277778,
           "autoAttackDPS": 1119.1524,
           "onHitDPS": 211.50123333333335,
-          "abilityDPS": 75.62602976190476,
+          "abilityDPS": 72.7173363095238,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -6737,10 +6776,10 @@
             "Periodic magic on-hit: +5",
             "Love Tap: +146.6 on-hit (×0.85 sustained)",
             "On-hit total: 213.9 DPS (151.6 * 1.41 AS)",
-            "Double Up: 60.7 DPS (373 dmg / 6.2s CD)",
-            "Make It Rain: 17.6 DPS (190 dmg / 10.8s CD)",
-            "Bullet Time: 3.2 DPS (247 dmg / 76.9s CD)",
-            "Sustained (rotation): 1406.3 DPS",
+            "Double Up: 58.3 DPS (373 dmg / 6.4s CD)",
+            "Make It Rain: 17.0 DPS (190 dmg / 11.2s CD)",
+            "Bullet Time: 3.1 DPS (247 dmg / 80.0s CD)",
+            "Sustained (rotation): 1403.4 DPS",
             "Combo (3s window): 2909 total → 969.7 DPS"
           ],
           "buildType": "glass · Crit/Lethality"
@@ -9143,41 +9182,6 @@
             "Combo (3s window): 965 total → 321.8 DPS"
           ],
           "buildType": "spell · AP"
-        },
-        {
-          "champion": "Vi",
-          "items": [
-            "Heartsteel",
-            "Warmog's Armor",
-            "Umbral Glaive (Base)",
-            "Youmuu's Ghostblade",
-            "Chempunk Chainsword",
-            "Rabadon's Deathcap"
-          ],
-          "totalGold": 20237,
-          "rune": "Summon Aery",
-          "totalDPS": 282.37554459064324,
-          "sustainedDPS": 290.8611842105263,
-          "comboDPS": 275.4327485380117,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 290.8611842105263,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (87.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (223.0 AD * 1.00 crit * 0.64 AS)",
-            "Vault Breaker: 52.2 DPS (254 dmg / 4.6s CD)",
-            "Vault Breaker: rotation weight ×0.95 (Vi)",
-            "Relentless Force: 226.9 DPS (1009 dmg / 4.0s CD)",
-            "Relentless Force: rotation weight ×0.90 (Vi)",
-            "Cease and Desist: 4.0 DPS (494 dmg / 61.5s CD)",
-            "Cease and Desist: rotation weight ×0.50 (Vi)",
-            "Rune (ability): 48.4 DPS (74 / 1.5s)",
-            "Sustained (rotation): 290.9 DPS",
-            "Combo (3s window): 826 total → 275.4 DPS"
-          ],
-          "buildType": "spell · Lethality/AP"
         }
       ]
     },
@@ -9918,19 +9922,19 @@
           "items": [
             "Bastionbreaker",
             "Infinity Edge",
+            "Hubris",
             "The Collector",
-            "Umbral Glaive (Base)",
             "Phantom Dancer",
             "Stormrazor (Ranged)"
           ],
-          "totalGold": 21065,
+          "totalGold": 20935,
           "rune": "Hail of Blades",
-          "totalDPS": 1018.5343381076386,
-          "sustainedDPS": 1194.7479166666665,
+          "totalDPS": 1016.6555881076388,
+          "sustainedDPS": 1190.5729166666665,
           "comboDPS": 874.3595920138887,
           "autoAttackDPS": 1081.7187499999998,
           "onHitDPS": 4.479166666666666,
-          "abilityDPS": 108.55000000000001,
+          "abilityDPS": 104.375,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -9938,11 +9942,11 @@
             "Base AA: 1081.7 DPS (350.0 AD * 2.30 crit * 1.34 AS)",
             "Periodic magic on-hit: +5",
             "On-hit total: 6.7 DPS (5.0 * 1.34 AS)",
-            "Boomerang Blade: 78.2 DPS (570 dmg / 6.9s CD)",
+            "Boomerang Blade: 75.2 DPS (570 dmg / 7.2s CD)",
             "Boomerang Blade: rotation weight ×0.95 (Sivir)",
-            "Ricochet: 30.3 DPS (175 dmg / 4.6s CD)",
+            "Ricochet: 29.2 DPS (175 dmg / 4.8s CD)",
             "Ricochet: rotation weight ×0.80 (Sivir)",
-            "Sustained (rotation): 1194.7 DPS",
+            "Sustained (rotation): 1190.6 DPS",
             "Combo (3s window): 2623 total → 874.4 DPS"
           ],
           "buildType": "glass · Crit/Lethality"
@@ -10818,39 +10822,6 @@
             "Combo (3s window): 3344 total → 1114.6 DPS"
           ],
           "buildType": "glass · Lethality/Crit"
-        },
-        {
-          "champion": "Viego",
-          "items": [
-            "Warmog's Armor",
-            "Profane Hydra (Melee)",
-            "Experimental Hexplate",
-            "Maw of Malmortius (Base)",
-            "The Collector",
-            "Axiom Arc"
-          ],
-          "totalGold": 20936,
-          "rune": "Hail of Blades",
-          "totalDPS": 634.0790978565706,
-          "sustainedDPS": 627.2315064102565,
-          "comboDPS": 639.6816726762821,
-          "autoAttackDPS": 376.0564903846155,
-          "onHitDPS": 120.33807692307694,
-          "abilityDPS": 130.8369391025641,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (96.2% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 391.1 DPS (317.0 AD * 1.25 crit * 0.99 AS)",
-            "AoE physical on-hit: +126.8",
-            "On-hit total: 125.2 DPS (126.8 * 0.99 AS)",
-            "Blade of the Ruined King: 74.2 DPS (307 dmg / 4.1s CD)",
-            "Spectral Maw: 72.5 DPS (300 dmg / 4.1s CD)",
-            "Heartbreaker: 11.6 DPS (642 dmg / 55.2s CD)",
-            "Sustained (rotation): 627.2 DPS",
-            "Combo (3s window): 1919 total → 639.7 DPS"
-          ],
-          "buildType": "ap · Lethality"
         },
         {
           "champion": "Viego",
@@ -12872,20 +12843,20 @@
           "champion": "Urgot",
           "items": [
             "Bastionbreaker",
-            "Umbral Glaive (Base)",
+            "Hubris",
             "The Collector",
             "Infinity Edge",
             "Muramana (Ranged)",
             "Actualizer"
           ],
-          "totalGold": 20601,
+          "totalGold": 20471,
           "rune": "Press the Attack",
-          "totalDPS": 764.9505244444443,
-          "sustainedDPS": 680.0550666666666,
+          "totalDPS": 761.6791444444443,
+          "sustainedDPS": 672.7853333333333,
           "comboDPS": 834.4104444444444,
           "autoAttackDPS": 404.79999999999995,
           "onHitDPS": 12,
-          "abilityDPS": 263.25506666666666,
+          "abilityDPS": 255.98533333333336,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -12894,11 +12865,11 @@
             "Physical on-hit (max mana): +18.0",
             "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
             "On-hit total: 11.3 DPS (18.0 * 0.63 AS)",
-            "Corrosive Charge: 98.3 DPS (508 dmg / 5.2s CD)",
-            "Disdain: 62.0 DPS (560 dmg / 9.0s CD)",
-            "Fear Beyond Death: 12.1 DPS (548 dmg / 45.2s CD)",
+            "Corrosive Charge: 95.2 DPS (508 dmg / 5.3s CD)",
+            "Disdain: 60.0 DPS (560 dmg / 9.3s CD)",
+            "Fear Beyond Death: 11.7 DPS (548 dmg / 46.7s CD)",
             "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 680.1 DPS",
+            "Sustained (rotation): 672.8 DPS",
             "Combo (3s window): 2503 total → 834.4 DPS"
           ],
           "buildType": "glass · Lethality/Crit"
@@ -15345,16 +15316,16 @@
             "Bastionbreaker",
             "The Collector",
             "Phantom Dancer",
-            "Hubris"
+            "Umbral Glaive (Base)"
           ],
-          "totalGold": 20935,
+          "totalGold": 21065,
           "rune": "Hail of Blades",
-          "totalDPS": 1042.763286904762,
-          "sustainedDPS": 1195.0897023809523,
+          "totalDPS": 1043.753581547619,
+          "sustainedDPS": 1197.2903571428571,
           "comboDPS": 918.1325833333334,
           "autoAttackDPS": 1135.3719999999998,
           "onHitDPS": 4.701333333333333,
-          "abilityDPS": 55.016369047619044,
+          "abilityDPS": 57.217023809523816,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -15362,53 +15333,16 @@
             "Base AA: 1135.4 DPS (350.0 AD * 2.30 crit * 1.41 AS)",
             "Periodic magic on-hit: +5",
             "On-hit total: 7.1 DPS (5.0 * 1.41 AS)",
-            "Rocket Jump: 11.9 DPS (295 dmg / 11.2s CD)",
+            "Rocket Jump: 12.3 DPS (295 dmg / 10.8s CD)",
             "Rocket Jump: rotation weight ×0.45 (Tristana)",
-            "Explosive Charge: 45.7 DPS (487 dmg / 11.2s CD)",
+            "Explosive Charge: 47.5 DPS (487 dmg / 10.8s CD)",
             "Explosive Charge: rotation weight ×1.05 (Tristana)",
-            "Buster Shot: 2.2 DPS (500 dmg / 80.0s CD)",
+            "Buster Shot: 2.3 DPS (500 dmg / 76.9s CD)",
             "Buster Shot: rotation weight ×0.35 (Tristana)",
-            "Sustained (rotation): 1195.1 DPS",
+            "Sustained (rotation): 1197.3 DPS",
             "Combo (3s window): 2754 total → 918.1 DPS"
           ],
           "buildType": "glass · Crit/Lethality"
-        },
-        {
-          "champion": "Tristana",
-          "items": [
-            "Warmog's Armor",
-            "Navori Flickerblade",
-            "Titanic Hydra (Base)",
-            "Bastionbreaker",
-            "The Collector",
-            "Phantom Dancer"
-          ],
-          "totalGold": 20505,
-          "rune": "Lethal Tempo (sustained avg)",
-          "totalDPS": 584.1209338124756,
-          "sustainedDPS": 747.2478996080711,
-          "comboDPS": 450.65341634335215,
-          "autoAttackDPS": 452.73033898305084,
-          "onHitDPS": 40.237031972881354,
-          "abilityDPS": 254.2805286521388,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (84.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 534.2 DPS (205.0 AD * 1.75 crit * 1.49 AS)",
-            "Physical on-hit (target max HP): +15.0",
-            "Rune (Lethal Tempo bolt, sustained): +16.9 per hit",
-            "On-hit total: 47.5 DPS (31.9 * 1.49 AS)",
-            "Rocket Jump: 94.8 DPS (295 dmg / 1.4s CD)",
-            "Rocket Jump: rotation weight ×0.45 (Tristana)",
-            "Explosive Charge: 223.9 DPS (299 dmg / 1.4s CD)",
-            "Explosive Charge: rotation weight ×1.05 (Tristana)",
-            "Buster Shot: 2.0 DPS (500 dmg / 87.0s CD)",
-            "Buster Shot: rotation weight ×0.35 (Tristana)",
-            "Sustained (rotation): 747.2 DPS",
-            "Combo (3s window): 1352 total → 450.7 DPS"
-          ],
-          "buildType": "ap · Crit/Lethality"
         },
         {
           "champion": "Tristana",
@@ -15772,41 +15706,6 @@
             "Combo (3s window): 465 total → 155.0 DPS"
           ],
           "buildType": "spell · Lethality"
-        },
-        {
-          "champion": "Ashe",
-          "items": [
-            "Warmog's Armor",
-            "Malignance",
-            "Blackfire Torch",
-            "Abyssal Mask",
-            "Morellonomicon",
-            "Jak'Sho, The Protean"
-          ],
-          "totalGold": 21180,
-          "rune": "Summon Aery",
-          "totalDPS": 152.27297649572654,
-          "sustainedDPS": 201.83730769230772,
-          "comboDPS": 111.7203418803419,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 74.76038461538461,
-          "dotDPS": 127.0769230769231,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (76.9% magic dmg)",
-            "Base AA: 0.0 DPS (59.0 AD * 1.00 crit * 0.66 AS)",
-            "Magic DoT: +120 DPS",
-            "Magic DoT (AP): +27.5 DPS",
-            "Volley: 44.4 DPS (148 dmg / 2.7s CD)",
-            "Volley: rotation weight ×0.80 (Ashe)",
-            "Enchanted Crystal Arrow: 5.6 DPS (850 dmg / 53.3s CD)",
-            "Enchanted Crystal Arrow: rotation weight ×0.35 (Ashe)",
-            "Rune (ability): 46.9 DPS (63 / 1.3s)",
-            "Sustained (rotation): 201.8 DPS",
-            "Combo (3s window): 335 total → 111.7 DPS"
-          ],
-          "buildType": "spell · Tank/AP"
         }
       ]
     },
@@ -16257,6 +16156,71 @@
             "Combo (3s window): 709 total → 236.3 DPS"
           ],
           "buildType": "spell · AP"
+        },
+        {
+          "champion": "Illaoi",
+          "items": [
+            "Warmog's Armor",
+            "Profane Hydra (Melee)",
+            "Blade of the Ruined King (Melee)",
+            "Hullbreaker",
+            "The Collector",
+            "Maw of Malmortius (Base)"
+          ],
+          "totalGold": 20931,
+          "rune": "Hail of Blades",
+          "totalDPS": 505.0597944415984,
+          "sustainedDPS": 553.6629098360655,
+          "comboDPS": 465.29360911885254,
+          "autoAttackDPS": 307.6972336065574,
+          "onHitDPS": 162.78176229508196,
+          "abilityDPS": 83.18391393442623,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (82.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 375.4 DPS (310.0 AD * 1.25 crit * 0.97 AS)",
+            "Physical on-hit (current HP): +81.0",
+            "AoE physical on-hit: +124.0",
+            "On-hit total: 198.6 DPS (205.0 * 0.97 AS)",
+            "Harsh Lesson: 93.0 DPS (298 dmg / 3.2s CD)",
+            "Leap of Faith: 8.4 DPS (473 dmg / 56.0s CD)",
+            "Sustained (rotation): 553.7 DPS",
+            "Combo (3s window): 1396 total → 465.3 DPS"
+          ],
+          "buildType": "ad · Lethality/Tank"
+        },
+        {
+          "champion": "Illaoi",
+          "items": [
+            "Warmog's Armor",
+            "Profane Hydra (Melee)",
+            "Experimental Hexplate",
+            "Infinity Edge",
+            "Phantom Dancer",
+            "Maw of Malmortius (Base)"
+          ],
+          "totalGold": 21193,
+          "rune": "Hail of Blades",
+          "totalDPS": 598.9967070960722,
+          "sustainedDPS": 690.5472132034631,
+          "comboDPS": 524.0917475536617,
+          "autoAttackDPS": 495.5078125,
+          "onHitDPS": 120.12310606060606,
+          "abilityDPS": 74.91629464285714,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (75.8% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 654.1 DPS (295.0 AD * 1.65 crit * 1.34 AS)",
+            "AoE physical on-hit: +118.0",
+            "On-hit total: 158.6 DPS (118.0 * 1.34 AS)",
+            "Harsh Lesson: 90.6 DPS (290 dmg / 3.2s CD)",
+            "Leap of Faith: 8.3 DPS (465 dmg / 56.0s CD)",
+            "Sustained (rotation): 690.5 DPS",
+            "Combo (3s window): 1572 total → 524.1 DPS"
+          ],
+          "buildType": "bruiser · Crit/Lethality"
         }
       ]
     },
@@ -16885,20 +16849,20 @@
           "champion": "Quinn",
           "items": [
             "Bastionbreaker",
-            "Hubris",
+            "Umbral Glaive (Base)",
             "The Collector",
             "Infinity Edge",
             "Stormrazor (Ranged)",
             "Phantom Dancer"
           ],
-          "totalGold": 20935,
+          "totalGold": 21065,
           "rune": "Hail of Blades",
-          "totalDPS": 781.0075135125,
-          "sustainedDPS": 1259.2448650000001,
+          "totalDPS": 782.8366697625,
+          "sustainedDPS": 1263.3096566666668,
           "comboDPS": 389.72240775,
           "autoAttackDPS": 1152.83774,
           "onHitDPS": 4.787333333333333,
-          "abilityDPS": 101.61979166666666,
+          "abilityDPS": 105.68458333333335,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
@@ -16906,13 +16870,13 @@
             "Base AA: 1152.8 DPS (349.0 AD * 2.30 crit * 1.44 AS)",
             "Periodic magic on-hit: +5",
             "On-hit total: 7.2 DPS (5.0 * 1.44 AS)",
-            "Blinding Assault: 58.4 DPS (495 dmg / 7.2s CD)",
+            "Blinding Assault: 60.8 DPS (495 dmg / 6.9s CD)",
             "Blinding Assault: rotation weight ×0.85 (Quinn)",
-            "Vault: 20.1 DPS (198 dmg / 6.4s CD)",
+            "Vault: 20.9 DPS (198 dmg / 6.2s CD)",
             "Vault: rotation weight ×0.65 (Quinn)",
-            "Behind Enemy Lines: 23.1 DPS (222 dmg / 2.4s CD)",
+            "Behind Enemy Lines: 24.0 DPS (222 dmg / 2.3s CD)",
             "Behind Enemy Lines: rotation weight ×0.25 (Quinn)",
-            "Sustained (rotation): 1259.2 DPS",
+            "Sustained (rotation): 1263.3 DPS",
             "Combo (3s window): 1169 total → 389.7 DPS"
           ],
           "buildType": "glass · Crit/Lethality"
@@ -17916,8 +17880,8 @@
             "Heartsteel",
             "Warmog's Armor",
             "Navori Flickerblade",
-            "Nashor's Tooth",
             "Morellonomicon",
+            "Nashor's Tooth",
             "Rabadon's Deathcap"
           ],
           "totalGold": 20596,
@@ -17942,7 +17906,7 @@
             "Sustained (rotation): 625.6 DPS",
             "Combo (3s window): 1292 total → 430.8 DPS"
           ],
-          "buildType": "ap · AP/On-Hit"
+          "buildType": "tank · AP/On-Hit"
         },
         {
           "champion": "Zyra",
@@ -17977,39 +17941,6 @@
             "Combo (3s window): 1428 total → 476.1 DPS"
           ],
           "buildType": "spell · AP"
-        },
-        {
-          "champion": "Zyra",
-          "items": [
-            "Warmog's Armor",
-            "Titanic Hydra (Base)",
-            "Navori Flickerblade",
-            "Experimental Hexplate",
-            "Phantom Dancer",
-            "Infinity Edge"
-          ],
-          "totalGold": 20938,
-          "rune": "Hail of Blades",
-          "totalDPS": 552.8761373860233,
-          "sustainedDPS": 774.7151334581381,
-          "comboDPS": 371.3715042361111,
-          "autoAttackDPS": 475.58316,
-          "onHitDPS": 17.365499999999997,
-          "abilityDPS": 281.7664734581381,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 713.4 DPS (208.0 AD * 1.98 crit * 1.74 AS)",
-            "Physical on-hit (target max HP): +15.0",
-            "On-hit total: 26.0 DPS (15.0 * 1.74 AS)",
-            "Deadly Spines: 180.4 DPS (220 dmg / 1.2s CD)",
-            "Grasping Roots: 239.0 DPS (200 dmg / 0.8s CD)",
-            "Stranglethorns: 3.2 DPS (350 dmg / 110.0s CD)",
-            "Sustained (rotation): 774.7 DPS",
-            "Combo (3s window): 1114 total → 371.4 DPS"
-          ],
-          "buildType": "ad · Crit/On-Hit"
         }
       ]
     },
@@ -18306,7 +18237,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-05-18T20:44:37.521Z",
+  "generatedAt": "2026-05-20T14:34:48.230Z",
   "duel": {
     "targetMaxHP": 1500,
     "targetBonusHP": 0,
