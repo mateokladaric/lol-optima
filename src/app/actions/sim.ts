@@ -2675,7 +2675,22 @@ type ChampionComboProfile = {
   deathMarkPopRatio?: number[];
   /** 0–1: how much auto damage counts in a short all-in (assassins ≈ low). */
   comboAutoWeight?: number;
+  /**
+   * Multiplier on item-granted flat/% on-hit (not ability passives). Assassins
+   * do not weave enough autos for Kraken/BotRK to reach full value.
+   */
+  itemOnHitScale?: number;
 };
+
+/** Scale for item stats that only apply on basic attacks (Kraken, BotRK, etc.). */
+export function itemOnHitScaleForChampion(championName: string): number {
+  const profile = CHAMPION_COMBO_PROFILES[championName];
+  if (profile?.itemOnHitScale != null) return profile.itemOnHitScale;
+  if ((profile?.comboAutoWeight ?? 0.65) <= 0.32) {
+    return profile!.comboAutoWeight!;
+  }
+  return 1;
+}
 
 /** Champions without a mana bar should not receive mana-scaling item recommendations. */
 export type ChampionResourceType = "mana" | "energy" | "none";
@@ -2741,14 +2756,17 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
   Akali: {
     castOrder: ["R", "Q", "E", "W"],
     comboAutoWeight: 0.25,
+    itemOnHitScale: 0.25,
   },
   KhaZix: {
     castOrder: ["R", "Q", "W", "E"],
     comboAutoWeight: 0.3,
+    itemOnHitScale: 0.3,
   },
   LeBlanc: {
     castOrder: ["R", "W", "Q", "E"],
     comboAutoWeight: 0.2,
+    itemOnHitScale: 0.2,
   },
   Talon: {
     castOrder: ["R", "W", "Q", "E"],
@@ -2760,6 +2778,8 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     abilityDupMultiplier: { Q: 1.55, E: 1.85 },
     deathMarkPopRatio: [0.25, 0.4, 0.55],
     comboAutoWeight: 0.3,
+    /** Few autos between spells — on-hit item stats (Kraken, BotRK) scale down. */
+    itemOnHitScale: 0.3,
   },
   Irelia: {
     castOrder: ["R", "E", "Q", "W"],
@@ -3906,6 +3926,8 @@ class Character {
     let onHitPhysPerAttack = 0;
     let onHitMagicPerAttack = 0;
     let onHitTruePerAttack = 0;
+    const itemOnHitScale = itemOnHitScaleForChampion(this.Name);
+    const scaleItemOnHit = (dmg: number) => dmg * itemOnHitScale;
 
     const addOnHitPhys = (dmg: number, label: string) => {
       onHitDamagePerAttack += dmg;
@@ -3933,18 +3955,21 @@ class Character {
       breakdown.push(label);
     };
 
-    // Physical on-hit
+    // Physical on-hit (item stats — scaled for low-auto champions)
     if (stats.physicalOnHit) {
+      const dmg = scaleItemOnHit(stats.physicalOnHit);
       addOnHitPhys(
-        stats.physicalOnHit,
-        `Physical on-hit: +${stats.physicalOnHit}`,
+        dmg,
+        `Physical on-hit: +${dmg.toFixed(1)}${itemOnHitScale < 1 ? ` (×${itemOnHitScale} auto weave)` : ""}`,
       );
     }
     if (stats.physicalOnHitBaseADPercent) {
       const hasSpellbladeItem = this.Items.some(
         (i) => i.getGroupName() === "Spellblade",
       );
-      const rawDmg = (this.AD * stats.physicalOnHitBaseADPercent) / 100;
+      const rawDmg = scaleItemOnHit(
+        (this.AD * stats.physicalOnHitBaseADPercent) / 100,
+      );
       if (hasSpellbladeItem && attackRate > 0) {
         // Spellblade has a 1.5s ICD — scale damage by proc uptime
         const uptime = spellbladeOnHitUptime(attackRate);
@@ -3956,29 +3981,37 @@ class Character {
     }
     if (stats.physicalOnHitCurrentHealthPercent) {
       const avgCurrentHP = targetMaxHP * sim.avgCurrentHPRatio;
-      const dmg =
-        (avgCurrentHP * stats.physicalOnHitCurrentHealthPercent) / 100;
+      const dmg = scaleItemOnHit(
+        (avgCurrentHP * stats.physicalOnHitCurrentHealthPercent) / 100,
+      );
       addOnHitPhys(dmg, `Physical on-hit (current HP): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitMaxHealthPercent) {
-      const dmg = (targetMaxHP * stats.physicalOnHitMaxHealthPercent) / 100;
+      const dmg = scaleItemOnHit(
+        (targetMaxHP * stats.physicalOnHitMaxHealthPercent) / 100,
+      );
       addOnHitPhys(dmg, `Physical on-hit (target max HP): +${dmg.toFixed(1)}`);
     }
     if (stats.physicalOnHitMaxManaPercent) {
       const maxMana = stats.mana;
-      const dmg = (maxMana * stats.physicalOnHitMaxManaPercent) / 100;
+      const dmg = scaleItemOnHit(
+        (maxMana * stats.physicalOnHitMaxManaPercent) / 100,
+      );
       addOnHitPhys(dmg, `Physical on-hit (max mana): +${dmg.toFixed(1)}`);
     }
 
-    // Magic on-hit
+    // Magic on-hit (item stats)
     if (stats.magicOnHit) {
-      addOnHitMagic(stats.magicOnHit, `Magic on-hit: +${stats.magicOnHit}`);
+      const dmg = scaleItemOnHit(stats.magicOnHit);
+      addOnHitMagic(dmg, `Magic on-hit: +${dmg.toFixed(1)}`);
     }
     if (stats.magicOnHitBaseADPercent) {
       const hasSpellbladeItemMagic = this.Items.some(
         (i) => i.getGroupName() === "Spellblade",
       );
-      const rawDmg = (this.AD * stats.magicOnHitBaseADPercent) / 100;
+      const rawDmg = scaleItemOnHit(
+        (this.AD * stats.magicOnHitBaseADPercent) / 100,
+      );
       if (hasSpellbladeItemMagic && attackRate > 0) {
         const uptime = spellbladeOnHitUptime(attackRate);
         const dmg = rawDmg * uptime;
@@ -3988,25 +4021,27 @@ class Character {
       }
     }
     if (stats.magicOnHitAPRatio) {
-      const dmg = (stats.ap * stats.magicOnHitAPRatio) / 100;
+      const dmg = scaleItemOnHit((stats.ap * stats.magicOnHitAPRatio) / 100);
       addOnHitMagic(dmg, `Magic on-hit (AP): +${dmg.toFixed(1)}`);
     }
 
     // Periodic on-hit (already averaged per attack)
     if (stats.magicPeriodicOnHit) {
-      addOnHitMagic(
-        stats.magicPeriodicOnHit,
-        `Periodic magic on-hit: +${stats.magicPeriodicOnHit}`,
-      );
+      const dmg = scaleItemOnHit(stats.magicPeriodicOnHit);
+      addOnHitMagic(dmg, `Periodic magic on-hit: +${dmg.toFixed(1)}`);
     }
 
     // AoE on-hit damage
     if (stats.physicalAoEOnHitADPercent) {
-      const dmg = (stats.ad * stats.physicalAoEOnHitADPercent) / 100;
+      const dmg = scaleItemOnHit(
+        (stats.ad * stats.physicalAoEOnHitADPercent) / 100,
+      );
       addOnHitPhys(dmg, `AoE physical on-hit: +${dmg.toFixed(1)}`);
     }
     if (stats.physicalAoEOnHitMaxHealthPercent) {
-      const dmg = (targetMaxHP * stats.physicalAoEOnHitMaxHealthPercent) / 100;
+      const dmg = scaleItemOnHit(
+        (targetMaxHP * stats.physicalAoEOnHitMaxHealthPercent) / 100,
+      );
       addOnHitPhys(dmg, `AoE physical on-hit (max HP): +${dmg.toFixed(1)}`);
     }
 

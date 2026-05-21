@@ -1,6 +1,6 @@
 {
   "patch": "16.10",
-  "scrapedAt": "2026-05-20T18:48:46.794Z",
+  "scrapedAt": "2026-05-21T16:16:18.830Z",
   "champions": {
     "Garen": {
       "position": "TOP",
@@ -603,16 +603,16 @@
       "items": [
         "Umbral Glaive",
         "Profane Hydra",
-        "Edge of Night"
+        "Lord Dominik's Regards"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Umbral Glaive",
         "Profane Hydra",
-        "Edge of Night",
+        "Lord Dominik's Regards",
         "Ionian Boots of Lucidity",
-        "Voltaic Cyclosword",
-        "Lord Dominik's Regards"
+        "Edge of Night",
+        "Voltaic Cyclosword"
       ],
       "baseStatsLv18": {
         "hp": 2358,
@@ -3194,7 +3194,7 @@
         "Rabadon's Deathcap",
         "Boots of Swiftness",
         "Rylai's Crystal Scepter",
-        "Statikk Shiv"
+        "Guinsoo's Rageblade"
       ],
       "baseStatsLv18": {
         "hp": 2234,
@@ -3215,8 +3215,8 @@
         "Guinsoo's Rageblade",
         "Runaan's Hurricane",
         "Berserker's Greaves",
-        "Terminus",
-        "Navori Flickerblade"
+        "Navori Flickerblade",
+        "Terminus"
       ],
       "baseStatsLv18": {
         "hp": 2318,

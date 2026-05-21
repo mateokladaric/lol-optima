@@ -11,7 +11,9 @@ import {
   runeProcSustainedDPS,
 } from "../src/app/actions/sim";
 import {
+  dpsMitigationForPurchaseStep,
   dpsMitigationFromDuel,
+  greedySimPurchaseOrder,
   recommendBuildsForChampion,
   resolveDuel,
 } from "../src/lib/buildOptimizer";
@@ -266,6 +268,41 @@ if (zed) {
       fail(
         `Zed glass should not stack attack-speed/crit farm items: ${critFarm.join(", ")}`,
       );
+    }
+
+    const zedOrderNames = [
+      "Youmuu's Ghostblade",
+      "Eclipse",
+      "Serylda's Grudge",
+      "Ionian Boots of Lucidity",
+      "Edge of Night",
+      "Voltaic Cyclosword",
+    ];
+    const zedOrderItems = zedOrderNames
+      .map((n) => Items.find((i) => i.name === n))
+      .filter((i): i is Item => i != null);
+    if (zedOrderItems.length === 6) {
+      const buyOrder = greedySimPurchaseOrder(
+        zed,
+        zedOrderItems,
+        "glass",
+        duel,
+        { level: 16 },
+        null,
+      );
+      const first = buyOrder[0]?.name ?? "";
+      const mit0 = dpsMitigationForPurchaseStep(duel, 1, 6);
+      const mit6 = dpsMitigationFromDuel(duel);
+      if (mit0.targetArmor >= mit6.targetArmor - 5) {
+        fail(
+          `Purchase-step armor should scale down early (1 item=${mit0.targetArmor}, full=${mit6.targetArmor})`,
+        );
+      }
+      if (/Serylda/i.test(first)) {
+        fail(
+          `Zed buy order should not rush armor pen first vs low early armor (got: ${buyOrder.map((i) => i.name).join(" → ")})`,
+        );
+      }
     }
   }
 

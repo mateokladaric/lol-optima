@@ -217,6 +217,32 @@ export function dpsMitigationFromDuel(duel: ResolvedDuel) {
   };
 }
 
+/** Level-18 baseline resist before item scaling (opponent with no completed items). */
+export const PURCHASE_OPPONENT_BASE_ARMOR = 48;
+export const PURCHASE_OPPONENT_BASE_MR = 30;
+
+/**
+ * Mitigation for buy-order steps: opponent has the same number of completed items
+ * as you, not a full 6-item duel. Avoids ranking Serylda/Void Staff first while
+ * enemy armor/MR are still low.
+ */
+export function dpsMitigationForPurchaseStep(
+  duel: ResolvedDuel,
+  buyerCompletedItems: number,
+  fullBuildSlots = 6,
+) {
+  const slots = Math.max(1, fullBuildSlots);
+  const n = Math.max(0, Math.min(buyerCompletedItems, slots));
+  const pace = n / slots;
+  const itemArmor = Math.max(0, duel.targetArmor - PURCHASE_OPPONENT_BASE_ARMOR);
+  const itemMR = Math.max(0, duel.targetMR - PURCHASE_OPPONENT_BASE_MR);
+  return {
+    targetArmor: Math.round(PURCHASE_OPPONENT_BASE_ARMOR + itemArmor * pace),
+    targetMR: Math.round(PURCHASE_OPPONENT_BASE_MR + itemMR * pace),
+    comboWindowSeconds: duel.comboWindowSeconds,
+  };
+}
+
 export type BuildProfileId =
   | "balanced"
   | "glass"
@@ -588,11 +614,16 @@ export function greedySimPurchaseOrder(
 ): Item[] {
   return greedyPurchaseOrder(finalBuild, (partial) => {
     const c = cloneChampionWithLoadout(champion, partial, runePage);
+    const mit = dpsMitigationForPurchaseStep(
+      duel,
+      partial.length,
+      finalBuild.length,
+    );
     const dps = c.calculateDPS(
       duel.targetMaxHP,
       duel.targetBonusHP,
       simulation,
-      dpsMitigationFromDuel(duel),
+      mit,
     );
     return purchasePowerScore(profile, dps, c.getTotalStats());
   });
