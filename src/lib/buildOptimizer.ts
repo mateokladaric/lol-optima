@@ -17,6 +17,7 @@ import type {
 import {
   AllKeystones,
   BLENDED_DPS_COMBO_WEIGHT,
+  championUsesApScaling,
   championUsesMana,
   isManaScalingItem,
   itemOnHitScaleForChampion,
@@ -43,6 +44,52 @@ const ON_HIT_FARM_GROUPS = new Set([
   "Navori Flickerblade",
   "Phantom Dancer",
 ]);
+
+/** AP mythics/actives whose DPS is item magic, not champion AP scaling. */
+const AP_CARRY_ITEM_GROUPS = new Set([
+  "Stormsurge",
+  "Luden's Echo",
+  "Hextech Rocketbelt",
+  "Hextech Gunblade",
+  "Rabadon's Deathcap",
+  "Liandry's Torment",
+  "Malignance",
+  "Blackfire Torch",
+  "Riftmaker",
+  "Cryptbloom",
+  "Morellonomicon",
+  "Void Staff",
+  "Shadowflame",
+  "Lich Bane",
+  "Nashor's Tooth",
+  "Rylai's Crystal Scepter",
+  "Zhonya's Hourglass",
+  "Banshee's Veil",
+  "Crown of the Shattered Queen",
+  "Rod of Ages",
+  "Mejai's Soulstealer",
+]);
+
+function isApCarryItem(item: Item): boolean {
+  if (AP_CARRY_ITEM_GROUPS.has(item.getGroupName())) return true;
+  const s = item.stats;
+  if (
+    (s.abilityDamageMultiplicative ?? 0) > 0 ||
+    s.abilityDamagePerManaMultiplicative ||
+    s.physicalOnAbilityHitMaxManaPercent ||
+    s.physicalOnHitMaxManaPercent ||
+    s.adPerMaxManaPercent
+  ) {
+    return false;
+  }
+  const lethality = s.lethality ?? 0;
+  const ad = s.ad ?? 0;
+  const bonusAdPct = s.bonusAdPercent ?? 0;
+  if (lethality >= 8 || ad >= 40 || bonusAdPct >= 8) return false;
+  const ap = s.ap ?? 0;
+  if (ap >= 70) return true;
+  return false;
+}
 
 function isMeleeChampion(champion: Character): boolean {
   return champion.AttackRange <= 250;
@@ -99,10 +146,12 @@ export function buildRealisticItemPool(champion: Character, itemPool: Item[]): I
   const grouped = new Map<string, Item[]>();
 
   const usesMana = championUsesMana(champion);
+  const usesAp = championUsesApScaling(champion);
 
   for (const item of itemPool) {
     if (!isRealisticName(item.name)) continue;
     if (!usesMana && isManaScalingItem(item)) continue;
+    if (!usesAp && isApCarryItem(item)) continue;
     const group = item.getGroupName();
     if (!grouped.has(group)) grouped.set(group, []);
     grouped.get(group)?.push(item);

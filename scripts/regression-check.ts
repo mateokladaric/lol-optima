@@ -378,6 +378,48 @@ if (zed) {
   }
 }
 
+const khazix = Characters.find((c) => c.Name === "Kha'Zix");
+if (khazix) {
+  const squishyDuel = resolveDuel({
+    targetArmor: 0,
+    targetMR: 0,
+    targetMaxHP: 2000,
+    targetBonusHP: 0,
+    comboWindowSeconds: 8,
+  });
+  const khaRecs = recommendBuildsForChampion(khazix, Items, {
+    simulation: { level: 16 },
+    duel: squishyDuel,
+    monteCarlo: false,
+    optimizeKeystones: false,
+  });
+  const khaGlass = khaRecs.find((r) => r.profile === "glass");
+  if (khaGlass) {
+    const apMythics =
+      /Luden|Stormsurge|Rabadon|Rocketbelt|Gunblade|Liandry|Void Staff|Riftmaker|Blackfire|Malignance/i;
+    const apHit = khaGlass.items.filter((n) => apMythics.test(n));
+    if (apHit.length > 0) {
+      fail(
+        `Kha'Zix glass vs 0 armor/0 MR must not stack AP mythics (no kit AP scaling): ${apHit.join(", ")} (full: ${khaGlass.items.join(", ")})`,
+      );
+    }
+    const lethalityOrAd = khaGlass.items.filter((n) => {
+      const it = Items.find((i) => i.name === n);
+      if (!it) return false;
+      return (
+        (it.stats.lethality ?? 0) >= 10 ||
+        (it.stats.ad ?? 0) >= 45 ||
+        (it.stats.armorPen ?? 0) >= 20
+      );
+    });
+    if (lethalityOrAd.length < 3) {
+      fail(
+        `Kha'Zix glass needs AD/lethality items, got ${lethalityOrAd.length}: ${khaGlass.items.join(", ")}`,
+      );
+    }
+  }
+}
+
 const aatrox = Characters.find((c) => c.Name === "Aatrox");
 if (aatrox) {
   const aatroxRecs = recommendBuildsForChampion(aatrox, Items, {

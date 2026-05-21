@@ -2698,9 +2698,55 @@ type ChampionComboProfile = {
   itemOnHitScale?: number;
 };
 
+/** Normalize display names (Kha'Zix, Rek'Sai) to profile map keys (KhaZix, RekSai). */
+export function championSimKey(displayName: string): string {
+  return displayName.replace(/[^a-zA-Z0-9]/g, "");
+}
+
+function scalingMaxAtLevel(value: ScalingValue, level: number): number {
+  if (typeof value === "number") return value;
+  if (typeof value === "function") {
+    let max = 0;
+    for (let lv = 1; lv <= level; lv++) max = Math.max(max, value(lv));
+    return max;
+  }
+  if (Array.isArray(value)) return Math.max(...value, 0);
+  return 0;
+}
+
+/** Highest AP ratio (%) on any damage-dealing ability; excludes heals-only blocks. */
+export function championMaxDamageApRatio(
+  champion: Character,
+  level: number = 18,
+): number {
+  let max = 0;
+  for (const ability of champion.Abilities) {
+    for (const block of [ability.damage, ability.burstDamage]) {
+      if (!block?.apRatio) continue;
+      const hasDamageScaling =
+        block.baseDamage != null ||
+        block.adRatio != null ||
+        block.bonusAdRatio != null ||
+        block.maxHealthRatio != null ||
+        block.missingHealthRatio != null;
+      if (!hasDamageScaling) continue;
+      max = Math.max(max, scalingMaxAtLevel(block.apRatio, level));
+    }
+  }
+  return max;
+}
+
+/** True when the kit meaningfully scales ability damage with AP (not item-only magic). */
+export function championUsesApScaling(
+  champion: Character,
+  minApRatioPercent: number = 25,
+): boolean {
+  return championMaxDamageApRatio(champion) >= minApRatioPercent;
+}
+
 /** Scale for item stats that only apply on basic attacks (Kraken, BotRK, etc.). */
 export function itemOnHitScaleForChampion(championName: string): number {
-  const profile = CHAMPION_COMBO_PROFILES[championName];
+  const profile = CHAMPION_COMBO_PROFILES[championSimKey(championName)];
   if (profile?.itemOnHitScale != null) return profile.itemOnHitScale;
   if ((profile?.comboAutoWeight ?? 0.65) <= 0.32) {
     return profile!.comboAutoWeight!;
@@ -4041,7 +4087,7 @@ class Character {
       `Target resistances: ${mit.targetArmor} armor (${(physMit * 100).toFixed(1)}% phys dmg), ${mit.targetMR} MR (${(magicMit * 100).toFixed(1)}% magic dmg)`,
     );
     const rotationProfile = sim.enableChampionRotationProfiles
-      ? CHAMPION_ROTATION_PROFILES[this.Name]
+      ? CHAMPION_ROTATION_PROFILES[championSimKey(this.Name)]
       : undefined;
 
     // Calculate effective ability haste for cooldown reduction
@@ -4958,7 +5004,7 @@ class Character {
       onHitPhysPerAttack * totalPhysicalMultiplier * physMit +
       onHitMagicPerAttack * totalMagicMultiplier * magicMit +
       onHitTruePerAttack * totalMultiplier;
-    const comboProfile = CHAMPION_COMBO_PROFILES[this.Name];
+    const comboProfile = CHAMPION_COMBO_PROFILES[championSimKey(this.Name)];
     const castOrder = comboProfile?.castOrder ?? DEFAULT_COMBO_CAST_ORDER;
     const comboResult = simulateComboWindowDamage(
       mit.comboWindowSeconds,
