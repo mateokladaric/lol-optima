@@ -11,6 +11,10 @@ import {
   runeProcSustainedDPS,
 } from "../src/app/actions/sim";
 import {
+  HORIZON_HYPERSHOT_UPTIME_MELEE,
+  HORIZON_HYPERSHOT_UPTIME_RANGED,
+} from "../src/lib/itemMechanics";
+import {
   dpsMitigationForPurchaseStep,
   dpsMitigationFromDuel,
   greedySimPurchaseOrder,
@@ -298,10 +302,35 @@ if (zed) {
           `Purchase-step armor should scale down early (1 item=${mit0.targetArmor}, full=${mit6.targetArmor})`,
         );
       }
-      if (/Serylda/i.test(first)) {
+      if (/Serylda|Last Whisper|Lord Dominik/i.test(first)) {
         fail(
           `Zed buy order should not rush armor pen first vs low early armor (got: ${buyOrder.map((i) => i.name).join(" → ")})`,
         );
+      }
+      const userBuild = [
+        "Serylda's Grudge",
+        "Profane Hydra (Melee)",
+        "Hubris",
+        "Axiom Arc",
+        "Bastionbreaker",
+        "Umbral Glaive (Base)",
+      ]
+        .map((n) => Items.find((i) => i.name === n))
+        .filter((i): i is Item => i != null);
+      if (userBuild.length === 6) {
+        const userOrder = greedySimPurchaseOrder(
+          zed,
+          userBuild,
+          "glass",
+          duel,
+          { level: 16 },
+          null,
+        );
+        if (/Serylda/i.test(userOrder[0]?.name ?? "")) {
+          fail(
+            `Zed buy order (reported build): Serylda first (got: ${userOrder.map((i) => i.name).join(" → ")})`,
+          );
+        }
       }
     }
   }
@@ -473,6 +502,100 @@ if (garen) {
   );
   if (cutDownUptime <= cutDownLowBonus) {
     fail("Cut Down uptime should be higher vs high bonus-HP targets");
+  }
+}
+
+{
+  const horizon = Items.find((i) => i.name === "Horizon Focus");
+  const ahri = Characters.find((c) => c.Name === "Ahri");
+  const zed = Characters.find((c) => c.Name === "Zed");
+  if (horizon && ahri && zed) {
+    const mit = dpsMitigationFromDuel(duel);
+    const sim = { level: 16, enableChampionRotationProfiles: true };
+    const dpsGain = (champ: typeof ahri) => {
+      const base = Object.assign(
+        Object.create(Object.getPrototypeOf(champ)),
+        champ,
+      ) as typeof champ;
+      const withHorizon = Object.assign(
+        Object.create(Object.getPrototypeOf(champ)),
+        champ,
+      ) as typeof champ;
+      withHorizon.Items = [horizon];
+      const d0 = base.calculateDPS(
+        duel.targetMaxHP,
+        duel.targetBonusHP,
+        sim,
+        mit,
+      ).totalDPS;
+      const d1 = withHorizon.calculateDPS(
+        duel.targetMaxHP,
+        duel.targetBonusHP,
+        sim,
+        mit,
+      ).totalDPS;
+      return (d1 - d0) / Math.max(d0, 1);
+    };
+    const rangedGain = dpsGain(ahri);
+    const meleeGain = dpsGain(zed);
+    const expectedRatio =
+      HORIZON_HYPERSHOT_UPTIME_RANGED / HORIZON_HYPERSHOT_UPTIME_MELEE;
+    if (rangedGain < meleeGain * expectedRatio * 0.85) {
+      fail(
+        `Horizon Hypershot should benefit ranged more than melee (Ahri +${(rangedGain * 100).toFixed(1)}%, Zed +${(meleeGain * 100).toFixed(1)}%, expected ~${expectedRatio.toFixed(2)}×)`,
+      );
+    }
+    const ahriLine = withHorizonBreakdown(ahri, horizon, sim, mit);
+    if (!ahriLine?.includes("ranged")) {
+      fail("Horizon breakdown should tag ranged Hypershot uptime for Ahri");
+    }
+  }
+}
+
+function withHorizonBreakdown(
+  champ: (typeof Characters)[0],
+  horizon: Item,
+  sim: { level: number; enableChampionRotationProfiles: boolean },
+  mit: ReturnType<typeof dpsMitigationFromDuel>,
+): string | undefined {
+  const c = Object.assign(
+    Object.create(Object.getPrototypeOf(champ)),
+    champ,
+  ) as typeof champ;
+  c.Items = [horizon];
+  return c
+    .calculateDPS(duel.targetMaxHP, duel.targetBonusHP, sim, mit)
+    .breakdown.find((b) => b.includes("Horizon Hypershot"));
+}
+
+const ezreal = Characters.find((c) => c.Name === "Ezreal");
+if (ezreal) {
+  const mit = dpsMitigationFromDuel(duel);
+  const muramana = Items.find((i) => i.name === "Muramana (Ranged)");
+  if (muramana) {
+    const withMuramana = Object.assign(
+      Object.create(Object.getPrototypeOf(ezreal)),
+      ezreal,
+    ) as typeof ezreal;
+    withMuramana.Items = [muramana];
+    const d = withMuramana.calculateDPS(
+      duel.targetMaxHP,
+      duel.targetBonusHP,
+      { level: 16, enableChampionRotationProfiles: true },
+      mit,
+    );
+    const shockLine = d.breakdown.find((b) => b.includes("Muramana Shock"));
+    if (!shockLine) {
+      fail("Muramana Shock should appear as ICD-gated proc in DPS breakdown");
+    }
+    const maxMana = withMuramana.getTotalStats().mana;
+    const shockPerProc = (maxMana * 3) / 100;
+    const shockDpsCap = (shockPerProc / 2) * 1.5;
+    if (d.abilityDPS > shockDpsCap + 400) {
+      fail(
+        `Muramana shock inflated per ability cast (abilityDPS=${d.abilityDPS.toFixed(0)}, cap~${shockDpsCap.toFixed(0)})`,
+      );
+    }
   }
 }
 

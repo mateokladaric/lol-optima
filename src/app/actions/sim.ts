@@ -1,6 +1,12 @@
 //import { writeFileSync } from "fs";
 //import { join } from "path";
 
+import {
+  applyStatSuppress,
+  buildItemMechanicContext,
+  computeItemMechanicContributions,
+} from "@/lib/itemMechanics";
+
 type ScalingValue = number | number[] | ((level: number) => number);
 
 interface DamageScaling {
@@ -384,7 +390,7 @@ const AatroxR = new Ability(
 );
 
 // Item system
-interface ItemStats {
+export interface ItemStats {
   // Base stats
   hp?: number;
   mana?: number;
@@ -428,7 +434,11 @@ interface ItemStats {
   // On-ability-hit damage (procced by abilities)
   trueOnAbilityHit?: number; // Flat true damage on next ability hit
   trueOnAbilityHitPerLethality?: number; // True damage per lethality on next ability hit
+  /** If set (e.g. Bastionbreaker Shaped Charge 45s), proc is ICD-based — not every cast. */
+  trueOnAbilityHitCooldown?: number;
   physicalOnAbilityHitMaxManaPercent?: number; // % max mana as physical damage on ability hit (e.g., 4 = 4% max mana)
+  /** Muramana Shock etc.: ability-hit bonus gated by ICD, not every cast. */
+  physicalOnAbilityHitCooldown?: number;
 
   // DoT (Damage over Time) effects - total damage or DPS
   magicDotDamage?: number; // Flat magic damage from DoT
@@ -694,6 +704,7 @@ const BastionbreakerShapedChargeMelee = new Item(
     lethality: 22,
     trueOnAbilityHit: 30,
     trueOnAbilityHitPerLethality: 1.5,
+    trueOnAbilityHitCooldown: 45,
   },
   [],
   "Bastionbreaker",
@@ -707,6 +718,7 @@ const BastionbreakerShapedChargeRanged = new Item(
     lethality: 22,
     trueOnAbilityHit: 15,
     trueOnAbilityHitPerLethality: 0.75,
+    trueOnAbilityHitCooldown: 45,
   },
   [],
   "Bastionbreaker",
@@ -1430,6 +1442,7 @@ const HorizonFocus = new Item(
   {
     ap: 75,
     abilityHaste: 25,
+    damageAmplificationOnTarget: 10,
   },
   [],
   "Horizon Focus",
@@ -1449,7 +1462,7 @@ const HorizonFocusHypershot = new Item(
 const Hubris = new Item(
   "Hubris",
   {
-    ad: 60,
+    ad: 55,
     abilityHaste: 10,
     lethality: 18,
   },
@@ -1824,6 +1837,7 @@ const MuramanaMelee = new Item(
     adPerMaxManaPercent: 2,
     physicalOnHitMaxManaPercent: 1.2,
     physicalOnAbilityHitMaxManaPercent: 4,
+    physicalOnAbilityHitCooldown: 2,
   },
   [],
   "Manaflow",
@@ -1838,6 +1852,7 @@ const MuramanaRanged = new Item(
     adPerMaxManaPercent: 2,
     physicalOnHitMaxManaPercent: 1.2,
     physicalOnAbilityHitMaxManaPercent: 3,
+    physicalOnAbilityHitCooldown: 2,
   },
   [],
   "Manaflow",
@@ -2476,6 +2491,7 @@ const UmbralGlaiveNightstalker = new Item(
     lethality: 18,
     trueOnAbilityHit: 50,
     trueOnAbilityHitPerLethality: 1.5,
+    trueOnAbilityHitCooldown: 45,
   },
   [],
   "Umbral Glaive",
@@ -3261,7 +3277,7 @@ const CHAMPION_SKILL_ORDER: Record<string, SkillOrder> = {
   Zyra: ["Q", "W", "E"],
 };
 
-function abilityRankAtLevel(
+export function abilityRankAtLevel(
   level: number,
   abilityType: "Q" | "W" | "E",
   championName: string,
@@ -3277,11 +3293,52 @@ function abilityRankAtLevel(
   return Math.max(1, rank);
 }
 
-function ultRankAtLevel(level: number): number {
+export function ultRankAtLevel(level: number): number {
   if (level >= 16) return 3;
   if (level >= 11) return 2;
   if (level >= 6) return 1;
   return 0;
+}
+
+/** Ability hits per second (Q/W/E/R) for item burn / Blight stack cadence. */
+export function estimateAbilityHitsPerSecond(
+  champion: Character,
+  level: number,
+  abilityHaste: number,
+  abilityHasteCap: number,
+): number {
+  const ah = Math.min(abilityHaste, abilityHasteCap);
+  const cdr = ah / (100 + ah);
+  let hits = 0;
+  for (const ability of champion.Abilities) {
+    if (
+      !ability.damage ||
+      ability.abilityType === "passive" ||
+      ability.appliesOnHit
+    ) {
+      continue;
+    }
+    const rank =
+      ability.abilityType === "R"
+        ? ultRankAtLevel(level)
+        : abilityRankAtLevel(
+            level,
+            ability.abilityType as "Q" | "W" | "E",
+            champion.Name,
+          );
+    if (rank <= 0) continue;
+    const baseCd = ability.getCooldownAtLevel(rank);
+    if (baseCd <= 0) continue;
+    if (
+      ability.cooldown.cooldownType === "static" ||
+      ability.cooldown.cooldownType === "ammo"
+    ) {
+      continue;
+    }
+    const cd = baseCd * (1 - cdr);
+    hits += effectiveAbilityCasts(ability) / Math.max(cd, 0.5);
+  }
+  return hits;
 }
 
 export type DpsMitigationOptions = {
@@ -3708,7 +3765,9 @@ class Character {
       magicPeriodicOnHit: 0,
       trueOnAbilityHit: 0,
       trueOnAbilityHitPerLethality: 0,
+      trueOnAbilityHitCooldown: 0,
       physicalOnAbilityHitMaxManaPercent: 0,
+      physicalOnAbilityHitCooldown: 0,
       magicDotDamage: 0,
       magicDotDamagePerAPRatio: 0,
       magicDotDamagePerBonusHPRatio: 0,
@@ -3752,7 +3811,14 @@ class Character {
       (Object.keys(item.stats) as Array<keyof ItemStats>).forEach((key) => {
         const value = item.stats[key];
         if (value !== undefined && (baseStats as any)[key] !== undefined) {
-          (baseStats as any)[key] += value;
+          if (
+            key === "trueOnAbilityHitCooldown" ||
+            key === "physicalOnAbilityHitCooldown"
+          ) {
+            (baseStats as any)[key] = Math.max((baseStats as any)[key], value);
+          } else {
+            (baseStats as any)[key] += value;
+          }
         }
       });
     });
@@ -3897,6 +3963,51 @@ class Character {
     /** For spell-only scenarios: no AAs, no on-hit DPS, no Navori-style CDR from attacks. */
     const attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
     const breakdown: string[] = [];
+
+    const totalAbilityHasteEarly =
+      stats.abilityHaste + stats.basicAbilityHaste;
+    const mechanicCtx = buildItemMechanicContext(
+      this,
+      mit,
+      sim,
+      stats,
+      targetMaxHP,
+      targetBonusHP,
+    );
+    const abilityHitsPerSec = estimateAbilityHitsPerSecond(
+      this,
+      sim.level,
+      totalAbilityHasteEarly,
+      sim.abilityHasteCap,
+    );
+    const itemMech = computeItemMechanicContributions(
+      this.Items,
+      mechanicCtx,
+      stats,
+      abilityHitsPerSec,
+    );
+    applyStatSuppress(stats, itemMech.statSuppress);
+    if (itemMech.bonusAD > 0) stats.ad += itemMech.bonusAD;
+    if (itemMech.bonusAPPercent > 0) {
+      stats.ap *= 1 + itemMech.bonusAPPercent / 100;
+    }
+    if (itemMech.magicResistReduction > 0) {
+      stats.magicResistReduction =
+        (stats.magicResistReduction ?? 0) + itemMech.magicResistReduction;
+    }
+    if (itemMech.armorPen > 0) {
+      stats.armorPen = (stats.armorPen ?? 0) + itemMech.armorPen;
+    }
+    if (itemMech.percentMagicPen > 0) {
+      stats.percentMagicPen =
+        (stats.percentMagicPen ?? 0) + itemMech.percentMagicPen;
+    }
+    if (itemMech.effectiveDamageAmplificationOnTarget > 0) {
+      stats.damageAmplificationOnTarget =
+        itemMech.effectiveDamageAmplificationOnTarget;
+    }
+    for (const line of itemMech.breakdown) breakdown.push(line);
+
     breakdown.push(
       `Target resistances: ${mit.targetArmor} armor (${(physMit * 100).toFixed(1)}% phys dmg), ${mit.targetMR} MR (${(magicMit * 100).toFixed(1)}% magic dmg)`,
     );
@@ -3994,10 +4105,17 @@ class Character {
     }
     if (stats.physicalOnHitMaxManaPercent) {
       const maxMana = stats.mana;
-      const dmg = scaleItemOnHit(
-        (maxMana * stats.physicalOnHitMaxManaPercent) / 100,
-      );
-      addOnHitPhys(dmg, `Physical on-hit (max mana): +${dmg.toFixed(1)}`);
+      const rawMuramana = (maxMana * stats.physicalOnHitMaxManaPercent) / 100;
+      const muramanaIcd = 1.5;
+      const uptime =
+        attackRate > 0 ? spellbladeOnHitUptime(attackRate) : 0;
+      const dmg = scaleItemOnHit(rawMuramana * (attackRate > 0 ? uptime : 0));
+      if (dmg > 0) {
+        addOnHitPhys(
+          dmg,
+          `Muramana on-attack Shock (${(uptime * 100).toFixed(0)}% uptime, ${muramanaIcd}s ICD): +${dmg.toFixed(1)}`,
+        );
+      }
     }
 
     // Magic on-hit (item stats)
@@ -4043,6 +4161,15 @@ class Character {
         (targetMaxHP * stats.physicalAoEOnHitMaxHealthPercent) / 100,
       );
       addOnHitPhys(dmg, `AoE physical on-hit (max HP): +${dmg.toFixed(1)}`);
+    }
+
+    if (itemMech.onHitPhysPerAttack > 0) {
+      const dmg = scaleItemOnHit(itemMech.onHitPhysPerAttack);
+      addOnHitPhys(dmg, `Item mechanics on-hit (phys): +${dmg.toFixed(1)}`);
+    }
+    if (itemMech.onHitMagicPerAttack > 0) {
+      const dmg = scaleItemOnHit(itemMech.onHitMagicPerAttack);
+      addOnHitMagic(dmg, `Item mechanics on-hit (magic): +${dmg.toFixed(1)}`);
     }
 
     // Process on-hit abilities (passives like Gwen's A Thousand Cuts, or buffs like Gwen E)
@@ -4259,12 +4386,26 @@ class Character {
       dotDPS += dmg;
       breakdown.push(`Magic DoT (target max HP): +${dmg.toFixed(1)} DPS`);
     }
+    if (itemMech.dotMagicDPS > 0) {
+      dotDPS += itemMech.dotMagicDPS;
+    }
 
     // 4. Ability DPS (raw, before offensive multipliers and resistances)
     let abilityPhysDPS = 0;
     let abilityMagicDPS = 0;
     let abilityTrueDPS = 0;
     const abilityCasts: ComboCastSpec[] = [];
+    const trueAbilityHitIcd = stats.trueOnAbilityHitCooldown ?? 0;
+    const physAbilityHitIcd = stats.physicalOnAbilityHitCooldown ?? 0;
+    const shapedChargeProc =
+      trueAbilityHitIcd > 0
+        ? (stats.trueOnAbilityHit ?? 0) +
+          (stats.lethality ?? 0) * (stats.trueOnAbilityHitPerLethality ?? 0)
+        : 0;
+    const muramanaShockProc =
+      stats.physicalOnAbilityHitMaxManaPercent
+        ? (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100
+        : 0;
 
     for (const ability of abilities) {
       // Skip passives and on-hit abilities (already counted in on-hit DPS)
@@ -4295,7 +4436,9 @@ class Character {
         const effectiveAH =
           ability.abilityType === "R"
             ? Math.min(
-                stats.abilityHaste + stats.ultAbilityHaste,
+                stats.abilityHaste +
+                  stats.ultAbilityHaste +
+                  itemMech.ultEffectiveHasteBonus,
                 sim.abilityHasteCap,
               )
             : Math.min(totalAbilityHaste, sim.abilityHasteCap);
@@ -4437,20 +4580,23 @@ class Character {
           100;
       }
 
-      // Add on-ability-hit damage from items (e.g., Muramana Shock)
+      // Add on-ability-hit damage from items (Muramana, etc.). ICD-gated (Bastionbreaker) handled below.
       let onAbilityHitTrue = 0;
       let onAbilityHitPhys = 0;
-      if (stats.trueOnAbilityHit) {
-        onAbilityHitTrue += stats.trueOnAbilityHit;
+      if (trueAbilityHitIcd <= 0) {
+        if (stats.trueOnAbilityHit) {
+          onAbilityHitTrue += stats.trueOnAbilityHit;
+        }
+        if (stats.trueOnAbilityHitPerLethality) {
+          onAbilityHitTrue +=
+            stats.lethality * stats.trueOnAbilityHitPerLethality;
+        }
       }
-      if (stats.trueOnAbilityHitPerLethality) {
-        onAbilityHitTrue +=
-          stats.lethality * stats.trueOnAbilityHitPerLethality;
-      }
-      if (stats.physicalOnAbilityHitMaxManaPercent) {
-        const maxMana = stats.mana;
-        onAbilityHitPhys +=
-          (maxMana * stats.physicalOnAbilityHitMaxManaPercent) / 100;
+      if (
+        stats.physicalOnAbilityHitMaxManaPercent &&
+        physAbilityHitIcd <= 0
+      ) {
+        onAbilityHitPhys += muramanaShockProc;
       }
 
       let castsPerWindow = effectiveAbilityCasts(ability);
@@ -4726,6 +4872,31 @@ class Character {
         breakdown.push(`${ability.name} burst: ${abilityBurstDmg.toFixed(1)}`);
       }
     }
+
+    if (shapedChargeProc > 0 && trueAbilityHitIcd > 0) {
+      const procDps = shapedChargeProc / trueAbilityHitIcd;
+      abilityTrueDPS += procDps;
+      burstTrue += shapedChargeProc;
+      breakdown.push(
+        `Shaped Charge: +${shapedChargeProc.toFixed(0)} true once per ${trueAbilityHitIcd}s (~${procDps.toFixed(1)} DPS)`,
+      );
+    }
+    if (muramanaShockProc > 0 && physAbilityHitIcd > 0) {
+      const procDps = muramanaShockProc / physAbilityHitIcd;
+      abilityPhysDPS += procDps;
+      const comboProcs = Math.max(
+        1,
+        Math.floor(mit.comboWindowSeconds / physAbilityHitIcd),
+      );
+      burstPhys += muramanaShockProc * comboProcs;
+      breakdown.push(
+        `Muramana Shock: +${muramanaShockProc.toFixed(0)} phys per ${physAbilityHitIcd}s (~${procDps.toFixed(1)} DPS)`,
+      );
+    }
+
+    abilityPhysDPS += itemMech.abilityPhysDPS;
+    abilityMagicDPS += itemMech.abilityMagicDPS;
+    abilityTrueDPS += itemMech.abilityTrueDPS;
 
     const finalAbilityDPS =
       abilityPhysMult * abilityPhysDPS * physMit +

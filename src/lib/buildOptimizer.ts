@@ -19,6 +19,7 @@ import {
   BLENDED_DPS_COMBO_WEIGHT,
   championUsesMana,
   isManaScalingItem,
+  itemOnHitScaleForChampion,
   Item as ItemModel,
   Items,
 } from "@/app/actions/sim";
@@ -33,6 +34,15 @@ function clamp(n: number, lo: number, hi: number): number {
 }
 
 const REALISTIC_PAREN_ALLOWED = new Set(["base", "melee", "ranged"]);
+
+/** On-hit/AS items that stay weak even with itemOnHitScale — omit for spell-heavy champions. */
+const ON_HIT_FARM_GROUPS = new Set([
+  "Terminus",
+  "Guinsoo's Rageblade",
+  "Runaan's Hurricane",
+  "Navori Flickerblade",
+  "Phantom Dancer",
+]);
 
 function isMeleeChampion(champion: Character): boolean {
   return champion.AttackRange <= 250;
@@ -67,21 +77,8 @@ function candidatePriority(item: Item, melee: boolean): number {
   return score;
 }
 
-function applyRealisticApproximation(item: Item, melee: boolean): Item {
-  // Kraken is a 3-hit cadence proc with missing-HP scaling; approximate sustained value
-  // with an average on-hit contribution rather than an always-proc burst row.
-  if (item.getGroupName() === "Kraken Slayer") {
-    const avgProc = melee ? 58 : 46; // ~175/3 melee, ~140/3 ranged
-    return new ItemModel(
-      "Kraken Slayer (Averaged)",
-      {
-        ...item.stats,
-        physicalOnHit: avgProc,
-      },
-      [],
-      "Kraken Slayer",
-    );
-  }
+/** Pool uses base item rows; passive math lives in itemMechanics + calculateDPS. */
+export function applyRealisticApproximation(item: Item, _melee: boolean): Item {
   return item;
 }
 
@@ -97,7 +94,7 @@ function mergeProfileSimulation(
   return base;
 }
 
-function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
+export function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
   const melee = isMeleeChampion(champion);
   const grouped = new Map<string, Item[]>();
 
@@ -128,6 +125,11 @@ function buildRealisticItemPool(champion: Character, itemPool: Item[]): Item[] {
       }
     }
     selected.push(applyRealisticApproximation(best, melee));
+  }
+
+  const onHitScale = itemOnHitScaleForChampion(champion.Name);
+  if (onHitScale < 0.5) {
+    return selected.filter((item) => !ON_HIT_FARM_GROUPS.has(item.getGroupName()));
   }
 
   return selected;
@@ -221,6 +223,17 @@ export function dpsMitigationFromDuel(duel: ResolvedDuel) {
 export const PURCHASE_OPPONENT_BASE_ARMOR = 48;
 export const PURCHASE_OPPONENT_BASE_MR = 30;
 
+/** Pen items (Serylda, LDR) are weak when enemy armor is still low. */
+export function armorPenPurchaseScale(targetArmor: number): number {
+  if (targetArmor >= 95) return 1;
+  if (targetArmor <= 50) return 0.5;
+  return 0.5 + (0.5 * (targetArmor - 50)) / 45;
+}
+
+export function isMajorArmorPenItem(item: Item): boolean {
+  return (item.stats.armorPen ?? 0) >= 20 || (item.stats.lethality ?? 0) >= 15;
+}
+
 /**
  * Mitigation for buy-order steps: opponent has the same number of completed items
  * as you, not a full 6-item duel. Avoids ranking Serylda/Void Staff first while
@@ -230,10 +243,19 @@ export function dpsMitigationForPurchaseStep(
   duel: ResolvedDuel,
   buyerCompletedItems: number,
   fullBuildSlots = 6,
+  /**
+   * Enemy completed items for this comparison. Defaults to buyer count.
+   * For buy-order marginals, pass `ordered.length` so the first purchase is
+   * scored vs baseline armor (0 items), not vs 1-item enemy armor.
+   */
+  enemyCompletedItems?: number,
 ) {
   const slots = Math.max(1, fullBuildSlots);
-  const n = Math.max(0, Math.min(buyerCompletedItems, slots));
-  const pace = n / slots;
+  const enemyN = Math.max(
+    0,
+    Math.min(enemyCompletedItems ?? buyerCompletedItems, slots),
+  );
+  const pace = enemyN / slots;
   const itemArmor = Math.max(0, duel.targetArmor - PURCHASE_OPPONENT_BASE_ARMOR);
   const itemMR = Math.max(0, duel.targetMR - PURCHASE_OPPONENT_BASE_MR);
   return {
@@ -612,21 +634,26 @@ export function greedySimPurchaseOrder(
   simulation: SimulationScenario | undefined,
   runePage: RunePage | null,
 ): Item[] {
-  return greedyPurchaseOrder(finalBuild, (partial) => {
-    const c = cloneChampionWithLoadout(champion, partial, runePage);
-    const mit = dpsMitigationForPurchaseStep(
-      duel,
-      partial.length,
-      finalBuild.length,
-    );
-    const dps = c.calculateDPS(
-      duel.targetMaxHP,
-      duel.targetBonusHP,
-      simulation,
-      mit,
-    );
-    return purchasePowerScore(profile, dps, c.getTotalStats());
-  });
+  return greedyPurchaseOrder(
+    finalBuild,
+    (partial, enemyCompletedItems) => {
+      const c = cloneChampionWithLoadout(champion, partial, runePage);
+      const mit = dpsMitigationForPurchaseStep(
+        duel,
+        partial.length,
+        finalBuild.length,
+        enemyCompletedItems,
+      );
+      const dps = c.calculateDPS(
+        duel.targetMaxHP,
+        duel.targetBonusHP,
+        simulation,
+        mit,
+      );
+      return purchasePowerScore(profile, dps, c.getTotalStats());
+    },
+    duel,
+  );
 }
 
 type KeystoneCacheEntry = { rune: Rune | null; score: number };
