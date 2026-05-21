@@ -2714,6 +2714,28 @@ function scalingMaxAtLevel(value: ScalingValue, level: number): number {
   return 0;
 }
 
+function damageBlockHasScaling(block: DamageScaling): boolean {
+  return (
+    block.baseDamage != null ||
+    block.adRatio != null ||
+    block.bonusAdRatio != null ||
+    block.apRatio != null ||
+    block.maxHealthRatio != null ||
+    block.missingHealthRatio != null
+  );
+}
+
+function damageBlockApRatio(block: DamageScaling, level: number): number {
+  return block.apRatio ? scalingMaxAtLevel(block.apRatio, level) : 0;
+}
+
+function damageBlockAdRatio(block: DamageScaling, level: number): number {
+  let ad = 0;
+  if (block.adRatio) ad += scalingMaxAtLevel(block.adRatio, level);
+  if (block.bonusAdRatio) ad += scalingMaxAtLevel(block.bonusAdRatio, level);
+  return ad;
+}
+
 /** Highest AP ratio (%) on any damage-dealing ability; excludes heals-only blocks. */
 export function championMaxDamageApRatio(
   champion: Character,
@@ -2722,18 +2744,51 @@ export function championMaxDamageApRatio(
   let max = 0;
   for (const ability of champion.Abilities) {
     for (const block of [ability.damage, ability.burstDamage]) {
-      if (!block?.apRatio) continue;
-      const hasDamageScaling =
-        block.baseDamage != null ||
-        block.adRatio != null ||
-        block.bonusAdRatio != null ||
-        block.maxHealthRatio != null ||
-        block.missingHealthRatio != null;
-      if (!hasDamageScaling) continue;
+      if (!block?.apRatio || !damageBlockHasScaling(block)) continue;
       max = Math.max(max, scalingMaxAtLevel(block.apRatio, level));
     }
   }
   return max;
+}
+
+/**
+ * Rotation-weighted AP vs AD scaling on damage abilities.
+ * One off-color magic ability (e.g. Rengar W) must not unlock full AP itemization.
+ */
+export function championApAdScalingScores(
+  champion: Character,
+  level: number = 18,
+): { apScore: number; adScore: number } {
+  const rot = CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)];
+  let apScore = 0;
+  let adScore = 0;
+
+  for (const ability of champion.Abilities) {
+    if (ability.abilityType === "passive") continue;
+    for (const block of [ability.damage, ability.burstDamage]) {
+      if (!block || !damageBlockHasScaling(block)) continue;
+
+      let weight =
+        rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+      const apR = damageBlockApRatio(block, level);
+      const adR = damageBlockAdRatio(block, level);
+      if (apR <= 0 && adR <= 0) continue;
+
+      // Heal/CC tools with incidental AP damage (Rengar W, etc.) are not carry vectors.
+      if (
+        ability.effects?.heal != null &&
+        apR > 0 &&
+        (block.damageType === "magic" || block.damageType === "adaptive")
+      ) {
+        weight *= 0.2;
+      }
+
+      apScore += apR * weight;
+      adScore += adR * weight;
+    }
+  }
+
+  return { apScore, adScore };
 }
 
 /** True when the kit meaningfully scales ability damage with AP (not item-only magic). */
@@ -2741,7 +2796,9 @@ export function championUsesApScaling(
   champion: Character,
   minApRatioPercent: number = 25,
 ): boolean {
-  return championMaxDamageApRatio(champion) >= minApRatioPercent;
+  const { apScore, adScore } = championApAdScalingScores(champion);
+  if (apScore < minApRatioPercent) return false;
+  return apScore >= adScore * 0.65;
 }
 
 /** Scale for item stats that only apply on basic attacks (Kraken, BotRK, etc.). */

@@ -84,8 +84,8 @@ function isApCarryItem(item: Item): boolean {
   }
   const lethality = s.lethality ?? 0;
   const ad = s.ad ?? 0;
-  const bonusAdPct = s.bonusAdPercent ?? 0;
-  if (lethality >= 8 || ad >= 40 || bonusAdPct >= 8) return false;
+  const adMult = s.adMultiplicative ?? 0;
+  if (lethality >= 8 || ad >= 40 || adMult >= 8) return false;
   const ap = s.ap ?? 0;
   if (ap >= 70) return true;
   return false;

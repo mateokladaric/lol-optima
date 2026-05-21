@@ -420,6 +420,34 @@ if (khazix) {
   }
 }
 
+const rengar = Characters.find((c) => c.Name === "Rengar");
+if (rengar) {
+  const squishyDuel = resolveDuel({
+    targetArmor: 0,
+    targetMR: 0,
+    targetMaxHP: 2000,
+    targetBonusHP: 0,
+    comboWindowSeconds: 8,
+  });
+  const rengarRecs = recommendBuildsForChampion(rengar, Items, {
+    simulation: { level: 16 },
+    duel: squishyDuel,
+    monteCarlo: false,
+    optimizeKeystones: false,
+  });
+  const rengarGlass = rengarRecs.find((r) => r.profile === "glass");
+  if (rengarGlass) {
+    const apMythics =
+      /Luden|Stormsurge|Rabadon|Rocketbelt|Gunblade|Liandry|Void Staff|Shadowflame|Riftmaker|Blackfire|Malignance/i;
+    const apHit = rengarGlass.items.filter((n) => apMythics.test(n));
+    if (apHit.length > 0) {
+      fail(
+        `Rengar glass must not stack AP mythics (AD assassin): ${apHit.join(", ")} (full: ${rengarGlass.items.join(", ")})`,
+      );
+    }
+  }
+}
+
 const aatrox = Characters.find((c) => c.Name === "Aatrox");
 if (aatrox) {
   const aatroxRecs = recommendBuildsForChampion(aatrox, Items, {
