@@ -1,6 +1,6 @@
 {
   "patch": "16.10",
-  "scrapedAt": "2026-05-21T17:42:28.036Z",
+  "scrapedAt": "2026-05-21T18:13:33.615Z",
   "champions": {
     "Garen": {
       "position": "TOP",
@@ -611,8 +611,8 @@
         "Profane Hydra",
         "Lord Dominik's Regards",
         "Ionian Boots of Lucidity",
-        "Edge of Night",
-        "Voltaic Cyclosword"
+        "Voltaic Cyclosword",
+        "Edge of Night"
       ],
       "baseStatsLv18": {
         "hp": 2358,
@@ -2464,7 +2464,7 @@
         "Wit's End",
         "Plated Steelcaps",
         "Death's Dance",
-        "Kraken Slayer"
+        "Guardian Angel"
       ],
       "baseStatsLv18": {
         "hp": 2585,

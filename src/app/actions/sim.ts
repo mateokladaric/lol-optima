@@ -3995,6 +3995,20 @@ class Character {
       stats.magicResistReduction =
         (stats.magicResistReduction ?? 0) + itemMech.magicResistReduction;
     }
+    if (itemMech.armorReduction > 0) {
+      stats.armorReduction =
+        (stats.armorReduction ?? 0) + itemMech.armorReduction;
+    }
+    if (itemMech.bonusAdMultiplicativePercent > 0) {
+      stats.ad *= 1 + itemMech.bonusAdMultiplicativePercent / 100;
+    }
+    if (itemMech.bonusAttackSpeed > 0) {
+      stats.attackSpeed = (stats.attackSpeed ?? 0) + itemMech.bonusAttackSpeed;
+      if (!sim.spellOnlyNoAutos && stats.as > 0) {
+        const baseAs = this.AS;
+        stats.as = baseAs * (1 + (stats.attackSpeed ?? 0) / 100);
+      }
+    }
     if (itemMech.armorPen > 0) {
       stats.armorPen = (stats.armorPen ?? 0) + itemMech.armorPen;
     }
@@ -4005,6 +4019,21 @@ class Character {
     if (itemMech.effectiveDamageAmplificationOnTarget > 0) {
       stats.damageAmplificationOnTarget =
         itemMech.effectiveDamageAmplificationOnTarget;
+    }
+    if (itemMech.bonusAP > 0) stats.ap += itemMech.bonusAP;
+    if (itemMech.bonusHP > 0) {
+      stats.hp += itemMech.bonusHP;
+      stats.ap +=
+        (itemMech.bonusHP * (stats.apPerBonusHPPercent ?? 0)) / 100;
+    }
+    if (itemMech.bonusMana > 0) stats.mana += itemMech.bonusMana;
+    if (itemMech.bonusCritChance > 0) {
+      stats.critChance = (stats.critChance ?? 0) + itemMech.bonusCritChance;
+    }
+    if (itemMech.bonusDamageMultiplicativePercent > 0) {
+      stats.damageMultiplicative =
+        (stats.damageMultiplicative ?? 0) +
+        itemMech.bonusDamageMultiplicativePercent;
     }
     for (const line of itemMech.breakdown) breakdown.push(line);
 
@@ -4765,6 +4794,9 @@ class Character {
     let burstPhys = 0;
     let burstMagic = 0;
     let burstTrue = 0;
+
+    burstPhys += itemMech.burstPhys;
+    burstMagic += itemMech.burstMagic;
 
     // Item burst damage
     if (stats.physicalBurstDamage) {
@@ -28424,7 +28456,6 @@ const Zyra = new Character(
 // Exports
 export { Character, Ability, Item };
 export type {
-  ItemStats,
   DamageScaling,
   CooldownInfo,
   CastInfo,

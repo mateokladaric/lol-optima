@@ -6,6 +6,11 @@
 
 import type { Character, Item, ItemStats } from "@/app/actions/sim";
 
+function spellbladeUptime(attackRate: number): number {
+  if (attackRate <= 0) return 0;
+  return Math.min(1, 1 / (attackRate * 1.5));
+}
+
 export type ItemMechanicContext = {
   level: number;
   attackRate: number;
@@ -15,6 +20,7 @@ export type ItemMechanicContext = {
   avgCurrentHPRatio: number;
   melee: boolean;
   attackRange: number;
+  championBaseHP: number;
   /** 1v1: assume one champion takedown mid-fight for stack items. */
   duelTakedownAtSeconds: number;
   takedownCount: number;
@@ -26,6 +32,8 @@ export type ItemMechanicContributions = {
   bonusAD: number;
   bonusAPPercent: number;
   magicResistReduction: number;
+  /** Carve-style % armor reduction on target (Black Cleaver). */
+  armorReduction: number;
   armorPen: number;
   percentMagicPen: number;
   /**
@@ -41,8 +49,52 @@ export type ItemMechanicContributions = {
   abilityTrueDPS: number;
   /** Extra ult casts worth of effective ability haste on R over the combo window. */
   ultEffectiveHasteBonus: number;
+  /** Retribution-style missing-HP AD% (Overlord's Bloodmail). */
+  bonusAdMultiplicativePercent: number;
+  /** Juxtaposition / Wrath stack attack speed (Guinsoo's). */
+  bonusAttackSpeed: number;
+  /** Added to stats before damage (Rod of Ages ramp, etc.). */
+  bonusAP: number;
+  bonusHP: number;
+  bonusMana: number;
+  bonusCritChance: number;
+  /** Everrising / Focus / Void Corruption style amps. */
+  bonusDamageMultiplicativePercent: number;
+  /** Combo-window burst (Rocketbelt, Luden's echo, etc.). */
+  burstPhys: number;
+  burstMagic: number;
   breakdown: string[];
 };
+
+/** Item groups with bespoke passive simulation in this module. */
+export const MODELED_ITEM_GROUPS = [
+  "Kraken Slayer",
+  "Stormrazor",
+  "Hubris",
+  "Terminus",
+  "Blight",
+  "Blackfire Torch",
+  "Malignance",
+  "Horizon Focus",
+  "Axiom Arc",
+  "Black Cleaver",
+  "Overlord's Bloodmail",
+  "Guinsoo's Rageblade",
+  "Eclipse",
+  "Stormsurge",
+  "Luden's Echo",
+  "Statikk Shiv",
+  "Voltaic Cyclosword",
+  "Riftmaker",
+  "Spear of Shojin",
+  "Hextech Rocketbelt",
+  "Hextech Gunblade",
+  "Eternity",
+  "Immolate",
+  "Momentum",
+  "Yun Tal Wildarrows",
+  "Sundered Sky",
+] as const;
 
 const BURN_DURATION = 3;
 
@@ -106,6 +158,30 @@ function stormrazorProcPerAttack(attackRate: number): number {
   return BOLT_DAMAGE / autosToProc;
 }
 
+/** Energized on-hit (Statikk / Voltaic): stacks per auto until 100, then proc. */
+function energizedMagicPerAuto(
+  attackRate: number,
+  boltDamage: number,
+  stacksPerAuto: number,
+): number {
+  if (attackRate <= 0) return 0;
+  return boltDamage / (100 / stacksPerAuto);
+}
+
+function icdAbilityProcDps(
+  procDamage: number,
+  icdSeconds: number,
+  abilityHitsPerSec: number,
+): number {
+  if (procDamage <= 0 || icdSeconds <= 0) return 0;
+  const procsPerSec = Math.min(abilityHitsPerSec, 1 / icdSeconds);
+  return procDamage * procsPerSec;
+}
+
+function comboProcs(windowSec: number, icdSeconds: number): number {
+  return Math.max(1, Math.floor(windowSec / Math.max(icdSeconds, 0.5)));
+}
+
 export function buildItemMechanicContext(
   champion: Character,
   mit: { comboWindowSeconds: number },
@@ -128,6 +204,7 @@ export function buildItemMechanicContext(
     avgCurrentHPRatio: sim.avgCurrentHPRatio,
     melee: champion.AttackRange <= 250,
     attackRange: champion.AttackRange,
+    championBaseHP: champion.HP,
     duelTakedownAtSeconds: window * 0.5,
     takedownCount: 1,
   };
@@ -144,6 +221,7 @@ export function computeItemMechanicContributions(
     bonusAD: 0,
     bonusAPPercent: 0,
     magicResistReduction: 0,
+    armorReduction: 0,
     armorPen: 0,
     percentMagicPen: 0,
     effectiveDamageAmplificationOnTarget: 0,
@@ -154,8 +232,28 @@ export function computeItemMechanicContributions(
     abilityMagicDPS: 0,
     abilityTrueDPS: 0,
     ultEffectiveHasteBonus: 0,
+    bonusAdMultiplicativePercent: 0,
+    bonusAttackSpeed: 0,
+    bonusAP: 0,
+    bonusHP: 0,
+    bonusMana: 0,
+    bonusCritChance: 0,
+    bonusDamageMultiplicativePercent: 0,
+    burstPhys: 0,
+    burstMagic: 0,
     breakdown: [],
   };
+
+  // 1v1 duel: Hydra cleave / Stridebreaker shockwave only hits secondary targets.
+  for (const item of items) {
+    if (
+      item.stats.physicalAoEOnHitADPercent ||
+      item.stats.physicalAoEOnHitMaxHealthPercent
+    ) {
+      out.statSuppress.physicalAoEOnHitADPercent = true;
+      out.statSuppress.physicalAoEOnHitMaxHealthPercent = true;
+    }
+  }
 
   if (hasGroup(items, "Kraken Slayer")) {
     out.statSuppress.physicalOnHit = true;
@@ -240,12 +338,14 @@ export function computeItemMechanicContributions(
   if (hasGroup(items, "Malignance")) {
     out.statSuppress.magicDotDamage = true;
     out.statSuppress.magicDotDamagePerAPRatio = true;
+    out.statSuppress.magicResistReduction = true;
     const burnTotal = 60 + stats.ap * 0.1;
     const burnDPS = burnTotal / BURN_DURATION;
     const uptime = burnUptime(abilityHitsPerSec, BURN_DURATION);
     out.dotMagicDPS += burnDPS * uptime;
+    out.magicResistReduction = 10 * uptime;
     out.breakdown.push(
-      `Malignance burn: ${(burnDPS * uptime).toFixed(1)} DPS (${burnTotal.toFixed(0)} over ${BURN_DURATION}s)`,
+      `Malignance burn: ${(burnDPS * uptime).toFixed(1)} DPS (${burnTotal.toFixed(0)} over ${BURN_DURATION}s, ${(uptime * 100).toFixed(0)}% burn, ${out.magicResistReduction.toFixed(0)}% MR shred)`,
     );
   }
 
@@ -262,6 +362,49 @@ export function computeItemMechanicContributions(
     );
   }
 
+  if (hasGroup(items, "Black Cleaver")) {
+    out.statSuppress.armorReduction = true;
+    const physHitsPerSec =
+      abilityHitsPerSec + (ctx.attackRate > 0 ? ctx.attackRate : 0);
+    const maxStacks = 6;
+    const hitsPerSec = Math.max(physHitsPerSec, 0.3);
+    const secToMax = maxStacks / hitsPerSec;
+    let avgStacks: number;
+    if (ctx.comboWindowSeconds >= secToMax + 1) {
+      avgStacks = maxStacks;
+    } else {
+      avgStacks = Math.min(maxStacks, (hitsPerSec * ctx.comboWindowSeconds) / 2);
+    }
+    out.armorReduction = avgStacks * 5;
+    out.breakdown.push(
+      `Black Cleaver Carve: ~${avgStacks.toFixed(1)} stacks (${out.armorReduction}% armor reduction)`,
+    );
+  }
+
+  if (hasGroup(items, "Overlord's Bloodmail")) {
+    out.statSuppress.adMultiplicative = true;
+    const wearerMissing = 1 - ctx.avgCurrentHPRatio;
+    out.bonusAdMultiplicativePercent = 12 * Math.min(1, Math.max(0, wearerMissing));
+    out.breakdown.push(
+      `Overlord Retribution: +${out.bonusAdMultiplicativePercent.toFixed(1)}% AD (${(wearerMissing * 100).toFixed(0)}% avg missing HP)`,
+    );
+  }
+
+  if (hasGroup(items, "Guinsoo's Rageblade") && ctx.attackRate > 0) {
+    out.statSuppress.magicOnHit = true;
+    const maxStacks = 11;
+    const avgStacks = Math.min(
+      maxStacks,
+      (ctx.attackRate * ctx.comboWindowSeconds) / 2,
+    );
+    const wrathFrac = avgStacks / maxStacks;
+    out.onHitMagicPerAttack += 30 / 3;
+    out.bonusAttackSpeed = (57 - 25) * wrathFrac;
+    out.breakdown.push(
+      `Guinsoo's Wrath: ~${avgStacks.toFixed(1)} stacks, ${(30 / 3).toFixed(0)} avg magic/on-hit, +${out.bonusAttackSpeed.toFixed(0)}% AS`,
+    );
+  }
+
   if (hasGroup(items, "Axiom Arc")) {
     const refund =
       (stats.ultCooldownRefundOnTakedown ?? 0) +
@@ -271,6 +414,144 @@ export function computeItemMechanicContributions(
       out.ultEffectiveHasteBonus = refund * 0.5;
       out.breakdown.push(
         `Axiom Arc: ~${refund.toFixed(0)}% ult CD refund on takedown (second R in long fights)`,
+      );
+    }
+  }
+
+  if (hasGroup(items, "Eclipse")) {
+    const procPhys = ctx.targetMaxHP * 0.03;
+    const hitRate = abilityHitsPerSec + ctx.attackRate;
+    const icd = 4;
+    const dps = icdAbilityProcDps(procPhys, icd, hitRate / 2);
+    out.abilityPhysDPS += dps;
+    out.burstPhys += procPhys * comboProcs(ctx.comboWindowSeconds, icd);
+    out.breakdown.push(
+      `Eclipse Everrising: ~${dps.toFixed(1)} DPS (${procPhys.toFixed(0)} per 2-hit proc, ${icd}s cadence)`,
+    );
+  }
+
+  if (hasGroup(items, "Stormsurge")) {
+    const procMagic = 75 + stats.ap * 0.25;
+    const dps = icdAbilityProcDps(procMagic, 15, abilityHitsPerSec);
+    out.abilityMagicDPS += dps;
+    out.burstMagic += procMagic * comboProcs(ctx.comboWindowSeconds, 15);
+    out.breakdown.push(
+      `Stormsurge: ~${dps.toFixed(1)} DPS (${procMagic.toFixed(0)} magic / 15s ICD)`,
+    );
+  }
+
+  if (hasGroup(items, "Luden's Echo")) {
+    const echo = 100 + stats.ap * 0.1;
+    const dps = icdAbilityProcDps(echo, 10, abilityHitsPerSec);
+    out.abilityMagicDPS += dps;
+    out.burstMagic += echo;
+    out.breakdown.push(
+      `Luden's Echo: ~${dps.toFixed(1)} DPS (${echo.toFixed(0)} magic / 10s)`,
+    );
+  }
+
+  if (hasGroup(items, "Statikk Shiv") && ctx.attackRate > 0) {
+    const perAuto = energizedMagicPerAuto(ctx.attackRate, 120, 25);
+    out.onHitMagicPerAttack += perAuto;
+    out.breakdown.push(
+      `Statikk Shiv: +${(perAuto * ctx.attackRate).toFixed(1)} DPS (${perAuto.toFixed(0)} magic / ~4 autos)`,
+    );
+  }
+
+  if (hasGroup(items, "Voltaic Cyclosword") && ctx.attackRate > 0) {
+    const perAuto = energizedMagicPerAuto(ctx.attackRate, 175, 25);
+    out.onHitMagicPerAttack += perAuto;
+    out.breakdown.push(
+      `Voltaic Cyclosword: +${(perAuto * ctx.attackRate).toFixed(1)} DPS (${perAuto.toFixed(0)} magic / ~4 autos)`,
+    );
+  }
+
+  if (hasGroup(items, "Riftmaker")) {
+    out.statSuppress.damageMultiplicative = true;
+    const combatUptime = 0.85;
+    out.bonusDamageMultiplicativePercent = 8 * combatUptime;
+    out.breakdown.push(
+      `Riftmaker Void Corruption: +${out.bonusDamageMultiplicativePercent.toFixed(1)}% damage (${(combatUptime * 100).toFixed(0)}% combat uptime)`,
+    );
+  }
+
+  if (hasGroup(items, "Spear of Shojin")) {
+    out.statSuppress.damageMultiplicative = true;
+    const ramp = Math.min(1, (abilityHitsPerSec * ctx.comboWindowSeconds) / 6);
+    out.bonusDamageMultiplicativePercent = 12 * ramp;
+    out.breakdown.push(
+      `Spear of Shojin Focus: +${out.bonusDamageMultiplicativePercent.toFixed(1)}% damage (~${(ramp * 100).toFixed(0)}% stacks)`,
+    );
+  }
+
+  if (hasGroup(items, "Hextech Rocketbelt")) {
+    const active = 125 + stats.ap * 0.45;
+    out.burstMagic += active;
+    out.breakdown.push(`Hextech Rocketbelt active: ${active.toFixed(0)} magic (combo)`);
+  }
+
+  if (hasGroup(items, "Hextech Gunblade")) {
+    const active = 170 + stats.ap * 0.85;
+    out.burstMagic += active;
+    out.breakdown.push(`Hextech Gunblade active: ${active.toFixed(0)} magic (combo)`);
+  }
+
+  if (hasGroup(items, "Eternity")) {
+    const frac = 0.8;
+    out.bonusAP += (75 - 45) * frac;
+    out.bonusHP += (450 - 350) * frac;
+    out.bonusMana += (800 - 500) * frac;
+    out.breakdown.push(
+      `Rod of Ages: +${out.bonusAP.toFixed(0)} AP, +${out.bonusHP.toFixed(0)} HP, +${out.bonusMana.toFixed(0)} mana (~80% stacks)`,
+    );
+  }
+
+  if (hasGroup(items, "Immolate")) {
+    const meleeUptime = ctx.melee ? 0.85 : 0.35;
+    const bonusHP = Math.max(0, (stats.hp ?? 0) - ctx.championBaseHP);
+    const dot = (20 + bonusHP * 0.01) * meleeUptime;
+    out.statSuppress.magicDotDamage = true;
+    out.statSuppress.magicDotDamagePerBonusHPRatio = true;
+    out.dotMagicDPS += dot;
+    out.breakdown.push(
+      `Sunfire Immolate: ${dot.toFixed(1)} DPS (${(meleeUptime * 100).toFixed(0)}% melee uptime)`,
+    );
+  }
+
+  if (items.some((i) => i.name.includes("Dead Man's Plate")) && ctx.attackRate > 0) {
+    const frac = 0.5;
+    if (ctx.attackRate > 0) {
+      out.onHitPhysPerAttack += 40 * frac;
+      const spellblade = (stats.ad * 1.0) * spellbladeUptime(ctx.attackRate) * frac;
+      out.onHitPhysPerAttack += spellblade;
+      out.breakdown.push(
+        `Dead Man's Plate: +${(40 * frac + spellblade).toFixed(1)} avg on-hit (${(frac * 100).toFixed(0)}% Momentum)`,
+      );
+    }
+  }
+
+  if (hasGroup(items, "Yun Tal Wildarrows") && ctx.attackRate > 0) {
+    out.statSuppress.critChance = true;
+    const maxStacks = 11;
+    const avgStacks = Math.min(
+      maxStacks,
+      (ctx.attackRate * ctx.comboWindowSeconds) / 2,
+    );
+    out.bonusCritChance = (25 * avgStacks) / maxStacks;
+    out.breakdown.push(
+      `Yun Tal Wildarrows: +${out.bonusCritChance.toFixed(0)}% avg crit (${avgStacks.toFixed(1)} stacks)`,
+    );
+  }
+
+  if (hasGroup(items, "Sundered Sky") && ctx.attackRate > 0) {
+    const crit = Math.min(
+      100,
+      (stats.critChance ?? 0) + (out.bonusCritChance || 0),
+    );
+    if (crit > 5) {
+      out.bonusDamageMultiplicativePercent += (crit / 100) * 8;
+      out.breakdown.push(
+        `Sundered Sky: +${((crit / 100) * 8).toFixed(1)}% damage via crit strikes`,
       );
     }
   }

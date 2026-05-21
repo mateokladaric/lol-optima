@@ -1,5 +1,5 @@
 /**
- * Static audit: item proc stats vs optimizer pool + known modeling rules.
+ * Full item catalog audit: proc stats, optimizer pool, modeling status.
  * Run: npm run audit:items
  */
 import {
@@ -8,10 +8,12 @@ import {
   type Item,
   type ItemStats,
 } from "../src/app/actions/sim";
+import { buildRealisticItemPool } from "../src/lib/buildOptimizer";
 import {
-  buildRealisticItemPool,
-  applyRealisticApproximation,
-} from "../src/lib/buildOptimizer";
+  MODELED_ITEM_GROUPS,
+  HORIZON_HYPERSHOT_UPTIME_MELEE,
+  HORIZON_HYPERSHOT_UPTIME_RANGED,
+} from "../src/lib/itemMechanics";
 
 const PROC_KEYS: (keyof ItemStats)[] = [
   "trueOnAbilityHit",
@@ -20,24 +22,102 @@ const PROC_KEYS: (keyof ItemStats)[] = [
   "physicalOnAbilityHitMaxManaPercent",
   "physicalOnAbilityHitCooldown",
   "physicalOnHit",
-  "physicalOnHitMaxHealthPercent",
   "physicalOnHitCurrentHealthPercent",
+  "physicalOnHitMaxHealthPercent",
+  "physicalOnHitBaseADPercent",
+  "physicalOnHitMaxManaPercent",
   "magicOnHit",
+  "magicOnHitAPRatio",
   "magicPeriodicOnHit",
   "magicDotDamage",
   "magicDotDamagePerAPRatio",
+  "magicDotDamagePerTargetMaxHPRatio",
+  "magicDotDamagePerBonusHPRatio",
   "damageAmplificationOnTarget",
+  "damagePerTargetBonusHPPercent",
   "executeMaxHealthThresholdPercent",
   "physicalAoEOnHitADPercent",
-  "physicalAoEOnHitMaxHealthPercent",
+  "armorReduction",
+  "magicResistReduction",
+  "ultCooldownRefundOnTakedown",
+  "basicAbilityCooldownReductionOnAttack",
+  "adMultiplicative",
+  "adPerMaxManaPercent",
+  "adPerBonusHPPercent",
+  "apPerBonusHPPercent",
+  "abilityDamagePerManaMultiplicative",
 ];
 
-type Issue = { item: string; severity: "high" | "medium" | "low"; note: string };
+type Severity = "high" | "medium" | "low";
+type Issue = { item: string; severity: Severity; note: string };
 
-function isMeleeChampion(name: string): boolean {
-  const c = Characters.find((ch) => ch.Name === name);
-  return c ? c.AttackRange <= 250 : true;
-}
+type PoolStatus = "mechanics" | "sim_ok" | "sim_partial" | "not_damage" | "sim_gap";
+
+/** Enchanter/support — correct sim is ~0 damage contribution. */
+const NOT_DAMAGE_GROUPS = new Set([
+  "Ardent Censer",
+  "Bandlepipes",
+  "Diadem of Songs",
+  "Echoes of Helia",
+  "Imperial Mandate",
+  "Knight's Vow",
+  "Locket of the Iron Solari",
+  "Mikael's Blessing",
+  "Moonstone Renewer",
+  "Protoplasm Harness",
+  "Redemption",
+  "Shurelya's Battlesong",
+  "Solstice Sleigh",
+  "Staff of Flowing Water",
+  "Support / Jungle",
+  "Zaz'Zak's Realmspike",
+  "Zeke's Convergence",
+]);
+
+const STATIC_OK_GROUPS = new Set([
+  "Liandry's Torment",
+  "Lord Dominik's Regards",
+  "The Collector",
+  "Blade of the Ruined King",
+  "Nashor's Tooth",
+  "Wit's End",
+  "Rabadon's Deathcap",
+  "Void Staff",
+  "Bastionbreaker",
+  "Titanic Hydra",
+  "Navori Flickerblade",
+  "Trinity Force",
+  "Iceborn Gauntlet",
+  "Sheen",
+  "Spellblade",
+  "Manaflow",
+  "Actualizer",
+  "Last Whisper",
+  "Infinity Edge",
+  "Youmuu's Ghostblade",
+  "Serpent's Fang",
+  "Lifeline",
+  "Annul",
+  "Void Pen",
+  "Morellonomicon",
+  "Shadowflame",
+  "Cosmic Drive",
+  "Dawncore",
+  "Glory",
+  "Hydra",
+  "Profane Hydra",
+]);
+
+const PARTIAL_NOTES: Record<string, string> = {
+  Spellblade:
+    "Sheen 1.5s ICD via spellbladeOnHitUptime; Bloodsong base row is enchanter stats only",
+  Heartsteel: "base HP row only; stack/consumption excluded from pool",
+  Mejai: "0-stack base in pool (conservative)",
+  Hydra: "cleave AoE suppressed in 1v1; Titanic %maxHP on-hit on primary target",
+  "Dead Man's Plate": "Momentum on-hit at 50% avg (Momentum group)",
+  "Zeke's Convergence": "partner passive — no solo 1v1 damage",
+  "Endless Hunger": "Feast omnivamp on kill only; base omnivamp in stats",
+};
 
 function procSnapshot(item: Item): Record<string, number> {
   const out: Record<string, number> = {};
@@ -48,7 +128,7 @@ function procSnapshot(item: Item): Record<string, number> {
   return out;
 }
 
-function auditItem(item: Item, inPool: boolean): Issue[] {
+function auditCatalogItem(item: Item, inPool: boolean): Issue[] {
   const issues: Issue[] = [];
   const s = item.stats;
   const name = item.name;
@@ -60,7 +140,7 @@ function auditItem(item: Item, inPool: boolean): Issue[] {
     issues.push({
       item: name,
       severity: "high",
-      note: "true on-ability-hit without ICD (every-cast inflation risk)",
+      note: "true on-ability-hit without ICD",
     });
   }
 
@@ -68,124 +148,150 @@ function auditItem(item: Item, inPool: boolean): Issue[] {
     issues.push({
       item: name,
       severity: "high",
-      note: "Muramana-style shock without physicalOnAbilityHitCooldown",
+      note: "Muramana Shock without physicalOnAbilityHitCooldown",
     });
   }
 
-  if (name.includes("Skipper") && (s.physicalOnHitBaseADPercent || s.physicalOnHitMaxHealthPercent)) {
-    issues.push({
-      item: name,
-      severity: "high",
-      note: "Hullbreaker Skipper on-hit is vs structures/minions, not champions",
-    });
-  }
-
-  if (s.magicDotDamage && s.magicDotDamage >= 40 && !name.includes("Burn avg")) {
-    issues.push({
-      item: name,
-      severity: "medium",
-      note: `magicDotDamage=${s.magicDotDamage} treated as flat DPS — verify burn uptime`,
-    });
-  }
-
-  if (s.damageAmplificationOnTarget && name.includes("Hypershot")) {
-    issues.push({
-      item: name,
-      severity: "low",
-      note: "Hypershot row — sim uses fixed melee/ranged uptime in itemMechanics",
-    });
-  }
   if (
-    s.damageAmplificationOnTarget &&
-    inPool &&
-    item.getGroupName() === "Horizon Focus" &&
-    !name.includes("Hypershot")
+    name.includes("Skipper") &&
+    (s.physicalOnHitBaseADPercent || s.physicalOnHitMaxHealthPercent)
   ) {
     issues.push({
       item: name,
-      severity: "low",
-      note: "Horizon base row — amp applied via Hypershot melee/ranged uptime in sim",
+      severity: inPool ? "high" : "medium",
+      note: "Skipper on-hit vs structures — excluded in sim",
     });
   }
 
   if (/\(\d+ stacks?\)/i.test(name) && inPool) {
     issues.push({
       item: name,
-      severity: "medium",
-      note: "stack variant in optimizer pool — may overstate stacks",
-    });
-  }
-
-  if (s.ultCooldownRefundOnTakedown) {
-    issues.push({
-      item: name,
-      severity: "low",
-      note: "Axiom ult refund on takedown not modeled in sustained 1v1 CD loop",
+      severity: "high",
+      note: "stack variant in optimizer pool",
     });
   }
 
   return issues;
 }
 
-const probe = Characters.find((c) => c.Name === "Ezreal")!;
-const melee = isMeleeChampion("Ezreal");
-const pool = buildRealisticItemPool(probe, Items);
-const poolItemNames = new Set(pool.map((i) => i.name));
-
-console.log("=== Item proc audit (loloptima) ===\n");
-console.log(`Optimizer pool: ${pool.length} item groups\n`);
-
-const allIssues: Issue[] = [];
-for (const item of Items) {
-  const procs = procSnapshot(item);
-  if (Object.keys(procs).length === 0) continue;
-  const inPool = poolItemNames.has(item.name);
-  const issues = auditItem(item, inPool);
-  for (const iss of issues) {
-    allIssues.push({ ...iss, item: `${iss.item}${inPool ? " [pool]" : ""}` });
+function poolStatusForGroup(group: string): PoolStatus {
+  if (NOT_DAMAGE_GROUPS.has(group)) return "not_damage";
+  if ((MODELED_ITEM_GROUPS as readonly string[]).includes(group)) {
+    return "mechanics";
   }
+  if (STATIC_OK_GROUPS.has(group)) return "sim_ok";
+  if (PARTIAL_NOTES[group]) return "sim_partial";
+  return "sim_gap";
 }
 
-const approxGroups = [
-  "Kraken Slayer",
-  "Hubris",
-  "Terminus",
-  "Blight",
-  "Blackfire Torch",
-  "Malignance",
-];
-console.log("Mechanics modeled in sim (itemMechanics.ts + calculateDPS):");
-console.log(
-  "  Kraken (3rd AA + missing HP), Stormrazor (100 energize), Hubris (Eminence takedown),",
-);
-console.log(
-  "  Terminus (stack ramp), Bloodletter (Blight stacks), Blackfire/Malignance (burn refresh),",
-);
-console.log(
-  "  Horizon Hypershot (fixed 30% melee / 80% ranged uptime @ 600+ units), Axiom, Muramana, Hullbreaker Skipper excluded.",
-);
+const probe = Characters.find((c) => c.Name === "Ezreal")!;
+const pool = buildRealisticItemPool(probe, Items);
+const poolByGroup = new Map(pool.map((i) => [i.getGroupName(), i]));
+const poolItemNames = new Set(pool.map((i) => i.name));
 
-const bySeverity = { high: 0, medium: 0, low: 0 };
-for (const i of allIssues) bySeverity[i.severity]++;
+const allGroups = new Map<string, Item[]>();
+for (const item of Items) {
+  const g = item.getGroupName();
+  if (!allGroups.has(g)) allGroups.set(g, []);
+  allGroups.get(g)!.push(item);
+}
 
-console.log(`\nIssues: high=${bySeverity.high} medium=${bySeverity.medium} low=${bySeverity.low}\n`);
+console.log("=== Full item audit (loloptima) ===\n");
+console.log(`Catalog: ${Items.length} rows, ${allGroups.size} groups`);
+console.log(`Optimizer pool: ${pool.length} groups\n`);
 
-for (const sev of ["high", "medium", "low"] as const) {
-  const rows = allIssues.filter((i) => i.severity === sev);
+console.log(`Modeled groups (${MODELED_ITEM_GROUPS.length}):`);
+for (const g of MODELED_ITEM_GROUPS) {
+  const row = poolByGroup.get(g);
+  console.log(`  ${g}${row ? ` → ${row.name}` : ""}`);
+}
+console.log(
+  `\nHorizon Hypershot: ${HORIZON_HYPERSHOT_UPTIME_MELEE * 100}% melee / ${HORIZON_HYPERSHOT_UPTIME_RANGED * 100}% ranged`,
+);
+console.log("1v1: Hydra/Stridebreaker cleave AoE = 0\n");
+
+const byStatus: Record<PoolStatus, string[]> = {
+  mechanics: [],
+  sim_ok: [],
+  sim_partial: [],
+  not_damage: [],
+  sim_gap: [],
+};
+
+for (const [group, row] of poolByGroup) {
+  const status = poolStatusForGroup(group);
+  const procs = procSnapshot(row);
+  const procStr =
+    Object.keys(procs).length > 0
+      ? ` {${Object.entries(procs)
+          .map(([k, v]) => `${k}:${v}`)
+          .join(", ")}}`
+      : "";
+  let line = `${row.name}${procStr}`;
+  if (status === "sim_partial" && PARTIAL_NOTES[group]) {
+    line += ` — ${PARTIAL_NOTES[group]}`;
+  } else if (status === "not_damage") {
+    line += " — support/enchanter (0 dmg expected)";
+  } else if (status === "sim_gap") {
+    line += " — stat stick / defensive only";
+  }
+  byStatus[status].push(line);
+}
+
+for (const status of [
+  "mechanics",
+  "sim_ok",
+  "sim_partial",
+  "not_damage",
+  "sim_gap",
+] as PoolStatus[]) {
+  const rows = byStatus[status];
   if (rows.length === 0) continue;
-  console.log(`--- ${sev.toUpperCase()} ---`);
-  for (const r of rows) console.log(`  ${r.item}: ${r.note}`);
+  console.log(`--- Pool: ${status} (${rows.length}) ---`);
+  for (const r of rows.sort()) console.log(`  ${r}`);
   console.log();
 }
 
-const blockingHigh = allIssues.filter(
-  (i) => i.severity === "high" && poolItemNames.has(i.item.replace(/ \[pool\]$/, "")),
+const allIssues: Issue[] = [];
+for (const item of Items) {
+  if (Object.keys(procSnapshot(item)).length === 0) continue;
+  const inPool = poolItemNames.has(item.name);
+  for (const iss of auditCatalogItem(item, inPool)) {
+    allIssues.push({
+      ...iss,
+      item: `${iss.item}${inPool ? " [pool]" : ""}`,
+    });
+  }
+}
+
+const counts = { high: 0, medium: 0, low: 0 };
+for (const i of allIssues) counts[i.severity]++;
+
+console.log(
+  `Catalog proc issues: high=${counts.high} medium=${counts.medium} low=${counts.low}`,
 );
+
+for (const sev of ["high", "medium", "low"] as Severity[]) {
+  const rows = allIssues.filter((i) => i.severity === sev);
+  if (rows.length === 0) continue;
+  console.log(`\n--- ${sev.toUpperCase()} (catalog) ---`);
+  for (const r of rows) console.log(`  ${r.item}: ${r.note}`);
+}
+
+const blockingHigh = allIssues.filter(
+  (i) =>
+    i.severity === "high" &&
+    poolItemNames.has(i.item.replace(/ \[pool\]$/, "")),
+);
+
 if (blockingHigh.length > 0) {
   console.error(
-    `Audit found ${blockingHigh.length} HIGH severity issue(s) in the optimizer pool.`,
+    `\n${blockingHigh.length} HIGH severity issue(s) in optimizer pool.`,
   );
   process.exit(1);
 }
 
-console.log("Audit complete (no unresolved high-severity issues in catalog).");
+const damagePool = pool.length - byStatus.not_damage.length;
+console.log(
+  `\nAudit complete: ${damagePool} damage-relevant pool groups, ${byStatus.not_damage.length} support items.`,
+);
