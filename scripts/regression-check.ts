@@ -23,12 +23,15 @@ import {
   HORIZON_HYPERSHOT_UPTIME_RANGED,
 } from "../src/lib/itemMechanics";
 import {
+  averageEnemyTeamStats,
   dpsMitigationForPurchaseStep,
   dpsMitigationFromDuel,
+  estimateEnemyIncomingPhysShare,
   greedySimPurchaseOrder,
   recommendBuildsForChampion,
   resolveDuel,
 } from "../src/lib/buildOptimizer";
+import { championIncomingPhysShare } from "../src/app/actions/sim";
 import {
   opponentAtPurchaseStep,
   purchaseLevelForItemCount,
@@ -887,6 +890,76 @@ if (ahriLiandry && liandryItem) {
   }
   if (!line.includes("burn uptime")) {
     fail("Liandry breakdown should report burn uptime");
+  }
+}
+
+const zedChamp = Characters.find((c) => c.Name === "Zed");
+const ahriChamp = Characters.find((c) => c.Name === "Ahri");
+if (zedChamp && ahriChamp) {
+  const zedPhys = championIncomingPhysShare(zedChamp);
+  const ahriPhys = championIncomingPhysShare(ahriChamp);
+  if (zedPhys <= ahriPhys) {
+    fail(
+      `Zed should skew more physical than Ahri (zed=${(zedPhys * 100).toFixed(0)}%, ahri=${(ahriPhys * 100).toFixed(0)}%)`,
+    );
+  }
+  const zedBuild = estimateEnemyIncomingPhysShare({
+    champion: "Zed",
+    items: [
+      "Youmuu's Ghostblade",
+      "Hubris",
+      "Serylda's Grudge",
+      "Edge of Night",
+      "Axiom Arc",
+      "Plated Steelcaps",
+    ],
+    baseStatsLv18: { hp: 2084, armor: 99, mr: 52 },
+  });
+  const ahriBuild = estimateEnemyIncomingPhysShare({
+    champion: "Ahri",
+    items: [
+      "Stormsurge",
+      "Shadowflame",
+      "Rabadon's Deathcap",
+      "Void Staff",
+      "Zhonya's Hourglass",
+      "Sorcerer's Shoes",
+    ],
+    baseStatsLv18: { hp: 2242, armor: 87, mr: 38 },
+  });
+  if (zedBuild <= ahriBuild) {
+    fail(
+      `AD build should skew more physical than AP build (zed=${(zedBuild * 100).toFixed(0)}%, ahri=${(ahriBuild * 100).toFixed(0)}%)`,
+    );
+  }
+  const team = averageEnemyTeamStats([
+    {
+      champion: "Zed",
+      items: [
+        "Youmuu's Ghostblade",
+        "Hubris",
+        "Serylda's Grudge",
+        "Edge of Night",
+        "Axiom Arc",
+        "Plated Steelcaps",
+      ],
+      baseStatsLv18: { hp: 2084, armor: 99, mr: 52 },
+    },
+    {
+      champion: "Ahri",
+      items: [
+        "Stormsurge",
+        "Shadowflame",
+        "Rabadon's Deathcap",
+        "Void Staff",
+        "Zhonya's Hourglass",
+        "Sorcerer's Shoes",
+      ],
+      baseStatsLv18: { hp: 2242, armor: 87, mr: 38 },
+    },
+  ]);
+  if (team.incomingPhysShare <= 0.05 || team.incomingPhysShare >= 0.95) {
+    fail(`Team incoming phys share should stay in (5%, 95%), got ${team.incomingPhysShare}`);
   }
 }
 

@@ -234,6 +234,7 @@ function BuildFinder(): React.ReactElement {
       setTargetBonusHP(autoStats.targetBonusHP);
       setTargetArmor(autoStats.targetArmor);
       setTargetMR(autoStats.targetMR);
+      setIncomingPhysPct(Math.round(autoStats.incomingPhysShare * 100));
     }
   }, [autoStats, useAutoStats]);
 
@@ -321,7 +322,8 @@ function BuildFinder(): React.ReactElement {
             <div className="mt-2 flex items-center gap-3 text-xs">
               <span className="text-gray-400">
                 Avg: {autoStats.targetMaxHP} HP (+{autoStats.targetBonusHP}{" "}
-                bonus), {autoStats.targetArmor} armor, {autoStats.targetMR} MR
+                bonus), {autoStats.targetArmor} armor, {autoStats.targetMR} MR,{" "}
+                {Math.round(autoStats.incomingPhysShare * 100)}% incoming phys
               </span>
               <button
                 type="button"
@@ -456,6 +458,9 @@ function BuildFinder(): React.ReactElement {
             >
               Incoming damage: {incomingPhysPct}% phys / {100 - incomingPhysPct}
               % magic
+              {isAutoActive && (
+                <span className="text-red-400/80 ml-1">(from enemy kits + items)</span>
+              )}
             </label>
             <input
               id="duel-phys-share"
@@ -463,7 +468,10 @@ function BuildFinder(): React.ReactElement {
               min={0}
               max={100}
               value={incomingPhysPct}
-              onChange={(e) => setIncomingPhysPct(Number(e.target.value))}
+              onChange={(e) => {
+                setIncomingPhysPct(Number(e.target.value));
+                if (useAutoStats) setUseAutoStats(false);
+              }}
               className="w-full accent-blue-500"
             />
           </div>

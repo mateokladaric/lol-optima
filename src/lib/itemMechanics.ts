@@ -65,6 +65,7 @@ export type ItemMechanicContributions = {
   /** Combo-window burst (Rocketbelt, Luden's echo, etc.). */
   burstPhys: number;
   burstMagic: number;
+  burstTrue: number;
   /** Time-averaged shield HP for EHP (Sterak-style passives use item stats). */
   shieldValue: number;
   breakdown: string[];
@@ -274,6 +275,7 @@ export function computeItemMechanicContributions(
     bonusDamageMultiplicativePercent: 0,
     burstPhys: 0,
     burstMagic: 0,
+    burstTrue: 0,
     shieldValue: 0,
     breakdown: [],
   };

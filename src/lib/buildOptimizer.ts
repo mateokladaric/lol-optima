@@ -17,6 +17,8 @@ import type {
 import {
   AllKeystones,
   BLENDED_DPS_COMBO_WEIGHT,
+  Characters,
+  championIncomingPhysShare,
   championUsesApScaling,
   championUsesMana,
   isManaScalingItem,
@@ -25,6 +27,7 @@ import {
   Items,
 } from "@/app/actions/sim";
 import { goldEfficiencyTieBreak, totalBuildGold } from "@/lib/itemGold";
+import { resolveItemByDDName } from "@/lib/itemNameMap";
 import {
   greedyPurchaseOrder,
   opponentAtPurchaseStep,
@@ -1644,20 +1647,92 @@ export function computeEnemyStatsFromBuild(enemy: EnemyChampionInput): {
   return { maxHP, bonusHP, armor, mr };
 }
 
+/** Physical vs magic lean from completed items in a scraped build. */
+export function buildDamageAffinityFromItems(
+  itemNames: string[],
+  isMelee = true,
+): { physical: number; magic: number } {
+  let physical = 0;
+  let magic = 0;
+
+  for (const name of itemNames) {
+    const item = resolveItemByDDName(name, isMelee);
+    if (!item) continue;
+    const s = item.stats;
+
+    magic += (s.ap ?? 0) * 1.2;
+    magic += (s.percentMagicPen ?? 0) * 2;
+    magic += (s.flatMagicPen ?? 0) * 1.5;
+    magic += (s.abilityDamageMultiplicative ?? 0) * 40;
+    magic += (s.magicOnHit ?? 0) * 0.5;
+    magic += (s.magicDotDamage ?? 0) * 0.3;
+
+    physical += (s.ad ?? 0) * 0.85;
+    physical += (s.lethality ?? 0) * 3;
+    physical += (s.armorPen ?? 0) * 1.5;
+    physical += (s.critChance ?? 0) * 0.6;
+    physical += (s.attackSpeed ?? 0) * 0.35;
+    physical += (s.physicalOnHitCurrentHealthPercent ?? 0) * 4;
+    physical += (s.physicalOnHitMaxHealthPercent ?? 0) * 4;
+    physical += (s.physicalOnHitBaseADPercent ?? 0) * 0.4;
+    physical += (s.adMultiplicative ?? 0) * 2;
+  }
+
+  return { physical, magic };
+}
+
+/**
+ * Incoming physical damage share for one enemy: kit rotation + item build.
+ */
+export function estimateEnemyIncomingPhysShare(
+  enemy: EnemyChampionInput,
+  level = 18,
+): number {
+  const champ = Characters.find((c) => c.Name === enemy.champion);
+  const isMelee = champ ? champ.AttackRange <= 250 : true;
+
+  let kitShare = 0.5;
+  if (champ) {
+    kitShare = championIncomingPhysShare(champ, level);
+  }
+
+  const aff = buildDamageAffinityFromItems(enemy.items, isMelee);
+  const itemTotal = aff.physical + aff.magic;
+  const itemShare =
+    itemTotal > 0 ? aff.physical / itemTotal : kitShare;
+
+  return clamp(kitShare * 0.6 + itemShare * 0.4, 0.05, 0.95);
+}
+
+export type AverageEnemyTeamStats = {
+  targetMaxHP: number;
+  targetBonusHP: number;
+  targetArmor: number;
+  targetMR: number;
+  incomingPhysShare: number;
+};
+
 /**
  * Average the stats of 1-5 enemy champions into DuelAssumptions fields.
  */
 export function averageEnemyTeamStats(
   enemies: EnemyChampionInput[],
-): { targetMaxHP: number; targetBonusHP: number; targetArmor: number; targetMR: number } {
+): AverageEnemyTeamStats {
   if (enemies.length === 0) {
-    return { targetMaxHP: 3000, targetBonusHP: 1000, targetArmor: 100, targetMR: 100 };
+    return {
+      targetMaxHP: 3000,
+      targetBonusHP: 1000,
+      targetArmor: 100,
+      targetMR: 100,
+      incomingPhysShare: 0.5,
+    };
   }
 
   let totalHP = 0;
   let totalBonusHP = 0;
   let totalArmor = 0;
   let totalMR = 0;
+  let totalPhysShare = 0;
 
   for (const enemy of enemies) {
     const s = computeEnemyStatsFromBuild(enemy);
@@ -1665,6 +1740,7 @@ export function averageEnemyTeamStats(
     totalBonusHP += s.bonusHP;
     totalArmor += s.armor;
     totalMR += s.mr;
+    totalPhysShare += estimateEnemyIncomingPhysShare(enemy);
   }
 
   const n = enemies.length;
@@ -1673,5 +1749,6 @@ export function averageEnemyTeamStats(
     targetBonusHP: Math.round(totalBonusHP / n),
     targetArmor: Math.round(totalArmor / n),
     targetMR: Math.round(totalMR / n),
+    incomingPhysShare: totalPhysShare / n,
   };
 }

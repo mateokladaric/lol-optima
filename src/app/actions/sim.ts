@@ -2801,6 +2801,69 @@ export function championUsesApScaling(
   return apScore >= adScore * 0.65;
 }
 
+function damageBlockIncomingWeight(block: DamageScaling, level: number): number {
+  let w = damageBlockAdRatio(block, level) + damageBlockApRatio(block, level);
+  if (block.baseDamage) {
+    w = Math.max(w, scalingMaxAtLevel(block.baseDamage, level));
+  }
+  return Math.max(w, 1);
+}
+
+/**
+ * Rotation-weighted share of incoming damage that is mitigated as physical
+ * (basic attacks + physical/true/adaptive-as-AD abilities). Used for EHP
+ * when facing a specific enemy team.
+ */
+export function championIncomingPhysShare(
+  champion: Character,
+  level: number = 18,
+): number {
+  const rot = CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)];
+  const combo = CHAMPION_COMBO_PROFILES[championSimKey(champion.Name)];
+  const { apScore, adScore } = championApAdScalingScores(champion, level);
+  const prefersMagic = apScore >= adScore * 0.65;
+
+  let physical = 0;
+  let magic = 0;
+  let trueW = 0;
+
+  for (const ability of champion.Abilities) {
+    if (ability.abilityType === "passive") continue;
+    for (const block of [ability.damage, ability.burstDamage]) {
+      if (!block || !damageBlockHasScaling(block)) continue;
+
+      let rotWeight =
+        rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+      const apR = damageBlockApRatio(block, level);
+      const adR = damageBlockAdRatio(block, level);
+      if (apR <= 0 && adR <= 0) continue;
+
+      if (
+        ability.effects?.heal != null &&
+        apR > 0 &&
+        (block.damageType === "magic" || block.damageType === "adaptive")
+      ) {
+        rotWeight *= 0.2;
+      }
+
+      const w = damageBlockIncomingWeight(block, level) * rotWeight;
+      const t = block.damageType ?? "physical";
+      if (t === "true") trueW += w;
+      else if (t === "magic") magic += w;
+      else if (t === "physical") physical += w;
+      else if (prefersMagic) magic += w;
+      else physical += w;
+    }
+  }
+
+  const autoWeight = combo?.comboAutoWeight ?? 0.65;
+  physical += 100 * autoWeight;
+
+  const total = physical + magic + trueW;
+  if (total <= 0) return 0.5;
+  return Math.min(0.95, Math.max(0.05, (physical + trueW * 0.5) / total));
+}
+
 /** Scale for item stats that only apply on basic attacks (Kraken, BotRK, etc.). */
 export function itemOnHitScaleForChampion(championName: string): number {
   const profile = CHAMPION_COMBO_PROFILES[championSimKey(championName)];
@@ -4933,6 +4996,7 @@ class Character {
 
     burstPhys += itemMech.burstPhys;
     burstMagic += itemMech.burstMagic;
+    burstTrue += itemMech.burstTrue;
 
     // Item burst damage
     if (stats.physicalBurstDamage) {
