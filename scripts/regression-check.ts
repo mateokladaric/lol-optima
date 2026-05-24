@@ -1,6 +1,8 @@
 import {
   BLENDED_DPS_COMBO_WEIGHT,
   Characters,
+  championBaseStatsAtLevel,
+  championLevelStatScale,
   collectorExecuteBonusDamage,
   isManaScalingItem,
   Item,
@@ -21,6 +23,10 @@ import {
   recommendBuildsForChampion,
   resolveDuel,
 } from "../src/lib/buildOptimizer";
+import {
+  opponentAtPurchaseStep,
+  purchaseLevelForItemCount,
+} from "../src/lib/purchaseOrder";
 
 type CheckCase = {
   champion: string;
@@ -697,6 +703,70 @@ if (jinx) {
       fail(
         `totalDPS should match blended sustained/combo (got ${d.totalDPS.toFixed(2)}, expected ${blended.toFixed(2)})`,
       );
+    }
+  }
+}
+
+if (
+  purchaseLevelForItemCount(1) !== 7 ||
+  purchaseLevelForItemCount(2) !== 10 ||
+  purchaseLevelForItemCount(6) !== 17
+) {
+  fail(
+    `Purchase step levels mismatch: got ${[1, 2, 6].map(purchaseLevelForItemCount).join(", ")}`,
+  );
+}
+
+if (championLevelStatScale(7) >= championLevelStatScale(18)) {
+  fail("Level 7 base stat scale should be below level 18");
+}
+
+const duelFull = resolveDuel({ targetArmor: 100, targetMR: 80, targetMaxHP: 3000 });
+const oppEarly = opponentAtPurchaseStep(duelFull, 1, 6, 1);
+const oppLate = opponentAtPurchaseStep(duelFull, 6, 6, 6);
+if (oppEarly.level !== 7 || oppLate.level !== 17) {
+  fail(
+    `Opponent purchase levels wrong: early=${oppEarly.level} late=${oppLate.level}`,
+  );
+}
+if (
+  oppEarly.targetMaxHP >= oppLate.targetMaxHP ||
+  oppEarly.targetArmor >= oppLate.targetArmor
+) {
+  fail(
+    `Opponent should scale up with items/level (HP ${oppEarly.targetMaxHP}→${oppLate.targetMaxHP}, armor ${oppEarly.targetArmor}→${oppLate.targetArmor})`,
+  );
+}
+
+const zedPurchase = Characters.find((c) => c.Name === "Zed");
+if (zedPurchase) {
+  const youmuu = Items.find((i) => i.name === "Youmuu's Ghostblade");
+  if (youmuu) {
+    const mit = dpsMitigationFromDuel(duel);
+    const clone = (items: Item[], level: number) => {
+      const c = Object.assign(
+        Object.create(Object.getPrototypeOf(zedPurchase)),
+        zedPurchase,
+      ) as typeof zedPurchase;
+      c.Items = items;
+      return c.calculateDPS(
+        duel.targetMaxHP,
+        duel.targetBonusHP,
+        { level, enableChampionRotationProfiles: true },
+        mit,
+      );
+    };
+    const early = clone([youmuu], purchaseLevelForItemCount(1));
+    const late = clone([youmuu], purchaseLevelForItemCount(6));
+    if (early.comboDPS >= late.comboDPS) {
+      fail(
+        `Same item should score lower at purchase level 7 than 17 (early=${early.comboDPS.toFixed(1)}, late=${late.comboDPS.toFixed(1)})`,
+      );
+    }
+    const baseEarly = championBaseStatsAtLevel(zedPurchase, 7);
+    const baseLate = championBaseStatsAtLevel(zedPurchase, 17);
+    if (baseEarly.armor >= baseLate.armor || baseEarly.ad >= baseLate.ad) {
+      fail("Scaled base armor/AD should rise with purchase level");
     }
   }
 }

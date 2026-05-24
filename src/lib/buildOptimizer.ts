@@ -25,7 +25,10 @@ import {
   Items,
 } from "@/app/actions/sim";
 import { goldEfficiencyTieBreak, totalBuildGold } from "@/lib/itemGold";
-import { greedyPurchaseOrder } from "@/lib/purchaseOrder";
+import {
+  greedyPurchaseOrder,
+  opponentAtPurchaseStep,
+} from "@/lib/purchaseOrder";
 import { extractDefensiveStats } from "@/lib/itemNameMap";
 
 export type { SimulationScenario };
@@ -299,18 +302,16 @@ export function dpsMitigationForPurchaseStep(
    */
   enemyCompletedItems?: number,
 ) {
-  const slots = Math.max(1, fullBuildSlots);
-  const enemyN = Math.max(
-    0,
-    Math.min(enemyCompletedItems ?? buyerCompletedItems, slots),
+  const step = opponentAtPurchaseStep(
+    duel,
+    buyerCompletedItems,
+    fullBuildSlots,
+    enemyCompletedItems,
   );
-  const pace = enemyN / slots;
-  const itemArmor = Math.max(0, duel.targetArmor - PURCHASE_OPPONENT_BASE_ARMOR);
-  const itemMR = Math.max(0, duel.targetMR - PURCHASE_OPPONENT_BASE_MR);
   return {
-    targetArmor: Math.round(PURCHASE_OPPONENT_BASE_ARMOR + itemArmor * pace),
-    targetMR: Math.round(PURCHASE_OPPONENT_BASE_MR + itemMR * pace),
-    comboWindowSeconds: duel.comboWindowSeconds,
+    targetArmor: step.targetArmor,
+    targetMR: step.targetMR,
+    comboWindowSeconds: step.comboWindowSeconds,
   };
 }
 
@@ -609,7 +610,7 @@ function scoreChampion(
     simulation,
     dpsMitigationFromDuel(duel),
   );
-  const stats = c.getTotalStats();
+  const stats = c.getTotalStats(simulation?.level ?? 18);
   const ownTotalDPS = dps.totalDPS;
   const ownAutoAttackDPS = dps.autoAttackDPS + dps.onHitDPS;
   const ehp = mixedEffectiveHP(
@@ -687,19 +688,27 @@ export function greedySimPurchaseOrder(
     finalBuild,
     (partial, enemyCompletedItems) => {
       const c = cloneChampionWithLoadout(champion, partial, runePage);
-      const mit = dpsMitigationForPurchaseStep(
+      const opponent = opponentAtPurchaseStep(
         duel,
         partial.length,
         finalBuild.length,
         enemyCompletedItems,
       );
+      const stepSim: SimulationScenario = {
+        ...(simulation ?? {}),
+        level: opponent.level,
+      };
       const dps = c.calculateDPS(
-        duel.targetMaxHP,
-        duel.targetBonusHP,
-        simulation,
-        mit,
+        opponent.targetMaxHP,
+        opponent.targetBonusHP,
+        stepSim,
+        {
+          targetArmor: opponent.targetArmor,
+          targetMR: opponent.targetMR,
+          comboWindowSeconds: opponent.comboWindowSeconds,
+        },
       );
-      return purchasePowerScore(profile, dps, c.getTotalStats());
+      return purchasePowerScore(profile, dps, c.getTotalStats(stepSim.level));
     },
     duel,
   );

@@ -3403,6 +3403,34 @@ export function ultRankAtLevel(level: number): number {
   return 0;
 }
 
+/** Character constructor stats are level 18; scale base combat stats for earlier levels. */
+export function championLevelStatScale(level: number): number {
+  const lv = Math.max(1, Math.min(18, Math.round(level)));
+  return 0.55 + (0.45 * (lv - 1)) / 17;
+}
+
+export function championBaseStatsAtLevel(
+  champion: Character,
+  level: number = 18,
+): {
+  hp: number;
+  hp5: number;
+  armor: number;
+  mr: number;
+  ad: number;
+  baseMana: number;
+} {
+  const scale = championLevelStatScale(level);
+  return {
+    hp: champion.HP * scale,
+    hp5: champion.HP5 * scale,
+    armor: champion.AR * scale,
+    mr: champion.MR * scale,
+    ad: champion.AD * scale,
+    baseMana: champion.BaseMana * scale,
+  };
+}
+
 /** Ability hits per second (Q/W/E/R) for item burn / Blight stack cadence. */
 export function estimateAbilityHitsPerSecond(
   champion: Character,
@@ -3786,7 +3814,7 @@ class Character {
       totalDamage += (stats.ap * apRatio) / 100;
     }
     if (damage.bonusAdRatio) {
-      const bonusAD = stats.ad - this.AD;
+      const bonusAD = stats.ad - championBaseStatsAtLevel(this, level).ad;
       const bonusAdRatio =
         typeof damage.bonusAdRatio === "number"
           ? damage.bonusAdRatio
@@ -3811,7 +3839,7 @@ class Character {
       totalDamage += (targetMaxHP * maxHealthRatio) / 100;
     }
     if (damage.bonusHPRatio) {
-      const bonusHP = stats.hp - this.HP;
+      const bonusHP = stats.hp - championBaseStatsAtLevel(this, level).hp;
       const bonusHPRatio =
         typeof damage.bonusHPRatio === "number"
           ? damage.bonusHPRatio
@@ -3827,13 +3855,14 @@ class Character {
   }
 
   // Calculate total stats with items
-  getTotalStats() {
+  getTotalStats(level: number = 18) {
+    const champBase = championBaseStatsAtLevel(this, level);
     const baseStats = {
-      hp: this.HP,
+      hp: champBase.hp,
       mana: 0,
-      armor: this.AR,
-      mr: this.MR,
-      ad: this.AD,
+      armor: champBase.armor,
+      mr: champBase.mr,
+      ad: champBase.ad,
       ap: 0,
       abilityHaste: 0,
       basicAbilityHaste: 0,
@@ -3851,7 +3880,7 @@ class Character {
       flatMagicPen: 0,
       percentMagicPen: 0,
       magicResistReduction: 0,
-      healthRegen: this.HP5,
+      healthRegen: champBase.hp5,
       manaRegen: 0,
       attackRange: this.AttackRange,
       baseAS: Number(this.AS),
@@ -3961,15 +3990,15 @@ class Character {
 
     // Calculate bonus HP from bonus mana (e.g., Winter's Approach/Fimbulwinter Awe: 15% bonus mana as HP)
     // Total mana pool = base mana + item mana. Bonus mana = item mana only.
-    const totalMana = this.BaseMana + baseStats.mana;
+    const totalMana = champBase.baseMana + baseStats.mana;
     const bonusMana = baseStats.mana;
     const bonusHPFromMana = (bonusMana * baseStats.hpPerBonusManaPercent) / 100;
 
     // Apply bonus HP multiplier (e.g., Warmog's Vitality: 12% increased bonus HP)
-    const rawBonusHP = baseStats.hp - this.HP + bonusHPFromMana; // Total HP from items + HP from mana
+    const rawBonusHP = baseStats.hp - champBase.hp + bonusHPFromMana; // Total HP from items + HP from mana
     const bonusHPMultiplier = 1 + (baseStats.bonusHPMultiplicative || 0) / 100;
     const bonusHP = rawBonusHP * bonusHPMultiplier;
-    const finalHP = this.HP + bonusHP;
+    const finalHP = champBase.hp + bonusHP;
 
     // Calculate bonus AD from max mana (e.g., Manamune/Muramana Awe passive)
     const bonusADFromMana =
@@ -3979,7 +4008,7 @@ class Character {
     const bonusADFromHP = (bonusHP * baseStats.adPerBonusHPPercent) / 100;
 
     // Calculate bonus AD from base AD (e.g., Sterak's Gage The Claws that Catch passive)
-    const bonusADFromBaseAD = (this.AD * baseStats.adPerBaseADPercent) / 100;
+    const bonusADFromBaseAD = (champBase.ad * baseStats.adPerBaseADPercent) / 100;
 
     // Calculate base total AD (before multipliers)
     const baseTotalAD =
@@ -4056,7 +4085,8 @@ class Character {
   } {
     const sim = resolveSimulationScenario(scenario);
     const mit = resolveDpsMitigation(mitigation);
-    const stats = this.getTotalStats();
+    const champBase = championBaseStatsAtLevel(this, sim.level);
+    const stats = this.getTotalStats(sim.level);
     const physMit = physicalMitigationMultiplier(
       mit.targetArmor,
       stats,
@@ -4211,7 +4241,7 @@ class Character {
         (i) => i.getGroupName() === "Spellblade",
       );
       const rawDmg = scaleItemOnHit(
-        (this.AD * stats.physicalOnHitBaseADPercent) / 100,
+        (champBase.ad * stats.physicalOnHitBaseADPercent) / 100,
       );
       if (hasSpellbladeItem && attackRate > 0) {
         // Spellblade has a 1.5s ICD — scale damage by proc uptime
@@ -4260,7 +4290,7 @@ class Character {
         (i) => i.getGroupName() === "Spellblade",
       );
       const rawDmg = scaleItemOnHit(
-        (this.AD * stats.magicOnHitBaseADPercent) / 100,
+        (champBase.ad * stats.magicOnHitBaseADPercent) / 100,
       );
       if (hasSpellbladeItemMagic && attackRate > 0) {
         const uptime = spellbladeOnHitUptime(attackRate);
@@ -4341,7 +4371,7 @@ class Character {
             (ability.damage.maxHealthRatioPerAD * stats.ad) / 100;
         }
         if (ability.damage.maxHealthRatioPerBonusAD) {
-          const bonusAD = stats.ad - this.AD;
+          const bonusAD = stats.ad - champBase.ad;
           effectivePercent +=
             (ability.damage.maxHealthRatioPerBonusAD * bonusAD) / 100;
         }
@@ -4386,14 +4416,14 @@ class Character {
           100;
       }
       if (ability.damage.bonusAdRatio) {
-        const bonusAD = stats.ad - this.AD;
+        const bonusAD = stats.ad - champBase.ad;
         onHitDamage +=
           (bonusAD *
             ability.getValueAtLevel(ability.damage.bonusAdRatio, level)) /
           100;
       }
       if (ability.damage.bonusHPRatio) {
-        const bonusHP = stats.hp - this.HP;
+        const bonusHP = stats.hp - champBase.hp;
         onHitDamage +=
           (bonusHP *
             ability.getValueAtLevel(ability.damage.bonusHPRatio, level)) /
@@ -4407,7 +4437,7 @@ class Character {
           100;
       }
       if (ability.damage.bonusMRRatio) {
-        const bonusMR = stats.mr - this.MR;
+        const bonusMR = stats.mr - champBase.mr;
         onHitDamage +=
           (bonusMR *
             ability.getValueAtLevel(ability.damage.bonusMRRatio, level)) /
@@ -4508,7 +4538,7 @@ class Character {
       breakdown.push(`Magic DoT (AP): +${dmg.toFixed(1)} DPS`);
     }
     if (stats.magicDotDamagePerBonusHPRatio) {
-      const bonusHP = stats.hp - this.HP;
+      const bonusHP = stats.hp - champBase.hp;
       const dmg = (bonusHP * stats.magicDotDamagePerBonusHPRatio) / 100;
       dotDPS += dmg;
       breakdown.push(`Magic DoT (bonus HP): +${dmg.toFixed(1)} DPS`);
@@ -4626,7 +4656,7 @@ class Character {
           100;
       }
       if (ability.damage.bonusAdRatio) {
-        const bonusAD = stats.ad - this.AD;
+        const bonusAD = stats.ad - champBase.ad;
         abilityDamage +=
           (bonusAD *
             ability.getValueAtLevel(ability.damage.bonusAdRatio, abilityRank)) /
@@ -4650,7 +4680,7 @@ class Character {
             (ability.damage.maxHealthRatioPerAD * stats.ad) / 100;
         }
         if (ability.damage.maxHealthRatioPerBonusAD) {
-          const bonusAD = stats.ad - this.AD;
+          const bonusAD = stats.ad - champBase.ad;
           effectiveMaxHPPercent +=
             (ability.damage.maxHealthRatioPerBonusAD * bonusAD) / 100;
         }
@@ -4691,7 +4721,7 @@ class Character {
         abilityDamage += (avgMissingHP * effectivePercent) / 100;
       }
       if (ability.damage.bonusHPRatio) {
-        const bonusHP = stats.hp - this.HP;
+        const bonusHP = stats.hp - champBase.hp;
         abilityDamage +=
           (bonusHP *
             ability.getValueAtLevel(ability.damage.bonusHPRatio, abilityRank)) /
@@ -4705,7 +4735,7 @@ class Character {
           100;
       }
       if (ability.damage.bonusMRRatio) {
-        const bonusMR = stats.mr - this.MR;
+        const bonusMR = stats.mr - champBase.mr;
         abilityDamage +=
           (bonusMR *
             ability.getValueAtLevel(ability.damage.bonusMRRatio, abilityRank)) /
@@ -4909,7 +4939,7 @@ class Character {
       burstPhys += (stats.ad * stats.physicalBurstDamagePerADRatio) / 100;
     }
     if (stats.physicalBurstDamagePerBonusADRatio) {
-      const bonusAD = stats.ad - this.AD;
+      const bonusAD = stats.ad - champBase.ad;
       burstPhys += (bonusAD * stats.physicalBurstDamagePerBonusADRatio) / 100;
     }
     if (stats.magicBurstDamage) {
@@ -4973,7 +5003,7 @@ class Character {
           abilityBurstDmg += (stats.ap * ratio) / 100;
         }
         if (burst.bonusAdRatio) {
-          const bonusAD = stats.ad - this.AD;
+          const bonusAD = stats.ad - champBase.ad;
           const ratio =
             typeof burst.bonusAdRatio === "function"
               ? burst.bonusAdRatio(abilityLevel)

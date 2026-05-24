@@ -5,6 +5,7 @@
  */
 
 import type { Character, Item, ItemStats } from "@/app/actions/sim";
+import { championBaseStatsAtLevel } from "@/app/actions/sim";
 
 function spellbladeUptime(attackRate: number): number {
   if (attackRate <= 0) return 0;
@@ -204,7 +205,7 @@ export function buildItemMechanicContext(
     avgCurrentHPRatio: sim.avgCurrentHPRatio,
     melee: champion.AttackRange <= 250,
     attackRange: champion.AttackRange,
-    championBaseHP: champion.HP,
+    championBaseHP: championBaseStatsAtLevel(champion, sim.level).hp,
     duelTakedownAtSeconds: window * 0.5,
     takedownCount: 1,
   };

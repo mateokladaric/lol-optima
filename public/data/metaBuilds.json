@@ -10,8 +10,8 @@
             "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
-            "Warmog's Armor",
-            "Heartsteel"
+            "Heartsteel",
+            "Warmog's Armor"
           ],
           "totalGold": 20465,
           "rune": "Press the Attack",
@@ -43,8 +43,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -80,9 +80,9 @@
           "champion": "Corki",
           "items": [
             "Maw of Malmortius (Base)",
+            "Titanic Hydra (Base)",
             "Bastionbreaker",
             "Edge of Night",
-            "Titanic Hydra (Base)",
             "Heartsteel",
             "Warmog's Armor"
           ],
@@ -239,8 +239,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -367,8 +367,8 @@
           "champion": "Sejuani",
           "items": [
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Hextech Rocketbelt",
+            "Riftmaker",
             "Morellonomicon",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -403,9 +403,9 @@
         {
           "champion": "Sejuani",
           "items": [
-            "Actualizer",
             "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Actualizer",
             "Stormsurge",
             "Shadowflame",
             "Void Staff"
@@ -445,8 +445,8 @@
         {
           "champion": "Irelia",
           "items": [
-            "Navori Flickerblade",
             "Rabadon's Deathcap",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -561,9 +561,9 @@
         {
           "champion": "Sylas",
           "items": [
-            "Stormsurge",
-            "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -598,8 +598,8 @@
           "champion": "Sylas",
           "items": [
             "Hextech Rocketbelt",
-            "Actualizer",
             "Rabadon's Deathcap",
+            "Actualizer",
             "Riftmaker",
             "Morellonomicon",
             "Warmog's Armor"
@@ -713,6 +713,121 @@
             "Item burst in combo: 1390 (463.3 DPS if spread)"
           ],
           "buildType": "glass · AP"
+        }
+      ]
+    },
+    {
+      "champion": "Syndra",
+      "builds": [
+        {
+          "champion": "Syndra",
+          "items": [
+            "Morellonomicon",
+            "Navori Flickerblade",
+            "Nashor's Tooth",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 20536,
+          "rune": "Hail of Blades",
+          "totalDPS": 932.8832691811886,
+          "sustainedDPS": 1072.762665433619,
+          "comboDPS": 818.4364904291998,
+          "autoAttackDPS": 69.571656,
+          "onHitDPS": 66.69259191466668,
+          "abilityDPS": 936.4984175189524,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
+            "Base AA: 97.7 DPS (54.0 AD * 1.25 crit * 1.45 AS)",
+            "Magic on-hit: +15.0",
+            "Magic on-hit (AP): +43.2",
+            "On-hit total: 84.3 DPS (58.2 * 1.45 AS)",
+            "Dark Sphere: 273.0 DPS (407 dmg / 1.5s CD)",
+            "Force of Will: 535.5 DPS (775 dmg / 1.4s CD)",
+            "Scatter the Weak: 352.9 DPS (424 dmg / 1.2s CD)",
+            "Unleashed Power: 22.3 DPS (1372 dmg / 61.5s CD)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 1072.8 DPS",
+            "Combo (3s window): 2455 total → 818.4 DPS"
+          ],
+          "buildType": "balanced · AP/On-Hit"
+        },
+        {
+          "champion": "Syndra",
+          "items": [
+            "Rabadon's Deathcap",
+            "Stormsurge",
+            "Shadowflame",
+            "Actualizer",
+            "Hextech Gunblade",
+            "Void Staff"
+          ],
+          "totalGold": 20714,
+          "rune": "Press the Attack",
+          "totalDPS": 1617.657774267963,
+          "sustainedDPS": 721.3443806777777,
+          "comboDPS": 2351.0050962962964,
+          "autoAttackDPS": 43.98364444444445,
+          "onHitDPS": 0,
+          "abilityDPS": 677.3607362333332,
+          "dotDPS": 0,
+          "burstDPS": 463.2766755555555,
+          "breakdown": [
+            "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
+            "Hextech Gunblade active: 827 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
+            "Base AA: 61.9 DPS (94.0 AD * 1.00 crit * 0.66 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Dark Sphere: 198.8 DPS (723 dmg / 3.6s CD)",
+            "Force of Will: 193.3 DPS (1406 dmg / 7.3s CD)",
+            "Scatter the Weak: 63.3 DPS (690 dmg / 10.9s CD)",
+            "Unleashed Power: 31.9 DPS (2318 dmg / 72.7s CD)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 721.3 DPS",
+            "Combo (3s window): 7053 total → 2351.0 DPS",
+            "Item burst in combo: 1390 (463.3 DPS if spread)"
+          ],
+          "buildType": "glass · AP"
+        },
+        {
+          "champion": "Syndra",
+          "items": [
+            "Hextech Rocketbelt",
+            "Actualizer",
+            "Rabadon's Deathcap",
+            "Riftmaker",
+            "Morellonomicon",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21445,
+          "rune": "Conqueror (AP)",
+          "totalDPS": 1015.1375651905214,
+          "sustainedDPS": 547.1806301040391,
+          "comboDPS": 1398.0114211703706,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 547.1806301040391,
+          "dotDPS": 0,
+          "burstDPS": 133.4357346162963,
+          "breakdown": [
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Rocketbelt active: 426 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
+            "Base AA: 0.0 DPS (54.0 AD * 1.00 crit * 0.66 AS)",
+            "Dark Sphere: 237.1 DPS (654 dmg / 2.8s CD)",
+            "Force of Will: 229.9 DPS (1268 dmg / 5.5s CD)",
+            "Scatter the Weak: 76.4 DPS (632 dmg / 8.3s CD)",
+            "Unleashed Power: 38.3 DPS (2112 dmg / 55.2s CD)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 547.2 DPS",
+            "Combo (3s window): 4194 total → 1398.0 DPS",
+            "Item burst in combo: 400 (133.4 DPS if spread)"
+          ],
+          "buildType": "spell · AP"
         }
       ]
     },
@@ -832,40 +947,6 @@
         {
           "champion": "Aatrox",
           "items": [
-            "Bloodthirster",
-            "Spectral Cutlass",
-            "Endless Hunger",
-            "Voltaic Cyclosword",
-            "Bastionbreaker",
-            "Spear of Shojin (Base)"
-          ],
-          "totalGold": 19387,
-          "rune": "Conqueror",
-          "totalDPS": 761.990223390573,
-          "sustainedDPS": 670.427354678125,
-          "comboDPS": 836.9052977916668,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 670.427354678125,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Spear of Shojin Focus: +2.5% damage (~21% stacks)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (417.0 AD * 1.00 crit * 0.65 AS)",
-            "The Darkin Blade: 634.7 DPS (2429 dmg / 3.6s CD)",
-            "The Darkin Blade: rotation weight ×0.95 (Aatrox)",
-            "Infernal Chains: 19.5 DPS (237 dmg / 7.3s CD)",
-            "Infernal Chains: rotation weight ×0.60 (Aatrox)",
-            "Damage multipliers: 102.5% (1.02 * 1.00 * 1.00)",
-            "Sustained (rotation): 670.4 DPS",
-            "Combo (3s window): 2511 total → 836.9 DPS"
-          ],
-          "buildType": "ability_burst · Lethality"
-        },
-        {
-          "champion": "Aatrox",
-          "items": [
             "Spear of Shojin (Base)",
             "Chempunk Chainsword",
             "Axiom Arc",
@@ -898,83 +979,6 @@
             "Combo (3s window): 2001 total → 667.0 DPS"
           ],
           "buildType": "spell · Lethality"
-        }
-      ]
-    },
-    {
-      "champion": "Yorick",
-      "builds": [
-        {
-          "champion": "Yorick",
-          "items": [
-            "Rabadon's Deathcap",
-            "Nashor's Tooth",
-            "Navori Flickerblade",
-            "Morellonomicon",
-            "Riftmaker",
-            "Warmog's Armor"
-          ],
-          "totalGold": 21006,
-          "rune": "Hail of Blades",
-          "totalDPS": 911.3104312876412,
-          "sustainedDPS": 1212.1482020451697,
-          "comboDPS": 665.1704370314815,
-          "autoAttackDPS": 75.8725,
-          "onHitDPS": 100.75606933333334,
-          "abilityDPS": 1035.5196327118363,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
-            "Base AA: 106.6 DPS (62.0 AD * 1.25 crit * 1.38 AS)",
-            "Magic on-hit: +15.0",
-            "Magic on-hit (AP): +77.6",
-            "On-hit total: 127.4 DPS (92.6 * 1.38 AS)",
-            "Last Rites: 91.1 DPS (141 dmg / 1.5s CD)",
-            "Mourning Mist: 1224.8 DPS (1905 dmg / 1.6s CD)",
-            "Eulogy of the Isles: 2.1 DPS (164 dmg / 76.9s CD)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 1212.1 DPS",
-            "Combo (3s window): 1996 total → 665.2 DPS"
-          ],
-          "buildType": "balanced · AP/On-Hit"
-        },
-        {
-          "champion": "Yorick",
-          "items": [
-            "Rabadon's Deathcap",
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Actualizer",
-            "Shadowflame",
-            "Void Staff"
-          ],
-          "totalGold": 20714,
-          "rune": "Press the Attack",
-          "totalDPS": 1255.7420466474075,
-          "sustainedDPS": 626.5465760888889,
-          "comboDPS": 1770.5383407407408,
-          "autoAttackDPS": 45.33333333333333,
-          "onHitDPS": 0,
-          "abilityDPS": 581.2132427555555,
-          "dotDPS": 0,
-          "burstDPS": 459.7699555555555,
-          "breakdown": [
-            "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
-            "Hextech Gunblade active: 827 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 63.8 DPS (102.0 AD * 1.00 crit * 0.63 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Last Rites: 44.3 DPS (161 dmg / 3.6s CD)",
-            "Mourning Mist: 383.4 DPS (2789 dmg / 7.3s CD)",
-            "Eulogy of the Isles: 1.9 DPS (176 dmg / 90.9s CD)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 626.5 DPS",
-            "Combo (3s window): 5312 total → 1770.5 DPS",
-            "Item burst in combo: 1379 (459.8 DPS if spread)"
-          ],
-          "buildType": "glass · AP"
         }
       ]
     },
@@ -1023,8 +1027,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Stormrazor (Ranged)",
-            "Phantom Dancer",
             "Infinity Edge",
+            "Phantom Dancer",
             "Voltaic Cyclosword",
             "Bastionbreaker"
           ],
@@ -1211,8 +1215,8 @@
           "champion": "Zaahen",
           "items": [
             "Bloodthirster",
-            "Actualizer",
             "Muramana (Melee)",
+            "Actualizer",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -1288,8 +1292,8 @@
         {
           "champion": "Jayce",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Blade of the Ruined King (Melee)",
             "Experimental Hexplate",
             "Heartsteel",
@@ -1369,12 +1373,12 @@
         {
           "champion": "Jayce",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
+            "Umbral Glaive (Base)",
+            "Bastionbreaker"
           ],
           "totalGold": 20174,
           "rune": "Conqueror",
@@ -1408,8 +1412,8 @@
         {
           "champion": "Jayce",
           "items": [
-            "Actualizer",
             "Muramana (Melee)",
+            "Actualizer",
             "Spear of Shojin (Base)",
             "Chempunk Chainsword",
             "Heartsteel",
@@ -1454,9 +1458,9 @@
         {
           "champion": "Skarner",
           "items": [
-            "Spear of Shojin (Base)",
             "Kraken Slayer (Base)",
             "Navori Flickerblade",
+            "Spear of Shojin (Base)",
             "Experimental Hexplate",
             "Warmog's Armor",
             "Heartsteel"
@@ -1524,8 +1528,8 @@
         {
           "champion": "Skarner",
           "items": [
-            "Actualizer",
             "Hextech Gunblade",
+            "Actualizer",
             "Stormsurge",
             "Rabadon's Deathcap",
             "Hextech Rocketbelt",
@@ -1600,8 +1604,8 @@
           "champion": "Akali",
           "items": [
             "Rabadon's Deathcap",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -1687,8 +1691,8 @@
         {
           "champion": "Thresh",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -1723,12 +1727,12 @@
         {
           "champion": "Thresh",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -1836,8 +1840,8 @@
           "champion": "Rumble",
           "items": [
             "Stormsurge",
-            "Shadowflame",
             "Rabadon's Deathcap",
+            "Shadowflame",
             "Hextech Gunblade",
             "Void Staff",
             "Hextech Rocketbelt"
@@ -1877,8 +1881,8 @@
         {
           "champion": "Zeri",
           "items": [
-            "Spear of Shojin (Base)",
             "Maw of Malmortius (Base)",
+            "Spear of Shojin (Base)",
             "Axiom Arc",
             "Bastionbreaker",
             "Titanic Hydra (Base)",
@@ -1959,9 +1963,9 @@
         {
           "champion": "Zeri",
           "items": [
-            "Actualizer",
-            "Muramana (Ranged)",
             "Spear of Shojin (Base)",
+            "Muramana (Ranged)",
+            "Actualizer",
             "Hubris",
             "Umbral Glaive (Base)",
             "Bastionbreaker"
@@ -2078,9 +2082,9 @@
         {
           "champion": "Volibear",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -2114,37 +2118,37 @@
           "champion": "Volibear",
           "items": [
             "Spear of Shojin (Base)",
-            "Maw of Malmortius (Base)",
+            "Chempunk Chainsword",
             "Axiom Arc",
-            "Bastionbreaker",
-            "Heartsteel",
+            "Umbral Glaive (Base)",
+            "Edge of Night",
             "Warmog's Armor"
           ],
-          "totalGold": 20730,
+          "totalGold": 21021,
           "rune": "Summon Aery",
-          "totalDPS": 534.5559160928353,
-          "sustainedDPS": 307.22198736118287,
-          "comboDPS": 720.5564032369147,
+          "totalDPS": 629.2111961635635,
+          "sustainedDPS": 361.72276693754844,
+          "comboDPS": 848.065365530303,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 307.22198736118287,
+          "abilityDPS": 361.72276693754844,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
-            "Axiom Arc: ~21% ult CD refund on takedown (second R in long fights)",
+            "Axiom Arc: ~23% ult CD refund on takedown (second R in long fights)",
             "Spear of Shojin Focus: +4.2% damage (~35% stacks)",
-            "Target resistances: 50 armor (90.9% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (280.0 AD * 1.00 crit * 0.63 AS)",
-            "Thundering Smash: 60.9 DPS (348 dmg / 5.7s CD)",
-            "Frenzied Maul: 134.8 DPS (385 dmg / 2.9s CD)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (320.0 AD * 1.00 crit * 0.63 AS)",
+            "Thundering Smash: 69.3 DPS (396 dmg / 5.7s CD)",
+            "Frenzied Maul: 148.8 DPS (425 dmg / 2.9s CD)",
             "Sky Splitter: 67.6 DPS (425 dmg / 6.3s CD)",
-            "Stormbringer: 16.6 DPS (1238 dmg / 74.8s CD)",
-            "Rune (ability): 62.6 DPS (72 / 1.1s)",
+            "Stormbringer: 18.0 DPS (1338 dmg / 74.4s CD)",
+            "Rune (ability): 66.1 DPS (76 / 1.1s)",
             "Damage multipliers: 104.2% (1.04 * 1.00 * 1.00)",
-            "Sustained (rotation): 307.2 DPS",
-            "Combo (3s window): 2162 total → 720.6 DPS"
+            "Sustained (rotation): 361.7 DPS",
+            "Combo (3s window): 2544 total → 848.1 DPS"
           ],
-          "buildType": "spell · Lethality/Tank"
+          "buildType": "spell · Lethality"
         }
       ]
     },
@@ -2189,8 +2193,8 @@
         {
           "champion": "Kennen",
           "items": [
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Shadowflame",
             "Hextech Gunblade",
             "Void Staff",
@@ -2351,8 +2355,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Navori Flickerblade",
-            "Experimental Hexplate",
             "Maw of Malmortius (Base)",
+            "Experimental Hexplate",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
           ],
@@ -2473,10 +2477,10 @@
           "items": [
             "Navori Flickerblade",
             "Kraken Slayer (Base)",
-            "Experimental Hexplate",
             "Riftmaker",
-            "Warmog's Armor",
-            "Heartsteel"
+            "Experimental Hexplate",
+            "Heartsteel",
+            "Warmog's Armor"
           ],
           "totalGold": 20227,
           "rune": "Press the Attack",
@@ -2509,8 +2513,8 @@
         {
           "champion": "Sion",
           "items": [
-            "Actualizer",
             "Hextech Gunblade",
+            "Actualizer",
             "Rabadon's Deathcap",
             "Stormsurge",
             "Shadowflame",
@@ -2625,8 +2629,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Infinity Edge",
-            "Phantom Dancer",
             "The Collector",
+            "Phantom Dancer",
             "Voltaic Cyclosword",
             "Bastionbreaker"
           ],
@@ -2692,9 +2696,9 @@
         {
           "champion": "Olaf",
           "items": [
-            "Spear of Shojin (Base)",
             "Muramana (Melee)",
             "Actualizer",
+            "Spear of Shojin (Base)",
             "Chempunk Chainsword",
             "Heartsteel",
             "Warmog's Armor"
@@ -2733,8 +2737,8 @@
           "champion": "Cho'Gath",
           "items": [
             "Actualizer",
-            "Riftmaker",
             "Hextech Rocketbelt",
+            "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor",
             "Heartsteel"
@@ -2769,9 +2773,9 @@
         {
           "champion": "Cho'Gath",
           "items": [
-            "Actualizer",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Actualizer",
             "Stormsurge",
             "Shadowflame",
             "Void Staff"
@@ -2956,8 +2960,8 @@
         {
           "champion": "Gnar",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Voltaic Cyclosword",
             "Heartsteel",
@@ -2992,8 +2996,8 @@
         {
           "champion": "Gnar",
           "items": [
-            "Kraken Slayer (Base)",
             "Infinity Edge",
+            "Kraken Slayer (Base)",
             "The Collector",
             "Phantom Dancer",
             "Voltaic Cyclosword",
@@ -3100,83 +3104,6 @@
       ]
     },
     {
-      "champion": "Syndra",
-      "builds": [
-        {
-          "champion": "Syndra",
-          "items": [
-            "Actualizer",
-            "Morellonomicon",
-            "Riftmaker",
-            "Abyssal Mask",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 20465,
-          "rune": "Press the Attack",
-          "totalDPS": 761.6259085387803,
-          "sustainedDPS": 465.742236263098,
-          "comboDPS": 1003.7125494916112,
-          "autoAttackDPS": 26.985369600000002,
-          "onHitDPS": 0,
-          "abilityDPS": 438.756866663098,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
-            "Base AA: 35.5 DPS (54.0 AD * 1.00 crit * 0.66 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Dark Sphere: 146.6 DPS (419 dmg / 2.9s CD)",
-            "Force of Will: 139.6 DPS (798 dmg / 5.7s CD)",
-            "Scatter the Weak: 50.6 DPS (433 dmg / 8.6s CD)",
-            "Unleashed Power: 24.6 DPS (1407 dmg / 57.1s CD)",
-            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 465.7 DPS",
-            "Combo (3s window): 3011 total → 1003.7 DPS"
-          ],
-          "buildType": "balanced · AP/Tank"
-        },
-        {
-          "champion": "Syndra",
-          "items": [
-            "Stormsurge",
-            "Actualizer",
-            "Rabadon's Deathcap",
-            "Shadowflame",
-            "Hextech Gunblade",
-            "Void Staff"
-          ],
-          "totalGold": 20714,
-          "rune": "Press the Attack",
-          "totalDPS": 1617.657774267963,
-          "sustainedDPS": 721.3443806777777,
-          "comboDPS": 2351.0050962962964,
-          "autoAttackDPS": 43.98364444444445,
-          "onHitDPS": 0,
-          "abilityDPS": 677.3607362333332,
-          "dotDPS": 0,
-          "burstDPS": 463.2766755555555,
-          "breakdown": [
-            "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
-            "Hextech Gunblade active: 827 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 61.9 DPS (94.0 AD * 1.00 crit * 0.66 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Dark Sphere: 198.8 DPS (723 dmg / 3.6s CD)",
-            "Force of Will: 193.3 DPS (1406 dmg / 7.3s CD)",
-            "Scatter the Weak: 63.3 DPS (690 dmg / 10.9s CD)",
-            "Unleashed Power: 31.9 DPS (2318 dmg / 72.7s CD)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 721.3 DPS",
-            "Combo (3s window): 7053 total → 2351.0 DPS",
-            "Item burst in combo: 1390 (463.3 DPS if spread)"
-          ],
-          "buildType": "glass · AP"
-        }
-      ]
-    },
-    {
       "champion": "Kled",
       "builds": [
         {
@@ -3263,8 +3190,8 @@
           "champion": "Kled",
           "items": [
             "Bloodthirster",
-            "Eclipse",
             "Infinity Edge",
+            "Eclipse",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -3295,43 +3222,6 @@
             "Sustained (rotation): 405.7 DPS",
             "Combo (3s window): 2106 total → 702.2 DPS",
             "Item burst in combo: 45 (15.0 DPS if spread)"
-          ],
-          "buildType": "ability_burst · Lethality"
-        },
-        {
-          "champion": "Kled",
-          "items": [
-            "Bloodthirster",
-            "Hubris",
-            "Bastionbreaker",
-            "Endless Hunger",
-            "Serylda's Grudge",
-            "Statikk Shiv"
-          ],
-          "totalGold": 19436,
-          "rune": "Conqueror",
-          "totalDPS": 502.9783909090909,
-          "sustainedDPS": 332.1280909090909,
-          "comboDPS": 642.765,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 332.1280909090909,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (429.5 AD * 1.00 crit * 0.81 AS)",
-            "Bear Trap on a Rope: 198.8 DPS (1046 dmg / 5.0s CD)",
-            "Bear Trap on a Rope: rotation weight ×0.95 (Kled)",
-            "Violent Tendencies: 43.6 DPS (267 dmg / 6.4s CD)",
-            "Violent Tendencies: rotation weight ×1.05 (Kled)",
-            "Jousting: 88.7 DPS (671 dmg / 6.4s CD)",
-            "Jousting: rotation weight ×0.85 (Kled)",
-            "Chaaaaaaaarge!!!: 1.6 DPS (360 dmg / 78.6s CD)",
-            "Chaaaaaaaarge!!!: rotation weight ×0.35 (Kled)",
-            "Sustained (rotation): 332.1 DPS",
-            "Combo (3s window): 1928 total → 642.8 DPS"
           ],
           "buildType": "ability_burst · Lethality"
         },
@@ -3461,31 +3351,31 @@
             "Muramana (Melee)",
             "Eclipse",
             "Hubris",
-            "Bastionbreaker",
+            "Voltaic Cyclosword",
             "Umbral Glaive (Base)"
           ],
-          "totalGold": 19964,
+          "totalGold": 19790,
           "rune": "Conqueror",
-          "totalDPS": 466.6590730547728,
-          "sustainedDPS": 224.17284317727274,
+          "totalDPS": 464.2952153275569,
+          "sustainedDPS": 218.91982600568184,
           "comboDPS": 665.0568975000001,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 224.17284317727274,
+          "abilityDPS": 218.91982600568184,
           "dotDPS": 0,
           "burstDPS": 41.702400000000004,
           "breakdown": [
             "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Eclipse Everrising: ~8.2 DPS (45 per 2-hit proc, 4s cadence)",
+            "Eclipse Everrising: ~8.0 DPS (45 per 2-hit proc, 4s cadence)",
             "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
             "Base AA: 0.0 DPS (380.2 AD * 1.00 crit * 0.72 AS)",
             "Umbra Blades: +210.1 on-hit (×0.85 sustained)",
             "On-hit total: 0.0 DPS (210.1 * 0.00 AS)",
-            "Duskbringer: 92.8 DPS (515 dmg / 5.6s CD)",
-            "Unspeakable Horror: 57.3 DPS (350 dmg / 6.1s CD)",
-            "Paranoia: 15.6 DPS (782 dmg / 50.0s CD)",
+            "Duskbringer: 90.2 DPS (515 dmg / 5.7s CD)",
+            "Unspeakable Horror: 55.7 DPS (350 dmg / 6.3s CD)",
+            "Paranoia: 15.2 DPS (782 dmg / 51.4s CD)",
             "Muramana Shock: +57 phys per 2s (~28.7 DPS)",
-            "Sustained (rotation): 224.2 DPS",
+            "Sustained (rotation): 218.9 DPS",
             "Combo (3s window): 1995 total → 665.1 DPS",
             "Item burst in combo: 125 (41.7 DPS if spread)"
           ],
@@ -3494,8 +3384,8 @@
         {
           "champion": "Nocturne",
           "items": [
-            "Actualizer",
             "Muramana (Melee)",
+            "Actualizer",
             "Rod of Ages",
             "Spear of Shojin (Base)",
             "Heartsteel",
@@ -3538,8 +3428,8 @@
         {
           "champion": "Gragas",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -3576,9 +3466,9 @@
         {
           "champion": "Gragas",
           "items": [
-            "Stormsurge",
-            "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -3656,8 +3546,8 @@
           "champion": "Tahm Kench",
           "items": [
             "Rabadon's Deathcap",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -3691,9 +3581,9 @@
         {
           "champion": "Tahm Kench",
           "items": [
-            "Stormsurge",
-            "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -3851,6 +3741,44 @@
         {
           "champion": "Renekton",
           "items": [
+            "Endless Hunger",
+            "Hexoptics C44",
+            "Hubris",
+            "Youmuu's Ghostblade",
+            "Serpent's Fang",
+            "Axiom Arc"
+          ],
+          "totalGold": 18585,
+          "rune": "Conqueror",
+          "totalDPS": 406.97929913229166,
+          "sustainedDPS": 233.65612770138893,
+          "comboDPS": 548.7891666666667,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 233.65612770138893,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Axiom Arc: ~25% ult CD refund on takedown (second R in long fights)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (423.5 AD * 1.25 crit * 0.67 AS)",
+            "Cull the Meek: 78.2 DPS (535 dmg / 6.2s CD)",
+            "Cull the Meek: rotation weight ×0.90 (Renekton)",
+            "Ruthless Predator: 105.0 DPS (765 dmg / 6.9s CD)",
+            "Ruthless Predator: rotation weight ×0.95 (Renekton)",
+            "Slice and Dice: 49.8 DPS (479 dmg / 7.7s CD)",
+            "Slice and Dice: rotation weight ×0.80 (Renekton)",
+            "Dominus: 1.0 DPS (138 dmg / 84.1s CD)",
+            "Dominus: rotation weight ×0.60 (Renekton)",
+            "Sustained (rotation): 233.7 DPS",
+            "Combo (3s window): 1646 total → 548.8 DPS"
+          ],
+          "buildType": "ability_burst · Lethality"
+        },
+        {
+          "champion": "Renekton",
+          "items": [
             "Spear of Shojin (Base)",
             "Chempunk Chainsword",
             "Axiom Arc",
@@ -3897,8 +3825,8 @@
           "champion": "Galio",
           "items": [
             "Rabadon's Deathcap",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -3933,9 +3861,9 @@
         {
           "champion": "Galio",
           "items": [
-            "Stormsurge",
-            "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -3976,8 +3904,8 @@
           "champion": "Bel'Veth",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Spear of Shojin (Base)",
             "Experimental Hexplate",
             "Warmog's Armor"
@@ -4095,9 +4023,9 @@
         {
           "champion": "Bel'Veth",
           "items": [
-            "Spear of Shojin (Base)",
             "Muramana (Melee)",
             "Actualizer",
+            "Spear of Shojin (Base)",
             "Rod of Ages",
             "Chempunk Chainsword",
             "Warmog's Armor"
@@ -4143,9 +4071,9 @@
           "items": [
             "Maw of Malmortius (Base)",
             "Spear of Shojin (Base)",
+            "Titanic Hydra (Base)",
             "Axiom Arc",
             "Bastionbreaker",
-            "Titanic Hydra (Base)",
             "Warmog's Armor"
           ],
           "totalGold": 21362,
@@ -4262,8 +4190,8 @@
           "champion": "Samira",
           "items": [
             "Spear of Shojin (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Umbral Glaive (Base)",
             "Edge of Night",
             "Warmog's Armor"
@@ -4547,10 +4475,10 @@
           "champion": "Nilah",
           "items": [
             "Infinity Edge",
-            "Edge of Night",
             "Kraken Slayer (Base)",
             "Experimental Hexplate",
             "Phantom Dancer",
+            "Edge of Night",
             "Warmog's Armor"
           ],
           "totalGold": 21091,
@@ -4626,8 +4554,8 @@
           "champion": "Lissandra",
           "items": [
             "Rabadon's Deathcap",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -4662,9 +4590,9 @@
         {
           "champion": "Lissandra",
           "items": [
-            "Stormsurge",
-            "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -4777,9 +4705,9 @@
         {
           "champion": "Qiyana",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -4892,12 +4820,12 @@
         {
           "champion": "Gwen",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
+            "Stormsurge",
             "Rabadon's Deathcap",
+            "Shadowflame",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -5006,32 +4934,32 @@
         {
           "champion": "Jarvan IV",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Hubris",
-            "Bastionbreaker",
+            "Youmuu's Ghostblade",
             "Umbral Glaive (Base)"
           ],
-          "totalGold": 20174,
+          "totalGold": 19836,
           "rune": "Conqueror",
-          "totalDPS": 621.3100004704168,
-          "sustainedDPS": 350.699805675,
+          "totalDPS": 608.4241193291667,
+          "sustainedDPS": 322.06451425,
           "comboDPS": 842.7183416666667,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 350.699805675,
+          "abilityDPS": 322.06451425,
           "dotDPS": 0,
           "burstDPS": 23.807733333333335,
           "breakdown": [
             "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
             "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
             "Base AA: 0.0 DPS (402.7 AD * 1.00 crit * 0.66 AS)",
-            "Dragon Strike: 203.8 DPS (741 dmg / 3.6s CD)",
-            "Demacian Standard: 51.5 DPS (312 dmg / 6.1s CD)",
-            "Cataclysm: 19.4 DPS (1060 dmg / 54.5s CD)",
+            "Dragon Strike: 185.3 DPS (741 dmg / 4.0s CD)",
+            "Demacian Standard: 46.8 DPS (312 dmg / 6.7s CD)",
+            "Cataclysm: 17.7 DPS (1060 dmg / 60.0s CD)",
             "Muramana Shock: +58 phys per 2s (~29.2 DPS)",
-            "Sustained (rotation): 350.7 DPS",
+            "Sustained (rotation): 322.1 DPS",
             "Combo (3s window): 2528 total → 842.7 DPS",
             "Item burst in combo: 71 (23.8 DPS if spread)"
           ],
@@ -5274,8 +5202,8 @@
           "champion": "Fizz",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -5435,8 +5363,8 @@
             "Hextech Gunblade",
             "Rabadon's Deathcap",
             "Stormsurge",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -5584,9 +5512,9 @@
         {
           "champion": "Poppy",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -5707,8 +5635,8 @@
         {
           "champion": "Maokai",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -5749,8 +5677,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -5863,12 +5791,12 @@
         {
           "champion": "Neeko",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Stormsurge",
+            "Shadowflame",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -5945,8 +5873,8 @@
         {
           "champion": "Nautilus",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -5983,9 +5911,9 @@
         {
           "champion": "Nautilus",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -6068,8 +5996,8 @@
           "champion": "Wukong",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Blade of the Ruined King (Melee)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Heartsteel",
             "Warmog's Armor"
@@ -6102,8 +6030,8 @@
         {
           "champion": "Wukong",
           "items": [
-            "Kraken Slayer (Base)",
             "Infinity Edge",
+            "Kraken Slayer (Base)",
             "The Collector",
             "Phantom Dancer",
             "Voltaic Cyclosword",
@@ -6138,9 +6066,9 @@
         {
           "champion": "Wukong",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -6174,6 +6102,40 @@
           "items": [
             "Actualizer",
             "Muramana (Melee)",
+            "Death's Dance",
+            "Profane Hydra (Melee)",
+            "Axiom Arc",
+            "Youmuu's Ghostblade"
+          ],
+          "totalGold": 20191,
+          "rune": "Conqueror",
+          "totalDPS": 502.75930053700296,
+          "sustainedDPS": 210.19678267482138,
+          "comboDPS": 742.1286333333333,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 210.19678267482138,
+          "dotDPS": 0,
+          "burstDPS": 24.326733333333333,
+          "breakdown": [
+            "Axiom Arc: ~23% ult CD refund on takedown (second R in long fights)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (372.8 AD * 1.00 crit * 0.69 AS)",
+            "Crushing Blow: 66.4 DPS (273 dmg / 4.1s CD)",
+            "Nimbus Strike: 70.1 DPS (330 dmg / 4.7s CD)",
+            "Cyclone: 28.7 DPS (1265 dmg / 44.1s CD)",
+            "Muramana Shock: +60 phys per 2s (~29.8 DPS)",
+            "Sustained (rotation): 210.2 DPS",
+            "Combo (3s window): 2226 total → 742.1 DPS",
+            "Item burst in combo: 73 (24.3 DPS if spread)"
+          ],
+          "buildType": "ability_burst · Lethality"
+        },
+        {
+          "champion": "Wukong",
+          "items": [
+            "Muramana (Melee)",
+            "Actualizer",
             "Spear of Shojin (Base)",
             "Bastionbreaker",
             "Heartsteel",
@@ -6293,8 +6255,8 @@
           "champion": "Aurora",
           "items": [
             "Rabadon's Deathcap",
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Riftmaker",
             "Warmog's Armor",
             "Heartsteel"
@@ -6330,10 +6292,10 @@
           "champion": "Aurora",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
+            "Stormsurge",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -6370,8 +6332,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -6490,9 +6452,9 @@
           "items": [
             "Bloodthirster",
             "Infinity Edge",
+            "Spear of Shojin (Base)",
             "Hubris",
             "Axiom Arc",
-            "Spear of Shojin (Base)",
             "Umbral Glaive (Base)"
           ],
           "totalGold": 20414,
@@ -6526,35 +6488,36 @@
         {
           "champion": "Zed",
           "items": [
-            "Infinity Edge",
-            "Axiom Arc",
-            "Umbral Glaive (Base)",
-            "Serpent's Fang",
+            "Eclipse",
+            "Guardian Angel",
             "Statikk Shiv",
-            "Edge of Night"
+            "Youmuu's Ghostblade",
+            "Profane Hydra (Melee)",
+            "Serpent's Fang"
           ],
-          "totalGold": 19422,
+          "totalGold": 18718,
           "rune": "Conqueror",
-          "totalDPS": 647.7378899531251,
-          "sustainedDPS": 322.02190406249997,
-          "comboDPS": 914.2327875000001,
+          "totalDPS": 633.325075703125,
+          "sustainedDPS": 301.4072265625,
+          "comboDPS": 904.894225,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 322.02190406249997,
+          "abilityDPS": 301.4072265625,
           "dotDPS": 0,
-          "burstDPS": 0,
+          "burstDPS": 15,
           "breakdown": [
-            "Axiom Arc: ~25% ult CD refund on takedown (second R in long fights)",
+            "Eclipse Everrising: ~11.3 DPS (45 per 2-hit proc, 4s cadence)",
             "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (420.0 AD * 1.32 crit * 0.85 AS)",
-            "Razor Shuriken: 135.2 DPS (633 dmg / 4.4s CD)",
+            "Base AA: 0.0 DPS (405.0 AD * 1.00 crit * 0.85 AS)",
+            "Razor Shuriken: 122.0 DPS (616 dmg / 4.8s CD)",
             "Razor Shuriken: rotation weight ×0.95 (Zed)",
-            "Shadow Slash: 184.5 DPS (456 dmg / 2.2s CD)",
+            "Shadow Slash: 166.3 DPS (444 dmg / 2.4s CD)",
             "Shadow Slash: rotation weight ×0.90 (Zed)",
-            "Death Mark: 2.3 DPS (273 dmg / 54.3s CD)",
+            "Death Mark: 1.9 DPS (263 dmg / 64.0s CD)",
             "Death Mark: rotation weight ×0.45 (Zed)",
-            "Sustained (rotation): 322.0 DPS",
-            "Combo (3s window): 2743 total → 914.2 DPS"
+            "Sustained (rotation): 301.4 DPS",
+            "Combo (3s window): 2715 total → 904.9 DPS",
+            "Item burst in combo: 45 (15.0 DPS if spread)"
           ],
           "buildType": "ability_burst · Lethality"
         },
@@ -6595,6 +6558,44 @@
             "Combo (3s window): 2367 total → 789.0 DPS"
           ],
           "buildType": "spell · Lethality"
+        },
+        {
+          "champion": "Zed",
+          "items": [
+            "Spear of Shojin (Base)",
+            "Chempunk Chainsword",
+            "Hubris",
+            "Sundered Sky",
+            "Serylda's Grudge",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21133,
+          "rune": "Summon Aery",
+          "totalDPS": 533.6404592870313,
+          "sustainedDPS": 366.44714982529916,
+          "comboDPS": 670.4349852102666,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 366.44714982529916,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Spear of Shojin Focus: +5.4% damage (~45% stacks)",
+            "Target resistances: 50 armor (87.3% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (305.5 AD * 1.00 crit * 0.65 AS)",
+            "Razor Shuriken: 140.4 DPS (507 dmg / 3.4s CD)",
+            "Razor Shuriken: rotation weight ×0.95 (Zed)",
+            "Shadow Slash: 191.1 DPS (364 dmg / 1.7s CD)",
+            "Shadow Slash: rotation weight ×0.90 (Zed)",
+            "Death Mark: 1.7 DPS (199 dmg / 53.3s CD)",
+            "Death Mark: rotation weight ×0.45 (Zed)",
+            "Rune (ability): 65.0 DPS (74 / 1.1s)",
+            "Damage multipliers: 105.4% (1.05 * 1.00 * 1.00)",
+            "Sustained (rotation): 366.4 DPS",
+            "Combo (3s window): 2011 total → 670.4 DPS"
+          ],
+          "buildType": "spell · Lethality/Tank"
         }
       ]
     },
@@ -6604,8 +6605,8 @@
         {
           "champion": "Malphite",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Wit's End",
             "Experimental Hexplate",
             "Heartsteel",
@@ -6794,8 +6795,8 @@
         {
           "champion": "Rengar",
           "items": [
-            "Eclipse",
             "Bloodthirster",
+            "Eclipse",
             "The Collector",
             "Spear of Shojin (Base)",
             "Bastionbreaker",
@@ -6833,8 +6834,8 @@
           "champion": "Rengar",
           "items": [
             "Spear of Shojin (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Bastionbreaker",
             "Heartsteel",
             "Warmog's Armor"
@@ -7277,9 +7278,9 @@
         {
           "champion": "Caitlyn",
           "items": [
+            "Eclipse",
             "Actualizer",
             "Muramana (Ranged)",
-            "Eclipse",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -7318,39 +7319,40 @@
           "champion": "Caitlyn",
           "items": [
             "Spear of Shojin (Base)",
+            "Black Cleaver",
             "Chempunk Chainsword",
             "Axiom Arc",
-            "Umbral Glaive (Base)",
-            "Edge of Night",
+            "Bastionbreaker",
             "Warmog's Armor"
           ],
-          "totalGold": 21021,
+          "totalGold": 21300,
           "rune": "Summon Aery",
-          "totalDPS": 335.1085329192231,
-          "sustainedDPS": 293.3718331268229,
-          "comboDPS": 369.25674184027775,
+          "totalDPS": 313.8565611089489,
+          "sustainedDPS": 292.29146982544194,
+          "comboDPS": 331.5007267045455,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 293.3718331268229,
+          "abilityDPS": 292.29146982544194,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
-            "Axiom Arc: ~23% ult CD refund on takedown (second R in long fights)",
-            "Spear of Shojin Focus: +3.2% damage (~26% stacks)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (317.0 AD * 1.00 crit * 0.68 AS)",
-            "Headshot: +69.7 on-hit (×0.22 sustained)",
-            "On-hit total: 0.0 DPS (69.7 * 0.00 AS)",
-            "Piltover Peacemaker: 188.1 DPS (860 dmg / 3.4s CD)",
+            "Black Cleaver Carve: ~0.9 stacks (4.428125000000001% armor reduction)",
+            "Axiom Arc: ~21% ult CD refund on takedown (second R in long fights)",
+            "Spear of Shojin Focus: +3.5% damage (~30% stacks)",
+            "Target resistances: 50 armor (90.9% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (302.0 AD * 1.00 crit * 0.68 AS)",
+            "Headshot: +66.4 on-hit (×0.22 sustained)",
+            "On-hit total: 0.0 DPS (66.4 * 0.00 AS)",
+            "Piltover Peacemaker: 202.1 DPS (829 dmg / 3.1s CD)",
             "Piltover Peacemaker: rotation weight ×0.75 (Caitlyn)",
-            "90 Caliber Net: 36.8 DPS (280 dmg / 4.6s CD)",
+            "90 Caliber Net: 41.0 DPS (280 dmg / 4.1s CD)",
             "90 Caliber Net: rotation weight ×0.60 (Caitlyn)",
-            "Ace in the Hole: 5.7 DPS (905 dmg / 55.8s CD)",
+            "Ace in the Hole: 6.2 DPS (890 dmg / 49.9s CD)",
             "Ace in the Hole: rotation weight ×0.35 (Caitlyn)",
-            "Rune (ability): 66.1 DPS (76 / 1.1s)",
-            "Damage multipliers: 103.2% (1.03 * 1.00 * 1.00)",
-            "Sustained (rotation): 293.4 DPS",
-            "Combo (3s window): 1108 total → 369.3 DPS"
+            "Rune (ability): 72.2 DPS (74 / 1.0s)",
+            "Damage multipliers: 103.5% (1.04 * 1.00 * 1.00)",
+            "Sustained (rotation): 292.3 DPS",
+            "Combo (3s window): 995 total → 331.5 DPS"
           ],
           "buildType": "spell · Lethality"
         }
@@ -7362,8 +7364,8 @@
         {
           "champion": "Lux",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -7398,9 +7400,9 @@
         {
           "champion": "Lux",
           "items": [
-            "Stormsurge",
-            "Rabadon's Deathcap",
             "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -7621,8 +7623,8 @@
         {
           "champion": "Xerath",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -7658,9 +7660,9 @@
         {
           "champion": "Xerath",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -7889,8 +7891,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Infinity Edge",
-            "Phantom Dancer",
             "The Collector",
+            "Phantom Dancer",
             "Voltaic Cyclosword",
             "Bastionbreaker"
           ],
@@ -7960,8 +7962,8 @@
           "champion": "Ambessa",
           "items": [
             "Spear of Shojin (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Umbral Glaive (Base)",
             "Edge of Night",
             "Warmog's Armor"
@@ -8071,8 +8073,8 @@
           "champion": "Kindred",
           "items": [
             "Eclipse",
-            "Actualizer",
             "Muramana (Ranged)",
+            "Actualizer",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -8145,8 +8147,8 @@
         {
           "champion": "Zac",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -8301,8 +8303,8 @@
           "champion": "Shaco",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -8340,8 +8342,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -8417,12 +8419,12 @@
         {
           "champion": "Evelynn",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
+            "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -8533,12 +8535,12 @@
         {
           "champion": "Ziggs",
           "items": [
+            "Hextech Gunblade",
+            "Rabadon's Deathcap",
             "Stormsurge",
             "Actualizer",
-            "Rabadon's Deathcap",
-            "Hextech Gunblade",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -8691,8 +8693,8 @@
         {
           "champion": "Alistar",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Nashor's Tooth",
             "Riftmaker",
             "Warmog's Armor",
@@ -8732,8 +8734,8 @@
             "Hextech Gunblade",
             "Rabadon's Deathcap",
             "Stormsurge",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -8768,8 +8770,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -8922,8 +8924,8 @@
           "champion": "Jax",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -9010,8 +9012,8 @@
           "champion": "Lee Sin",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Blade of the Ruined King (Melee)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Heartsteel",
             "Warmog's Armor"
@@ -9085,11 +9087,11 @@
           "champion": "Lee Sin",
           "items": [
             "Bloodthirster",
-            "Eclipse",
             "Infinity Edge",
+            "Eclipse",
             "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
+            "Umbral Glaive (Base)",
+            "Bastionbreaker"
           ],
           "totalGold": 19718,
           "rune": "Conqueror",
@@ -9120,41 +9122,42 @@
         {
           "champion": "Lee Sin",
           "items": [
-            "Infinity Edge",
-            "Hexoptics C44",
-            "Youmuu's Ghostblade",
-            "Voltaic Cyclosword",
-            "Serpent's Fang",
-            "Bastionbreaker"
+            "Bloodthirster",
+            "Endless Hunger",
+            "Black Cleaver",
+            "Profane Hydra (Melee)",
+            "Umbral Glaive (Base)",
+            "Serylda's Grudge"
           ],
-          "totalGold": 18849,
+          "totalGold": 20056,
           "rune": "Conqueror",
-          "totalDPS": 377.85615128968254,
-          "sustainedDPS": 220.95342261904756,
-          "comboDPS": 506.23111111111103,
+          "totalDPS": 402.23599285714283,
+          "sustainedDPS": 280.36942857142856,
+          "comboDPS": 501.945,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 220.95342261904756,
+          "abilityDPS": 280.36942857142856,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
+            "Black Cleaver Carve: ~0.8 stacks (4.214285714285714% armor reduction)",
             "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (428.0 AD * 1.65 crit * 0.65 AS)",
-            "Sonic Wave / Resonating Strike: 115.4 DPS (646 dmg / 5.6s CD)",
-            "Tempest / Cripple: 66.0 DPS (497 dmg / 6.4s CD)",
+            "Base AA: 0.0 DPS (423.0 AD * 1.00 crit * 0.65 AS)",
+            "Sonic Wave / Resonating Strike: 146.4 DPS (641 dmg / 4.4s CD)",
+            "Tempest / Cripple: 83.6 DPS (492 dmg / 5.0s CD)",
             "Tempest / Cripple: rotation weight ×0.85 (Lee Sin)",
-            "Dragon's Rage: 61.5 DPS (1313 dmg / 9.6s CD)",
+            "Dragon's Rage: 78.2 DPS (1303 dmg / 7.5s CD)",
             "Dragon's Rage: rotation weight ×0.45 (Lee Sin)",
-            "Sustained (rotation): 221.0 DPS",
-            "Combo (3s window): 1519 total → 506.2 DPS"
+            "Sustained (rotation): 280.4 DPS",
+            "Combo (3s window): 1506 total → 501.9 DPS"
           ],
           "buildType": "ability_burst · Lethality"
         },
         {
           "champion": "Lee Sin",
           "items": [
-            "Spear of Shojin (Base)",
             "Maw of Malmortius (Base)",
+            "Spear of Shojin (Base)",
             "Chempunk Chainsword",
             "Axiom Arc",
             "Bastionbreaker",
@@ -9196,8 +9199,8 @@
           "champion": "Kai'Sa",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
@@ -9340,8 +9343,8 @@
         {
           "champion": "Brand",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -9377,9 +9380,9 @@
         {
           "champion": "Brand",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -9502,8 +9505,8 @@
             "Rabadon's Deathcap",
             "Stormsurge",
             "Shadowflame",
-            "Void Staff",
-            "Hextech Rocketbelt"
+            "Hextech Rocketbelt",
+            "Void Staff"
           ],
           "totalGold": 20679,
           "rune": "Press the Attack",
@@ -9690,6 +9693,43 @@
             "Combo (3s window): 901 total → 300.2 DPS"
           ],
           "buildType": "spell · Lethality"
+        },
+        {
+          "champion": "Varus",
+          "items": [
+            "Trinity Force (Base)",
+            "Chempunk Chainsword",
+            "Axiom Arc",
+            "Hubris",
+            "Serylda's Grudge",
+            "Warmog's Armor"
+          ],
+          "totalGold": 17461,
+          "rune": "Summon Aery",
+          "totalDPS": 242.61568900434028,
+          "sustainedDPS": 187.59454911458334,
+          "comboDPS": 287.6329852777778,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 187.59454911458334,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Axiom Arc: ~20% ult CD refund on takedown (second R in long fights)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (302.5 AD * 1.00 crit * 0.86 AS)",
+            "Piercing Arrow: 71.5 DPS (516 dmg / 6.9s CD)",
+            "Piercing Arrow: rotation weight ×0.95 (Varus)",
+            "Hail of Arrows: 48.9 DPS (399 dmg / 5.7s CD)",
+            "Hail of Arrows: rotation weight ×0.70 (Varus)",
+            "Chain of Corruption: 3.2 DPS (350 dmg / 43.2s CD)",
+            "Chain of Corruption: rotation weight ×0.40 (Varus)",
+            "Rune (ability): 65.1 DPS (74 / 1.1s)",
+            "Sustained (rotation): 187.6 DPS",
+            "Combo (3s window): 863 total → 287.6 DPS"
+          ],
+          "buildType": "spell · Lethality"
         }
       ]
     },
@@ -9701,8 +9741,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Blade of the Ruined King (Melee)",
-            "Phantom Dancer",
             "Infinity Edge",
+            "Phantom Dancer",
             "Heartsteel",
             "Warmog's Armor"
           ],
@@ -9735,8 +9775,8 @@
           "champion": "Master Yi",
           "items": [
             "Kraken Slayer (Base)",
-            "Stormrazor (Melee)",
             "Infinity Edge",
+            "Stormrazor (Melee)",
             "Phantom Dancer",
             "The Collector",
             "Voltaic Cyclosword"
@@ -9808,8 +9848,8 @@
           "champion": "Master Yi",
           "items": [
             "Muramana (Melee)",
-            "Actualizer",
             "Diadem of Songs",
+            "Actualizer",
             "Sunfire Aegis",
             "Warmog's Armor",
             "Heartsteel"
@@ -9848,11 +9888,11 @@
         {
           "champion": "Urgot",
           "items": [
-            "Navori Flickerblade",
             "Voltaic Cyclosword",
+            "Navori Flickerblade",
             "Experimental Hexplate",
-            "Edge of Night",
             "Titanic Hydra (Base)",
+            "Edge of Night",
             "Warmog's Armor"
           ],
           "totalGold": 20201,
@@ -9884,9 +9924,9 @@
           "champion": "Urgot",
           "items": [
             "Infinity Edge",
-            "The Collector",
             "Kraken Slayer (Base)",
             "Stormrazor (Ranged)",
+            "The Collector",
             "Hubris",
             "Bastionbreaker"
           ],
@@ -9923,8 +9963,8 @@
           "champion": "Urgot",
           "items": [
             "Eclipse",
-            "Actualizer",
             "Muramana (Ranged)",
+            "Actualizer",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -10105,8 +10145,8 @@
             "Sunfire Aegis",
             "Spear of Shojin (Base)",
             "Warmog's Armor",
-            "Abyssal Mask",
             "Chempunk Chainsword",
+            "Abyssal Mask",
             "Heartsteel"
           ],
           "totalGold": 20300,
@@ -10252,9 +10292,47 @@
         {
           "champion": "Talon",
           "items": [
+            "Maw of Malmortius (Base)",
+            "Spear of Shojin (Base)",
+            "Axiom Arc",
+            "Serylda's Grudge",
+            "Dead Man's Plate",
+            "Warmog's Armor"
+          ],
+          "totalGold": 20619,
+          "rune": "Press the Attack",
+          "totalDPS": 556.210272587215,
+          "sustainedDPS": 502.4434197487735,
+          "comboDPS": 600.2013340004852,
+          "autoAttackDPS": 163.86622998544397,
+          "onHitDPS": 93.93796700630762,
+          "abilityDPS": 244.63922275702194,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Axiom Arc: ~18% ult CD refund on takedown (second R in long fights)",
+            "Spear of Shojin Focus: +3.1% damage (~26% stacks)",
+            "Dead Man's Plate: +156.5 avg on-hit (50% Momentum)",
+            "Target resistances: 50 armor (87.3% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 170.6 DPS (273.0 AD * 1.00 crit * 0.63 AS)",
+            "Item mechanics on-hit (phys): +156.5",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 97.8 DPS (156.5 * 0.63 AS)",
+            "Noxian Diplomacy: 102.1 DPS (350 dmg / 3.4s CD)",
+            "Rake: 104.3 DPS (537 dmg / 5.1s CD)",
+            "Shadow Assault: 19.3 DPS (730 dmg / 37.8s CD)",
+            "Damage multipliers: 110.0% (1.03 * 1.00 * 1.00)",
+            "Sustained (rotation): 502.4 DPS",
+            "Combo (3s window): 1801 total → 600.2 DPS"
+          ],
+          "buildType": "balanced · Tank/Lethality"
+        },
+        {
+          "champion": "Talon",
+          "items": [
             "Infinity Edge",
-            "The Collector",
             "Kraken Slayer (Base)",
+            "The Collector",
             "Stormrazor (Melee)",
             "Hubris",
             "Bastionbreaker"
@@ -10356,6 +10434,42 @@
             "Combo (3s window): 1888 total → 629.4 DPS"
           ],
           "buildType": "spell · Lethality"
+        },
+        {
+          "champion": "Talon",
+          "items": [
+            "Kraken Slayer (Base)",
+            "Infinity Edge",
+            "Navori Flickerblade",
+            "Statikk Shiv",
+            "Chempunk Chainsword",
+            "Warmog's Armor"
+          ],
+          "totalGold": 20168,
+          "rune": "Hail of Blades",
+          "totalDPS": 771.1957964817968,
+          "sustainedDPS": 1047.5093008237461,
+          "comboDPS": 545.1211111111112,
+          "autoAttackDPS": 458.69999999999993,
+          "onHitDPS": 105.83333333333333,
+          "abilityDPS": 482.9759674904128,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Kraken (every 3rd AA): ~113.8 DPS (228 dmg, 30% missing-HP bonus)",
+            "Statikk Shiv: +45.0 DPS (30 magic / ~4 autos)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 688.0 DPS (278.0 AD * 1.65 crit * 1.50 AS)",
+            "Item mechanics on-hit (phys): +75.8",
+            "Item mechanics on-hit (magic): +30.0",
+            "On-hit total: 158.8 DPS (105.8 * 1.50 AS)",
+            "Noxian Diplomacy: 242.7 DPS (355 dmg / 1.5s CD)",
+            "Rake: 467.5 DPS (543 dmg / 1.2s CD)",
+            "Shadow Assault: 14.2 DPS (740 dmg / 52.2s CD)",
+            "Sustained (rotation): 1047.5 DPS",
+            "Combo (3s window): 1635 total → 545.1 DPS"
+          ],
+          "buildType": "ad · Crit"
         }
       ]
     },
@@ -10366,8 +10480,8 @@
           "champion": "Vi",
           "items": [
             "Kraken Slayer (Base)",
-            "Voltaic Cyclosword",
             "Experimental Hexplate",
+            "Voltaic Cyclosword",
             "Edge of Night",
             "Dead Man's Plate",
             "Warmog's Armor"
@@ -10445,9 +10559,9 @@
         {
           "champion": "Vi",
           "items": [
+            "Eclipse",
             "Actualizer",
             "Muramana (Melee)",
-            "Eclipse",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -10555,6 +10669,45 @@
             "Combo (3s window): 1540 total → 513.3 DPS"
           ],
           "buildType": "ad · Crit"
+        },
+        {
+          "champion": "Vi",
+          "items": [
+            "Infinity Edge",
+            "Phantom Dancer",
+            "Sundered Sky",
+            "Voltaic Cyclosword",
+            "Chempunk Chainsword",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21008,
+          "rune": "Hail of Blades",
+          "totalDPS": 622.9728244277778,
+          "sustainedDPS": 694.82842,
+          "comboDPS": 564.1818825959597,
+          "autoAttackDPS": 462.00882,
+          "onHitDPS": 38.092600000000004,
+          "abilityDPS": 194.727,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Voltaic Cyclosword: +54.9 DPS (44 magic / ~4 autos)",
+            "Sundered Sky: +4.0% damage via crit strikes",
+            "Target resistances: 50 armor (75.8% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 586.4 DPS (283.0 AD * 1.65 crit * 1.26 AS)",
+            "Item mechanics on-hit (magic): +43.8",
+            "On-hit total: 54.9 DPS (43.8 * 1.26 AS)",
+            "Vault Breaker: 61.9 DPS (290 dmg / 4.4s CD)",
+            "Vault Breaker: rotation weight ×0.95 (Vi)",
+            "Relentless Force: 180.6 DPS (803 dmg / 4.0s CD)",
+            "Relentless Force: rotation weight ×0.90 (Vi)",
+            "Cease and Desist: 4.6 DPS (548 dmg / 59.3s CD)",
+            "Cease and Desist: rotation weight ×0.50 (Vi)",
+            "Damage multipliers: 104.0% (1.04 * 1.00 * 1.00)",
+            "Sustained (rotation): 694.8 DPS",
+            "Combo (3s window): 1693 total → 564.2 DPS"
+          ],
+          "buildType": "bruiser · Crit/Lethality"
         }
       ]
     },
@@ -10644,32 +10797,32 @@
             "Muramana (Ranged)",
             "Actualizer",
             "Hubris",
-            "Youmuu's Ghostblade",
+            "Bastionbreaker",
             "Umbral Glaive (Base)"
           ],
-          "totalGold": 19626,
+          "totalGold": 19964,
           "rune": "Conqueror",
-          "totalDPS": 319.17928728133336,
-          "sustainedDPS": 202.68403539,
+          "totalDPS": 326.32658428933337,
+          "sustainedDPS": 218.56691763,
           "comboDPS": 414.49358428333335,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 202.68403539,
+          "abilityDPS": 218.56691763,
           "dotDPS": 0,
           "burstDPS": 37.0389705,
           "breakdown": [
             "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Eclipse Everrising: ~7.8 DPS (45 per 2-hit proc, 4s cadence)",
+            "Eclipse Everrising: ~8.5 DPS (45 per 2-hit proc, 4s cadence)",
             "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
             "Base AA: 0.0 DPS (381.9 AD * 1.00 crit * 0.68 AS)",
-            "Spinning Axe: 110.3 DPS (428 dmg / 4.8s CD)",
+            "Spinning Axe: 120.3 DPS (428 dmg / 4.4s CD)",
             "Spinning Axe: rotation weight ×1.25 (Draven)",
-            "Stand Aside: 19.9 DPS (375 dmg / 8.5s CD)",
+            "Stand Aside: 21.7 DPS (375 dmg / 7.8s CD)",
             "Stand Aside: rotation weight ×0.45 (Draven)",
-            "Whirling Death: 4.5 DPS (880 dmg / 48.5s CD)",
+            "Whirling Death: 4.9 DPS (880 dmg / 44.4s CD)",
             "Whirling Death: rotation weight ×0.25 (Draven)",
             "Muramana Shock: +46 phys per 2s (~22.8 DPS)",
-            "Sustained (rotation): 202.7 DPS",
+            "Sustained (rotation): 218.6 DPS",
             "Combo (3s window): 1243 total → 414.5 DPS",
             "Item burst in combo: 111 (37.0 DPS if spread)"
           ],
@@ -10912,8 +11065,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Infinity Edge",
-            "Phantom Dancer",
             "The Collector",
+            "Phantom Dancer",
             "Voltaic Cyclosword",
             "Bastionbreaker"
           ],
@@ -10993,8 +11146,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -11037,8 +11190,8 @@
         {
           "champion": "Ornn",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Edge of Night",
             "Heartsteel",
@@ -11115,17 +11268,17 @@
             "Muramana (Melee)",
             "Eclipse",
             "Hubris",
-            "Bastionbreaker",
+            "Voltaic Cyclosword",
             "Umbral Glaive (Base)"
           ],
-          "totalGold": 19964,
+          "totalGold": 19790,
           "rune": "Conqueror",
-          "totalDPS": 455.32358678170993,
-          "sustainedDPS": 332.12012355194804,
+          "totalDPS": 451.8040579060606,
+          "sustainedDPS": 324.2989482727273,
           "comboDPS": 556.1264203333333,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 332.12012355194804,
+          "abilityDPS": 324.2989482727273,
           "dotDPS": 0,
           "burstDPS": 42.893083999999995,
           "breakdown": [
@@ -11133,12 +11286,12 @@
             "Eclipse Everrising: ~11.3 DPS (45 per 2-hit proc, 4s cadence)",
             "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
             "Base AA: 0.0 DPS (388.5 AD * 1.00 crit * 0.63 AS)",
-            "Volcanic Rupture: 145.9 DPS (567 dmg / 3.9s CD)",
-            "Bellows Breath: 34.3 DPS (210 dmg / 6.1s CD)",
-            "Searing Charge: 58.2 DPS (388 dmg / 6.7s CD)",
-            "Call of the Forge God: 4.4 DPS (243 dmg / 55.6s CD)",
+            "Volcanic Rupture: 141.8 DPS (567 dmg / 4.0s CD)",
+            "Bellows Breath: 33.3 DPS (210 dmg / 6.3s CD)",
+            "Searing Charge: 56.6 DPS (388 dmg / 6.9s CD)",
+            "Call of the Forge God: 4.3 DPS (243 dmg / 57.1s CD)",
             "Muramana Shock: +60 phys per 2s (~30.0 DPS)",
-            "Sustained (rotation): 332.1 DPS",
+            "Sustained (rotation): 324.3 DPS",
             "Combo (3s window): 1668 total → 556.1 DPS",
             "Item burst in combo: 129 (42.9 DPS if spread)"
           ],
@@ -11381,8 +11534,8 @@
           "champion": "Rek'Sai",
           "items": [
             "Eclipse",
-            "Spear of Shojin (Base)",
             "Bloodthirster",
+            "Spear of Shojin (Base)",
             "Hubris",
             "Axiom Arc",
             "Umbral Glaive (Base)"
@@ -11423,8 +11576,8 @@
           "items": [
             "Navori Flickerblade",
             "Kraken Slayer (Base)",
-            "Experimental Hexplate",
             "Infinity Edge",
+            "Experimental Hexplate",
             "Spear of Shojin (Base)",
             "Warmog's Armor"
           ],
@@ -11506,8 +11659,8 @@
         {
           "champion": "Nami",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -11543,12 +11696,12 @@
         {
           "champion": "Nami",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Stormsurge",
+            "Shadowflame",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -11584,8 +11737,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -11625,8 +11778,8 @@
         {
           "champion": "Ahri",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -11757,8 +11910,8 @@
           "items": [
             "Hextech Gunblade",
             "Hextech Rocketbelt",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
           ],
@@ -11800,8 +11953,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -11838,156 +11991,79 @@
       ]
     },
     {
-      "champion": "Akshan",
+      "champion": "Yorick",
       "builds": [
         {
-          "champion": "Akshan",
+          "champion": "Yorick",
           "items": [
-            "Infinity Edge",
-            "Navori Flickerblade",
-            "Experimental Hexplate",
-            "Titanic Hydra (Base)",
-            "Edge of Night",
-            "Warmog's Armor"
+            "Rabadon's Deathcap",
+            "Hextech Rocketbelt",
+            "Morellonomicon",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
           ],
-          "totalGold": 20518,
-          "rune": "Hail of Blades",
-          "totalDPS": 584.2410782824068,
-          "sustainedDPS": 665.7827758367616,
-          "comboDPS": 517.525143919753,
-          "autoAttackDPS": 380.7654888888888,
-          "onHitDPS": 13.468888888888888,
-          "abilityDPS": 271.54839805898393,
+          "totalGold": 21005,
+          "rune": "Press the Attack",
+          "totalDPS": 584.5202998613333,
+          "sustainedDPS": 374.01390167703704,
+          "comboDPS": 756.7528074666667,
+          "autoAttackDPS": 29.429333333333332,
+          "onHitDPS": 0,
+          "abilityDPS": 344.5845683437037,
           "dotDPS": 0,
-          "burstDPS": 0,
+          "burstDPS": 103.44262289382716,
           "breakdown": [
-            "Target resistances: 50 armor (74.1% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 514.0 DPS (257.0 AD * 1.65 crit * 1.21 AS)",
-            "Physical on-hit (target max HP): +15.0",
-            "On-hit total: 18.2 DPS (15.0 * 1.21 AS)",
-            "Avengerang: 280.9 DPS (617 dmg / 1.9s CD)",
-            "Avengerang: rotation weight ×0.85 (Akshan)",
-            "Heroic Swing: 78.2 DPS (104 dmg / 1.2s CD)",
-            "Heroic Swing: rotation weight ×0.90 (Akshan)",
-            "Comeuppance: 7.5 DPS (1170 dmg / 70.0s CD)",
-            "Comeuppance: rotation weight ×0.45 (Akshan)",
-            "Sustained (rotation): 665.8 DPS",
-            "Combo (3s window): 1553 total → 517.5 DPS"
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Rocketbelt active: 368 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
+            "Base AA: 38.8 DPS (62.0 AD * 1.00 crit * 0.63 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Last Rites: 47.6 DPS (141 dmg / 3.0s CD)",
+            "Mourning Mist: 334.3 DPS (1981 dmg / 5.9s CD)",
+            "Eulogy of the Isles: 2.2 DPS (164 dmg / 74.1s CD)",
+            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 374.0 DPS",
+            "Combo (3s window): 2270 total → 756.8 DPS",
+            "Item burst in combo: 310 (103.4 DPS if spread)"
           ],
-          "buildType": "balanced · Crit/On-Hit"
+          "buildType": "balanced · AP"
         },
         {
-          "champion": "Akshan",
+          "champion": "Yorick",
           "items": [
-            "Infinity Edge",
-            "Stormrazor (Ranged)",
-            "The Collector",
-            "Phantom Dancer",
-            "Voltaic Cyclosword",
-            "Bastionbreaker"
-          ],
-          "totalGold": 20760,
-          "rune": "Hail of Blades",
-          "totalDPS": 1190.7655228805556,
-          "sustainedDPS": 1291.4964991666666,
-          "comboDPS": 1108.3492695555556,
-          "autoAttackDPS": 1063.2046699999999,
-          "onHitDPS": 50.981516666666664,
-          "abilityDPS": 177.3103125,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Stormrazor Bolt: +16.5 DPS (12.0 magic per AA, 100 energize)",
-            "Voltaic Cyclosword: +60.0 DPS (44 magic / ~4 autos)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 1063.2 DPS (337.0 AD * 2.30 crit * 1.37 AS)",
-            "Item mechanics on-hit (magic): +55.8",
-            "On-hit total: 76.5 DPS (55.8 * 1.37 AS)",
-            "Avengerang: 154.9 DPS (729 dmg / 4.0s CD)",
-            "Avengerang: rotation weight ×0.85 (Akshan)",
-            "Heroic Swing: 11.6 DPS (124 dmg / 9.6s CD)",
-            "Heroic Swing: rotation weight ×0.90 (Akshan)",
-            "Comeuppance: 10.7 DPS (1338 dmg / 56.0s CD)",
-            "Comeuppance: rotation weight ×0.45 (Akshan)",
-            "Sustained (rotation): 1291.5 DPS",
-            "Combo (3s window): 3325 total → 1108.3 DPS"
-          ],
-          "buildType": "glass · Crit/Lethality"
-        },
-        {
-          "champion": "Akshan",
-          "items": [
-            "Bloodthirster",
+            "Hextech Gunblade",
+            "Rabadon's Deathcap",
+            "Stormsurge",
+            "Shadowflame",
             "Actualizer",
-            "Muramana (Ranged)",
-            "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
+            "Void Staff"
           ],
-          "totalGold": 20174,
-          "rune": "Conqueror",
-          "totalDPS": 493.78682830121875,
-          "sustainedDPS": 344.4770526693749,
-          "comboDPS": 615.949372,
-          "autoAttackDPS": 0,
+          "totalGold": 20714,
+          "rune": "Press the Attack",
+          "totalDPS": 1255.7420466474075,
+          "sustainedDPS": 626.5465760888889,
+          "comboDPS": 1770.5383407407408,
+          "autoAttackDPS": 45.33333333333333,
           "onHitDPS": 0,
-          "abilityDPS": 344.4770526693749,
+          "abilityDPS": 581.2132427555555,
           "dotDPS": 0,
-          "burstDPS": 18.50505,
+          "burstDPS": 459.7699555555555,
           "breakdown": [
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (391.7 AD * 1.00 crit * 0.64 AS)",
-            "Avengerang: 226.0 DPS (806 dmg / 3.0s CD)",
-            "Avengerang: rotation weight ×0.85 (Akshan)",
-            "Heroic Swing: 17.1 DPS (138 dmg / 7.3s CD)",
-            "Heroic Swing: rotation weight ×0.90 (Akshan)",
-            "Comeuppance: 15.4 DPS (1453 dmg / 42.4s CD)",
-            "Comeuppance: rotation weight ×0.45 (Akshan)",
-            "Muramana Shock: +45 phys per 2s (~22.6 DPS)",
-            "Sustained (rotation): 344.5 DPS",
-            "Combo (3s window): 1848 total → 615.9 DPS",
-            "Item burst in combo: 56 (18.5 DPS if spread)"
+            "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
+            "Hextech Gunblade active: 827 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
+            "Base AA: 63.8 DPS (102.0 AD * 1.00 crit * 0.63 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Last Rites: 44.3 DPS (161 dmg / 3.6s CD)",
+            "Mourning Mist: 383.4 DPS (2789 dmg / 7.3s CD)",
+            "Eulogy of the Isles: 1.9 DPS (176 dmg / 90.9s CD)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 626.5 DPS",
+            "Combo (3s window): 5312 total → 1770.5 DPS",
+            "Item burst in combo: 1379 (459.8 DPS if spread)"
           ],
-          "buildType": "ability_burst · Lethality"
-        },
-        {
-          "champion": "Akshan",
-          "items": [
-            "Spear of Shojin (Base)",
-            "Chempunk Chainsword",
-            "Axiom Arc",
-            "Umbral Glaive (Base)",
-            "Edge of Night",
-            "Warmog's Armor"
-          ],
-          "totalGold": 21021,
-          "rune": "Summon Aery",
-          "totalDPS": 377.4670933494141,
-          "sustainedDPS": 308.3315963320313,
-          "comboDPS": 434.03249999999997,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 308.3315963320313,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Axiom Arc: ~23% ult CD refund on takedown (second R in long fights)",
-            "Spear of Shojin Focus: +3.1% damage (~26% stacks)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (307.0 AD * 1.00 crit * 0.64 AS)",
-            "Avengerang: 204.4 DPS (687 dmg / 2.9s CD)",
-            "Avengerang: rotation weight ×0.85 (Akshan)",
-            "Heroic Swing: 15.3 DPS (117 dmg / 6.9s CD)",
-            "Heroic Swing: rotation weight ×0.90 (Akshan)",
-            "Comeuppance: 13.2 DPS (1275 dmg / 43.4s CD)",
-            "Comeuppance: rotation weight ×0.45 (Akshan)",
-            "Rune (ability): 66.1 DPS (76 / 1.1s)",
-            "Damage multipliers: 103.1% (1.03 * 1.00 * 1.00)",
-            "Sustained (rotation): 308.3 DPS",
-            "Combo (3s window): 1302 total → 434.0 DPS"
-          ],
-          "buildType": "spell · Lethality"
+          "buildType": "glass · AP"
         }
       ]
     },
@@ -12039,10 +12115,10 @@
           "champion": "Ekko",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
+            "Stormsurge",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -12082,8 +12158,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -12198,12 +12274,12 @@
         {
           "champion": "Dr. Mundo",
           "items": [
+            "Heartsteel",
             "Abyssal Mask",
             "Warmog's Armor",
-            "Heartsteel",
             "Spear of Shojin (Base)",
-            "Eclipse",
-            "Hullbreaker"
+            "Hullbreaker",
+            "Eclipse"
           ],
           "totalGold": 20091,
           "rune": "First Strike",
@@ -12355,8 +12431,8 @@
           "champion": "Xayah",
           "items": [
             "Spear of Shojin (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Umbral Glaive (Base)",
             "Edge of Night",
             "Warmog's Armor"
@@ -12436,8 +12512,8 @@
           "items": [
             "Hextech Gunblade",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Stormsurge",
+            "Actualizer",
             "Hextech Rocketbelt",
             "Void Staff"
           ],
@@ -12520,8 +12596,8 @@
           "champion": "Viego",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Blade of the Ruined King (Melee)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Heartsteel",
             "Warmog's Armor"
@@ -12590,8 +12666,8 @@
         {
           "champion": "Viego",
           "items": [
-            "Eclipse",
             "Bloodthirster",
+            "Eclipse",
             "Infinity Edge",
             "The Collector",
             "Hubris",
@@ -12657,41 +12733,6 @@
             "Combo (3s window): 994 total → 331.3 DPS"
           ],
           "buildType": "spell · Lethality"
-        },
-        {
-          "champion": "Viego",
-          "items": [
-            "Spear of Shojin (Base)",
-            "Black Cleaver",
-            "Sundered Sky",
-            "Umbral Glaive (Base)",
-            "Kaenic Rookern",
-            "Warmog's Armor"
-          ],
-          "totalGold": 21123,
-          "rune": "Summon Aery",
-          "totalDPS": 231.7350181088226,
-          "sustainedDPS": 169.90699317392674,
-          "comboDPS": 282.32158396464644,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 169.90699317392674,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Black Cleaver Carve: ~0.9 stacks (4.409375% armor reduction)",
-            "Spear of Shojin Focus: +3.5% damage (~29% stacks)",
-            "Target resistances: 50 armor (75.8% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (247.0 AD * 1.00 crit * 0.66 AS)",
-            "Blade of the Ruined King: 73.1 DPS (258 dmg / 3.5s CD)",
-            "Spectral Maw: 85.0 DPS (300 dmg / 3.5s CD)",
-            "Heartbreaker: 10.1 DPS (558 dmg / 55.2s CD)",
-            "Rune (ability): 58.6 DPS (69 / 1.2s)",
-            "Damage multipliers: 103.5% (1.04 * 1.00 * 1.00)",
-            "Sustained (rotation): 169.9 DPS",
-            "Combo (3s window): 847 total → 282.3 DPS"
-          ],
-          "buildType": "spell · Tank/Lethality"
         }
       ]
     },
@@ -12744,10 +12785,10 @@
           "champion": "Diana",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
+            "Stormsurge",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -12874,8 +12915,8 @@
           "champion": "Katarina",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Shadowflame",
             "Void Staff",
             "Hextech Rocketbelt"
@@ -12916,8 +12957,8 @@
             "Hextech Gunblade",
             "Hextech Rocketbelt",
             "Rabadon's Deathcap",
-            "Riftmaker",
             "Morellonomicon",
+            "Riftmaker",
             "Warmog's Armor"
           ],
           "totalGold": 21675,
@@ -12995,8 +13036,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Hextech Rocketbelt",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20734,
@@ -13102,12 +13143,12 @@
         {
           "champion": "Trundle",
           "items": [
+            "Eclipse",
             "Actualizer",
             "Muramana (Melee)",
-            "Eclipse",
             "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
+            "Umbral Glaive (Base)",
+            "Bastionbreaker"
           ],
           "totalGold": 19964,
           "rune": "Conqueror",
@@ -13175,8 +13216,8 @@
         {
           "champion": "Vex",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -13217,8 +13258,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -13374,8 +13415,8 @@
         {
           "champion": "Mel",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -13412,8 +13453,8 @@
           "champion": "Mel",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -13493,8 +13534,8 @@
         {
           "champion": "Rammus",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -13534,8 +13575,8 @@
             "Hextech Gunblade",
             "Rabadon's Deathcap",
             "Stormsurge",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -13777,8 +13818,8 @@
           "champion": "Rakan",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -13895,8 +13936,8 @@
           "champion": "Annie",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -14240,8 +14281,8 @@
           "champion": "Naafiri",
           "items": [
             "Spear of Shojin (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Umbral Glaive (Base)",
             "Edge of Night",
             "Warmog's Armor"
@@ -14281,8 +14322,8 @@
         {
           "champion": "Vel'Koz",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -14323,8 +14364,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -14399,8 +14440,8 @@
         {
           "champion": "Rell",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -14440,8 +14481,8 @@
             "Hextech Gunblade",
             "Rabadon's Deathcap",
             "Stormsurge",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -14590,9 +14631,9 @@
         {
           "champion": "Warwick",
           "items": [
+            "Bloodthirster",
             "Actualizer",
             "Muramana (Melee)",
-            "Bloodthirster",
             "Eclipse",
             "Infinity Edge",
             "Abyssal Mask"
@@ -14625,8 +14666,8 @@
         {
           "champion": "Warwick",
           "items": [
-            "Actualizer",
             "Muramana (Melee)",
+            "Actualizer",
             "Rod of Ages",
             "Spear of Shojin (Base)",
             "Heartsteel",
@@ -14669,8 +14710,8 @@
           "champion": "Orianna",
           "items": [
             "Hextech Gunblade",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -14715,8 +14756,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -14755,8 +14796,8 @@
         {
           "champion": "Orianna",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -14797,14 +14838,208 @@
       ]
     },
     {
+      "champion": "Akshan",
+      "builds": [
+        {
+          "champion": "Akshan",
+          "items": [
+            "Voltaic Cyclosword",
+            "Titanic Hydra (Base)",
+            "Umbral Glaive (Base)",
+            "Dead Man's Plate",
+            "Edge of Night",
+            "Warmog's Armor"
+          ],
+          "totalGold": 19764,
+          "rune": "Hail of Blades",
+          "totalDPS": 551.2652876875,
+          "sustainedDPS": 502.3276125,
+          "comboDPS": 591.3052037499999,
+          "autoAttackDPS": 213.1558,
+          "onHitDPS": 138.8865,
+          "abilityDPS": 150.28531249999997,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Voltaic Cyclosword: +36.3 DPS (44 magic / ~4 autos)",
+            "Dead Man's Plate: +123.3 avg on-hit (50% Momentum)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 213.2 DPS (257.0 AD * 1.00 crit * 0.83 AS)",
+            "Physical on-hit (target max HP): +15.0",
+            "Item mechanics on-hit (phys): +123.3",
+            "Item mechanics on-hit (magic): +43.8",
+            "On-hit total: 151.0 DPS (182.0 * 0.83 AS)",
+            "Avengerang: 131.1 DPS (617 dmg / 4.0s CD)",
+            "Avengerang: rotation weight ×0.85 (Akshan)",
+            "Heroic Swing: 9.8 DPS (104 dmg / 9.6s CD)",
+            "Heroic Swing: rotation weight ×0.90 (Akshan)",
+            "Comeuppance: 9.4 DPS (1170 dmg / 56.0s CD)",
+            "Comeuppance: rotation weight ×0.45 (Akshan)",
+            "Sustained (rotation): 502.3 DPS",
+            "Combo (3s window): 1774 total → 591.3 DPS"
+          ],
+          "buildType": "balanced · Lethality"
+        },
+        {
+          "champion": "Akshan",
+          "items": [
+            "Infinity Edge",
+            "Stormrazor (Ranged)",
+            "The Collector",
+            "Phantom Dancer",
+            "Voltaic Cyclosword",
+            "Bastionbreaker"
+          ],
+          "totalGold": 20760,
+          "rune": "Hail of Blades",
+          "totalDPS": 1190.7655228805556,
+          "sustainedDPS": 1291.4964991666666,
+          "comboDPS": 1108.3492695555556,
+          "autoAttackDPS": 1063.2046699999999,
+          "onHitDPS": 50.981516666666664,
+          "abilityDPS": 177.3103125,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Stormrazor Bolt: +16.5 DPS (12.0 magic per AA, 100 energize)",
+            "Voltaic Cyclosword: +60.0 DPS (44 magic / ~4 autos)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 1063.2 DPS (337.0 AD * 2.30 crit * 1.37 AS)",
+            "Item mechanics on-hit (magic): +55.8",
+            "On-hit total: 76.5 DPS (55.8 * 1.37 AS)",
+            "Avengerang: 154.9 DPS (729 dmg / 4.0s CD)",
+            "Avengerang: rotation weight ×0.85 (Akshan)",
+            "Heroic Swing: 11.6 DPS (124 dmg / 9.6s CD)",
+            "Heroic Swing: rotation weight ×0.90 (Akshan)",
+            "Comeuppance: 10.7 DPS (1338 dmg / 56.0s CD)",
+            "Comeuppance: rotation weight ×0.45 (Akshan)",
+            "Sustained (rotation): 1291.5 DPS",
+            "Combo (3s window): 3325 total → 1108.3 DPS"
+          ],
+          "buildType": "glass · Crit/Lethality"
+        },
+        {
+          "champion": "Akshan",
+          "items": [
+            "Bloodthirster",
+            "Muramana (Ranged)",
+            "Actualizer",
+            "Hubris",
+            "Bastionbreaker",
+            "Umbral Glaive (Base)"
+          ],
+          "totalGold": 20174,
+          "rune": "Conqueror",
+          "totalDPS": 493.78682830121875,
+          "sustainedDPS": 344.4770526693749,
+          "comboDPS": 615.949372,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 344.4770526693749,
+          "dotDPS": 0,
+          "burstDPS": 18.50505,
+          "breakdown": [
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (391.7 AD * 1.00 crit * 0.64 AS)",
+            "Avengerang: 226.0 DPS (806 dmg / 3.0s CD)",
+            "Avengerang: rotation weight ×0.85 (Akshan)",
+            "Heroic Swing: 17.1 DPS (138 dmg / 7.3s CD)",
+            "Heroic Swing: rotation weight ×0.90 (Akshan)",
+            "Comeuppance: 15.4 DPS (1453 dmg / 42.4s CD)",
+            "Comeuppance: rotation weight ×0.45 (Akshan)",
+            "Muramana Shock: +45 phys per 2s (~22.6 DPS)",
+            "Sustained (rotation): 344.5 DPS",
+            "Combo (3s window): 1848 total → 615.9 DPS",
+            "Item burst in combo: 56 (18.5 DPS if spread)"
+          ],
+          "buildType": "ability_burst · Lethality"
+        },
+        {
+          "champion": "Akshan",
+          "items": [
+            "Infinity Edge",
+            "Navori Flickerblade",
+            "Experimental Hexplate",
+            "Titanic Hydra (Base)",
+            "Edge of Night",
+            "Warmog's Armor"
+          ],
+          "totalGold": 20518,
+          "rune": "Hail of Blades",
+          "totalDPS": 584.2410782824068,
+          "sustainedDPS": 665.7827758367616,
+          "comboDPS": 517.525143919753,
+          "autoAttackDPS": 380.7654888888888,
+          "onHitDPS": 13.468888888888888,
+          "abilityDPS": 271.54839805898393,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (74.1% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 514.0 DPS (257.0 AD * 1.65 crit * 1.21 AS)",
+            "Physical on-hit (target max HP): +15.0",
+            "On-hit total: 18.2 DPS (15.0 * 1.21 AS)",
+            "Avengerang: 280.9 DPS (617 dmg / 1.9s CD)",
+            "Avengerang: rotation weight ×0.85 (Akshan)",
+            "Heroic Swing: 78.2 DPS (104 dmg / 1.2s CD)",
+            "Heroic Swing: rotation weight ×0.90 (Akshan)",
+            "Comeuppance: 7.5 DPS (1170 dmg / 70.0s CD)",
+            "Comeuppance: rotation weight ×0.45 (Akshan)",
+            "Sustained (rotation): 665.8 DPS",
+            "Combo (3s window): 1553 total → 517.5 DPS"
+          ],
+          "buildType": "tank · Crit/On-Hit"
+        },
+        {
+          "champion": "Akshan",
+          "items": [
+            "Spear of Shojin (Base)",
+            "Chempunk Chainsword",
+            "Axiom Arc",
+            "Umbral Glaive (Base)",
+            "Edge of Night",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21021,
+          "rune": "Summon Aery",
+          "totalDPS": 377.4670933494141,
+          "sustainedDPS": 308.3315963320313,
+          "comboDPS": 434.03249999999997,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 308.3315963320313,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Axiom Arc: ~23% ult CD refund on takedown (second R in long fights)",
+            "Spear of Shojin Focus: +3.1% damage (~26% stacks)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (307.0 AD * 1.00 crit * 0.64 AS)",
+            "Avengerang: 204.4 DPS (687 dmg / 2.9s CD)",
+            "Avengerang: rotation weight ×0.85 (Akshan)",
+            "Heroic Swing: 15.3 DPS (117 dmg / 6.9s CD)",
+            "Heroic Swing: rotation weight ×0.90 (Akshan)",
+            "Comeuppance: 13.2 DPS (1275 dmg / 43.4s CD)",
+            "Comeuppance: rotation weight ×0.45 (Akshan)",
+            "Rune (ability): 66.1 DPS (76 / 1.1s)",
+            "Damage multipliers: 103.1% (1.03 * 1.00 * 1.00)",
+            "Sustained (rotation): 308.3 DPS",
+            "Combo (3s window): 1302 total → 434.0 DPS"
+          ],
+          "buildType": "spell · Lethality"
+        }
+      ]
+    },
+    {
       "champion": "LeBlanc",
       "builds": [
         {
           "champion": "LeBlanc",
           "items": [
             "Stormsurge",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -14843,12 +15078,12 @@
         {
           "champion": "LeBlanc",
           "items": [
-            "Stormsurge",
             "Hextech Gunblade",
+            "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -14889,8 +15124,8 @@
           "champion": "Yone",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Heartsteel",
             "Warmog's Armor"
@@ -14964,11 +15199,11 @@
         {
           "champion": "Yone",
           "items": [
-            "Eclipse",
             "Bloodthirster",
+            "Eclipse",
+            "Spear of Shojin (Base)",
             "Hubris",
             "Axiom Arc",
-            "Spear of Shojin (Base)",
             "Umbral Glaive (Base)"
           ],
           "totalGold": 20204,
@@ -14998,6 +15233,42 @@
             "Sustained (rotation): 368.1 DPS",
             "Combo (3s window): 1421 total → 473.8 DPS",
             "Item burst in combo: 47 (15.6 DPS if spread)"
+          ],
+          "buildType": "ability_burst · Lethality"
+        },
+        {
+          "champion": "Yone",
+          "items": [
+            "Spectral Cutlass",
+            "Endless Hunger",
+            "Guardian Angel",
+            "Hubris",
+            "Axiom Arc",
+            "Bastionbreaker"
+          ],
+          "totalGold": 19055,
+          "rune": "Conqueror",
+          "totalDPS": 361.2737922326389,
+          "sustainedDPS": 283.6457574305556,
+          "comboDPS": 424.7876388888889,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 283.6457574305556,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Axiom Arc: ~26% ult CD refund on takedown (second R in long fights)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (411.5 AD * 1.00 crit * 0.63 AS)",
+            "Mortal Steel: 256.3 DPS (557 dmg / 2.5s CD)",
+            "Mortal Steel: rotation weight ×1.15 (Yone)",
+            "Spirit Cleave: 24.5 DPS (230 dmg / 7.5s CD)",
+            "Spirit Cleave: rotation weight ×0.80 (Yone)",
+            "Fate Sealed: 11.0 DPS (929 dmg / 46.3s CD)",
+            "Fate Sealed: rotation weight ×0.55 (Yone)",
+            "Sustained (rotation): 283.6 DPS",
+            "Combo (3s window): 1274 total → 424.8 DPS"
           ],
           "buildType": "ability_burst · Lethality"
         },
@@ -15232,8 +15503,8 @@
         {
           "champion": "K'Sante",
           "items": [
-            "Spear of Shojin (Base)",
             "Sunfire Aegis",
+            "Spear of Shojin (Base)",
             "Axiom Arc",
             "Bastionbreaker",
             "Warmog's Armor",
@@ -15275,8 +15546,8 @@
           "items": [
             "Maw of Malmortius (Base)",
             "Spear of Shojin (Base)",
-            "Bastionbreaker",
             "Dead Man's Plate",
+            "Bastionbreaker",
             "Edge of Night",
             "Warmog's Armor"
           ],
@@ -15350,8 +15621,8 @@
         {
           "champion": "Yasuo",
           "items": [
-            "Eclipse",
             "Bloodthirster",
+            "Eclipse",
             "Spear of Shojin (Base)",
             "Hubris",
             "Axiom Arc",
@@ -15383,40 +15654,6 @@
             "Sustained (rotation): 420.9 DPS",
             "Combo (3s window): 1613 total → 537.7 DPS",
             "Item burst in combo: 48 (15.9 DPS if spread)"
-          ],
-          "buildType": "ability_burst · Lethality"
-        },
-        {
-          "champion": "Yasuo",
-          "items": [
-            "Bloodthirster",
-            "Death's Dance",
-            "Axiom Arc",
-            "Serylda's Grudge",
-            "Edge of Night",
-            "Sundered Sky"
-          ],
-          "totalGold": 20883,
-          "rune": "Conqueror",
-          "totalDPS": 405.66421958888884,
-          "sustainedDPS": 322.7185126666667,
-          "comboDPS": 473.52888888888884,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 322.7185126666667,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Axiom Arc: ~20% ult CD refund on takedown (second R in long fights)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (412.0 AD * 1.00 crit * 0.70 AS)",
-            "Steel Tempest: 265.2 DPS (553 dmg / 2.5s CD)",
-            "Steel Tempest: rotation weight ×1.20 (Yasuo)",
-            "Sweeping Blade: 52.0 DPS (130 dmg / 2.5s CD)",
-            "Last Breath: 22.8 DPS (1118 dmg / 29.4s CD)",
-            "Last Breath: rotation weight ×0.60 (Yasuo)",
-            "Sustained (rotation): 322.7 DPS",
-            "Combo (3s window): 1421 total → 473.5 DPS"
           ],
           "buildType": "ability_burst · Lethality"
         },
@@ -15459,6 +15696,42 @@
             "Combo (3s window): 1627 total → 542.4 DPS"
           ],
           "buildType": "tank · Lethality"
+        },
+        {
+          "champion": "Yasuo",
+          "items": [
+            "Wit's End",
+            "Navori Flickerblade",
+            "Experimental Hexplate",
+            "Edge of Night",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 19756,
+          "rune": "Lethal Tempo (sustained avg)",
+          "totalDPS": 453.25322342231624,
+          "sustainedDPS": 538.191950360378,
+          "comboDPS": 383.75790138208396,
+          "autoAttackDPS": 224.58888888888887,
+          "onHitDPS": 68.73545938962963,
+          "abilityDPS": 244.86760208185947,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Target resistances: 50 armor (74.1% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 303.2 DPS (150.0 AD * 1.25 crit * 1.62 AS)",
+            "Magic on-hit: +45.0",
+            "Rune (Lethal Tempo bolt, sustained): +16.9 per hit",
+            "On-hit total: 100.1 DPS (61.9 * 1.62 AS)",
+            "Steel Tempest: 238.2 DPS (278 dmg / 1.4s CD)",
+            "Steel Tempest: rotation weight ×1.20 (Yasuo)",
+            "Sweeping Blade: 93.0 DPS (130 dmg / 1.4s CD)",
+            "Last Breath: 8.7 DPS (725 dmg / 50.0s CD)",
+            "Last Breath: rotation weight ×0.60 (Yasuo)",
+            "Sustained (rotation): 538.2 DPS",
+            "Combo (3s window): 1151 total → 383.8 DPS"
+          ],
+          "buildType": "tank · On-Hit/Tank"
         },
         {
           "champion": "Yasuo",
@@ -15583,8 +15856,8 @@
         {
           "champion": "Ezreal",
           "items": [
-            "Kraken Slayer (Base)",
             "Infinity Edge",
+            "Kraken Slayer (Base)",
             "Phantom Dancer",
             "The Collector",
             "Voltaic Cyclosword",
@@ -15663,8 +15936,8 @@
         {
           "champion": "Ezreal",
           "items": [
-            "Actualizer",
             "Muramana (Ranged)",
+            "Actualizer",
             "Rod of Ages",
             "Spear of Shojin (Base)",
             "Heartsteel",
@@ -15711,8 +15984,8 @@
           "champion": "Lucian",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
@@ -15750,8 +16023,8 @@
           "items": [
             "Infinity Edge",
             "Stormrazor (Ranged)",
-            "Phantom Dancer",
             "The Collector",
+            "Phantom Dancer",
             "Voltaic Cyclosword",
             "Bastionbreaker"
           ],
@@ -15824,10 +16097,48 @@
         {
           "champion": "Lucian",
           "items": [
+            "Kraken Slayer (Base)",
+            "Navori Flickerblade",
+            "Chempunk Chainsword",
+            "Edge of Night",
+            "Dead Man's Plate",
+            "Warmog's Armor"
+          ],
+          "totalGold": 19688,
+          "rune": "Hail of Blades",
+          "totalDPS": 435.25173004613634,
+          "sustainedDPS": 585.5359105369103,
+          "comboDPS": 312.29194600823047,
+          "autoAttackDPS": 248.11111111111114,
+          "onHitDPS": 129.43990123456786,
+          "abilityDPS": 207.9848981912313,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Kraken (every 3rd AA): ~81.3 DPS (182 dmg, 30% missing-HP bonus)",
+            "Dead Man's Plate: +69.8 avg on-hit (50% Momentum)",
+            "Target resistances: 50 armor (74.1% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 335.0 DPS (200.0 AD * 1.25 crit * 1.34 AS)",
+            "Item mechanics on-hit (phys): +130.4",
+            "On-hit total: 174.7 DPS (130.4 * 1.34 AS)",
+            "Piercing Light: 202.7 DPS (360 dmg / 1.7s CD)",
+            "Piercing Light: rotation weight ×0.95 (Lucian)",
+            "Ardent Blaze: 86.1 DPS (205 dmg / 1.3s CD)",
+            "Ardent Blaze: rotation weight ×0.55 (Lucian)",
+            "The Culling: 0.5 DPS (95 dmg / 78.3s CD)",
+            "The Culling: rotation weight ×0.45 (Lucian)",
+            "Sustained (rotation): 585.5 DPS",
+            "Combo (3s window): 937 total → 312.3 DPS"
+          ],
+          "buildType": "tank · Tank/Lethality"
+        },
+        {
+          "champion": "Lucian",
+          "items": [
             "Spear of Shojin (Base)",
             "Black Cleaver",
-            "Chempunk Chainsword",
             "Axiom Arc",
+            "Chempunk Chainsword",
             "Bastionbreaker",
             "Warmog's Armor"
           ],
@@ -15859,43 +16170,6 @@
             "Combo (3s window): 541 total → 180.2 DPS"
           ],
           "buildType": "spell · Lethality"
-        },
-        {
-          "champion": "Lucian",
-          "items": [
-            "Spear of Shojin (Base)",
-            "Umbral Glaive (Base)",
-            "Serylda's Grudge",
-            "Edge of Night",
-            "Abyssal Mask",
-            "Warmog's Armor"
-          ],
-          "totalGold": 20338,
-          "rune": "Summon Aery",
-          "totalDPS": 198.3820745260741,
-          "sustainedDPS": 216.94177700444445,
-          "comboDPS": 183.19686340740745,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 216.94177700444445,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Spear of Shojin Focus: +3.2% damage (~26% stacks)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (260.0 AD * 1.00 crit * 0.64 AS)",
-            "Piercing Light: 135.7 DPS (420 dmg / 2.9s CD)",
-            "Piercing Light: rotation weight ×0.95 (Lucian)",
-            "Ardent Blaze: 19.2 DPS (205 dmg / 5.9s CD)",
-            "Ardent Blaze: rotation weight ×0.55 (Lucian)",
-            "The Culling: 0.8 DPS (110 dmg / 62.1s CD)",
-            "The Culling: rotation weight ×0.45 (Lucian)",
-            "Rune (ability): 59.5 DPS (70 / 1.2s)",
-            "Damage multipliers: 103.2% (1.03 * 1.00 * 1.00)",
-            "Sustained (rotation): 216.9 DPS",
-            "Combo (3s window): 550 total → 183.2 DPS"
-          ],
-          "buildType": "spell · Lethality/Tank"
         }
       ]
     },
@@ -15944,8 +16218,8 @@
             "Hextech Gunblade",
             "Rabadon's Deathcap",
             "Stormsurge",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -16097,8 +16371,8 @@
             "Muramana (Melee)",
             "Actualizer",
             "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
+            "Umbral Glaive (Base)",
+            "Bastionbreaker"
           ],
           "totalGold": 19964,
           "rune": "Conqueror",
@@ -16133,8 +16407,8 @@
           "items": [
             "Spear of Shojin (Base)",
             "Maw of Malmortius (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Bastionbreaker",
             "Warmog's Armor"
           ],
@@ -16316,8 +16590,8 @@
         {
           "champion": "Taliyah",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -16354,8 +16628,8 @@
           "champion": "Taliyah",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -16432,8 +16706,8 @@
           "champion": "Leona",
           "items": [
             "Hextech Gunblade",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -16470,10 +16744,10 @@
           "champion": "Leona",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
+            "Stormsurge",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -16659,8 +16933,8 @@
         {
           "champion": "Veigar",
           "items": [
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor",
@@ -16695,12 +16969,12 @@
         {
           "champion": "Veigar",
           "items": [
+            "Hextech Gunblade",
             "Stormsurge",
             "Actualizer",
-            "Hextech Gunblade",
             "Rabadon's Deathcap",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -16737,8 +17011,8 @@
           "champion": "Gangplank",
           "items": [
             "Voltaic Cyclosword",
-            "Umbral Glaive (Base)",
             "Dead Man's Plate",
+            "Umbral Glaive (Base)",
             "Edge of Night",
             "Heartsteel",
             "Warmog's Armor"
@@ -16854,130 +17128,14 @@
       ]
     },
     {
-      "champion": "Morgana",
-      "builds": [
-        {
-          "champion": "Morgana",
-          "items": [
-            "Navori Flickerblade",
-            "Kraken Slayer (Base)",
-            "Nashor's Tooth",
-            "Riftmaker",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 20227,
-          "rune": "Hail of Blades",
-          "totalDPS": 525.6482477561422,
-          "sustainedDPS": 678.3683744735259,
-          "comboDPS": 400.69541680555545,
-          "autoAttackDPS": 146.07125,
-          "onHitDPS": 122.32575333333332,
-          "abilityDPS": 409.9713711401926,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Kraken (every 3rd AA): ~98.6 DPS (182 dmg, 30% missing-HP bonus)",
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 205.2 DPS (101.0 AD * 1.25 crit * 1.63 AS)",
-            "Magic on-hit: +15.0",
-            "Magic on-hit (AP): +30.1",
-            "Item mechanics on-hit (phys): +60.7",
-            "On-hit total: 171.8 DPS (105.7 * 1.63 AS)",
-            "Dark Binding: 476.2 DPS (480 dmg / 1.0s CD)",
-            "Tormented Shadow: 91.7 DPS (110 dmg / 1.2s CD)",
-            "Soul Shackles: 7.9 DPS (485 dmg / 61.5s CD)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 678.4 DPS",
-            "Combo (3s window): 1202 total → 400.7 DPS"
-          ],
-          "buildType": "balanced · On-Hit/AP"
-        },
-        {
-          "champion": "Morgana",
-          "items": [
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Rabadon's Deathcap",
-            "Actualizer",
-            "Shadowflame",
-            "Void Staff"
-          ],
-          "totalGold": 20714,
-          "rune": "Press the Attack",
-          "totalDPS": 893.3875669777777,
-          "sustainedDPS": 282.27277599999996,
-          "comboDPS": 1393.3905777777775,
-          "autoAttackDPS": 42.666666666666664,
-          "onHitDPS": 0,
-          "abilityDPS": 239.6061093333333,
-          "dotDPS": 0,
-          "burstDPS": 460.5492266666666,
-          "breakdown": [
-            "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
-            "Hextech Gunblade active: 827 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 60.0 DPS (96.0 AD * 1.00 crit * 0.63 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Dark Binding: 109.6 DPS (996 dmg / 9.1s CD)",
-            "Tormented Shadow: 20.6 DPS (225 dmg / 10.9s CD)",
-            "Soul Shackles: 13.0 DPS (944 dmg / 72.7s CD)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 282.3 DPS",
-            "Combo (3s window): 4180 total → 1393.4 DPS",
-            "Item burst in combo: 1382 (460.5 DPS if spread)"
-          ],
-          "buildType": "glass · AP"
-        },
-        {
-          "champion": "Morgana",
-          "items": [
-            "Hextech Gunblade",
-            "Morellonomicon",
-            "Hextech Rocketbelt",
-            "Riftmaker",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 21205,
-          "rune": "Press the Attack",
-          "totalDPS": 421.2091796108642,
-          "sustainedDPS": 163.99465410370368,
-          "comboDPS": 631.6574277530865,
-          "autoAttackDPS": 45.568,
-          "onHitDPS": 0,
-          "abilityDPS": 118.4266541037037,
-          "dotDPS": 0,
-          "burstDPS": 216.43337323456794,
-          "breakdown": [
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Rocketbelt active: 289 magic (combo)",
-            "Hextech Gunblade active: 480 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
-            "Base AA: 60.0 DPS (96.0 AD * 1.00 crit * 0.63 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Dark Binding: 84.8 DPS (628 dmg / 7.4s CD)",
-            "Tormented Shadow: 16.1 DPS (143 dmg / 8.9s CD)",
-            "Soul Shackles: 10.4 DPS (617 dmg / 59.3s CD)",
-            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 164.0 DPS",
-            "Combo (3s window): 1895 total → 631.7 DPS",
-            "Item burst in combo: 649 (216.4 DPS if spread)"
-          ],
-          "buildType": "tank · AP"
-        }
-      ]
-    },
-    {
       "champion": "Zyra",
       "builds": [
         {
           "champion": "Zyra",
           "items": [
             "Hextech Gunblade",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -17013,8 +17171,8 @@
           "champion": "Zyra",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -17092,9 +17250,9 @@
         {
           "champion": "Pantheon",
           "items": [
+            "Infinity Edge",
             "Actualizer",
             "Muramana (Melee)",
-            "Infinity Edge",
             "Hubris",
             "Voltaic Cyclosword",
             "Umbral Glaive (Base)"
@@ -17137,8 +17295,8 @@
         {
           "champion": "Pantheon",
           "items": [
-            "Actualizer",
             "Muramana (Melee)",
+            "Actualizer",
             "Spear of Shojin (Base)",
             "Bastionbreaker",
             "Heartsteel",
@@ -17261,8 +17419,8 @@
           "champion": "Nasus",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Blade of the Ruined King (Melee)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Warmog's Armor",
             "Heartsteel"
@@ -17300,8 +17458,8 @@
           "champion": "Nasus",
           "items": [
             "Hextech Gunblade",
-            "Hextech Rocketbelt",
             "Stormsurge",
+            "Hextech Rocketbelt",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor"
@@ -17346,8 +17504,8 @@
           "champion": "Heimerdinger",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
@@ -17382,8 +17540,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Shadowflame",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -17576,8 +17734,8 @@
         {
           "champion": "Hwei",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -17775,12 +17933,12 @@
         {
           "champion": "Ashe",
           "items": [
+            "Eclipse",
             "Actualizer",
             "Muramana (Ranged)",
-            "Eclipse",
             "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
+            "Umbral Glaive (Base)",
+            "Bastionbreaker"
           ],
           "totalGold": 19964,
           "rune": "Conqueror",
@@ -17843,160 +18001,6 @@
             "Combo (3s window): 479 total → 159.6 DPS"
           ],
           "buildType": "spell · Lethality"
-        }
-      ]
-    },
-    {
-      "champion": "Bard",
-      "builds": [
-        {
-          "champion": "Bard",
-          "items": [
-            "Kraken Slayer (Base)",
-            "Navori Flickerblade",
-            "Wit's End",
-            "Experimental Hexplate",
-            "Titanic Hydra (Base)",
-            "Warmog's Armor"
-          ],
-          "totalGold": 20589,
-          "rune": "Hail of Blades",
-          "totalDPS": 508.61651065176005,
-          "sustainedDPS": 694.6124839586439,
-          "comboDPS": 356.4379870370369,
-          "autoAttackDPS": 271.754,
-          "onHitDPS": 236.9531111111111,
-          "abilityDPS": 185.90537284753282,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Kraken (every 3rd AA): ~111.8 DPS (182 dmg, 30% missing-HP bonus)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 407.6 DPS (177.0 AD * 1.25 crit * 1.84 AS)",
-            "Physical on-hit (target max HP): +15.0",
-            "Magic on-hit: +45.0",
-            "Item mechanics on-hit (phys): +60.7",
-            "Traveler's Call: +72.3 on-hit (×0.85 sustained)",
-            "On-hit total: 355.4 DPS (192.9 * 1.84 AS)",
-            "Cosmic Binding: 278.9 DPS (240 dmg / 0.9s CD)",
-            "Sustained (rotation): 694.6 DPS",
-            "Combo (3s window): 1069 total → 356.4 DPS"
-          ],
-          "buildType": "balanced · On-Hit/Tank"
-        },
-        {
-          "champion": "Bard",
-          "items": [
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Rabadon's Deathcap",
-            "Nashor's Tooth",
-            "Shadowflame",
-            "Void Staff"
-          ],
-          "totalGold": 20944,
-          "rune": "Press the Attack",
-          "totalDPS": 893.4856618988888,
-          "sustainedDPS": 747.207856,
-          "comboDPS": 1013.1675030888888,
-          "autoAttackDPS": 64.57173333333333,
-          "onHitDPS": 484.17745600000006,
-          "abilityDPS": 198.45866666666672,
-          "dotDPS": 0,
-          "burstDPS": 384.5511111111111,
-          "breakdown": [
-            "Stormsurge: ~17.7 DPS (265 magic / 15s ICD)",
-            "Hextech Gunblade active: 816 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 90.8 DPS (92.0 AD * 1.00 crit * 0.99 AS)",
-            "Magic on-hit: +15.0",
-            "Magic on-hit (AP): +114.1",
-            "Traveler's Call: +330.8 on-hit (×0.85 sustained)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 453.9 DPS (459.9 * 0.99 AS)",
-            "Cosmic Binding: 139.4 DPS (848 dmg / 6.1s CD)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 747.2 DPS",
-            "Combo (3s window): 3040 total → 1013.2 DPS",
-            "Item burst in combo: 1154 (384.6 DPS if spread)"
-          ],
-          "buildType": "glass · AP"
-        },
-        {
-          "champion": "Bard",
-          "items": [
-            "Kraken Slayer (Base)",
-            "Navori Flickerblade",
-            "Nashor's Tooth",
-            "Riftmaker",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 20227,
-          "rune": "Lethal Tempo (sustained avg)",
-          "totalDPS": 506.71506874406737,
-          "sustainedDPS": 679.5476075067727,
-          "comboDPS": 365.30662793821756,
-          "autoAttackDPS": 143.14895280000002,
-          "onHitDPS": 310.496945837568,
-          "abilityDPS": 225.9017088692047,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Kraken (every 3rd AA): ~100.6 DPS (182 dmg, 30% missing-HP bonus)",
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 201.1 DPS (97.0 AD * 1.25 crit * 1.66 AS)",
-            "Magic on-hit: +15.0",
-            "Magic on-hit (AP): +30.1",
-            "Item mechanics on-hit (phys): +60.7",
-            "Traveler's Call: +140.4 on-hit (×0.85 sustained)",
-            "Rune (Lethal Tempo bolt, sustained): +16.9 per hit",
-            "On-hit total: 436.1 DPS (263.0 * 1.66 AS)",
-            "Cosmic Binding: 317.3 DPS (400 dmg / 1.3s CD)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 679.5 DPS",
-            "Combo (3s window): 1096 total → 365.3 DPS"
-          ],
-          "buildType": "tank · On-Hit/AP"
-        },
-        {
-          "champion": "Bard",
-          "items": [
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Hextech Rocketbelt",
-            "Morellonomicon",
-            "Riftmaker",
-            "Warmog's Armor"
-          ],
-          "totalGold": 21304,
-          "rune": "Summon Aery",
-          "totalDPS": 337.0365972976191,
-          "sustainedDPS": 157.2988754761905,
-          "comboDPS": 484.09473333333335,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 157.2988754761905,
-          "dotDPS": 0,
-          "burstDPS": 309.7022,
-          "breakdown": [
-            "Stormsurge: ~12.2 DPS (184 magic / 15s ICD)",
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Rocketbelt active: 321 magic (combo)",
-            "Hextech Gunblade active: 540 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (83.3% magic dmg)",
-            "Base AA: 0.0 DPS (92.0 AD * 1.00 crit * 0.66 AS)",
-            "Traveler's Call: +220.1 on-hit (×0.85 sustained)",
-            "On-hit total: 0.0 DPS (220.1 * 0.00 AS)",
-            "Cosmic Binding: 113.4 DPS (588 dmg / 5.2s CD)",
-            "Rune (ability): 51.1 DPS (76 / 1.5s)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 157.3 DPS",
-            "Combo (3s window): 1452 total → 484.1 DPS",
-            "Item burst in combo: 929 (309.7 DPS if spread)"
-          ],
-          "buildType": "spell · AP"
         }
       ]
     },
@@ -18122,13 +18126,132 @@
       ]
     },
     {
+      "champion": "Bard",
+      "builds": [
+        {
+          "champion": "Bard",
+          "items": [
+            "Kraken Slayer (Base)",
+            "Nashor's Tooth",
+            "Navori Flickerblade",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 20227,
+          "rune": "Lethal Tempo (sustained avg)",
+          "totalDPS": 506.71506874406737,
+          "sustainedDPS": 679.5476075067727,
+          "comboDPS": 365.30662793821756,
+          "autoAttackDPS": 143.14895280000002,
+          "onHitDPS": 310.496945837568,
+          "abilityDPS": 225.9017088692047,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Kraken (every 3rd AA): ~100.6 DPS (182 dmg, 30% missing-HP bonus)",
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 201.1 DPS (97.0 AD * 1.25 crit * 1.66 AS)",
+            "Magic on-hit: +15.0",
+            "Magic on-hit (AP): +30.1",
+            "Item mechanics on-hit (phys): +60.7",
+            "Traveler's Call: +140.4 on-hit (×0.85 sustained)",
+            "Rune (Lethal Tempo bolt, sustained): +16.9 per hit",
+            "On-hit total: 436.1 DPS (263.0 * 1.66 AS)",
+            "Cosmic Binding: 317.3 DPS (400 dmg / 1.3s CD)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 679.5 DPS",
+            "Combo (3s window): 1096 total → 365.3 DPS"
+          ],
+          "buildType": "balanced · On-Hit/AP"
+        },
+        {
+          "champion": "Bard",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Rabadon's Deathcap",
+            "Shadowflame",
+            "Nashor's Tooth",
+            "Void Staff"
+          ],
+          "totalGold": 20944,
+          "rune": "Press the Attack",
+          "totalDPS": 893.4856618988888,
+          "sustainedDPS": 747.207856,
+          "comboDPS": 1013.1675030888888,
+          "autoAttackDPS": 64.57173333333333,
+          "onHitDPS": 484.17745600000006,
+          "abilityDPS": 198.45866666666672,
+          "dotDPS": 0,
+          "burstDPS": 384.5511111111111,
+          "breakdown": [
+            "Stormsurge: ~17.7 DPS (265 magic / 15s ICD)",
+            "Hextech Gunblade active: 816 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
+            "Base AA: 90.8 DPS (92.0 AD * 1.00 crit * 0.99 AS)",
+            "Magic on-hit: +15.0",
+            "Magic on-hit (AP): +114.1",
+            "Traveler's Call: +330.8 on-hit (×0.85 sustained)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 453.9 DPS (459.9 * 0.99 AS)",
+            "Cosmic Binding: 139.4 DPS (848 dmg / 6.1s CD)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 747.2 DPS",
+            "Combo (3s window): 3040 total → 1013.2 DPS",
+            "Item burst in combo: 1154 (384.6 DPS if spread)"
+          ],
+          "buildType": "glass · AP"
+        },
+        {
+          "champion": "Bard",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Hextech Rocketbelt",
+            "Morellonomicon",
+            "Riftmaker",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21304,
+          "rune": "Summon Aery",
+          "totalDPS": 337.0365972976191,
+          "sustainedDPS": 157.2988754761905,
+          "comboDPS": 484.09473333333335,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 157.2988754761905,
+          "dotDPS": 0,
+          "burstDPS": 309.7022,
+          "breakdown": [
+            "Stormsurge: ~12.2 DPS (184 magic / 15s ICD)",
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Rocketbelt active: 321 magic (combo)",
+            "Hextech Gunblade active: 540 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (83.3% magic dmg)",
+            "Base AA: 0.0 DPS (92.0 AD * 1.00 crit * 0.66 AS)",
+            "Traveler's Call: +220.1 on-hit (×0.85 sustained)",
+            "On-hit total: 0.0 DPS (220.1 * 0.00 AS)",
+            "Cosmic Binding: 113.4 DPS (588 dmg / 5.2s CD)",
+            "Rune (ability): 51.1 DPS (76 / 1.5s)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 157.3 DPS",
+            "Combo (3s window): 1452 total → 484.1 DPS",
+            "Item burst in combo: 929 (309.7 DPS if spread)"
+          ],
+          "buildType": "spell · AP"
+        }
+      ]
+    },
+    {
       "champion": "Nidalee",
       "builds": [
         {
           "champion": "Nidalee",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Wit's End",
             "Titanic Hydra (Base)",
             "Heartsteel",
@@ -18168,8 +18291,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -18365,8 +18488,8 @@
         {
           "champion": "Karma",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -18471,144 +18594,117 @@
       ]
     },
     {
-      "champion": "Milio",
+      "champion": "Morgana",
       "builds": [
         {
-          "champion": "Milio",
+          "champion": "Morgana",
           "items": [
             "Kraken Slayer (Base)",
             "Navori Flickerblade",
-            "Infinity Edge",
             "Experimental Hexplate",
+            "Riftmaker",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
           ],
-          "totalGold": 20719,
+          "totalGold": 20859,
           "rune": "Hail of Blades",
-          "totalDPS": 496.48408969907405,
-          "sustainedDPS": 677.9972222222221,
-          "comboDPS": 347.9733449074074,
-          "autoAttackDPS": 392.15,
-          "onHitDPS": 72.51388888888887,
-          "abilityDPS": 213.33333333333331,
+          "totalDPS": 495.3663814964624,
+          "sustainedDPS": 626.4263257529412,
+          "comboDPS": 388.1355180138889,
+          "autoAttackDPS": 231.566875,
+          "onHitDPS": 77.44483333333332,
+          "abilityDPS": 317.41461741960785,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
             "Kraken (every 3rd AA): ~87.2 DPS (182 dmg, 30% missing-HP bonus)",
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
             "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 588.2 DPS (248.0 AD * 1.65 crit * 1.44 AS)",
+            "Base AA: 325.2 DPS (181.0 AD * 1.25 crit * 1.44 AS)",
             "Physical on-hit (target max HP): +15.0",
             "Item mechanics on-hit (phys): +60.7",
             "On-hit total: 108.8 DPS (75.7 * 1.44 AS)",
-            "Ultra Mega Fire Kick: 320.0 DPS (320 dmg / 1.0s CD)",
-            "Sustained (rotation): 678.0 DPS",
-            "Combo (3s window): 1044 total → 348.0 DPS"
+            "Dark Binding: 360.8 DPS (411 dmg / 1.1s CD)",
+            "Tormented Shadow: 79.0 DPS (95 dmg / 1.2s CD)",
+            "Soul Shackles: 6.1 DPS (424 dmg / 69.6s CD)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 626.4 DPS",
+            "Combo (3s window): 1164 total → 388.1 DPS"
           ],
-          "buildType": "balanced · Crit/On-Hit"
+          "buildType": "balanced · On-Hit/Crit"
         },
         {
-          "champion": "Milio",
+          "champion": "Morgana",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
-          "totalDPS": 677.424005957037,
-          "sustainedDPS": 271.5880776,
-          "comboDPS": 1009.4715837037037,
-          "autoAttackDPS": 39.11111111111111,
+          "totalDPS": 893.3875669777777,
+          "sustainedDPS": 282.27277599999996,
+          "comboDPS": 1393.3905777777775,
+          "autoAttackDPS": 42.666666666666664,
           "onHitDPS": 0,
-          "abilityDPS": 232.4769664888889,
+          "abilityDPS": 239.6061093333333,
           "dotDPS": 0,
-          "burstDPS": 461.0362711111111,
+          "burstDPS": 460.5492266666666,
           "breakdown": [
             "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
             "Hextech Gunblade active: 827 magic (combo)",
             "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 55.0 DPS (88.0 AD * 1.00 crit * 0.63 AS)",
+            "Base AA: 60.0 DPS (96.0 AD * 1.00 crit * 0.63 AS)",
             "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Ultra Mega Fire Kick: 137.3 DPS (1248 dmg / 9.1s CD)",
+            "Dark Binding: 109.6 DPS (996 dmg / 9.1s CD)",
+            "Tormented Shadow: 20.6 DPS (225 dmg / 10.9s CD)",
+            "Soul Shackles: 13.0 DPS (944 dmg / 72.7s CD)",
             "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 271.6 DPS",
-            "Combo (3s window): 3028 total → 1009.5 DPS",
-            "Item burst in combo: 1383 (461.0 DPS if spread)"
+            "Sustained (rotation): 282.3 DPS",
+            "Combo (3s window): 4180 total → 1393.4 DPS",
+            "Item burst in combo: 1382 (460.5 DPS if spread)"
           ],
           "buildType": "glass · AP"
         },
         {
-          "champion": "Milio",
-          "items": [
-            "Navori Flickerblade",
-            "Nashor's Tooth",
-            "Hextech Gunblade",
-            "Experimental Hexplate",
-            "Rod of Ages",
-            "Warmog's Armor"
-          ],
-          "totalGold": 20954,
-          "rune": "Hail of Blades",
-          "totalDPS": 448.5138410184877,
-          "sustainedDPS": 589.1896081275037,
-          "comboDPS": 333.41548611111114,
-          "autoAttackDPS": 160,
-          "onHitDPS": 49.35,
-          "abilityDPS": 379.8396081275037,
-          "dotDPS": 0,
-          "burstDPS": 76.5,
-          "breakdown": [
-            "Hextech Gunblade active: 344 magic (combo)",
-            "Rod of Ages: +24 AP, +80 HP, +240 mana (~80% stacks)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 240.0 DPS (128.0 AD * 1.25 crit * 1.50 AS)",
-            "Magic on-hit: +15.0",
-            "Magic on-hit (AP): +34.4",
-            "On-hit total: 74.0 DPS (49.4 * 1.50 AS)",
-            "Ultra Mega Fire Kick: 569.8 DPS (595 dmg / 1.0s CD)",
-            "Sustained (rotation): 589.2 DPS",
-            "Combo (3s window): 1000 total → 333.4 DPS",
-            "Item burst in combo: 230 (76.5 DPS if spread)"
-          ],
-          "buildType": "ap · On-Hit/AP"
-        },
-        {
-          "champion": "Milio",
+          "champion": "Morgana",
           "items": [
             "Hextech Gunblade",
             "Hextech Rocketbelt",
-            "Rabadon's Deathcap",
             "Morellonomicon",
             "Riftmaker",
-            "Warmog's Armor"
+            "Warmog's Armor",
+            "Heartsteel"
           ],
-          "totalGold": 21675,
-          "rune": "Summon Aery",
-          "totalDPS": 384.37343350962965,
-          "sustainedDPS": 158.59778640000002,
-          "comboDPS": 569.098962962963,
-          "autoAttackDPS": 0,
+          "totalGold": 21205,
+          "rune": "Press the Attack",
+          "totalDPS": 421.2091796108642,
+          "sustainedDPS": 163.99465410370368,
+          "comboDPS": 631.6574277530865,
+          "autoAttackDPS": 45.568,
           "onHitDPS": 0,
-          "abilityDPS": 158.59778640000002,
+          "abilityDPS": 118.4266541037037,
           "dotDPS": 0,
-          "burstDPS": 289.39160888888887,
+          "burstDPS": 216.43337323456794,
           "breakdown": [
             "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Rocketbelt active: 403 magic (combo)",
-            "Hextech Gunblade active: 695 magic (combo)",
+            "Hextech Rocketbelt active: 289 magic (combo)",
+            "Hextech Gunblade active: 480 magic (combo)",
             "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
-            "Base AA: 0.0 DPS (88.0 AD * 1.00 crit * 0.63 AS)",
-            "Ultra Mega Fire Kick: 143.2 DPS (1061 dmg / 7.4s CD)",
-            "Rune (ability): 57.3 DPS (85 / 1.5s)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 158.6 DPS",
-            "Combo (3s window): 1707 total → 569.1 DPS",
-            "Item burst in combo: 868 (289.4 DPS if spread)"
+            "Base AA: 60.0 DPS (96.0 AD * 1.00 crit * 0.63 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Dark Binding: 84.8 DPS (628 dmg / 7.4s CD)",
+            "Tormented Shadow: 16.1 DPS (143 dmg / 8.9s CD)",
+            "Soul Shackles: 10.4 DPS (617 dmg / 59.3s CD)",
+            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 164.0 DPS",
+            "Combo (3s window): 1895 total → 631.7 DPS",
+            "Item burst in combo: 649 (216.4 DPS if spread)"
           ],
-          "buildType": "spell · AP"
+          "buildType": "tank · AP"
         }
       ]
     },
@@ -18729,6 +18825,43 @@
             "Sustained (rotation): 157.7 DPS",
             "Combo (3s window): 867 total → 289.0 DPS",
             "Item burst in combo: 47 (15.5 DPS if spread)"
+          ],
+          "buildType": "ability_burst · Lethality"
+        },
+        {
+          "champion": "Garen",
+          "items": [
+            "Eclipse",
+            "Spectral Cutlass",
+            "Endless Hunger",
+            "Axiom Arc",
+            "Profane Hydra (Melee)",
+            "Youmuu's Ghostblade"
+          ],
+          "totalGold": 18382,
+          "rune": "Conqueror",
+          "totalDPS": 206.2344941666667,
+          "sustainedDPS": 127.65028333333335,
+          "comboDPS": 270.5306666666667,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 127.65028333333335,
+          "dotDPS": 0,
+          "burstDPS": 15,
+          "breakdown": [
+            "Axiom Arc: ~25% ult CD refund on takedown (second R in long fights)",
+            "Eclipse Everrising: ~11.0 DPS (45 per 2-hit proc, 4s cadence)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (416.0 AD * 1.00 crit * 0.63 AS)",
+            "Decisive Strike: 57.3 DPS (358 dmg / 5.0s CD)",
+            "Decisive Strike: rotation weight ×0.80 (Garen)",
+            "Judgment: 53.4 DPS (174 dmg / 3.8s CD)",
+            "Judgment: rotation weight ×1.15 (Garen)",
+            "Demacian Justice: 6.0 DPS (560 dmg / 46.4s CD)",
+            "Demacian Justice: rotation weight ×0.50 (Garen)",
+            "Sustained (rotation): 127.7 DPS",
+            "Combo (3s window): 812 total → 270.5 DPS",
+            "Item burst in combo: 45 (15.0 DPS if spread)"
           ],
           "buildType": "ability_burst · Lethality"
         },
@@ -18959,8 +19092,8 @@
           "items": [
             "Kraken Slayer (Base)",
             "Infinity Edge",
-            "The Collector",
             "Phantom Dancer",
+            "The Collector",
             "Voltaic Cyclosword",
             "Bastionbreaker"
           ],
@@ -18993,8 +19126,8 @@
           "champion": "Illaoi",
           "items": [
             "Eclipse",
-            "Actualizer",
             "Muramana (Melee)",
+            "Actualizer",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -19058,6 +19191,42 @@
             "Item burst in combo: 45 (15.1 DPS if spread)"
           ],
           "buildType": "spell · Lethality"
+        },
+        {
+          "champion": "Illaoi",
+          "items": [
+            "Kraken Slayer (Base)",
+            "Infinity Edge",
+            "Stormrazor (Melee)",
+            "The Collector",
+            "Heartsteel",
+            "Warmog's Armor"
+          ],
+          "totalGold": 20731,
+          "rune": "Hail of Blades",
+          "totalDPS": 548.0515864158162,
+          "sustainedDPS": 606.7813031462584,
+          "comboDPS": 500,
+          "autoAttackDPS": 477.43861607142856,
+          "onHitDPS": 73.82291666666667,
+          "abilityDPS": 55.51977040816327,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Kraken (every 3rd AA): ~90.1 DPS (228 dmg, 30% missing-HP bonus)",
+            "Stormrazor Bolt: +14.3 DPS (12.0 magic per AA, 100 energize)",
+            "Target resistances: 50 armor (71.4% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 668.4 DPS (285.0 AD * 1.98 crit * 1.19 AS)",
+            "Item mechanics on-hit (phys): +75.8",
+            "Item mechanics on-hit (magic): +12.0",
+            "On-hit total: 104.3 DPS (87.8 * 1.19 AS)",
+            "Harsh Lesson: 71.2 DPS (285 dmg / 4.0s CD)",
+            "Leap of Faith: 6.6 DPS (460 dmg / 70.0s CD)",
+            "Sustained (rotation): 606.8 DPS",
+            "Combo (3s window): 1428 total → 475.9 DPS",
+            "Collector execute (Death): +72 vs 1500 HP (≤5% max HP)"
+          ],
+          "buildType": "bruiser · Crit"
         }
       ]
     },
@@ -19067,8 +19236,8 @@
         {
           "champion": "Lulu",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Wit's End",
             "Titanic Hydra (Base)",
             "Heartsteel",
@@ -19181,184 +19350,13 @@
       ]
     },
     {
-      "champion": "Jinx",
-      "builds": [
-        {
-          "champion": "Jinx",
-          "items": [
-            "Maw of Malmortius (Base)",
-            "Spear of Shojin (Base)",
-            "Bastionbreaker",
-            "Edge of Night",
-            "Dead Man's Plate",
-            "Warmog's Armor"
-          ],
-          "totalGold": 20388,
-          "rune": "Press the Attack",
-          "totalDPS": 482.80492446384415,
-          "sustainedDPS": 660.600005748192,
-          "comboDPS": 337.33622159483235,
-          "autoAttackDPS": 164.19580137659787,
-          "onHitDPS": 94.30576696165193,
-          "abilityDPS": 402.09843740994216,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Spear of Shojin Focus: +3.5% damage (~29% stacks)",
-            "Dead Man's Plate: +154.5 avg on-hit (50% Momentum)",
-            "Target resistances: 50 armor (88.5% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 168.1 DPS (269.0 AD * 1.00 crit * 0.63 AS)",
-            "Item mechanics on-hit (phys): +154.5",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 96.6 DPS (154.5 * 0.63 AS)",
-            "Switcheroo!: 263.0 DPS (296 dmg / 0.9s CD)",
-            "Switcheroo!: rotation weight ×0.80 (Jinx)",
-            "Zap!: 102.3 DPS (587 dmg / 2.6s CD)",
-            "Zap!: rotation weight ×0.45 (Jinx)",
-            "Flame Chompers!: 15.7 DPS (290 dmg / 6.5s CD)",
-            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
-            "Super Mega Death Rocket!: 5.6 DPS (962 dmg / 34.6s CD)",
-            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
-            "Damage multipliers: 110.4% (1.03 * 1.00 * 1.00)",
-            "Sustained (rotation): 660.6 DPS",
-            "Combo (3s window): 1012 total → 337.3 DPS"
-          ],
-          "buildType": "balanced · Lethality/Tank"
-        },
-        {
-          "champion": "Jinx",
-          "items": [
-            "Infinity Edge",
-            "Stormrazor (Ranged)",
-            "The Collector",
-            "Phantom Dancer",
-            "Voltaic Cyclosword",
-            "Bastionbreaker"
-          ],
-          "totalGold": 20760,
-          "rune": "Hail of Blades",
-          "totalDPS": 1071.601203515625,
-          "sustainedDPS": 1561.0322916666664,
-          "comboDPS": 671.1575859375,
-          "autoAttackDPS": 1063.175,
-          "onHitDPS": 49.94270833333333,
-          "abilityDPS": 447.9145833333333,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Stormrazor Bolt: +16.1 DPS (12.0 magic per AA, 100 energize)",
-            "Voltaic Cyclosword: +58.8 DPS (44 magic / ~4 autos)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 1063.2 DPS (344.0 AD * 2.30 crit * 1.34 AS)",
-            "Item mechanics on-hit (magic): +55.8",
-            "On-hit total: 74.9 DPS (55.8 * 1.34 AS)",
-            "Switcheroo!: 336.4 DPS (378 dmg / 0.9s CD)",
-            "Switcheroo!: rotation weight ×0.80 (Jinx)",
-            "Zap!: 97.3 DPS (692 dmg / 3.2s CD)",
-            "Zap!: rotation weight ×0.45 (Jinx)",
-            "Flame Chompers!: 12.7 DPS (290 dmg / 8.0s CD)",
-            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
-            "Super Mega Death Rocket!: 5.8 DPS (1052 dmg / 36.0s CD)",
-            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
-            "Sustained (rotation): 1561.0 DPS",
-            "Combo (3s window): 2013 total → 671.2 DPS"
-          ],
-          "buildType": "glass · Crit/Lethality"
-        },
-        {
-          "champion": "Jinx",
-          "items": [
-            "Eclipse",
-            "Actualizer",
-            "Muramana (Ranged)",
-            "Hubris",
-            "Bastionbreaker",
-            "Umbral Glaive (Base)"
-          ],
-          "totalGold": 19964,
-          "rune": "Conqueror",
-          "totalDPS": 552.8859766888334,
-          "sustainedDPS": 702.2489124566667,
-          "comboDPS": 430.6799383333334,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 702.2489124566667,
-          "dotDPS": 0,
-          "burstDPS": 35.6532,
-          "breakdown": [
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Eclipse Everrising: ~11.3 DPS (45 per 2-hit proc, 4s cadence)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (376.9 AD * 1.00 crit * 0.63 AS)",
-            "Switcheroo!: 368.5 DPS (415 dmg / 0.9s CD)",
-            "Switcheroo!: rotation weight ×0.80 (Jinx)",
-            "Zap!: 149.4 DPS (738 dmg / 2.2s CD)",
-            "Zap!: rotation weight ×0.45 (Jinx)",
-            "Flame Chompers!: 23.9 DPS (380 dmg / 5.6s CD)",
-            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
-            "Super Mega Death Rocket!: 8.7 DPS (1091 dmg / 25.0s CD)",
-            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
-            "Muramana Shock: +43 phys per 2s (~21.3 DPS)",
-            "Sustained (rotation): 702.2 DPS",
-            "Combo (3s window): 1292 total → 430.7 DPS",
-            "Item burst in combo: 107 (35.7 DPS if spread)"
-          ],
-          "buildType": "ability_burst · Lethality"
-        },
-        {
-          "champion": "Jinx",
-          "items": [
-            "Spear of Shojin (Base)",
-            "Hubris",
-            "Voltaic Cyclosword",
-            "Edge of Night",
-            "Titanic Hydra (Base)",
-            "Warmog's Armor"
-          ],
-          "totalGold": 20418,
-          "rune": "Press the Attack",
-          "totalDPS": 549.04301130121,
-          "sustainedDPS": 744.9445120591358,
-          "comboDPS": 388.7599652265433,
-          "autoAttackDPS": 214.39160555555557,
-          "onHitDPS": 30.397953703703703,
-          "abilityDPS": 500.1549527998766,
-          "dotDPS": 0,
-          "burstDPS": 0,
-          "breakdown": [
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Voltaic Cyclosword: +27.3 DPS (44 magic / ~4 autos)",
-            "Spear of Shojin Focus: +3.2% damage (~27% stacks)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 194.7 DPS (311.5 AD * 1.00 crit * 0.63 AS)",
-            "Physical on-hit (target max HP): +15.0",
-            "Item mechanics on-hit (magic): +43.8",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 36.7 DPS (58.8 * 0.63 AS)",
-            "Switcheroo!: 304.6 DPS (343 dmg / 0.9s CD)",
-            "Switcheroo!: rotation weight ×0.80 (Jinx)",
-            "Zap!: 105.4 DPS (646 dmg / 2.8s CD)",
-            "Zap!: rotation weight ×0.45 (Jinx)",
-            "Flame Chompers!: 14.7 DPS (290 dmg / 6.9s CD)",
-            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
-            "Super Mega Death Rocket!: 5.4 DPS (1013 dmg / 37.5s CD)",
-            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
-            "Damage multipliers: 110.1% (1.03 * 1.00 * 1.00)",
-            "Sustained (rotation): 744.9 DPS",
-            "Combo (3s window): 1166 total → 388.8 DPS"
-          ],
-          "buildType": "ap · Lethality"
-        }
-      ]
-    },
-    {
       "champion": "Nunu & Willump",
       "builds": [
         {
           "champion": "Nunu & Willump",
           "items": [
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor",
@@ -19395,10 +19393,10 @@
           "champion": "Nunu & Willump",
           "items": [
             "Stormsurge",
-            "Shadowflame",
-            "Actualizer",
-            "Hextech Gunblade",
             "Rabadon's Deathcap",
+            "Hextech Gunblade",
+            "Actualizer",
+            "Shadowflame",
             "Void Staff"
           ],
           "totalGold": 20714,
@@ -19548,8 +19546,8 @@
           "champion": "Ivern",
           "items": [
             "Hextech Gunblade",
-            "Morellonomicon",
             "Hextech Rocketbelt",
+            "Morellonomicon",
             "Riftmaker",
             "Abyssal Mask",
             "Warmog's Armor"
@@ -19585,8 +19583,8 @@
           "champion": "Ivern",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Rabadon's Deathcap",
+            "Stormsurge",
             "Actualizer",
             "Shadowflame",
             "Void Staff"
@@ -19620,14 +19618,140 @@
       ]
     },
     {
+      "champion": "Jinx",
+      "builds": [
+        {
+          "champion": "Jinx",
+          "items": [
+            "Maw of Malmortius (Base)",
+            "Spear of Shojin (Base)",
+            "Titanic Hydra (Base)",
+            "Bastionbreaker",
+            "Edge of Night",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21309,
+          "rune": "Press the Attack",
+          "totalDPS": 478.391984779126,
+          "sustainedDPS": 647.8705651704579,
+          "comboDPS": 339.7276917316727,
+          "autoAttackDPS": 188.61153392330385,
+          "onHitDPS": 9.15589970501475,
+          "abilityDPS": 450.1031315421393,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Spear of Shojin Focus: +3.5% damage (~29% stacks)",
+            "Target resistances: 50 armor (88.5% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 193.1 DPS (309.0 AD * 1.00 crit * 0.63 AS)",
+            "Physical on-hit (target max HP): +15.0",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 9.4 DPS (15.0 * 0.63 AS)",
+            "Switcheroo!: 302.1 DPS (340 dmg / 0.9s CD)",
+            "Switcheroo!: rotation weight ×0.80 (Jinx)",
+            "Zap!: 112.1 DPS (643 dmg / 2.6s CD)",
+            "Zap!: rotation weight ×0.45 (Jinx)",
+            "Flame Chompers!: 15.7 DPS (290 dmg / 6.5s CD)",
+            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
+            "Super Mega Death Rocket!: 5.8 DPS (1010 dmg / 34.6s CD)",
+            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
+            "Damage multipliers: 110.4% (1.03 * 1.00 * 1.00)",
+            "Sustained (rotation): 647.9 DPS",
+            "Combo (3s window): 1019 total → 339.7 DPS"
+          ],
+          "buildType": "balanced · Lethality/Tank"
+        },
+        {
+          "champion": "Jinx",
+          "items": [
+            "Infinity Edge",
+            "Stormrazor (Ranged)",
+            "The Collector",
+            "Phantom Dancer",
+            "Voltaic Cyclosword",
+            "Bastionbreaker"
+          ],
+          "totalGold": 20760,
+          "rune": "Hail of Blades",
+          "totalDPS": 1071.601203515625,
+          "sustainedDPS": 1561.0322916666664,
+          "comboDPS": 671.1575859375,
+          "autoAttackDPS": 1063.175,
+          "onHitDPS": 49.94270833333333,
+          "abilityDPS": 447.9145833333333,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Stormrazor Bolt: +16.1 DPS (12.0 magic per AA, 100 energize)",
+            "Voltaic Cyclosword: +58.8 DPS (44 magic / ~4 autos)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 1063.2 DPS (344.0 AD * 2.30 crit * 1.34 AS)",
+            "Item mechanics on-hit (magic): +55.8",
+            "On-hit total: 74.9 DPS (55.8 * 1.34 AS)",
+            "Switcheroo!: 336.4 DPS (378 dmg / 0.9s CD)",
+            "Switcheroo!: rotation weight ×0.80 (Jinx)",
+            "Zap!: 97.3 DPS (692 dmg / 3.2s CD)",
+            "Zap!: rotation weight ×0.45 (Jinx)",
+            "Flame Chompers!: 12.7 DPS (290 dmg / 8.0s CD)",
+            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
+            "Super Mega Death Rocket!: 5.8 DPS (1052 dmg / 36.0s CD)",
+            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
+            "Sustained (rotation): 1561.0 DPS",
+            "Combo (3s window): 2013 total → 671.2 DPS"
+          ],
+          "buildType": "glass · Crit/Lethality"
+        },
+        {
+          "champion": "Jinx",
+          "items": [
+            "Eclipse",
+            "Muramana (Ranged)",
+            "Actualizer",
+            "Hubris",
+            "Bastionbreaker",
+            "Umbral Glaive (Base)"
+          ],
+          "totalGold": 19964,
+          "rune": "Conqueror",
+          "totalDPS": 552.8859766888334,
+          "sustainedDPS": 702.2489124566667,
+          "comboDPS": 430.6799383333334,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 702.2489124566667,
+          "dotDPS": 0,
+          "burstDPS": 35.6532,
+          "breakdown": [
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Eclipse Everrising: ~11.3 DPS (45 per 2-hit proc, 4s cadence)",
+            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
+            "Base AA: 0.0 DPS (376.9 AD * 1.00 crit * 0.63 AS)",
+            "Switcheroo!: 368.5 DPS (415 dmg / 0.9s CD)",
+            "Switcheroo!: rotation weight ×0.80 (Jinx)",
+            "Zap!: 149.4 DPS (738 dmg / 2.2s CD)",
+            "Zap!: rotation weight ×0.45 (Jinx)",
+            "Flame Chompers!: 23.9 DPS (380 dmg / 5.6s CD)",
+            "Flame Chompers!: rotation weight ×0.35 (Jinx)",
+            "Super Mega Death Rocket!: 8.7 DPS (1091 dmg / 25.0s CD)",
+            "Super Mega Death Rocket!: rotation weight ×0.20 (Jinx)",
+            "Muramana Shock: +43 phys per 2s (~21.3 DPS)",
+            "Sustained (rotation): 702.2 DPS",
+            "Combo (3s window): 1292 total → 430.7 DPS",
+            "Item burst in combo: 107 (35.7 DPS if spread)"
+          ],
+          "buildType": "ability_burst · Lethality"
+        }
+      ]
+    },
+    {
       "champion": "Janna",
       "builds": [
         {
           "champion": "Janna",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
@@ -19662,8 +19786,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Hextech Rocketbelt",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20734,
@@ -19862,8 +19986,8 @@
           "champion": "Soraka",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Infinity Edge",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Titanic Hydra (Base)",
             "Warmog's Armor"
@@ -19898,8 +20022,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Hextech Rocketbelt",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20734,
@@ -20011,8 +20135,8 @@
           "champion": "Senna",
           "items": [
             "Hextech Gunblade",
-            "Actualizer",
             "Rabadon's Deathcap",
+            "Actualizer",
             "Stormsurge",
             "Hextech Rocketbelt",
             "Luden's Echo"
@@ -20053,8 +20177,8 @@
         {
           "champion": "Swain",
           "items": [
-            "Navori Flickerblade",
             "Nashor's Tooth",
+            "Navori Flickerblade",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor",
@@ -20209,8 +20333,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Hextech Rocketbelt",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20734,
@@ -20324,8 +20448,8 @@
           "champion": "Kha'Zix",
           "items": [
             "Infinity Edge",
-            "The Collector",
             "Stormrazor (Melee)",
+            "The Collector",
             "Kraken Slayer (Base)",
             "Hubris",
             "Bastionbreaker"
@@ -20361,47 +20485,6 @@
             "Combo (3s window): 1967 total → 655.7 DPS"
           ],
           "buildType": "glass · Lethality/Crit"
-        },
-        {
-          "champion": "Kha'Zix",
-          "items": [
-            "Eclipse",
-            "The Collector",
-            "Muramana (Melee)",
-            "Actualizer",
-            "Hubris",
-            "Bastionbreaker"
-          ],
-          "totalGold": 20086,
-          "rune": "Press the Attack",
-          "totalDPS": 476.7990977056,
-          "sustainedDPS": 448.4424393457778,
-          "comboDPS": 500,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 448.4424393457778,
-          "dotDPS": 0,
-          "burstDPS": 37.29444977777778,
-          "breakdown": [
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Eclipse Everrising: ~11.3 DPS (45 per 2-hit proc, 4s cadence)",
-            "Target resistances: 50 armor (100.0% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 0.0 DPS (345.7 AD * 1.25 crit * 0.67 AS)",
-            "Rune (PTA proc): 5.8 DPS (174 / 30.00s)",
-            "Taste Their Fear: 244.7 DPS (494 dmg / 2.4s CD)",
-            "Taste Their Fear: rotation weight ×1.20 (Kha'Zix)",
-            "Void Spike: 57.3 DPS (481 dmg / 5.5s CD)",
-            "Void Spike: rotation weight ×0.65 (Kha'Zix)",
-            "Leap: 24.1 DPS (319 dmg / 7.3s CD)",
-            "Leap: rotation weight ×0.55 (Kha'Zix)",
-            "Damage multipliers: 101.3% (1.00 * 1.00 * 1.00)",
-            "Muramana Shock: +46 phys per 2s (~23.2 DPS)",
-            "Sustained (rotation): 448.4 DPS",
-            "Combo (3s window): 1435 total → 478.5 DPS",
-            "Collector execute (Death): +65 vs 1500 HP (≤5% max HP)",
-            "Item burst in combo: 112 (37.3 DPS if spread)"
-          ],
-          "buildType": "ability_burst · Lethality"
         },
         {
           "champion": "Kha'Zix",
@@ -20645,8 +20728,8 @@
             "Hextech Gunblade",
             "Stormsurge",
             "Rabadon's Deathcap",
-            "Actualizer",
             "Hextech Rocketbelt",
+            "Actualizer",
             "Void Staff"
           ],
           "totalGold": 20734,
@@ -20706,6 +20789,123 @@
             "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
             "Sustained (rotation): 194.8 DPS",
             "Combo (3s window): 1544 total → 514.8 DPS",
+            "Item burst in combo: 929 (309.7 DPS if spread)"
+          ],
+          "buildType": "spell · AP"
+        }
+      ]
+    },
+    {
+      "champion": "Elise",
+      "builds": [
+        {
+          "champion": "Elise",
+          "items": [
+            "Nashor's Tooth",
+            "Navori Flickerblade",
+            "Morellonomicon",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 20536,
+          "rune": "Hail of Blades",
+          "totalDPS": 451.4014721893587,
+          "sustainedDPS": 628.6698899487806,
+          "comboDPS": 306.36367584074077,
+          "autoAttackDPS": 67.30625,
+          "onHitDPS": 142.15797933333332,
+          "abilityDPS": 419.2056606154473,
+          "dotDPS": 0,
+          "burstDPS": 0,
+          "breakdown": [
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
+            "Base AA: 94.5 DPS (55.0 AD * 1.25 crit * 1.38 AS)",
+            "Magic on-hit: +15.0",
+            "Magic on-hit (AP): +43.2",
+            "Spider Queen: +72.5 on-hit (×0.85 sustained)",
+            "On-hit total: 179.7 DPS (130.7 * 1.38 AS)",
+            "Neurotoxin: 166.4 DPS (274 dmg / 1.6s CD)",
+            "Volatile Spiderling: 363.5 DPS (436 dmg / 1.2s CD)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 628.7 DPS",
+            "Combo (3s window): 919 total → 306.4 DPS"
+          ],
+          "buildType": "balanced · AP/On-Hit"
+        },
+        {
+          "champion": "Elise",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Rabadon's Deathcap",
+            "Shadowflame",
+            "Actualizer",
+            "Void Staff"
+          ],
+          "totalGold": 20714,
+          "rune": "Press the Attack",
+          "totalDPS": 742.2355569579723,
+          "sustainedDPS": 376.7764836266666,
+          "comboDPS": 1041.2475260472224,
+          "autoAttackDPS": 42.22222222222222,
+          "onHitDPS": 89.54749999999999,
+          "abilityDPS": 245.00676140444443,
+          "dotDPS": 0,
+          "burstDPS": 460.2375182222222,
+          "breakdown": [
+            "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
+            "Hextech Gunblade active: 827 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
+            "Base AA: 59.4 DPS (95.0 AD * 1.00 crit * 0.63 AS)",
+            "Spider Queen: +134.3 on-hit (×0.85 sustained)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 84.0 DPS (134.3 * 0.63 AS)",
+            "Neurotoxin: 74.2 DPS (405 dmg / 5.5s CD)",
+            "Volatile Spiderling: 73.3 DPS (800 dmg / 10.9s CD)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 376.8 DPS",
+            "Combo (3s window): 3124 total → 1041.2 DPS",
+            "Item burst in combo: 1381 (460.2 DPS if spread)"
+          ],
+          "buildType": "glass · AP"
+        },
+        {
+          "champion": "Elise",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Hextech Rocketbelt",
+            "Morellonomicon",
+            "Riftmaker",
+            "Warmog's Armor"
+          ],
+          "totalGold": 21304,
+          "rune": "Summon Aery",
+          "totalDPS": 388.8035747583333,
+          "sustainedDPS": 173.8361498333333,
+          "comboDPS": 564.6860133333333,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 173.8361498333333,
+          "dotDPS": 0,
+          "burstDPS": 309.7022,
+          "breakdown": [
+            "Stormsurge: ~12.2 DPS (184 magic / 15s ICD)",
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Rocketbelt active: 321 magic (combo)",
+            "Hextech Gunblade active: 540 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (83.3% magic dmg)",
+            "Base AA: 0.0 DPS (95.0 AD * 1.00 crit * 0.63 AS)",
+            "Spider Queen: +91.1 on-hit (×0.85 sustained)",
+            "On-hit total: 0.0 DPS (91.1 * 0.00 AS)",
+            "Neurotoxin: 70.5 DPS (313 dmg / 4.4s CD)",
+            "Volatile Spiderling: 61.4 DPS (546 dmg / 8.9s CD)",
+            "Rune (ability): 51.1 DPS (76 / 1.5s)",
+            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 173.8 DPS",
+            "Combo (3s window): 1694 total → 564.7 DPS",
             "Item burst in combo: 929 (309.7 DPS if spread)"
           ],
           "buildType": "spell · AP"
@@ -20831,8 +21031,8 @@
         {
           "champion": "Fiddlesticks",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
+            "Navori Flickerblade",
             "Wit's End",
             "Titanic Hydra (Base)",
             "Heartsteel",
@@ -20872,8 +21072,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -20938,7 +21138,7 @@
             "Sustained (rotation): 612.2 DPS",
             "Combo (3s window): 1009 total → 336.3 DPS"
           ],
-          "buildType": "ap · AP/On-Hit"
+          "buildType": "tank · AP/On-Hit"
         },
         {
           "champion": "Fiddlesticks",
@@ -21027,8 +21227,8 @@
             "Stormsurge",
             "Rabadon's Deathcap",
             "Actualizer",
-            "Void Staff",
-            "Shadowflame"
+            "Shadowflame",
+            "Void Staff"
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
@@ -21217,8 +21417,8 @@
           "champion": "Quinn",
           "items": [
             "Spear of Shojin (Base)",
-            "Axiom Arc",
             "Chempunk Chainsword",
+            "Axiom Arc",
             "Umbral Glaive (Base)",
             "Edge of Night",
             "Warmog's Armor"
@@ -21260,10 +21460,10 @@
           "champion": "Graves",
           "items": [
             "Experimental Hexplate",
+            "Titanic Hydra (Base)",
+            "Dead Man's Plate",
             "Bastionbreaker",
             "Edge of Night",
-            "Dead Man's Plate",
-            "Titanic Hydra (Base)",
             "Warmog's Armor"
           ],
           "totalGold": 20350,
@@ -21334,9 +21534,9 @@
         {
           "champion": "Graves",
           "items": [
+            "Eclipse",
             "Actualizer",
             "Muramana (Ranged)",
-            "Eclipse",
             "Hubris",
             "Bastionbreaker",
             "Umbral Glaive (Base)"
@@ -21404,47 +21604,44 @@
       ]
     },
     {
-      "champion": "Elise",
+      "champion": "Milio",
       "builds": [
         {
-          "champion": "Elise",
+          "champion": "Milio",
           "items": [
-            "Navori Flickerblade",
             "Kraken Slayer (Base)",
-            "Riftmaker",
+            "Navori Flickerblade",
+            "Experimental Hexplate",
             "Titanic Hydra (Base)",
-            "Warmog's Armor",
-            "Heartsteel"
+            "Dead Man's Plate",
+            "Warmog's Armor"
           ],
-          "totalGold": 20189,
+          "totalGold": 20160,
           "rune": "Hail of Blades",
-          "totalDPS": 417.3458207506352,
-          "sustainedDPS": 570.053194706944,
-          "comboDPS": 292.40342387729163,
-          "autoAttackDPS": 163.5375,
-          "onHitDPS": 120.0190187,
-          "abilityDPS": 286.4966760069441,
+          "totalDPS": 397.4823589409722,
+          "sustainedDPS": 550.6979166666665,
+          "comboDPS": 272.1241753472222,
+          "autoAttackDPS": 207.23958333333331,
+          "onHitDPS": 130.12499999999997,
+          "abilityDPS": 213.33333333333331,
           "dotDPS": 0,
           "burstDPS": 0,
           "breakdown": [
-            "Kraken (every 3rd AA): ~79.6 DPS (182 dmg, 30% missing-HP bonus)",
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Kraken (every 3rd AA): ~87.2 DPS (182 dmg, 30% missing-HP bonus)",
+            "Dead Man's Plate: +60.1 avg on-hit (50% Momentum)",
             "Target resistances: 50 armor (66.7% phys dmg), 50 MR (66.7% magic dmg)",
-            "Base AA: 229.7 DPS (140.0 AD * 1.25 crit * 1.31 AS)",
+            "Base AA: 310.9 DPS (173.0 AD * 1.25 crit * 1.44 AS)",
             "Physical on-hit (target max HP): +15.0",
-            "Item mechanics on-hit (phys): +60.7",
-            "Spider Queen: +52.8 on-hit (×0.85 sustained)",
-            "On-hit total: 168.6 DPS (128.4 * 1.31 AS)",
-            "Neurotoxin: 135.4 DPS (232 dmg / 1.7s CD)",
-            "Volatile Spiderling: 267.0 DPS (320 dmg / 1.2s CD)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 570.1 DPS",
-            "Combo (3s window): 877 total → 292.4 DPS"
+            "Item mechanics on-hit (phys): +120.8",
+            "On-hit total: 195.2 DPS (135.8 * 1.44 AS)",
+            "Ultra Mega Fire Kick: 320.0 DPS (320 dmg / 1.0s CD)",
+            "Sustained (rotation): 550.7 DPS",
+            "Combo (3s window): 816 total → 272.1 DPS"
           ],
-          "buildType": "balanced · On-Hit/Tank"
+          "buildType": "balanced · Tank/On-Hit"
         },
         {
-          "champion": "Elise",
+          "champion": "Milio",
           "items": [
             "Hextech Gunblade",
             "Stormsurge",
@@ -21455,67 +21652,60 @@
           ],
           "totalGold": 20714,
           "rune": "Press the Attack",
-          "totalDPS": 742.2355569579723,
-          "sustainedDPS": 376.7764836266666,
-          "comboDPS": 1041.2475260472224,
-          "autoAttackDPS": 42.22222222222222,
-          "onHitDPS": 89.54749999999999,
-          "abilityDPS": 245.00676140444443,
+          "totalDPS": 677.424005957037,
+          "sustainedDPS": 271.5880776,
+          "comboDPS": 1009.4715837037037,
+          "autoAttackDPS": 39.11111111111111,
+          "onHitDPS": 0,
+          "abilityDPS": 232.4769664888889,
           "dotDPS": 0,
-          "burstDPS": 460.2375182222222,
+          "burstDPS": 461.0362711111111,
           "breakdown": [
             "Stormsurge: ~17.9 DPS (268 magic / 15s ICD)",
             "Hextech Gunblade active: 827 magic (combo)",
             "Target resistances: 50 armor (66.7% phys dmg), 50 MR (100.0% magic dmg)",
-            "Base AA: 59.4 DPS (95.0 AD * 1.00 crit * 0.63 AS)",
-            "Spider Queen: +134.3 on-hit (×0.85 sustained)",
+            "Base AA: 55.0 DPS (88.0 AD * 1.00 crit * 0.63 AS)",
             "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 84.0 DPS (134.3 * 0.63 AS)",
-            "Neurotoxin: 74.2 DPS (405 dmg / 5.5s CD)",
-            "Volatile Spiderling: 73.3 DPS (800 dmg / 10.9s CD)",
+            "Ultra Mega Fire Kick: 137.3 DPS (1248 dmg / 9.1s CD)",
             "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 376.8 DPS",
-            "Combo (3s window): 3124 total → 1041.2 DPS",
-            "Item burst in combo: 1381 (460.2 DPS if spread)"
+            "Sustained (rotation): 271.6 DPS",
+            "Combo (3s window): 3028 total → 1009.5 DPS",
+            "Item burst in combo: 1383 (461.0 DPS if spread)"
           ],
           "buildType": "glass · AP"
         },
         {
-          "champion": "Elise",
+          "champion": "Milio",
           "items": [
             "Hextech Gunblade",
-            "Stormsurge",
             "Hextech Rocketbelt",
+            "Rabadon's Deathcap",
             "Morellonomicon",
             "Riftmaker",
             "Warmog's Armor"
           ],
-          "totalGold": 21304,
+          "totalGold": 21675,
           "rune": "Summon Aery",
-          "totalDPS": 388.8035747583333,
-          "sustainedDPS": 173.8361498333333,
-          "comboDPS": 564.6860133333333,
+          "totalDPS": 384.37343350962965,
+          "sustainedDPS": 158.59778640000002,
+          "comboDPS": 569.098962962963,
           "autoAttackDPS": 0,
           "onHitDPS": 0,
-          "abilityDPS": 173.8361498333333,
+          "abilityDPS": 158.59778640000002,
           "dotDPS": 0,
-          "burstDPS": 309.7022,
+          "burstDPS": 289.39160888888887,
           "breakdown": [
-            "Stormsurge: ~12.2 DPS (184 magic / 15s ICD)",
             "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Rocketbelt active: 321 magic (combo)",
-            "Hextech Gunblade active: 540 magic (combo)",
-            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (83.3% magic dmg)",
-            "Base AA: 0.0 DPS (95.0 AD * 1.00 crit * 0.63 AS)",
-            "Spider Queen: +91.1 on-hit (×0.85 sustained)",
-            "On-hit total: 0.0 DPS (91.1 * 0.00 AS)",
-            "Neurotoxin: 70.5 DPS (313 dmg / 4.4s CD)",
-            "Volatile Spiderling: 61.4 DPS (546 dmg / 8.9s CD)",
-            "Rune (ability): 51.1 DPS (76 / 1.5s)",
+            "Hextech Rocketbelt active: 403 magic (combo)",
+            "Hextech Gunblade active: 695 magic (combo)",
+            "Target resistances: 50 armor (66.7% phys dmg), 50 MR (74.1% magic dmg)",
+            "Base AA: 0.0 DPS (88.0 AD * 1.00 crit * 0.63 AS)",
+            "Ultra Mega Fire Kick: 143.2 DPS (1061 dmg / 7.4s CD)",
+            "Rune (ability): 57.3 DPS (85 / 1.5s)",
             "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 173.8 DPS",
-            "Combo (3s window): 1694 total → 564.7 DPS",
-            "Item burst in combo: 929 (309.7 DPS if spread)"
+            "Sustained (rotation): 158.6 DPS",
+            "Combo (3s window): 1707 total → 569.1 DPS",
+            "Item burst in combo: 868 (289.4 DPS if spread)"
           ],
           "buildType": "spell · AP"
         }
@@ -21528,8 +21718,8 @@
           "champion": "Taric",
           "items": [
             "Kraken Slayer (Base)",
-            "Navori Flickerblade",
             "Blade of the Ruined King (Melee)",
+            "Navori Flickerblade",
             "Experimental Hexplate",
             "Heartsteel",
             "Warmog's Armor"
@@ -21632,7 +21822,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-05-21T19:37:29.179Z",
+  "generatedAt": "2026-05-24T10:02:08.068Z",
   "duel": {
     "targetMaxHP": 1500,
     "targetBonusHP": 0,

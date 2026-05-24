@@ -13,6 +13,7 @@ import {
   recommendBuildsForChampion,
   resolveDuel,
 } from "@/lib/buildOptimizer";
+import { purchaseLevelForItemCount } from "@/lib/purchaseOrder";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
 
 type ScrapedChampionBuild = {
@@ -1386,6 +1387,8 @@ export default function Home(): React.ReactElement {
     setSelectedItems(selectedItems.filter((_, i) => i !== index));
   };
 
+  const purchaseLevel = purchaseLevelForItemCount(selectedItems.length);
+
   const getTotalStats = () => {
     if (!selectedChampion) return null;
 
@@ -1394,7 +1397,7 @@ export default function Home(): React.ReactElement {
       selectedChampion,
     );
     championWithItems.Items = selectedItems;
-    return championWithItems.getTotalStats();
+    return championWithItems.getTotalStats(purchaseLevel);
   };
 
   const getDPS = () => {
@@ -1405,7 +1408,9 @@ export default function Home(): React.ReactElement {
       selectedChampion,
     );
     championWithItems.Items = selectedItems;
-    return championWithItems.calculateDPS();
+    return championWithItems.calculateDPS(undefined, undefined, {
+      level: purchaseLevel,
+    });
   };
 
   const stats = getTotalStats();

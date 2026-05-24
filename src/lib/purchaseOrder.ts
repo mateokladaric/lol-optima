@@ -1,3 +1,4 @@
+import { championLevelStatScale } from "@/app/actions/sim";
 import type { Item } from "@/app/actions/sim";
 import { bestComponentSpikePerGold, shopGoldForItem } from "@/lib/itemRecipes";
 
@@ -11,18 +12,60 @@ export type PurchaseDuelMitigation = {
 const PURCHASE_OPP_BASE_ARMOR = 48;
 const PURCHASE_OPP_BASE_MR = 30;
 
-function enemyResistsAtItemCount(
-  duel: PurchaseDuelMitigation,
-  enemyCompletedItems: number,
-  fullBuildSlots: number,
+/** Champion level when each item slot is completed (1st → 6th). */
+export const PURCHASE_STEP_LEVELS = [7, 10, 12, 14, 16, 17] as const;
+
+/** Level for sim scoring when the build has `itemCount` completed items. */
+export function purchaseLevelForItemCount(itemCount: number): number {
+  if (itemCount <= 0) return PURCHASE_STEP_LEVELS[0];
+  const idx = Math.min(itemCount, PURCHASE_STEP_LEVELS.length) - 1;
+  return PURCHASE_STEP_LEVELS[idx];
+}
+
+/** Fraction of level-18 combat stats at this purchase step (matches buyer level ramp). */
+export function purchaseLevelScale(itemCount: number): number {
+  const level = purchaseLevelForItemCount(itemCount);
+  return championLevelStatScale(level) / championLevelStatScale(18);
+}
+
+export type PurchaseDuelTarget = PurchaseDuelMitigation & {
+  targetMaxHP: number;
+  targetBonusHP: number;
+};
+
+/**
+ * Opponent HP + resists at a buy-order step: same level ramp as the buyer and
+ * item-count pacing on armor/MR from items.
+ */
+export function opponentAtPurchaseStep(
+  duel: PurchaseDuelTarget,
+  buyerCompletedItems: number,
+  fullBuildSlots = 6,
+  /**
+   * Enemy completed items for this comparison (buy-order marginals pass
+   * `ordered.length` so the first purchase is vs baseline resists).
+   */
+  enemyCompletedItems?: number,
 ) {
+  const level = purchaseLevelForItemCount(buyerCompletedItems);
+  const levelScale = purchaseLevelScale(buyerCompletedItems);
   const slots = Math.max(1, fullBuildSlots);
-  const pace = Math.max(0, Math.min(enemyCompletedItems, slots)) / slots;
-  const itemArmor = Math.max(0, duel.targetArmor - PURCHASE_OPP_BASE_ARMOR);
-  const itemMR = Math.max(0, duel.targetMR - PURCHASE_OPP_BASE_MR);
+  const enemyN = Math.max(
+    0,
+    Math.min(enemyCompletedItems ?? buyerCompletedItems, slots),
+  );
+  const pace = enemyN / slots;
+  const baseArmor = PURCHASE_OPP_BASE_ARMOR * levelScale;
+  const baseMR = PURCHASE_OPP_BASE_MR * levelScale;
+  const itemArmor =
+    Math.max(0, duel.targetArmor - PURCHASE_OPP_BASE_ARMOR) * levelScale;
+  const itemMR = Math.max(0, duel.targetMR - PURCHASE_OPP_BASE_MR) * levelScale;
   return {
-    targetArmor: Math.round(PURCHASE_OPP_BASE_ARMOR + itemArmor * pace),
-    targetMR: Math.round(PURCHASE_OPP_BASE_MR + itemMR * pace),
+    level,
+    targetMaxHP: Math.round(duel.targetMaxHP * levelScale),
+    targetBonusHP: Math.round(duel.targetBonusHP * levelScale),
+    targetArmor: Math.round(baseArmor + itemArmor * pace),
+    targetMR: Math.round(baseMR + itemMR * pace),
     comboWindowSeconds: duel.comboWindowSeconds,
   };
 }
@@ -129,8 +172,16 @@ export function greedyPurchaseOrder(
     const enemyItems = ordered.length;
     const baseScore = scorePartial(ordered, enemyItems);
     const targetArmor = duel
-      ? enemyResistsAtItemCount(duel, enemyItems, finalBuild.length)
-          .targetArmor
+      ? opponentAtPurchaseStep(
+          {
+            targetMaxHP: 3000,
+            targetBonusHP: 1000,
+            ...duel,
+          },
+          enemyItems,
+          finalBuild.length,
+          enemyItems,
+        ).targetArmor
       : 100;
 
     let bestItem = remaining[0];
