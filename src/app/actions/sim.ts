@@ -1184,7 +1184,7 @@ const EchoesOfHelia = new Item(
 const Eclipse = new Item(
   "Eclipse",
   {
-    ad: 60,
+    ad: 70,
     abilityHaste: 15,
   },
   [],
@@ -4167,6 +4167,9 @@ class Character {
       stats.damageMultiplicative =
         (stats.damageMultiplicative ?? 0) +
         itemMech.bonusDamageMultiplicativePercent;
+    }
+    if (itemMech.shieldValue > 0) {
+      stats.shieldValue = (stats.shieldValue ?? 0) + itemMech.shieldValue;
     }
     for (const line of itemMech.breakdown) breakdown.push(line);
 

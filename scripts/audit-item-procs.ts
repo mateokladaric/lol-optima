@@ -75,7 +75,6 @@ const NOT_DAMAGE_GROUPS = new Set([
 ]);
 
 const STATIC_OK_GROUPS = new Set([
-  "Liandry's Torment",
   "Lord Dominik's Regards",
   "The Collector",
   "Blade of the Ruined King",
@@ -83,7 +82,6 @@ const STATIC_OK_GROUPS = new Set([
   "Wit's End",
   "Rabadon's Deathcap",
   "Void Staff",
-  "Bastionbreaker",
   "Titanic Hydra",
   "Navori Flickerblade",
   "Trinity Force",
@@ -184,10 +182,7 @@ function poolStatusForGroup(group: string): PoolStatus {
   return "sim_gap";
 }
 
-const probe = Characters.find((c) => c.Name === "Ezreal")!;
-const pool = buildRealisticItemPool(probe, Items);
-const poolByGroup = new Map(pool.map((i) => [i.getGroupName(), i]));
-const poolItemNames = new Set(pool.map((i) => i.name));
+const probeNames = ["Ezreal", "Ahri", "Zed"] as const;
 
 const allGroups = new Map<string, Item[]>();
 for (const item of Items) {
@@ -196,13 +191,18 @@ for (const item of Items) {
   allGroups.get(g)!.push(item);
 }
 
+const probe = Characters.find((c) => c.Name === "Ezreal")!;
+const pool = buildRealisticItemPool(probe, Items);
+const poolItemNames = new Set(pool.map((i) => i.name));
+const ezPoolByGroup = new Map(pool.map((i) => [i.getGroupName(), i]));
+
 console.log("=== Full item audit (loloptima) ===\n");
 console.log(`Catalog: ${Items.length} rows, ${allGroups.size} groups`);
-console.log(`Optimizer pool: ${pool.length} groups\n`);
+console.log(`Ezreal optimizer pool: ${pool.length} groups\n`);
 
 console.log(`Modeled groups (${MODELED_ITEM_GROUPS.length}):`);
 for (const g of MODELED_ITEM_GROUPS) {
-  const row = poolByGroup.get(g);
+  const row = ezPoolByGroup.get(g);
   console.log(`  ${g}${row ? ` → ${row.name}` : ""}`);
 }
 console.log(
@@ -210,47 +210,64 @@ console.log(
 );
 console.log("1v1: Hydra/Stridebreaker cleave AoE = 0\n");
 
-const byStatus: Record<PoolStatus, string[]> = {
-  mechanics: [],
-  sim_ok: [],
-  sim_partial: [],
-  not_damage: [],
-  sim_gap: [],
-};
+for (const probeName of probeNames) {
+  const champ = Characters.find((c) => c.Name === probeName);
+  if (!champ) continue;
 
-for (const [group, row] of poolByGroup) {
-  const status = poolStatusForGroup(group);
-  const procs = procSnapshot(row);
-  const procStr =
-    Object.keys(procs).length > 0
-      ? ` {${Object.entries(procs)
-          .map(([k, v]) => `${k}:${v}`)
-          .join(", ")}}`
-      : "";
-  let line = `${row.name}${procStr}`;
-  if (status === "sim_partial" && PARTIAL_NOTES[group]) {
-    line += ` — ${PARTIAL_NOTES[group]}`;
-  } else if (status === "not_damage") {
-    line += " — support/enchanter (0 dmg expected)";
-  } else if (status === "sim_gap") {
-    line += " — stat stick / defensive only";
+  const champPool = buildRealisticItemPool(champ, Items);
+  const poolByGroup = new Map(champPool.map((i) => [i.getGroupName(), i]));
+
+  console.log(`=== Probe: ${probeName} (${champPool.length} pool groups) ===\n`);
+
+  const byStatus: Record<PoolStatus, string[]> = {
+    mechanics: [],
+    sim_ok: [],
+    sim_partial: [],
+    not_damage: [],
+    sim_gap: [],
+  };
+
+  for (const [group, row] of poolByGroup) {
+    const status = poolStatusForGroup(group);
+    const procs = procSnapshot(row);
+    const procStr =
+      Object.keys(procs).length > 0
+        ? ` {${Object.entries(procs)
+            .map(([k, v]) => `${k}:${v}`)
+            .join(", ")}}`
+        : "";
+    let line = `${row.name}${procStr}`;
+    if (status === "sim_partial" && PARTIAL_NOTES[group]) {
+      line += ` — ${PARTIAL_NOTES[group]}`;
+    } else if (status === "not_damage") {
+      line += " — support/enchanter (0 dmg expected)";
+    } else if (status === "sim_gap") {
+      line += " — stat stick / defensive only";
+    }
+    byStatus[status].push(line);
   }
-  byStatus[status].push(line);
+
+  for (const status of [
+    "mechanics",
+    "sim_ok",
+    "sim_partial",
+    "not_damage",
+    "sim_gap",
+  ] as PoolStatus[]) {
+    const rows = byStatus[status];
+    if (rows.length === 0) continue;
+    console.log(`--- ${probeName} / ${status} (${rows.length}) ---`);
+    for (const r of rows.sort()) console.log(`  ${r}`);
+    console.log();
+  }
+
+  const damagePool = champPool.length - byStatus.not_damage.length;
+  console.log(
+    `${probeName}: ${damagePool} damage-relevant groups, ${byStatus.not_damage.length} support.\n`,
+  );
 }
 
-for (const status of [
-  "mechanics",
-  "sim_ok",
-  "sim_partial",
-  "not_damage",
-  "sim_gap",
-] as PoolStatus[]) {
-  const rows = byStatus[status];
-  if (rows.length === 0) continue;
-  console.log(`--- Pool: ${status} (${rows.length}) ---`);
-  for (const r of rows.sort()) console.log(`  ${r}`);
-  console.log();
-}
+console.log("--- Catalog proc scan (Ezreal pool for blocking issues) ---\n");
 
 const allIssues: Issue[] = [];
 for (const item of Items) {
@@ -291,7 +308,6 @@ if (blockingHigh.length > 0) {
   process.exit(1);
 }
 
-const damagePool = pool.length - byStatus.not_damage.length;
 console.log(
-  `\nAudit complete: ${damagePool} damage-relevant pool groups, ${byStatus.not_damage.length} support items.`,
+  `\nAudit complete: ${MODELED_ITEM_GROUPS.length} modeled groups, 0 blocking high issues.`,
 );

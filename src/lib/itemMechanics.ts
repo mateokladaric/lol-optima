@@ -22,6 +22,7 @@ export type ItemMechanicContext = {
   melee: boolean;
   attackRange: number;
   championBaseHP: number;
+  championBaseAD: number;
   /** 1v1: assume one champion takedown mid-fight for stack items. */
   duelTakedownAtSeconds: number;
   takedownCount: number;
@@ -64,6 +65,8 @@ export type ItemMechanicContributions = {
   /** Combo-window burst (Rocketbelt, Luden's echo, etc.). */
   burstPhys: number;
   burstMagic: number;
+  /** Time-averaged shield HP for EHP (Sterak-style passives use item stats). */
+  shieldValue: number;
   breakdown: string[];
 };
 
@@ -95,9 +98,37 @@ export const MODELED_ITEM_GROUPS = [
   "Momentum",
   "Yun Tal Wildarrows",
   "Sundered Sky",
+  "Bastionbreaker",
+  "Liandry's Torment",
 ] as const;
 
 const BURN_DURATION = 3;
+
+/** Ever Rising Moon — live values (melee / ranged). */
+export const ECLIPSE_ICD_SECONDS = 6;
+export const ECLIPSE_MELEE_MAX_HP_PERCENT = 6;
+export const ECLIPSE_RANGED_MAX_HP_PERCENT = 4;
+export const ECLIPSE_SHIELD_BASE_MELEE = 160;
+export const ECLIPSE_SHIELD_BASE_RANGED = 80;
+export const ECLIPSE_SHIELD_BONUS_AD_MELEE_PERCENT = 50;
+export const ECLIPSE_SHIELD_BONUS_AD_RANGED_PERCENT = 25;
+export const ECLIPSE_SHIELD_DURATION_SECONDS = 2;
+
+/** Shaped Charge — live values (melee / ranged), 45s ICD. */
+export const BASTIONBREAKER_ICD_SECONDS = 45;
+export const BASTIONBREAKER_TRUE_BASE_MELEE = 30;
+export const BASTIONBREAKER_TRUE_LETHALITY_MELEE = 1.5;
+export const BASTIONBREAKER_TRUE_BASE_RANGED = 15;
+export const BASTIONBREAKER_TRUE_LETHALITY_RANGED = 0.75;
+
+/** Liandry's Torment — 2% target max HP per second while burn is active (3s, refreshed on ability hit). */
+export const LIANDRY_BURN_MAX_HP_PERCENT_PER_SEC = 2;
+
+function eclipseProcsPerSecond(hitRate: number): number {
+  if (hitRate <= 0) return 0;
+  // Two separate hits within ~2s; sustained combat ≈ half the raw hit rate builds stacks.
+  return Math.min(hitRate / 2, 1 / ECLIPSE_ICD_SECONDS);
+}
 
 /** Hypershot: +10% damage vs champions when damaging from 600+ units (wiki). */
 export const HORIZON_HYPERSHOT_AMP_PERCENT = 10;
@@ -206,6 +237,7 @@ export function buildItemMechanicContext(
     melee: champion.AttackRange <= 250,
     attackRange: champion.AttackRange,
     championBaseHP: championBaseStatsAtLevel(champion, sim.level).hp,
+    championBaseAD: championBaseStatsAtLevel(champion, sim.level).ad,
     duelTakedownAtSeconds: window * 0.5,
     takedownCount: 1,
   };
@@ -242,6 +274,7 @@ export function computeItemMechanicContributions(
     bonusDamageMultiplicativePercent: 0,
     burstPhys: 0,
     burstMagic: 0,
+    shieldValue: 0,
     breakdown: [],
   };
 
@@ -406,6 +439,37 @@ export function computeItemMechanicContributions(
     );
   }
 
+  if (hasGroup(items, "Bastionbreaker")) {
+    out.statSuppress.trueOnAbilityHit = true;
+    out.statSuppress.trueOnAbilityHitPerLethality = true;
+    out.statSuppress.trueOnAbilityHitCooldown = true;
+    const base = ctx.melee
+      ? BASTIONBREAKER_TRUE_BASE_MELEE
+      : BASTIONBREAKER_TRUE_BASE_RANGED;
+    const perLeth = ctx.melee
+      ? BASTIONBREAKER_TRUE_LETHALITY_MELEE
+      : BASTIONBREAKER_TRUE_LETHALITY_RANGED;
+    const proc = base + (stats.lethality ?? 0) * perLeth;
+    const procDps = proc / BASTIONBREAKER_ICD_SECONDS;
+    out.abilityTrueDPS += procDps;
+    out.burstTrue += proc * comboProcs(ctx.comboWindowSeconds, BASTIONBREAKER_ICD_SECONDS);
+    const body = ctx.melee ? "melee" : "ranged";
+    out.breakdown.push(
+      `Bastionbreaker Shaped Charge (${body}): ~${procDps.toFixed(1)} true DPS (${proc.toFixed(0)} / ${BASTIONBREAKER_ICD_SECONDS}s ICD)`,
+    );
+  }
+
+  if (hasGroup(items, "Liandry's Torment")) {
+    out.statSuppress.magicDotDamagePerTargetMaxHPRatio = true;
+    const burnDPS =
+      (ctx.targetMaxHP * LIANDRY_BURN_MAX_HP_PERCENT_PER_SEC) / 100;
+    const uptime = burnUptime(abilityHitsPerSec, BURN_DURATION);
+    out.dotMagicDPS += burnDPS * uptime;
+    out.breakdown.push(
+      `Liandry's Torment: ${(burnDPS * uptime).toFixed(1)} DPS (${LIANDRY_BURN_MAX_HP_PERCENT_PER_SEC}% max HP/s, ${(uptime * 100).toFixed(0)}% burn uptime)`,
+    );
+  }
+
   if (hasGroup(items, "Axiom Arc")) {
     const refund =
       (stats.ultCooldownRefundOnTakedown ?? 0) +
@@ -420,14 +484,35 @@ export function computeItemMechanicContributions(
   }
 
   if (hasGroup(items, "Eclipse")) {
-    const procPhys = ctx.targetMaxHP * 0.03;
+    const maxHpPct = ctx.melee
+      ? ECLIPSE_MELEE_MAX_HP_PERCENT / 100
+      : ECLIPSE_RANGED_MAX_HP_PERCENT / 100;
+    const procPhys = ctx.targetMaxHP * maxHpPct;
     const hitRate = abilityHitsPerSec + ctx.attackRate;
-    const icd = 4;
-    const dps = icdAbilityProcDps(procPhys, icd, hitRate / 2);
+    const procsPerSec = eclipseProcsPerSecond(hitRate);
+    const dps = procPhys * procsPerSec;
     out.abilityPhysDPS += dps;
-    out.burstPhys += procPhys * comboProcs(ctx.comboWindowSeconds, icd);
+    out.burstPhys +=
+      procPhys * comboProcs(ctx.comboWindowSeconds, ECLIPSE_ICD_SECONDS);
+
+    const bonusAD = Math.max(0, stats.ad - ctx.championBaseAD);
+    const shieldBase = ctx.melee
+      ? ECLIPSE_SHIELD_BASE_MELEE
+      : ECLIPSE_SHIELD_BASE_RANGED;
+    const shieldAdPct = ctx.melee
+      ? ECLIPSE_SHIELD_BONUS_AD_MELEE_PERCENT
+      : ECLIPSE_SHIELD_BONUS_AD_RANGED_PERCENT;
+    const shieldPerProc = shieldBase + (bonusAD * shieldAdPct) / 100;
+    out.shieldValue =
+      shieldPerProc *
+      (ECLIPSE_SHIELD_DURATION_SECONDS / ECLIPSE_ICD_SECONDS);
+
+    const body = ctx.melee ? "melee" : "ranged";
     out.breakdown.push(
-      `Eclipse Everrising: ~${dps.toFixed(1)} DPS (${procPhys.toFixed(0)} per 2-hit proc, ${icd}s cadence)`,
+      `Eclipse Ever Rising Moon (${body}): ~${dps.toFixed(1)} DPS (${procPhys.toFixed(0)} per proc, ${ECLIPSE_ICD_SECONDS}s CD)`,
+    );
+    out.breakdown.push(
+      `Eclipse shield: ~${out.shieldValue.toFixed(0)} avg HP (${shieldPerProc.toFixed(0)} for ${ECLIPSE_SHIELD_DURATION_SECONDS}s)`,
     );
   }
 

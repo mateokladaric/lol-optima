@@ -13,6 +13,12 @@ import {
   runeProcSustainedDPS,
 } from "../src/app/actions/sim";
 import {
+  BASTIONBREAKER_ICD_SECONDS,
+  BASTIONBREAKER_TRUE_BASE_MELEE,
+  BASTIONBREAKER_TRUE_LETHALITY_MELEE,
+  ECLIPSE_ICD_SECONDS,
+  ECLIPSE_MELEE_MAX_HP_PERCENT,
+  ECLIPSE_RANGED_MAX_HP_PERCENT,
   HORIZON_HYPERSHOT_UPTIME_MELEE,
   HORIZON_HYPERSHOT_UPTIME_RANGED,
 } from "../src/lib/itemMechanics";
@@ -768,6 +774,119 @@ if (zedPurchase) {
     if (baseEarly.armor >= baseLate.armor || baseEarly.ad >= baseLate.ad) {
       fail("Scaled base armor/AD should rise with purchase level");
     }
+  }
+}
+
+const zedEclipse = Characters.find((c) => c.Name === "Zed");
+const ezrealEclipse = Characters.find((c) => c.Name === "Ezreal");
+const eclipseItem = Items.find((i) => i.getGroupName() === "Eclipse");
+if (zedEclipse && ezrealEclipse && eclipseItem) {
+  const mit = dpsMitigationFromDuel(duel);
+  const clone = (champ: typeof zedEclipse, items: Item[]) => {
+    const c = Object.assign(
+      Object.create(Object.getPrototypeOf(champ)),
+      champ,
+    ) as typeof champ;
+    c.Items = items;
+    return c;
+  };
+  const zedDps = clone(zedEclipse, [eclipseItem]).calculateDPS(
+    3000,
+    1000,
+    { level: 16, enableChampionRotationProfiles: true },
+    mit,
+  );
+  const ezDps = clone(ezrealEclipse, [eclipseItem]).calculateDPS(
+    3000,
+    1000,
+    { level: 16, enableChampionRotationProfiles: true },
+    mit,
+  );
+  const meleeProc = 3000 * (ECLIPSE_MELEE_MAX_HP_PERCENT / 100);
+  const rangedProc = 3000 * (ECLIPSE_RANGED_MAX_HP_PERCENT / 100);
+  const zedLine = zedDps.breakdown.find((b) =>
+    b.includes("Eclipse Ever Rising Moon"),
+  );
+  const ezLine = ezDps.breakdown.find((b) =>
+    b.includes("Eclipse Ever Rising Moon"),
+  );
+  if (!zedLine?.includes(String(Math.round(meleeProc)))) {
+    fail(
+      `Zed Eclipse proc should be ${meleeProc.toFixed(0)} melee max-HP damage (got: ${zedLine ?? "missing"})`,
+    );
+  }
+  if (!ezLine?.includes(String(Math.round(rangedProc)))) {
+    fail(
+      `Ezreal Eclipse proc should be ${rangedProc.toFixed(0)} ranged max-HP damage (got: ${ezLine ?? "missing"})`,
+    );
+  }
+  if (!zedLine?.includes(`${ECLIPSE_ICD_SECONDS}s CD`)) {
+    fail(`Eclipse should use ${ECLIPSE_ICD_SECONDS}s cooldown`);
+  }
+  if (!zedDps.breakdown.some((b) => b.includes("Eclipse shield"))) {
+    fail("Eclipse shield should appear in breakdown");
+  }
+  if (eclipseItem.stats.ad !== 70) {
+    fail(`Eclipse base AD should be 70, got ${eclipseItem.stats.ad}`);
+  }
+}
+
+const zedBastion = Characters.find((c) => c.Name === "Zed");
+const bastionItem = Items.find((i) => i.name === "Bastionbreaker");
+if (zedBastion && bastionItem) {
+  const mit = dpsMitigationFromDuel(duel);
+  const clone = Object.assign(
+    Object.create(Object.getPrototypeOf(zedBastion)),
+    zedBastion,
+  ) as typeof zedBastion;
+  clone.Items = [bastionItem];
+  const dps = clone.calculateDPS(
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    { level: 16, enableChampionRotationProfiles: true },
+    mit,
+  );
+  const expectedProc =
+    BASTIONBREAKER_TRUE_BASE_MELEE +
+    (bastionItem.stats.lethality ?? 0) * BASTIONBREAKER_TRUE_LETHALITY_MELEE;
+  const line = dps.breakdown.find((b) => b.includes("Bastionbreaker Shaped Charge"));
+  if (!line?.includes(String(Math.round(expectedProc)))) {
+    fail(
+      `Zed Bastionbreaker proc should be ${expectedProc.toFixed(0)} true (got: ${line ?? "missing"})`,
+    );
+  }
+  if (!line?.includes(`${BASTIONBREAKER_ICD_SECONDS}s ICD`)) {
+    fail(`Bastionbreaker should use ${BASTIONBREAKER_ICD_SECONDS}s ICD`);
+  }
+  if (dps.breakdown.some((b) => b.startsWith("Shaped Charge:"))) {
+    fail("Bastionbreaker must not double-count legacy Shaped Charge line");
+  }
+}
+
+const ahriLiandry = Characters.find((c) => c.Name === "Ahri");
+const liandryItem = Items.find((i) => i.name === "Liandry's Torment");
+if (ahriLiandry && liandryItem) {
+  const mit = dpsMitigationFromDuel(duel);
+  const clone = Object.assign(
+    Object.create(Object.getPrototypeOf(ahriLiandry)),
+    ahriLiandry,
+  ) as typeof ahriLiandry;
+  clone.Items = [liandryItem];
+  const dps = clone.calculateDPS(
+    3000,
+    1000,
+    { level: 16, enableChampionRotationProfiles: true },
+    mit,
+  );
+  const line = dps.breakdown.find((b) => b.includes("Liandry's Torment"));
+  if (!line) {
+    fail("Ahri Liandry should appear in breakdown with burn uptime");
+  }
+  if (dps.breakdown.some((b) => b.includes("Magic DoT (target max HP): +60"))) {
+    fail("Liandry must not apply full-time 2% max HP DoT without burn uptime");
+  }
+  if (!line.includes("burn uptime")) {
+    fail("Liandry breakdown should report burn uptime");
   }
 }
 
