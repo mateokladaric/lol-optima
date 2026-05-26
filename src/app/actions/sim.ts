@@ -2506,7 +2506,7 @@ const VoidStaff = new Item(
     percentMagicPen: 40,
   },
   [],
-  "Void Staff",
+  "Void Pen",
 );
 
 const VoltaicCyclosword = new Item(
