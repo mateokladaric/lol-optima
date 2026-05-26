@@ -5,12 +5,10 @@ import type { Item, ItemStats } from "@/app/actions/sim";
  * Uses a stat→gold linear model (not patch-perfect) plus optional group overrides.
  */
 const GROUP_GOLD_OVERRIDES: Record<string, number> = {
-  // Tune only when stat estimate is systematically off for a whole item line.
   "Support / Jungle": 400,
   Bloodsong: 400,
-  "Spellblade": 400,
-  "Rabadon's Deathcap": 3600,
-  "Infinity Edge": 3400,
+  "Rabadon's Deathcap": 3500,
+  "Infinity Edge": 3500,
   "Bloodthirster": 3400,
   "Void Staff": 3000,
 };

@@ -829,8 +829,8 @@ if (zedEclipse && ezrealEclipse && eclipseItem) {
   if (!zedDps.breakdown.some((b) => b.includes("Eclipse shield"))) {
     fail("Eclipse shield should appear in breakdown");
   }
-  if (eclipseItem.stats.ad !== 70) {
-    fail(`Eclipse base AD should be 70, got ${eclipseItem.stats.ad}`);
+  if (eclipseItem.stats.ad !== 60) {
+    fail(`Eclipse base AD should be 60, got ${eclipseItem.stats.ad}`);
   }
 }
 

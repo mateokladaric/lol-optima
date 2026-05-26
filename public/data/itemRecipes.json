@@ -18,7 +18,7 @@
       ]
     },
     "Actualizer": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Manaflow": {
@@ -62,15 +62,15 @@
       ]
     },
     "Axiom Arc": {
-      "totalGold": 2500,
+      "totalGold": 2750,
       "components": []
     },
     "Bandlepipes": {
-      "totalGold": 2500,
+      "totalGold": 2300,
       "components": []
     },
     "Annul": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Bastionbreaker": {
@@ -89,15 +89,15 @@
       ]
     },
     "Black Cleaver": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Blackfire Torch": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Blade of the Ruined King": {
-      "totalGold": 2500,
+      "totalGold": 3200,
       "components": []
     },
     "Blight": {
@@ -116,17 +116,17 @@
       ]
     },
     "Spellblade": {
-      "totalGold": 400,
+      "totalGold": 3000,
       "components": [
         {
-          "name": "Bounty of Worlds",
-          "gold": 400,
-          "powerPerGold": 0.0325
+          "name": "Sheen",
+          "gold": 700,
+          "powerPerGold": 0
         }
       ]
     },
     "Bloodthirster": {
-      "totalGold": 2500,
+      "totalGold": 3400,
       "components": []
     },
     "Support / Jungle": {
@@ -140,15 +140,15 @@
       ]
     },
     "Chempunk Chainsword": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Cosmic Drive": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Void Pen": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Dawncore": {
@@ -172,11 +172,11 @@
       ]
     },
     "Momentum": {
-      "totalGold": 2500,
+      "totalGold": 2900,
       "components": []
     },
     "Death's Dance": {
-      "totalGold": 2500,
+      "totalGold": 3300,
       "components": []
     },
     "Echoes of Helia": {
@@ -195,27 +195,27 @@
       ]
     },
     "Eclipse": {
-      "totalGold": 2500,
+      "totalGold": 2900,
       "components": []
     },
     "Endless Hunger": {
-      "totalGold": 2500,
+      "totalGold": 3100,
       "components": []
     },
     "Experimental Hexplate": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Fiendhunter Bolts": {
-      "totalGold": 2500,
+      "totalGold": 2650,
       "components": []
     },
     "Force of Nature": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Frozen Heart": {
-      "totalGold": 2700,
+      "totalGold": 2500,
       "components": [
         {
           "name": "Glacial Buckler",
@@ -230,47 +230,47 @@
       ]
     },
     "Guardian Angel": {
-      "totalGold": 2500,
+      "totalGold": 3200,
       "components": []
     },
     "Guinsoo's Rageblade": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Heartsteel": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Hexoptics C44": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Hextech Gunblade": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Hextech Rocketbelt": {
-      "totalGold": 2500,
+      "totalGold": 2650,
       "components": []
     },
     "Immolate": {
-      "totalGold": 2500,
+      "totalGold": 2700,
       "components": []
     },
     "Horizon Focus": {
-      "totalGold": 2500,
+      "totalGold": 2700,
       "components": []
     },
     "Hubris": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Hullbreaker": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Lifeline": {
-      "totalGold": 2500,
+      "totalGold": 3100,
       "components": []
     },
     "Imperial Mandate": {
@@ -294,15 +294,15 @@
       ]
     },
     "Infinity Edge": {
-      "totalGold": 2500,
+      "totalGold": 3500,
       "components": []
     },
     "Jak'Sho, The Protean": {
-      "totalGold": 2500,
+      "totalGold": 3200,
       "components": []
     },
     "Kaenic Rookern": {
-      "totalGold": 2500,
+      "totalGold": 2900,
       "components": []
     },
     "Knight's Vow": {
@@ -326,7 +326,7 @@
       ]
     },
     "Kraken Slayer": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Liandry's Torment": {
@@ -365,15 +365,15 @@
       ]
     },
     "Last Whisper": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Luden's Echo": {
-      "totalGold": 2500,
+      "totalGold": 2750,
       "components": []
     },
     "Malignance": {
-      "totalGold": 2500,
+      "totalGold": 2700,
       "components": []
     },
     "Glory": {
@@ -387,7 +387,7 @@
       ]
     },
     "Quicksilver": {
-      "totalGold": 2500,
+      "totalGold": 3200,
       "components": []
     },
     "Mikael's Blessing": {
@@ -431,11 +431,11 @@
       ]
     },
     "Morellonomicon": {
-      "totalGold": 2500,
+      "totalGold": 2850,
       "components": []
     },
     "Nashor's Tooth": {
-      "totalGold": 2500,
+      "totalGold": 2900,
       "components": []
     },
     "Navori Flickerblade": {
@@ -459,27 +459,27 @@
       ]
     },
     "Overlord's Bloodmail": {
-      "totalGold": 2500,
+      "totalGold": 3300,
       "components": []
     },
     "Phantom Dancer": {
-      "totalGold": 2500,
+      "totalGold": 2650,
       "components": []
     },
     "Hydra": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Rabadon's Deathcap": {
-      "totalGold": 2500,
+      "totalGold": 3500,
       "components": []
     },
     "Randuin's Omen": {
-      "totalGold": 2500,
+      "totalGold": 2700,
       "components": []
     },
     "Rapid Firecannon": {
-      "totalGold": 2500,
+      "totalGold": 2650,
       "components": []
     },
     "Redemption": {
@@ -503,7 +503,7 @@
       ]
     },
     "Riftmaker": {
-      "totalGold": 2500,
+      "totalGold": 3100,
       "components": []
     },
     "Eternity": {
@@ -522,19 +522,30 @@
       ]
     },
     "Runaan's Hurricane": {
-      "totalGold": 2500,
+      "totalGold": 2650,
       "components": []
     },
     "Rylai's Crystal Scepter": {
-      "totalGold": 2500,
+      "totalGold": 2600,
       "components": []
     },
     "Serpent's Fang": {
       "totalGold": 2500,
-      "components": []
+      "components": [
+        {
+          "name": "Serrated Dirk",
+          "gold": 1000,
+          "powerPerGold": 0
+        },
+        {
+          "name": "Pickaxe",
+          "gold": 875,
+          "powerPerGold": 0
+        }
+      ]
     },
     "Shadowflame": {
-      "totalGold": 2500,
+      "totalGold": 3200,
       "components": []
     },
     "Shurelya's Battlesong": {
@@ -553,15 +564,11 @@
       ]
     },
     "Spear of Shojin": {
-      "totalGold": 2500,
-      "components": []
-    },
-    "Spectral Cutlass": {
-      "totalGold": 2500,
+      "totalGold": 3100,
       "components": []
     },
     "Spirit Visage": {
-      "totalGold": 2500,
+      "totalGold": 2700,
       "components": []
     },
     "Staff of Flowing Water": {
@@ -585,23 +592,23 @@
       ]
     },
     "Statikk Shiv": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Stormrazor": {
-      "totalGold": 2500,
+      "totalGold": 3200,
       "components": []
     },
     "Stormsurge": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Sundered Sky": {
-      "totalGold": 2500,
+      "totalGold": 3100,
       "components": []
     },
     "Terminus": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "The Collector": {
@@ -625,7 +632,7 @@
       ]
     },
     "Thornmail": {
-      "totalGold": 2650,
+      "totalGold": 2450,
       "components": [
         {
           "name": "Ruby Crystal",
@@ -660,31 +667,31 @@
       ]
     },
     "Unending Despair": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Void Staff": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Voltaic Cyclosword": {
-      "totalGold": 2500,
+      "totalGold": 3000,
       "components": []
     },
     "Warmog's Armor": {
-      "totalGold": 2750,
+      "totalGold": 3100,
       "components": []
     },
     "Wit's End": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Youmuu's Ghostblade": {
-      "totalGold": 2500,
+      "totalGold": 2800,
       "components": []
     },
     "Yun Tal Wildarrows": {
-      "totalGold": 2500,
+      "totalGold": 3100,
       "components": []
     },
     "Zeke's Convergence": {
@@ -708,7 +715,7 @@
       ]
     },
     "Stasis": {
-      "totalGold": 2500,
+      "totalGold": 3250,
       "components": []
     }
   }

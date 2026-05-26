@@ -90,6 +90,7 @@ export const MODELED_ITEM_GROUPS = [
   "Luden's Echo",
   "Statikk Shiv",
   "Voltaic Cyclosword",
+  "Rapid Firecannon",
   "Riftmaker",
   "Spear of Shojin",
   "Hextech Rocketbelt",
@@ -182,24 +183,6 @@ function krakenProcDamage(
   return base * levelScale * (1 + missingBonus);
 }
 
-function stormrazorProcPerAttack(attackRate: number): number {
-  const ENERGIZE_MAX = 100;
-  const STACKS_PER_AUTO = 12;
-  const BOLT_DAMAGE = 100;
-  if (attackRate <= 0) return 0;
-  const autosToProc = ENERGIZE_MAX / STACKS_PER_AUTO;
-  return BOLT_DAMAGE / autosToProc;
-}
-
-/** Energized on-hit (Statikk / Voltaic): stacks per auto until 100, then proc. */
-function energizedMagicPerAuto(
-  attackRate: number,
-  boltDamage: number,
-  stacksPerAuto: number,
-): number {
-  if (attackRate <= 0) return 0;
-  return boltDamage / (100 / stacksPerAuto);
-}
 
 function icdAbilityProcDps(
   procDamage: number,
@@ -298,21 +281,82 @@ export function computeItemMechanicContributions(
       ctx.level,
       ctx.avgCurrentHPRatio,
     );
-    const procsPerSec = ctx.attackRate / 3;
-    const dps = proc * procsPerSec;
-    out.onHitPhysPerAttack += proc / 3;
+    const autosInCombo = ctx.comboWindowSeconds * ctx.attackRate;
+    const fullProcs = Math.floor(autosInCombo / 3);
+    const perAuto = autosInCombo > 0 && fullProcs > 0 ? proc * fullProcs / autosInCombo : 0;
+    const dps = perAuto * ctx.attackRate;
+    out.onHitPhysPerAttack += perAuto;
     out.breakdown.push(
-      `Kraken (every 3rd AA): ~${dps.toFixed(1)} DPS (${proc.toFixed(0)} dmg, ${(0.75 * (1 - ctx.avgCurrentHPRatio) * 100).toFixed(0)}% missing-HP bonus)`,
+      `Kraken (every 3rd AA): ~${dps.toFixed(1)} DPS (${proc.toFixed(0)} dmg × ${fullProcs} procs in ${autosInCombo.toFixed(1)} AAs)`,
     );
   }
 
-  if (hasGroup(items, "Stormrazor")) {
-    out.statSuppress.magicPeriodicOnHit = true;
-    const perAuto = stormrazorProcPerAttack(ctx.attackRate);
-    out.onHitMagicPerAttack += perAuto;
-    out.breakdown.push(
-      `Stormrazor Bolt: +${(perAuto * ctx.attackRate).toFixed(1)} DPS (${perAuto.toFixed(1)} magic per AA, 100 energize)`,
-    );
+  // --- Unified Energized System ---
+  // All energized items share the same 100-stack charge pool.
+  // First proc is ALWAYS pre-charged at combat start (walk-up burst).
+  {
+    const hasShiv = hasGroup(items, "Statikk Shiv");
+    const hasStormrazor = hasGroup(items, "Stormrazor");
+    const hasRFC = hasGroup(items, "Rapid Firecannon");
+    const hasVoltaic = hasGroup(items, "Voltaic Cyclosword");
+    const hasAnyEnergized = hasShiv || hasStormrazor || hasRFC || hasVoltaic;
+
+    if (hasAnyEnergized && ctx.attackRate > 0) {
+      if (hasStormrazor) out.statSuppress.magicPeriodicOnHit = true;
+
+      // Combined stacks per auto from all sources
+      let totalStacksPerAuto = 6; // base energize
+      if (hasShiv) totalStacksPerAuto += 9; // Electroshock
+      if (hasStormrazor) totalStacksPerAuto += 6; // Bolt
+
+      // Per-proc damage from each energized item
+      let procMagic = 0;
+      let procPhys = 0;
+      if (hasShiv) procMagic += 60;
+      if (hasStormrazor) procMagic += 100;
+      if (hasRFC) procMagic += 40;
+      let voltaicProcDmg = 0;
+      if (hasVoltaic) {
+        const hpRatio = ctx.melee ? 0.09 : 0.07;
+        voltaicProcDmg = ctx.targetMaxHP * ctx.avgCurrentHPRatio * hpRatio;
+        procPhys += voltaicProcDmg;
+      }
+
+      // First proc: guaranteed burst at combat start
+      out.burstMagic += procMagic;
+      out.burstPhys += procPhys;
+
+      // Additional procs during sustained combat
+      const autosInCombo = ctx.comboWindowSeconds * ctx.attackRate;
+      const autosPerProc = 100 / totalStacksPerAuto;
+      const additionalProcs = Math.max(0, Math.floor(autosInCombo / autosPerProc));
+      if (additionalProcs > 0 && autosInCombo > 0) {
+        out.onHitMagicPerAttack += procMagic * additionalProcs / autosInCombo;
+        out.onHitPhysPerAttack += procPhys * additionalProcs / autosInCombo;
+      }
+
+      // Voltaic temporary lethality (up from first proc, refreshed on each subsequent)
+      if (hasVoltaic) {
+        const LETHALITY_BONUS = ctx.melee ? 15 : 12;
+        const totalProcs = 1 + additionalProcs;
+        const lethalityCoverage = Math.min(ctx.comboWindowSeconds, totalProcs * 4);
+        const lethalityUptime = lethalityCoverage / ctx.comboWindowSeconds;
+        out.armorPen += LETHALITY_BONUS * lethalityUptime;
+        out.breakdown.push(
+          `Voltaic Firmament: ${voltaicProcDmg.toFixed(0)} phys/proc, +${(LETHALITY_BONUS * lethalityUptime).toFixed(1)} avg lethality`,
+        );
+      }
+
+      // Breakdown
+      const totalDPS = (procMagic + procPhys) * (1 + additionalProcs) / ctx.comboWindowSeconds;
+      const procNames: string[] = [];
+      if (hasShiv) procNames.push("Shiv 60");
+      if (hasStormrazor) procNames.push("Stormrazor 100");
+      if (hasRFC) procNames.push("RFC 40");
+      out.breakdown.push(
+        `Energized (${procNames.join("+")}): burst ${procMagic + procPhys} + ${totalDPS.toFixed(1)} avg DPS (${1 + additionalProcs} procs / ${ctx.comboWindowSeconds}s, ${totalStacksPerAuto} stacks/AA)`,
+      );
+    }
   }
 
   if (hasGroup(items, "Hubris")) {
@@ -361,7 +405,7 @@ export function computeItemMechanicContributions(
     out.statSuppress.magicDotDamage = true;
     out.statSuppress.magicDotDamagePerAPRatio = true;
     out.statSuppress.apPerBurnedTargetMultiplicative = true;
-    const burnTotal = 60 + stats.ap * 0.12;
+    const burnTotal = 60 + stats.ap * 0.06;
     const burnDPS = burnTotal / BURN_DURATION;
     const uptime = burnUptime(abilityHitsPerSec, BURN_DURATION);
     out.dotMagicDPS += burnDPS * uptime;
@@ -402,7 +446,8 @@ export function computeItemMechanicContributions(
     out.statSuppress.armorReduction = true;
     const physHitsPerSec =
       abilityHitsPerSec + (ctx.attackRate > 0 ? ctx.attackRate : 0);
-    const maxStacks = 6;
+    const maxStacks = 5;
+    const perStack = 6;
     const hitsPerSec = Math.max(physHitsPerSec, 0.3);
     const secToMax = maxStacks / hitsPerSec;
     let avgStacks: number;
@@ -411,7 +456,7 @@ export function computeItemMechanicContributions(
     } else {
       avgStacks = Math.min(maxStacks, (hitsPerSec * ctx.comboWindowSeconds) / 2);
     }
-    out.armorReduction = avgStacks * 5;
+    out.armorReduction = avgStacks * perStack;
     out.breakdown.push(
       `Black Cleaver Carve: ~${avgStacks.toFixed(1)} stacks (${out.armorReduction}% armor reduction)`,
     );
@@ -519,40 +564,27 @@ export function computeItemMechanicContributions(
   }
 
   if (hasGroup(items, "Stormsurge")) {
-    const procMagic = 75 + stats.ap * 0.25;
-    const dps = icdAbilityProcDps(procMagic, 15, abilityHitsPerSec);
+    const procMagic = 125 + stats.ap * 0.1;
+    const dps = icdAbilityProcDps(procMagic, 30, abilityHitsPerSec);
     out.abilityMagicDPS += dps;
-    out.burstMagic += procMagic * comboProcs(ctx.comboWindowSeconds, 15);
+    out.burstMagic += procMagic * comboProcs(ctx.comboWindowSeconds, 30);
     out.breakdown.push(
-      `Stormsurge: ~${dps.toFixed(1)} DPS (${procMagic.toFixed(0)} magic / 15s ICD)`,
+      `Stormsurge: ~${dps.toFixed(1)} DPS (${procMagic.toFixed(0)} magic / 30s ICD)`,
     );
   }
 
   if (hasGroup(items, "Luden's Echo")) {
-    const echo = 100 + stats.ap * 0.1;
-    const dps = icdAbilityProcDps(echo, 10, abilityHitsPerSec);
+    const echoBurst = 150 + stats.ap * 0.1;
+    const echoSustained = 75 + stats.ap * 0.05;
+    const dps = icdAbilityProcDps(echoSustained, 10, abilityHitsPerSec);
     out.abilityMagicDPS += dps;
-    out.burstMagic += echo;
+    out.burstMagic += echoBurst;
     out.breakdown.push(
-      `Luden's Echo: ~${dps.toFixed(1)} DPS (${echo.toFixed(0)} magic / 10s)`,
+      `Luden's Echo: ~${dps.toFixed(1)} DPS (sustained ${echoSustained.toFixed(0)} / 10s, burst ${echoBurst.toFixed(0)})`,
     );
   }
 
-  if (hasGroup(items, "Statikk Shiv") && ctx.attackRate > 0) {
-    const perAuto = energizedMagicPerAuto(ctx.attackRate, 120, 25);
-    out.onHitMagicPerAttack += perAuto;
-    out.breakdown.push(
-      `Statikk Shiv: +${(perAuto * ctx.attackRate).toFixed(1)} DPS (${perAuto.toFixed(0)} magic / ~4 autos)`,
-    );
-  }
-
-  if (hasGroup(items, "Voltaic Cyclosword") && ctx.attackRate > 0) {
-    const perAuto = energizedMagicPerAuto(ctx.attackRate, 175, 25);
-    out.onHitMagicPerAttack += perAuto;
-    out.breakdown.push(
-      `Voltaic Cyclosword: +${(perAuto * ctx.attackRate).toFixed(1)} DPS (${perAuto.toFixed(0)} magic / ~4 autos)`,
-    );
-  }
+  // (Statikk Shiv + Voltaic Cyclosword handled in unified Energized system above)
 
   if (hasGroup(items, "Riftmaker")) {
     out.statSuppress.damageMultiplicative = true;
@@ -573,13 +605,14 @@ export function computeItemMechanicContributions(
   }
 
   if (hasGroup(items, "Hextech Rocketbelt")) {
-    const active = 125 + stats.ap * 0.45;
+    const active = 100 + stats.ap * 0.1;
     out.burstMagic += active;
     out.breakdown.push(`Hextech Rocketbelt active: ${active.toFixed(0)} magic (combo)`);
   }
 
   if (hasGroup(items, "Hextech Gunblade")) {
-    const active = 170 + stats.ap * 0.85;
+    const baseDmg = 175 + (78 / 17) * (ctx.level - 1);
+    const active = baseDmg + stats.ap * 0.3;
     out.burstMagic += active;
     out.breakdown.push(`Hextech Gunblade active: ${active.toFixed(0)} magic (combo)`);
   }
@@ -642,6 +675,15 @@ export function computeItemMechanicContributions(
         `Sundered Sky: +${((crit / 100) * 8).toFixed(1)}% damage via crit strikes`,
       );
     }
+  }
+
+  if (items.some((i) => i.name === "Sterak's Gage")) {
+    const bonusHP = Math.max(0, (stats.hp ?? 0) - ctx.championBaseHP) + out.bonusHP;
+    const shield = bonusHP * 0.6;
+    out.shieldValue += shield;
+    out.breakdown.push(
+      `Sterak's Lifeline: ${shield.toFixed(0)} shield (60% of ${bonusHP.toFixed(0)} bonus HP)`,
+    );
   }
 
   for (const item of items) {

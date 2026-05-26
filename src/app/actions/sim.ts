@@ -1184,7 +1184,7 @@ const EchoesOfHelia = new Item(
 const Eclipse = new Item(
   "Eclipse",
   {
-    ad: 70,
+    ad: 60,
     abilityHaste: 15,
   },
   [],
@@ -1205,7 +1205,7 @@ const EdgeOfNight = new Item(
 const EndlessHunger = new Item(
   "Endless Hunger",
   {
-    ad: 60,
+    ad: 65,
     omnivamp: 5,
   },
   [],
@@ -1215,7 +1215,7 @@ const EndlessHunger = new Item(
 const EndlessHungerFeast = new Item(
   "Endless Hunger (Feast)",
   {
-    ad: 60,
+    ad: 65,
     omnivamp: 20,
   },
   [],
@@ -1473,7 +1473,7 @@ const Hubris = new Item(
 const Hubris5Stacks = new Item(
   "Hubris (5 stacks)",
   {
-    ad: 85,
+    ad: 82,
     abilityHaste: 10,
     lethality: 18,
   },
@@ -1484,7 +1484,7 @@ const Hubris5Stacks = new Item(
 const Hubris10Stacks = new Item(
   "Hubris (10 stacks)",
   {
-    ad: 95,
+    ad: 97,
     abilityHaste: 10,
     lethality: 18,
   },
@@ -1495,7 +1495,7 @@ const Hubris10Stacks = new Item(
 const Hubris20Stacks = new Item(
   "Hubris (20 stacks)",
   {
-    ad: 115,
+    ad: 127,
     abilityHaste: 10,
     lethality: 18,
   },
@@ -1682,7 +1682,7 @@ const LichBane = new Item(
   {
     ap: 100,
     abilityHaste: 10,
-    msPercent: 4,
+    msPercent: 6,
   },
   [],
   "Spellblade",
@@ -1693,9 +1693,9 @@ const LichBaneSpellblade = new Item(
   {
     ap: 100,
     abilityHaste: 10,
-    msPercent: 4,
+    msPercent: 6,
     magicOnHitBaseADPercent: 75,
-    magicOnHitAPRatio: 40,
+    magicOnHitAPRatio: 45,
   },
   [],
   "Spellblade",
@@ -1730,8 +1730,9 @@ const Malignance = new Item(
     ap: 90,
     abilityHaste: 15,
     mana: 600,
+    ultAbilityHaste: 20,
     magicDotDamage: 60,
-    magicDotDamagePerAPRatio: 5,
+    magicDotDamagePerAPRatio: 6,
     magicResistReduction: 10,
   },
   [],
@@ -1741,9 +1742,9 @@ const Malignance = new Item(
 const Morellonomicon = new Item(
   "Morellonomicon",
   {
-    ap: 80,
+    ap: 75,
     hp: 350,
-    flatMagicPen: 15,
+    abilityHaste: 15,
   },
   [],
   "Morellonomicon",
@@ -2237,16 +2238,6 @@ const SpearOfShojinMaxStacks = new Item(
   "Spear of Shojin",
 );
 
-const SpectralCutlass = new Item(
-  "Spectral Cutlass",
-  {
-    ad: 45,
-    abilityHaste: 15,
-    lethality: 12,
-  },
-  [],
-  "Spectral Cutlass",
-);
 
 const SpiritVisage = new Item(
   "Spirit Visage",
@@ -2275,7 +2266,8 @@ const StaffOfFlowingWater = new Item(
 const StatikkShiv = new Item(
   "Statikk Shiv",
   {
-    ad: 45,
+    ad: 40,
+    ap: 45,
     attackSpeed: 30,
     msPercent: 4,
   },
@@ -2288,7 +2280,6 @@ const SteraksGage = new Item(
   {
     hp: 400,
     adPerBaseADPercent: 45,
-    shieldValue: 350,
   },
   [],
   "Lifeline",
@@ -2523,7 +2514,7 @@ const VoltaicCyclosword = new Item(
   {
     ad: 55,
     abilityHaste: 10,
-    lethality: 18,
+    lethality: 10,
   },
   [],
   "Voltaic Cyclosword",
@@ -4150,14 +4141,6 @@ class Character {
     const mit = resolveDpsMitigation(mitigation);
     const champBase = championBaseStatsAtLevel(this, sim.level);
     const stats = this.getTotalStats(sim.level);
-    const physMit = physicalMitigationMultiplier(
-      mit.targetArmor,
-      stats,
-      sim.level,
-    );
-    const magicMit = magicMitigationMultiplier(mit.targetMR, stats);
-    /** For spell-only scenarios: no AAs, no on-hit DPS, no Navori-style CDR from attacks. */
-    const attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
     const breakdown: string[] = [];
 
     const totalAbilityHasteEarly =
@@ -4216,6 +4199,17 @@ class Character {
       stats.damageAmplificationOnTarget =
         itemMech.effectiveDamageAmplificationOnTarget;
     }
+
+    // Compute mitigation AFTER itemMech has applied armor reduction, magic pen, etc.
+    const physMit = physicalMitigationMultiplier(
+      mit.targetArmor,
+      stats,
+      sim.level,
+    );
+    const magicMit = magicMitigationMultiplier(mit.targetMR, stats);
+    /** For spell-only scenarios: no AAs, no on-hit DPS, no Navori-style CDR from attacks. */
+    const attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
+
     if (itemMech.bonusAP > 0) stats.ap += itemMech.bonusAP;
     if (itemMech.bonusHP > 0) {
       stats.hp += itemMech.bonusHP;
@@ -29906,7 +29900,6 @@ export const Items: Item[] = [
   SolsticeSleigh,
   SpearOfShojin,
   SpearOfShojinMaxStacks,
-  SpectralCutlass,
   SpiritVisage,
   StaffOfFlowingWater,
   StatikkShiv,
