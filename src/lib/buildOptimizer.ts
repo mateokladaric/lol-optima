@@ -226,12 +226,12 @@ const DEFAULT_DUEL: ResolvedDuel = {
 
 /** Duel assumptions for `npm run compute-meta` / Meta Analysis (squishy carry, short burst). */
 export const META_DUEL_DEFAULTS: ResolvedDuel = {
-  targetMaxHP: 1500,
+  targetMaxHP: 3000,
   targetBonusHP: 0,
   incomingPhysShare: 0.5,
-  targetArmor: 50,
-  targetMR: 50,
-  comboWindowSeconds: 3,
+  targetArmor: 150,
+  targetMR: 150,
+  comboWindowSeconds: 1,
 };
 
 export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
