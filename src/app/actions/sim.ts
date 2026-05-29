@@ -732,7 +732,7 @@ const BlackCleaver = new Item(
     hp: 400,
   },
   [],
-  "Black Cleaver",
+  "Last Whisper",
 );
 
 const BlackCleaverCarve = new Item(
@@ -744,7 +744,7 @@ const BlackCleaverCarve = new Item(
     armorReduction: 30,
   },
   [],
-  "Black Cleaver",
+  "Last Whisper",
 );
 
 const BlackCleaverFervor = new Item(
@@ -756,7 +756,7 @@ const BlackCleaverFervor = new Item(
     ms: 20,
   },
   [],
-  "Black Cleaver",
+  "Last Whisper",
 );
 
 const BlackCleaverCarveFervor = new Item(
@@ -769,7 +769,7 @@ const BlackCleaverCarveFervor = new Item(
     ms: 20,
   },
   [],
-  "Black Cleaver",
+  "Last Whisper",
 );
 
 const BlackfireTorch = new Item(
@@ -2238,7 +2238,6 @@ const SpearOfShojinMaxStacks = new Item(
   "Spear of Shojin",
 );
 
-
 const SpiritVisage = new Item(
   "Spirit Visage",
   {
@@ -2759,8 +2758,7 @@ export function championApAdScalingScores(
     for (const block of [ability.damage, ability.burstDamage]) {
       if (!block || !damageBlockHasScaling(block)) continue;
 
-      let weight =
-        rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+      let weight = rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
       const apR = damageBlockApRatio(block, level);
       const adR = damageBlockAdRatio(block, level);
       if (apR <= 0 && adR <= 0) continue;
@@ -2792,7 +2790,10 @@ export function championUsesApScaling(
   return apScore >= adScore * 0.65;
 }
 
-function damageBlockIncomingWeight(block: DamageScaling, level: number): number {
+function damageBlockIncomingWeight(
+  block: DamageScaling,
+  level: number,
+): number {
   let w = damageBlockAdRatio(block, level) + damageBlockApRatio(block, level);
   if (block.baseDamage) {
     w = Math.max(w, scalingMaxAtLevel(block.baseDamage, level));
@@ -2823,8 +2824,7 @@ export function championIncomingPhysShare(
     for (const block of [ability.damage, ability.burstDamage]) {
       if (!block || !damageBlockHasScaling(block)) continue;
 
-      let rotWeight =
-        rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+      let rotWeight = rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
       const apR = damageBlockApRatio(block, level);
       const adR = damageBlockAdRatio(block, level);
       if (apR <= 0 && adR <= 0) continue;
@@ -3190,9 +3190,7 @@ export function runeConditionUptime(
       const threshold = c.threshold / 100;
       if (op === "<" || op === "<=") {
         uptime *=
-          sim.avgCurrentHPRatio <= threshold
-            ? 1
-            : sim.conditionalLowHpUptime;
+          sim.avgCurrentHPRatio <= threshold ? 1 : sim.conditionalLowHpUptime;
       } else if (op === ">" || op === ">=") {
         uptime *= sim.avgCurrentHPRatio >= threshold ? 1 : 0.15;
       }
@@ -3200,9 +3198,7 @@ export function runeConditionUptime(
       const op = c.operator ?? ">";
       if (op === ">") {
         uptime *=
-          targetBonusHP > c.threshold
-            ? sim.conditionalHighHpUptime
-            : 0.2;
+          targetBonusHP > c.threshold ? sim.conditionalHighHpUptime : 0.2;
       }
     }
   }
@@ -3225,7 +3221,10 @@ function collectRuneDamageMultipliers(
           effect.cooldown,
           3 / Math.max(attackRate, 0.1),
         );
-        const ampUptime = Math.min(1, PTA_AMP_DURATION_SECONDS / secondsBetween);
+        const ampUptime = Math.min(
+          1,
+          PTA_AMP_DURATION_SECONDS / secondsBetween,
+        );
         ptaAmpMultiplier *= 1 + (effect.statMultiplier / 100) * ampUptime;
       }
       continue;
@@ -3649,7 +3648,9 @@ function mitigatedAbilityHit(
   if (t === "adaptive") {
     return (
       damage *
-      (stats.ad >= stats.ap ? abilityPhysMult * physMit : abilityMagicMult * magicMit)
+      (stats.ad >= stats.ap
+        ? abilityPhysMult * physMit
+        : abilityMagicMult * magicMit)
     );
   }
   return damage * abilityPhysMult * physMit;
@@ -3727,8 +3728,7 @@ function simulateComboWindowDamage(
         const gap = Math.min(1 / attackRate, window - t);
         t += gap;
         const autosInGap = gap * attackRate;
-        total +=
-          (autoHitAfterMit + onHitPerAutoMit) * autoWeight * autosInGap;
+        total += (autoHitAfterMit + onHitPerAutoMit) * autoWeight * autosInGap;
       } else {
         let nextReady = window;
         for (const type of castOrder) {
@@ -4037,7 +4037,10 @@ class Character {
     }
 
     // Calculate final AS with bonus attack speed percentage, capped at 2.5
-    const finalAS = Math.min(2.5, baseStats.baseAS * (1 + baseStats.attackSpeed / 100));
+    const finalAS = Math.min(
+      2.5,
+      baseStats.baseAS * (1 + baseStats.attackSpeed / 100),
+    );
 
     // Calculate final MS with bonus movement speed percentage
     const finalMS = baseStats.ms * (1 + baseStats.msPercent / 100);
@@ -4055,14 +4058,14 @@ class Character {
     const finalHP = champBase.hp + bonusHP;
 
     // Calculate bonus AD from max mana (e.g., Manamune/Muramana Awe passive)
-    const bonusADFromMana =
-      (totalMana * baseStats.adPerMaxManaPercent) / 100;
+    const bonusADFromMana = (totalMana * baseStats.adPerMaxManaPercent) / 100;
 
     // Calculate bonus AD from bonus HP (e.g., Overlord's Bloodmail Tyranny passive)
     const bonusADFromHP = (bonusHP * baseStats.adPerBonusHPPercent) / 100;
 
     // Calculate bonus AD from base AD (e.g., Sterak's Gage The Claws that Catch passive)
-    const bonusADFromBaseAD = (champBase.ad * baseStats.adPerBaseADPercent) / 100;
+    const bonusADFromBaseAD =
+      (champBase.ad * baseStats.adPerBaseADPercent) / 100;
 
     // Calculate base total AD (before multipliers)
     const baseTotalAD =
@@ -4143,8 +4146,7 @@ class Character {
     const stats = this.getTotalStats(sim.level);
     const breakdown: string[] = [];
 
-    const totalAbilityHasteEarly =
-      stats.abilityHaste + stats.basicAbilityHaste;
+    const totalAbilityHasteEarly = stats.abilityHaste + stats.basicAbilityHaste;
     const mechanicCtx = buildItemMechanicContext(
       this,
       mit,
@@ -4213,8 +4215,7 @@ class Character {
     if (itemMech.bonusAP > 0) stats.ap += itemMech.bonusAP;
     if (itemMech.bonusHP > 0) {
       stats.hp += itemMech.bonusHP;
-      stats.ap +=
-        (itemMech.bonusHP * (stats.apPerBonusHPPercent ?? 0)) / 100;
+      stats.ap += (itemMech.bonusHP * (stats.apPerBonusHPPercent ?? 0)) / 100;
     }
     if (itemMech.bonusMana > 0) stats.mana += itemMech.bonusMana;
     if (itemMech.bonusCritChance > 0) {
@@ -4307,9 +4308,15 @@ class Character {
         // Spellblade has a 1.5s ICD — scale damage by proc uptime
         const uptime = spellbladeOnHitUptime(attackRate);
         const dmg = rawDmg * uptime;
-        addOnHitPhys(dmg, `Spellblade on-hit (${(uptime * 100).toFixed(0)}% uptime): +${dmg.toFixed(1)}`);
+        addOnHitPhys(
+          dmg,
+          `Spellblade on-hit (${(uptime * 100).toFixed(0)}% uptime): +${dmg.toFixed(1)}`,
+        );
       } else {
-        addOnHitPhys(rawDmg, `Physical on-hit (base AD): +${rawDmg.toFixed(1)}`);
+        addOnHitPhys(
+          rawDmg,
+          `Physical on-hit (base AD): +${rawDmg.toFixed(1)}`,
+        );
       }
     }
     if (stats.physicalOnHitCurrentHealthPercent) {
@@ -4329,8 +4336,7 @@ class Character {
       const maxMana = stats.mana;
       const rawMuramana = (maxMana * stats.physicalOnHitMaxManaPercent) / 100;
       const muramanaIcd = 1.5;
-      const uptime =
-        attackRate > 0 ? spellbladeOnHitUptime(attackRate) : 0;
+      const uptime = attackRate > 0 ? spellbladeOnHitUptime(attackRate) : 0;
       const dmg = scaleItemOnHit(rawMuramana * (attackRate > 0 ? uptime : 0));
       if (dmg > 0) {
         addOnHitPhys(
@@ -4355,7 +4361,10 @@ class Character {
       if (hasSpellbladeItemMagic && attackRate > 0) {
         const uptime = spellbladeOnHitUptime(attackRate);
         const dmg = rawDmg * uptime;
-        addOnHitMagic(dmg, `Spellblade magic on-hit (${(uptime * 100).toFixed(0)}% uptime): +${dmg.toFixed(1)}`);
+        addOnHitMagic(
+          dmg,
+          `Spellblade magic on-hit (${(uptime * 100).toFixed(0)}% uptime): +${dmg.toFixed(1)}`,
+        );
       } else {
         addOnHitMagic(rawDmg, `Magic on-hit (base AD): +${rawDmg.toFixed(1)}`);
       }
@@ -4405,7 +4414,11 @@ class Character {
           ? sim.level
           : ability.abilityType === "R"
             ? Math.max(1, ultRankAtLevel(sim.level))
-            : abilityRankAtLevel(sim.level, ability.abilityType as "Q" | "W" | "E", this.Name);
+            : abilityRankAtLevel(
+                sim.level,
+                ability.abilityType as "Q" | "W" | "E",
+                this.Name,
+              );
 
       if (ability.damage.baseDamage) {
         onHitDamage += ability.getValueAtLevel(
@@ -4563,11 +4576,7 @@ class Character {
       }
 
       if (effect.cooldown) {
-        const { dps, label } = runeProcSustainedDPS(
-          damage,
-          effect,
-          attackRate,
-        );
+        const { dps, label } = runeProcSustainedDPS(damage, effect, attackRate);
         addRuneTimedDPS(dps, effect.damage?.damageType, label);
       }
     }
@@ -4624,10 +4633,9 @@ class Character {
         ? (stats.trueOnAbilityHit ?? 0) +
           (stats.lethality ?? 0) * (stats.trueOnAbilityHitPerLethality ?? 0)
         : 0;
-    const muramanaShockProc =
-      stats.physicalOnAbilityHitMaxManaPercent
-        ? (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100
-        : 0;
+    const muramanaShockProc = stats.physicalOnAbilityHitMaxManaPercent
+      ? (stats.mana * stats.physicalOnAbilityHitMaxManaPercent) / 100
+      : 0;
 
     for (const ability of abilities) {
       // Skip passives and on-hit abilities (already counted in on-hit DPS)
@@ -4641,7 +4649,11 @@ class Character {
       const abilityRank =
         ability.abilityType === "R"
           ? ultRankAtLevel(sim.level)
-          : abilityRankAtLevel(sim.level, ability.abilityType as "Q" | "W" | "E", this.Name);
+          : abilityRankAtLevel(
+              sim.level,
+              ability.abilityType as "Q" | "W" | "E",
+              this.Name,
+            );
       if (abilityRank <= 0) continue;
       const baseCooldown = ability.getCooldownAtLevel(abilityRank);
       if (baseCooldown === 0) continue;
@@ -4814,10 +4826,7 @@ class Character {
             stats.lethality * stats.trueOnAbilityHitPerLethality;
         }
       }
-      if (
-        stats.physicalOnAbilityHitMaxManaPercent &&
-        physAbilityHitIcd <= 0
-      ) {
+      if (stats.physicalOnAbilityHitMaxManaPercent && physAbilityHitIcd <= 0) {
         onAbilityHitPhys += muramanaShockProc;
       }
 
@@ -4898,11 +4907,7 @@ class Character {
         );
         const effectiveCooldown = effect.cooldown * (1 - abilityCDR);
         const condUptime = effect.conditions
-          ? runeConditionUptime(
-              effect.conditions,
-              sim,
-              targetBonusHP,
-            )
+          ? runeConditionUptime(effect.conditions, sim, targetBonusHP)
           : 1;
         const runeDPS = (damage / effectiveCooldown) * condUptime;
         const runeType = effect.damage?.damageType ?? "magic";
@@ -4920,7 +4925,7 @@ class Character {
       }
     }
 
-  const { runeMultiplier, ptaAmpMultiplier } = collectRuneDamageMultipliers(
+    const { runeMultiplier, ptaAmpMultiplier } = collectRuneDamageMultipliers(
       runeEffects,
       sim,
       targetBonusHP,
@@ -4950,8 +4955,7 @@ class Character {
       ptaAmpMultiplier;
 
     // Physical multiplier (for auto attacks and physical on-hit)
-    const totalPhysicalMultiplier =
-      baseMultiplier * physicalDamageMultiplier;
+    const totalPhysicalMultiplier = baseMultiplier * physicalDamageMultiplier;
 
     // Magic multiplier (for magic on-hit and magic DoT)
     const totalMagicMultiplier = baseMultiplier * magicDamageMultiplier;
@@ -4980,8 +4984,7 @@ class Character {
       ptaAmpMultiplier *
       (1 +
         ((stats.abilityDamageMultiplicative || 0) + abilityDamageFromAP) / 100);
-    const abilityPhysMult =
-      abilityBaseMult * physicalDamageMultiplier;
+    const abilityPhysMult = abilityBaseMult * physicalDamageMultiplier;
     const abilityMagicMult = abilityBaseMult * magicDamageMultiplier;
     // 6. Calculate Burst Damage (one-time damage at combat start)
     let burstPhys = 0;
@@ -5025,7 +5028,11 @@ class Character {
             ? sim.level
             : ability.abilityType === "R"
               ? Math.max(1, ultRankAtLevel(sim.level))
-              : abilityRankAtLevel(sim.level, ability.abilityType as "Q" | "W" | "E", this.Name);
+              : abilityRankAtLevel(
+                  sim.level,
+                  ability.abilityType as "Q" | "W" | "E",
+                  this.Name,
+                );
 
         // Calculate burst damage from burstDamage field
         let abilityBurstDmg = 0;
@@ -5195,9 +5202,7 @@ class Character {
 
     const hasFirstStrike = runeEffects.some(
       (e) =>
-        e.type === "conditional" &&
-        e.statMultiplier === 7 &&
-        e.cooldown === 12,
+        e.type === "conditional" && e.statMultiplier === 7 && e.cooldown === 12,
     );
     if (hasFirstStrike) {
       const fsUptime = sim.conditionalGeneralUptime * (5 / 12);
@@ -5303,9 +5308,7 @@ const AhriQ = new Ability(
   undefined,
   undefined,
   undefined,
-  [
-    "Outward pass: 40/65/90/115/140 (+45% AP) magic damage",
-  ],
+  ["Outward pass: 40/65/90/115/140 (+45% AP) magic damage"],
 );
 
 const AhriQReturn = new Ability(
@@ -5330,9 +5333,7 @@ const AhriQReturn = new Ability(
   undefined,
   undefined,
   undefined,
-  [
-    "Return pass: 40/65/90/115/140 (+45% AP) true damage",
-  ],
+  ["Return pass: 40/65/90/115/140 (+45% AP) true damage"],
 );
 
 const AhriW = new Ability(
@@ -28649,13 +28650,7 @@ const Zyra = new Character(
 
 // Exports
 export { Character, Ability, Item };
-export type {
-  DamageScaling,
-  CooldownInfo,
-  CastInfo,
-  EffectInfo,
-  ScalingValue,
-};
+export type { DamageScaling, CooldownInfo, CastInfo, EffectInfo, ScalingValue };
 
 // ===== RUNE DEFINITIONS =====
 
@@ -29542,34 +29537,149 @@ const HealthScalingShard: Rune = {
 
 // Base mana values from Data Dragon (level 1). Only set for actual mana users.
 const CHAMPION_BASE_MANA: Record<string, number> = {
-  Ahri: 418, Akshan: 350, Alistar: 350, Amumu: 285, Anivia: 495, Annie: 418,
-  Aphelios: 348, Ashe: 280, "Aurelion Sol": 530, Aurora: 475, Azir: 320,
-  Bard: 350, Blitzcrank: 267, Brand: 469, Braum: 311, Caitlyn: 315,
-  Camille: 339, Cassiopeia: 480, "Cho'Gath": 270, Corki: 350, Darius: 263,
-  Diana: 375, Draven: 361, Ekko: 280, Elise: 324, Evelynn: 315, Ezreal: 375,
-  Fiddlesticks: 500, Fiora: 300, Fizz: 317, Galio: 410, Gangplank: 280,
-  Gragas: 400, Graves: 325, Gwen: 330, Hecarim: 280, Heimerdinger: 385,
-  Hwei: 480, Illaoi: 350, Irelia: 350, Ivern: 450, Janna: 360,
-  "Jarvan IV": 300, Jax: 339, Jayce: 375, Jhin: 300, Jinx: 260,
-  "Kai'Sa": 345, Kalista: 300, Karma: 374, Karthus: 467, Kassadin: 400,
-  Kayle: 330, Kayn: 410, Kindred: 300, "Kog'Maw": 325, "K'Sante": 320,
-  LeBlanc: 400, Leona: 302, Lillia: 410, Lissandra: 475, Lucian: 320,
-  Lulu: 350, Lux: 440, Malphite: 280, Malzahar: 375, Maokai: 375,
-  "Master Yi": 251, Mel: 480, Milio: 365, "Miss Fortune": 300, Morgana: 340,
-  Naafiri: 400, Nami: 365, Nasus: 326, Nautilus: 400, Neeko: 450,
-  Nidalee: 295, Nilah: 350, Nocturne: 275, "Nunu & Willump": 280, Olaf: 316,
-  Orianna: 418, Ornn: 341, Pantheon: 317, Poppy: 280, Pyke: 415,
-  Qiyana: 375, Quinn: 269, Rakan: 315, Rammus: 310, Rell: 320,
-  "Renata Glasc": 350, Ryze: 300, Samira: 349, Sejuani: 400, Senna: 350,
-  Seraphine: 360, Shaco: 297, Singed: 330, Sion: 400, Sivir: 340,
-  Skarner: 320, Smolder: 300, Sona: 340, Soraka: 425, Swain: 400,
-  Sylas: 400, Syndra: 480, "Tahm Kench": 325, Taliyah: 470, Talon: 400,
-  Taric: 300, Teemo: 334, Thresh: 274, Tristana: 300, Trundle: 340,
-  "Twisted Fate": 333, Twitch: 300, Udyr: 271, Urgot: 340, Varus: 320,
-  Vayne: 232, Veigar: 490, "Vel'Koz": 469, Vex: 490, Vi: 295, Viktor: 405,
-  Volibear: 350, Warwick: 280, Wukong: 330, Xayah: 340, Xerath: 400,
-  "Xin Zhao": 274, Yorick: 300, Yunara: 275, Yuumi: 440, Zaahen: 350,
-  Zeri: 250, Ziggs: 480, Zilean: 452, Zoe: 425, Zyra: 418,
+  Ahri: 418,
+  Akshan: 350,
+  Alistar: 350,
+  Amumu: 285,
+  Anivia: 495,
+  Annie: 418,
+  Aphelios: 348,
+  Ashe: 280,
+  "Aurelion Sol": 530,
+  Aurora: 475,
+  Azir: 320,
+  Bard: 350,
+  Blitzcrank: 267,
+  Brand: 469,
+  Braum: 311,
+  Caitlyn: 315,
+  Camille: 339,
+  Cassiopeia: 480,
+  "Cho'Gath": 270,
+  Corki: 350,
+  Darius: 263,
+  Diana: 375,
+  Draven: 361,
+  Ekko: 280,
+  Elise: 324,
+  Evelynn: 315,
+  Ezreal: 375,
+  Fiddlesticks: 500,
+  Fiora: 300,
+  Fizz: 317,
+  Galio: 410,
+  Gangplank: 280,
+  Gragas: 400,
+  Graves: 325,
+  Gwen: 330,
+  Hecarim: 280,
+  Heimerdinger: 385,
+  Hwei: 480,
+  Illaoi: 350,
+  Irelia: 350,
+  Ivern: 450,
+  Janna: 360,
+  "Jarvan IV": 300,
+  Jax: 339,
+  Jayce: 375,
+  Jhin: 300,
+  Jinx: 260,
+  "Kai'Sa": 345,
+  Kalista: 300,
+  Karma: 374,
+  Karthus: 467,
+  Kassadin: 400,
+  Kayle: 330,
+  Kayn: 410,
+  Kindred: 300,
+  "Kog'Maw": 325,
+  "K'Sante": 320,
+  LeBlanc: 400,
+  Leona: 302,
+  Lillia: 410,
+  Lissandra: 475,
+  Lucian: 320,
+  Lulu: 350,
+  Lux: 440,
+  Malphite: 280,
+  Malzahar: 375,
+  Maokai: 375,
+  "Master Yi": 251,
+  Mel: 480,
+  Milio: 365,
+  "Miss Fortune": 300,
+  Morgana: 340,
+  Naafiri: 400,
+  Nami: 365,
+  Nasus: 326,
+  Nautilus: 400,
+  Neeko: 450,
+  Nidalee: 295,
+  Nilah: 350,
+  Nocturne: 275,
+  "Nunu & Willump": 280,
+  Olaf: 316,
+  Orianna: 418,
+  Ornn: 341,
+  Pantheon: 317,
+  Poppy: 280,
+  Pyke: 415,
+  Qiyana: 375,
+  Quinn: 269,
+  Rakan: 315,
+  Rammus: 310,
+  Rell: 320,
+  "Renata Glasc": 350,
+  Ryze: 300,
+  Samira: 349,
+  Sejuani: 400,
+  Senna: 350,
+  Seraphine: 360,
+  Shaco: 297,
+  Singed: 330,
+  Sion: 400,
+  Sivir: 340,
+  Skarner: 320,
+  Smolder: 300,
+  Sona: 340,
+  Soraka: 425,
+  Swain: 400,
+  Sylas: 400,
+  Syndra: 480,
+  "Tahm Kench": 325,
+  Taliyah: 470,
+  Talon: 400,
+  Taric: 300,
+  Teemo: 334,
+  Thresh: 274,
+  Tristana: 300,
+  Trundle: 340,
+  "Twisted Fate": 333,
+  Twitch: 300,
+  Udyr: 271,
+  Urgot: 340,
+  Varus: 320,
+  Vayne: 232,
+  Veigar: 490,
+  "Vel'Koz": 469,
+  Vex: 490,
+  Vi: 295,
+  Viktor: 405,
+  Volibear: 350,
+  Warwick: 280,
+  Wukong: 330,
+  Xayah: 340,
+  Xerath: 400,
+  "Xin Zhao": 274,
+  Yorick: 300,
+  Yunara: 275,
+  Yuumi: 440,
+  Zaahen: 350,
+  Zeri: 250,
+  Ziggs: 480,
+  Zilean: 452,
+  Zoe: 425,
+  Zyra: 418,
 };
 
 // Export arrays for easy import
