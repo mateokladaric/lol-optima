@@ -317,6 +317,9 @@ function BuildFinder(): React.ReactElement {
       setLiveImportStatus({ kind: "error", message: result.message });
       return;
     }
+    if (result.data.resolvedRegion) {
+      setLiveRegion(result.data.resolvedRegion);
+    }
     const you = Characters.find((c) => c.Name === result.data.myChampion);
     if (you) setSelectedChampion(you);
     setEnemyTeam(result.data.enemyTeam);

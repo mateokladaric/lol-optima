@@ -4,11 +4,11 @@
  * Confirmed endpoints (2026-06):
  * - GET https://lol-api-summoner.op.gg/api/v3/{region}/summoners?riot_id={gameName%23tag}&hl=en_US
  * - POST https://op.gg/lol/summoners/{region}/{slug}/ingame (Next-Action renewal server action)
- * - GET https://lol-api-summoner.op.gg/api/v3/{region}/summoners/renew?puuid={puuid}&hl=en_US
- * - GET https://lol-api-summoner.op.gg/api/{region}/games/spectate?created_at={token}&summoner_id={id}&hl=en_US
+ * - POST ingame page Next-Action getInGameInfo (teamsData + champion_name)
+ * - GET https://lol-api-summoner.op.gg/api/{region}/games/spectate (fallback; created_at is encrypted game_id)
  *
- * Live game is loaded client-side on OP.GG only after "Update" (renewal). `created_at` on spectate is an
- * encrypted game token from GET /renew when in game — not profile revision/updated timestamps.
+ * Flow: summoner search → renewal (Update) → getInGameInfo server action (retries). Region is auto-detected
+ * across common servers when the selected region is wrong.
  */
 
 import { Characters } from "@/app/actions/sim";
@@ -16,13 +16,17 @@ import { Characters } from "@/app/actions/sim";
 const SUMMONER_API = "https://lol-api-summoner.op.gg/api";
 const OPGG_WEB = "https://op.gg";
 
-/** OP.GG Next.js server action ids (ingame page, chunk 606). */
+/** OP.GG Next.js server action ids (ingame page chunks). */
 const OPGG_RENEWAL_ACTION = "405a04669583947dc03eb8c7f367adf28c8f714e86";
 const OPGG_RENEWAL_STATUS_ACTION = "400c02bdfd8c90756a329b312a7455e73880ad43ec";
+const OPGG_INGAME_INFO_ACTION = "40f052435807841afcefdd3e993b4a019b4a1bf970";
 
 const RENEW_POLL_MS = 1500;
 const RENEW_POLL_MAX = 20;
-const RENEW_TOKEN_RETRIES = 6;
+const INGAME_INFO_RETRIES = 4;
+const INGAME_INFO_RETRY_MS = 1000;
+
+const REGION_FALLBACK_ORDER = ["na", "euw", "eune", "kr", "oce", "br", "lan", "las"] as const;
 
 const OPGG_FETCH_HEADERS: Record<string, string> = {
   Accept: "application/json",
@@ -30,12 +34,6 @@ const OPGG_FETCH_HEADERS: Record<string, string> = {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   Origin: OPGG_WEB,
   Referer: `${OPGG_WEB}/`,
-};
-
-const RSC_HEADERS: Record<string, string> = {
-  Accept: "text/x-component",
-  RSC: "1",
-  "User-Agent": OPGG_FETCH_HEADERS["User-Agent"] ?? "Mozilla/5.0",
 };
 
 /** UI region code → OP.GG API path segment (lowercase). */
@@ -61,6 +59,8 @@ export type LiveGameImport = {
   myChampion: string;
   enemyTeam: string[];
   queueLabel?: string;
+  /** OP.GG region segment where the account was found (may differ from UI selection). */
+  resolvedRegion?: string;
 };
 
 export type LiveGameErrorCode =
@@ -115,6 +115,29 @@ type OpggLivePayload = {
   participants?: OpggParticipant[];
   queue_info?: { description?: string; name?: string };
   game_type?: string;
+};
+
+type OpggInGameParticipant = {
+  puuid?: string;
+  game_name?: string;
+  tagline?: string;
+  champion_name?: string;
+  team_key?: string;
+};
+
+type OpggInGameTeam = {
+  key?: string;
+  participants?: OpggInGameParticipant[];
+};
+
+type OpggInGamePayload = {
+  game_id?: string;
+  created_at?: string;
+  game_type?: { game_translate?: string; game_type?: string };
+  teamsData?: {
+    blueTeam?: OpggInGameTeam;
+    redTeam?: OpggInGameTeam;
+  };
 };
 
 let championKeyCache: Map<number, string> | null = null;
@@ -180,25 +203,11 @@ async function fetchJson<T>(url: string, headers: Record<string, string>): Promi
   return body as T;
 }
 
-async function searchSummoner(
-  region: string,
+function pickSummonerFromList(
+  list: OpggSummonerRecord[],
   gameName: string,
   tagLine: string,
-): Promise<OpggSummonerRecord> {
-  const riotId = encodeURIComponent(`${gameName}#${tagLine}`);
-  const url = `${SUMMONER_API}/v3/${region}/summoners?riot_id=${riotId}&hl=en_US`;
-  const body = await fetchJson<{ data?: OpggSummonerRecord[] }>(
-    url,
-    OPGG_FETCH_HEADERS,
-  );
-  const list = body.data ?? [];
-  if (list.length === 0) {
-    throw new LiveGameError(
-      "NOT_FOUND",
-      `No summoner found for ${gameName}#${tagLine} in ${region.toUpperCase()}. Check the region and Riot ID.`,
-    );
-  }
-
+): OpggSummonerRecord | null {
   const wantName = gameName.toLowerCase();
   const wantTag = normalizeTag(tagLine);
   const exact = list.filter(
@@ -207,13 +216,57 @@ async function searchSummoner(
       normalizeTag(s.tagline) === wantTag,
   );
   const pool = exact.length > 0 ? exact : list;
-
   const ranked = pool.find((s) => s.solo_tier_info != null);
-  const pick = ranked ?? pool[0];
-  if (!pick) {
-    throw new LiveGameError("NOT_FOUND", "No summoner matched that Riot ID.");
+  return ranked ?? pool[0] ?? null;
+}
+
+async function searchSummonerInRegion(
+  region: string,
+  gameName: string,
+  tagLine: string,
+): Promise<OpggSummonerRecord | null> {
+  const riotId = encodeURIComponent(`${gameName}#${tagLine}`);
+  const url = `${SUMMONER_API}/v3/${region}/summoners?riot_id=${riotId}&hl=en_US`;
+  try {
+    const body = await fetchJson<{ data?: OpggSummonerRecord[] }>(
+      url,
+      OPGG_FETCH_HEADERS,
+    );
+    return pickSummonerFromList(body.data ?? [], gameName, tagLine);
+  } catch (e) {
+    if (e instanceof LiveGameError && e.code === "NOT_FOUND") return null;
+    throw e;
   }
-  return pick;
+}
+
+async function searchSummoner(
+  region: string,
+  gameName: string,
+  tagLine: string,
+): Promise<OpggSummonerRecord & { resolvedRegion: string }> {
+  const normalized = normalizeOpggRegion(region);
+  let pick = await searchSummonerInRegion(normalized, gameName, tagLine);
+  let resolvedRegion = normalized;
+
+  if (!pick) {
+    const others = REGION_FALLBACK_ORDER.filter((r) => r !== normalized);
+    for (const r of others) {
+      pick = await searchSummonerInRegion(r, gameName, tagLine);
+      if (pick) {
+        resolvedRegion = r;
+        break;
+      }
+    }
+  }
+
+  if (!pick) {
+    throw new LiveGameError(
+      "NOT_FOUND",
+      `No summoner found for ${gameName}#${tagLine}. Check the Riot ID and region.`,
+    );
+  }
+
+  return { ...pick, resolvedRegion };
 }
 
 function ingamePageUrl(region: string, gameName: string, tagLine: string): string {
@@ -321,132 +374,6 @@ async function pollOpggRenewalUntilFinish(
   return state;
 }
 
-function isIsoTimestamp(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}T/.test(value);
-}
-
-/** Spectate `created_at` is an encrypted token, not a profile timestamp. */
-function isLikelySpectateGameToken(value: string): boolean {
-  if (isIsoTimestamp(value)) return false;
-  return value.length >= 24;
-}
-
-function collectSpectateTokensFromUnknown(value: unknown, out: string[]): void {
-  if (value == null) return;
-  if (typeof value === "string") {
-    if (isLikelySpectateGameToken(value)) out.push(value);
-    return;
-  }
-  if (Array.isArray(value)) {
-    for (const item of value) collectSpectateTokensFromUnknown(item, out);
-    return;
-  }
-  if (typeof value === "object") {
-    for (const v of Object.values(value as Record<string, unknown>)) {
-      collectSpectateTokensFromUnknown(v, out);
-    }
-  }
-}
-
-function extractSpectateTokensFromText(text: string): string[] {
-  const tokens: string[] = [];
-  const trimmed = text.trim();
-  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-    try {
-      collectSpectateTokensFromUnknown(JSON.parse(trimmed) as unknown, tokens);
-    } catch {
-      // not JSON
-    }
-  }
-  for (const m of text.matchAll(/"created_at"\s*:\s*"([^"]+)"/g)) {
-    const token = m[1];
-    if (token && isLikelySpectateGameToken(token)) tokens.push(token);
-  }
-  for (const m of text.matchAll(/"game_id"\s*:\s*"([^"]+)"/g)) {
-    const token = m[1];
-    if (token && isLikelySpectateGameToken(token)) tokens.push(token);
-  }
-  const patterns = [
-    /"live_game"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
-    /"liveGame"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
-    /"spectate"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
-  ];
-  for (const re of patterns) {
-    const m = text.match(re);
-    if (m?.[1] && isLikelySpectateGameToken(m[1])) tokens.push(m[1]);
-  }
-  return [...new Set(tokens)];
-}
-
-async function fetchRenewGameToken(
-  region: string,
-  puuid: string,
-  referer: string,
-): Promise<string | null> {
-  const q = new URLSearchParams({ puuid, hl: "en_US" });
-  const url = `${SUMMONER_API}/v3/${region}/summoners/renew?${q}`;
-  const res = await fetch(url, {
-    headers: { ...OPGG_FETCH_HEADERS, Referer: referer },
-    cache: "no-store",
-  });
-  const text = await res.text();
-  if (res.status === 404) return null;
-  if (!res.ok) return null;
-  try {
-    const body = JSON.parse(text) as { data?: unknown };
-    const tokens: string[] = [];
-    collectSpectateTokensFromUnknown(body.data ?? body, tokens);
-    return tokens[0] ?? null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchRenewGameTokenWithRetries(
-  region: string,
-  puuid: string,
-  referer: string,
-): Promise<string | null> {
-  for (let i = 0; i < RENEW_TOKEN_RETRIES; i++) {
-    const token = await fetchRenewGameToken(region, puuid, referer);
-    if (token) return token;
-    if (i < RENEW_TOKEN_RETRIES - 1) {
-      await new Promise((r) => setTimeout(r, 800));
-    }
-  }
-  return null;
-}
-
-async function fetchIngameRsc(
-  region: string,
-  gameName: string,
-  tagLine: string,
-): Promise<string> {
-  const url = ingamePageUrl(region, gameName, tagLine);
-  const res = await fetch(url, { headers: RSC_HEADERS, cache: "no-store" });
-  if (!res.ok) {
-    throw new LiveGameError(
-      "OPGG_ERROR",
-      `Could not load OP.GG live game page (${res.status}).`,
-    );
-  }
-  return res.text();
-}
-
-function candidateSpectateTokens(
-  sources: string[],
-  renewal: OpggRenewalState,
-): string[] {
-  const candidates: string[] = [];
-  for (const src of sources) {
-    candidates.push(...extractSpectateTokensFromText(src));
-  }
-  if (renewal.lastUpdatedAt && isLikelySpectateGameToken(renewal.lastUpdatedAt)) {
-    candidates.push(renewal.lastUpdatedAt);
-  }
-  return [...new Set(candidates)];
-}
-
 async function fetchSpectate(
   region: string,
   summonerId: string,
@@ -507,7 +434,34 @@ const CHAMPION_ALIASES: Record<string, string> = {
   "Kha'Zix": "Khazix",
   "Vel'Koz": "Velkoz",
   "Rek'Sai": "RekSai",
+  "Lee Sin": "LeeSin",
+  "Master Yi": "MasterYi",
+  "Miss Fortune": "MissFortune",
+  "Twisted Fate": "TwistedFate",
+  "Jarvan IV": "JarvanIV",
+  "Aurelion Sol": "AurelionSol",
+  "BelVeth": "Belveth",
+  "Renata Glasc": "Renata",
 };
+
+function mapOpggDisplayChampion(displayName: string): string {
+  const aliased = CHAMPION_ALIASES[displayName];
+  if (aliased) {
+    const hit = Characters.find((c) => c.Name === aliased);
+    if (hit) return hit.Name;
+  }
+  const compact = displayName.replace(/[^a-zA-Z]/g, "");
+  const byCompact = Characters.find(
+    (c) => c.Name.toLowerCase() === compact.toLowerCase(),
+  );
+  if (byCompact) return byCompact.Name;
+  const byExact = Characters.find((c) => c.Name === displayName);
+  if (byExact) return byExact.Name;
+  throw new LiveGameError(
+    "CHAMPION_UNMAPPED",
+    `Champion "${displayName}" is not available in this simulator.`,
+  );
+}
 
 function resolveCharacterName(ddId: string): string | null {
   const aliased = CHAMPION_ALIASES[ddId] ?? ddId;
@@ -597,34 +551,112 @@ async function buildImportFromSpectateAsync(
   };
 }
 
-/** Parse embedded live payload from ingame RSC when spectate data is inlined. */
-function tryParseEmbeddedLiveGame(rsc: string): OpggLivePayload | null {
-  const idx = rsc.indexOf('"participants":');
-  if (idx < 0) return null;
-  const snippet = rsc.slice(idx, idx + 8000);
-  if (!snippet.includes("champion_id") || !snippet.includes("team_key")) {
-    return null;
-  }
-  const start = rsc.lastIndexOf("{", idx);
-  if (start < 0) return null;
-  let depth = 0;
-  for (let i = start; i < Math.min(rsc.length, start + 120000); i++) {
-    const ch = rsc[i];
-    if (ch === "{") depth++;
-    else if (ch === "}") {
-      depth--;
-      if (depth === 0) {
-        try {
-          const obj = JSON.parse(rsc.slice(start, i + 1)) as OpggLivePayload;
-          if (obj.participants && obj.participants.length >= 2) return obj;
-        } catch {
-          return null;
-        }
-        break;
-      }
+function parseInGameInfoActionResponse(text: string): OpggInGamePayload | null {
+  for (const line of text.split("\n")) {
+    if (!line.startsWith("1:") || !line.includes("teamsData")) continue;
+    try {
+      return JSON.parse(line.slice(2)) as OpggInGamePayload;
+    } catch {
+      continue;
     }
   }
   return null;
+}
+
+async function fetchInGameInfoViaAction(
+  region: string,
+  puuid: string,
+  pageUrl: string,
+): Promise<OpggInGamePayload | null> {
+  const text = await callOpggServerAction(
+    OPGG_INGAME_INFO_ACTION,
+    { region, puuid, locale: "en" },
+    pageUrl,
+  );
+  return parseInGameInfoActionResponse(text);
+}
+
+function buildImportFromInGamePayload(
+  payload: OpggInGamePayload,
+  summoner: OpggSummonerRecord,
+): LiveGameImport {
+  const blue = payload.teamsData?.blueTeam?.participants ?? [];
+  const red = payload.teamsData?.redTeam?.participants ?? [];
+  const all = [...blue, ...red];
+
+  const self =
+    all.find((p) => p.puuid === summoner.puuid) ??
+    all.find(
+      (p) =>
+        p.game_name?.toLowerCase() === summoner.game_name.toLowerCase() &&
+        normalizeTag(p.tagline ?? "") === normalizeTag(summoner.tagline),
+    );
+
+  if (!self?.champion_name) {
+    throw new LiveGameError(
+      "OPGG_ERROR",
+      "Could not determine your champion in the live game payload.",
+    );
+  }
+
+  const myTeamKey =
+    self.team_key ??
+    (blue.some((p) => p.puuid === summoner.puuid) ? "BLUE" : "RED");
+  const myChampion = mapOpggDisplayChampion(self.champion_name);
+
+  const enemyTeam: string[] = [];
+  const unmapped: string[] = [];
+  const enemies = myTeamKey === "BLUE" ? red : blue;
+
+  for (const p of enemies) {
+    if (!p.champion_name) continue;
+    try {
+      const name = mapOpggDisplayChampion(p.champion_name);
+      if (!enemyTeam.includes(name)) enemyTeam.push(name);
+    } catch (e) {
+      if (e instanceof LiveGameError && e.code === "CHAMPION_UNMAPPED") {
+        unmapped.push(p.champion_name);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  if (enemyTeam.length === 0) {
+    throw new LiveGameError(
+      "CHAMPION_UNMAPPED",
+      unmapped.length > 0
+        ? `Could not map enemy champions: ${unmapped.join(", ")}.`
+        : "No enemy champions found in the live game.",
+    );
+  }
+
+  return {
+    myChampion,
+    enemyTeam: enemyTeam.slice(0, 5),
+    queueLabel: payload.game_type?.game_translate ?? payload.game_type?.game_type,
+  };
+}
+
+async function fetchInGameInfoWithRetries(
+  region: string,
+  puuid: string,
+  pageUrl: string,
+): Promise<OpggInGamePayload | null> {
+  for (let i = 0; i < INGAME_INFO_RETRIES; i++) {
+    const payload = await fetchInGameInfoViaAction(region, puuid, pageUrl);
+    if (payload?.teamsData) return payload;
+    if (i < INGAME_INFO_RETRIES - 1) {
+      await new Promise((r) => setTimeout(r, INGAME_INFO_RETRY_MS));
+    }
+  }
+  return null;
+}
+
+function regionCodeFromOpggSegment(segment: string): OpggRegionCode {
+  const upper = segment.toUpperCase();
+  const hit = OPGG_REGION_OPTIONS.find((o) => o.value === upper);
+  return hit?.value ?? "NA";
 }
 
 export async function fetchOpggLiveGame(params: {
@@ -632,16 +664,13 @@ export async function fetchOpggLiveGame(params: {
   tagLine: string;
   region: string;
 }): Promise<LiveGameImport> {
-  const region = normalizeOpggRegion(params.region);
-  const summoner = await searchSummoner(region, params.gameName, params.tagLine);
+  const summoner = await searchSummoner(
+    params.region,
+    params.gameName,
+    params.tagLine,
+  );
+  const region = summoner.resolvedRegion;
   const pageUrl = ingamePageUrl(region, params.gameName, params.tagLine);
-  const spectateSummonerId = resolveSpectateSummonerId(summoner);
-
-  let rsc = await fetchIngameRsc(region, params.gameName, params.tagLine);
-  const embeddedInitial = tryParseEmbeddedLiveGame(rsc);
-  if (embeddedInitial) {
-    return buildImportFromSpectateAsync(embeddedInitial, summoner);
-  }
 
   let renewal = await triggerOpggRenewal(region, summoner.puuid, pageUrl);
   if (renewal.status === "RENEWING") {
@@ -653,54 +682,44 @@ export async function fetchOpggLiveGame(params: {
     );
   }
 
-  const renewToken = await fetchRenewGameTokenWithRetries(
-    region,
-    summoner.puuid,
-    pageUrl,
-  );
+  const inGame = await fetchInGameInfoWithRetries(region, summoner.puuid, pageUrl);
+  const resolvedRegion = regionCodeFromOpggSegment(region);
 
-  rsc = await fetchIngameRsc(region, params.gameName, params.tagLine);
-  const embeddedAfterRenew = tryParseEmbeddedLiveGame(rsc);
-  if (embeddedAfterRenew) {
-    return buildImportFromSpectateAsync(embeddedAfterRenew, summoner);
+  if (inGame?.teamsData) {
+    return {
+      ...buildImportFromInGamePayload(inGame, summoner),
+      resolvedRegion,
+    };
   }
 
-  const tokens = candidateSpectateTokens(
-    [rsc, renewToken ?? ""],
-    renewal,
-  );
-  if (renewToken && !tokens.includes(renewToken)) {
-    tokens.unshift(renewToken);
-  }
-
-  let lastStatus = 0;
-  let triedSpectate = false;
-  for (const createdAt of tokens) {
-    triedSpectate = true;
+  const spectateSummonerId = resolveSpectateSummonerId(summoner);
+  const gameId = inGame?.game_id;
+  if (gameId) {
+    const createdAt = inGame.created_at ?? gameId;
     const result = await fetchSpectate(region, spectateSummonerId, createdAt);
     if (result.ok) {
-      return buildImportFromSpectateAsync(result.data, summoner);
+      return {
+        ...(await buildImportFromSpectateAsync(result.data, summoner)),
+        resolvedRegion,
+      };
     }
-    lastStatus = result.status;
+    const result2 = await fetchSpectate(region, spectateSummonerId, gameId);
+    if (result2.ok) {
+      return {
+        ...(await buildImportFromSpectateAsync(result2.data, summoner)),
+        resolvedRegion,
+      };
+    }
   }
 
-  if (!triedSpectate || renewToken == null) {
-    throw new LiveGameError(
-      "NOT_IN_GAME",
-      `${params.gameName}#${params.tagLine} is not in an active game on OP.GG. Start a match, wait until OP.GG shows Live Game, then try again.`,
-    );
-  }
-
-  if (lastStatus === 404) {
-    throw new LiveGameError(
-      "NOT_IN_GAME",
-      `${params.gameName}#${params.tagLine} is not in an active game on OP.GG.`,
-    );
-  }
+  const regionHint =
+    resolvedRegion !== regionCodeFromOpggSegment(normalizeOpggRegion(params.region))
+      ? ` Account is on ${resolvedRegion}.`
+      : "";
 
   throw new LiveGameError(
     "NOT_IN_GAME",
-    `${params.gameName}#${params.tagLine} is not in an active game on OP.GG, or live data is not available yet.`,
+    `${params.gameName}#${params.tagLine} is not in an active game on OP.GG.${regionHint} Start a match, wait until OP.GG shows Live Game, then try again.`,
   );
 }
 
