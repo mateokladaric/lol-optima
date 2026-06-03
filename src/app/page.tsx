@@ -14,6 +14,8 @@ import {
   resolveDuel,
 } from "@/lib/buildOptimizer";
 import { purchaseLevelForItemCount } from "@/lib/purchaseOrder";
+import { OPGG_REGION_OPTIONS } from "@/lib/opggLiveGame";
+import { importLiveGameFromOpgg } from "./actions/liveGame";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
 
 type ScrapedChampionBuild = {
@@ -202,6 +204,14 @@ function BuildFinder(): React.ReactElement {
   const [enemyTeam, setEnemyTeam] = useState<string[]>([]);
   const [useAutoStats, setUseAutoStats] = useState(true);
 
+  const [liveRiotId, setLiveRiotId] = useState("");
+  const [liveRegion, setLiveRegion] = useState("NA");
+  const [liveImportBusy, setLiveImportBusy] = useState(false);
+  const [liveImportStatus, setLiveImportStatus] = useState<{
+    kind: "success" | "error";
+    message: string;
+  } | null>(null);
+
   useEffect(() => {
     fetch("/data/opggBuilds.json")
       .then((res) => (res.ok ? res.json() : null))
@@ -292,17 +302,108 @@ function BuildFinder(): React.ReactElement {
 
   const isAutoActive = useAutoStats && enemyTeam.length > 0 && autoStats !== null;
 
+  const missingOpggEnemies =
+    opggBuilds && enemyTeam.length > 0
+      ? enemyTeam.filter((name) => !opggBuilds.champions[name])
+      : [];
+
+  const handleLiveImport = useCallback(async () => {
+    if (liveImportBusy || !liveRiotId.trim()) return;
+    setLiveImportBusy(true);
+    setLiveImportStatus(null);
+    const result = await importLiveGameFromOpgg(liveRiotId.trim(), liveRegion);
+    setLiveImportBusy(false);
+    if (!result.ok) {
+      setLiveImportStatus({ kind: "error", message: result.message });
+      return;
+    }
+    const you = Characters.find((c) => c.Name === result.data.myChampion);
+    if (you) setSelectedChampion(you);
+    setEnemyTeam(result.data.enemyTeam);
+    setUseAutoStats(true);
+    setChampionSearch(result.data.myChampion);
+    const queue =
+      result.data.queueLabel != null ? ` (${result.data.queueLabel})` : "";
+    setLiveImportStatus({
+      kind: "success",
+      message: `Loaded ${result.data.myChampion} vs ${result.data.enemyTeam.join(", ")}${queue}`,
+    });
+  }, [liveImportBusy, liveRiotId, liveRegion]);
+
   return (
     <div className="flex flex-1 flex-col min-h-0 p-4 overflow-hidden">
       <div className="mb-4 shrink-0">
         <h1 className="text-2xl font-bold text-white mb-1">1v1 build finder</h1>
         <p className="text-gray-400 text-sm max-w-3xl">
           Picks a balanced mix of damage and effective HP for a reference duel.
-          Select enemy team champions to auto-compute their average stats from
-          OP.GG most-common builds, or set values manually. Press{" "}
+          Import your live game from OP.GG (Riot ID + region), pick enemies
+          manually, or auto-fill duel stats from OP.GG builds. Press{" "}
           <kbd className="px-1 bg-gray-800 rounded">F4</kbd> for Random / Meta
           / manual Planner.
         </p>
+
+        <fieldset className="mt-3 border border-emerald-900/50 rounded-lg p-3 bg-emerald-950/20 text-sm">
+          <legend className="text-emerald-400 px-1 text-xs font-medium">
+            Import live game (OP.GG)
+          </legend>
+          <p className="text-gray-500 text-xs mb-2">
+            Requires an active game visible on OP.GG. Enter Riot ID as
+            Name#Tag and your server region.
+          </p>
+          <div className="flex flex-wrap gap-2 items-end">
+            <div className="min-w-[200px] flex-1">
+              <label
+                htmlFor="live-riot-id"
+                className="block text-gray-500 text-xs mb-1"
+              >
+                Riot ID (Name#Tag)
+              </label>
+              <input
+                id="live-riot-id"
+                type="text"
+                placeholder="Faker#KR1"
+                value={liveRiotId}
+                onChange={(e) => setLiveRiotId(e.target.value)}
+                className="w-full px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="live-region"
+                className="block text-gray-500 text-xs mb-1"
+              >
+                Region
+              </label>
+              <select
+                id="live-region"
+                value={liveRegion}
+                onChange={(e) => setLiveRegion(e.target.value)}
+                className="px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white focus:border-emerald-500 focus:outline-none"
+              >
+                {OPGG_REGION_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              disabled={liveImportBusy || !liveRiotId.trim()}
+              onClick={() => void handleLiveImport()}
+              className="px-3 py-1 rounded border text-xs font-medium border-emerald-600 bg-emerald-900/50 text-emerald-200 hover:bg-emerald-900/70 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {liveImportBusy ? "Loading…" : "Load live game"}
+            </button>
+          </div>
+          {liveImportStatus && (
+            <p
+              className={`mt-2 text-xs ${liveImportStatus.kind === "success" ? "text-emerald-300" : "text-red-300"}`}
+            >
+              {liveImportStatus.message}
+            </p>
+          )}
+        </fieldset>
 
         <fieldset className="mt-3 border border-red-900/50 rounded-lg p-3 bg-red-950/20 text-sm">
           <legend className="text-red-400 px-1 text-xs font-medium">
@@ -318,6 +419,12 @@ function BuildFinder(): React.ReactElement {
             enemyTeam={enemyTeam}
             setEnemyTeam={setEnemyTeam}
           />
+          {missingOpggEnemies.length > 0 && (
+            <p className="mt-2 text-amber-400/90 text-xs">
+              Auto-stats skip champions missing from scraped OP.GG builds:{" "}
+              {missingOpggEnemies.join(", ")}.
+            </p>
+          )}
           {autoStats && enemyTeam.length > 0 && (
             <div className="mt-2 flex items-center gap-3 text-xs">
               <span className="text-gray-400">
