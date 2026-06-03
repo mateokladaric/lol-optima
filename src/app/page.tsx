@@ -347,8 +347,9 @@ function BuildFinder(): React.ReactElement {
             Import live game (OP.GG)
           </legend>
           <p className="text-gray-500 text-xs mb-2">
-            Requires an active game visible on OP.GG. Enter Riot ID as
-            Name#Tag and your server region.
+            Requires an active game visible on OP.GG (Live Game tab). We
+            refresh OP.GG first, same as the site&apos;s Update button. Enter
+            Riot ID as Name#Tag and your server region.
           </p>
           <div className="flex flex-wrap gap-2 items-end">
             <div className="min-w-[200px] flex-1">

@@ -3,17 +3,26 @@
  *
  * Confirmed endpoints (2026-06):
  * - GET https://lol-api-summoner.op.gg/api/v3/{region}/summoners?riot_id={gameName%23tag}&hl=en_US
- * - GET https://lol-api-summoner.op.gg/api/{region}/games/spectate?created_at={iso}&summoner_id={id}&hl=en_US
- * - RSC fallback: GET https://op.gg/lol/summoners/{region}/{gameName-tagLine}/ingame (Accept: text/x-component)
+ * - POST https://op.gg/lol/summoners/{region}/{slug}/ingame (Next-Action renewal server action)
+ * - GET https://lol-api-summoner.op.gg/api/v3/{region}/summoners/renew?puuid={puuid}&hl=en_US
+ * - GET https://lol-api-summoner.op.gg/api/{region}/games/spectate?created_at={token}&summoner_id={id}&hl=en_US
  *
- * `created_at` on spectate is an ISO timestamp for the active game (not a match history game_id).
- * When the summoner is not in game, spectate returns 422 (decrypt) or ingame RSC shows not_ingame copy.
+ * Live game is loaded client-side on OP.GG only after "Update" (renewal). `created_at` on spectate is an
+ * encrypted game token from GET /renew when in game — not profile revision/updated timestamps.
  */
 
 import { Characters } from "@/app/actions/sim";
 
 const SUMMONER_API = "https://lol-api-summoner.op.gg/api";
 const OPGG_WEB = "https://op.gg";
+
+/** OP.GG Next.js server action ids (ingame page, chunk 606). */
+const OPGG_RENEWAL_ACTION = "405a04669583947dc03eb8c7f367adf28c8f714e86";
+const OPGG_RENEWAL_STATUS_ACTION = "400c02bdfd8c90756a329b312a7455e73880ad43ec";
+
+const RENEW_POLL_MS = 1500;
+const RENEW_POLL_MAX = 20;
+const RENEW_TOKEN_RETRIES = 6;
 
 const OPGG_FETCH_HEADERS: Record<string, string> = {
   Accept: "application/json",
@@ -73,7 +82,8 @@ export class LiveGameError extends Error {
 }
 
 type OpggSummonerRecord = {
-  summoner_id: string;
+  id?: number;
+  summoner_id: string | null;
   puuid: string;
   game_name: string;
   tagline: string;
@@ -81,6 +91,14 @@ type OpggSummonerRecord = {
   updated_at?: string;
   renewable_at?: string;
   solo_tier_info?: unknown;
+};
+
+type OpggRenewalState = {
+  status: string;
+  delay?: number;
+  lastUpdatedAt?: string;
+  renewableAt?: string;
+  statusCode?: number;
 };
 
 type OpggParticipant = {
@@ -198,13 +216,213 @@ async function searchSummoner(
   return pick;
 }
 
+function ingamePageUrl(region: string, gameName: string, tagLine: string): string {
+  const slug = summonerSlug(gameName, tagLine);
+  return `${OPGG_WEB}/lol/summoners/${region}/${encodeURIComponent(slug)}/ingame`;
+}
+
+function resolveSpectateSummonerId(summoner: OpggSummonerRecord): string {
+  if (summoner.summoner_id != null && summoner.summoner_id !== "") {
+    return String(summoner.summoner_id);
+  }
+  if (summoner.id != null) {
+    return String(summoner.id);
+  }
+  throw new LiveGameError(
+    "OPGG_ERROR",
+    "OP.GG did not return a summoner id for spectate.",
+  );
+}
+
+function parseOpggActionResponse(text: string): OpggRenewalState | null {
+  const line = text.split("\n").find((l) => l.startsWith("1:"));
+  if (!line) return null;
+  try {
+    return JSON.parse(line.slice(2)) as OpggRenewalState;
+  } catch {
+    return null;
+  }
+}
+
+async function callOpggServerAction(
+  actionId: string,
+  payload: unknown,
+  pageUrl: string,
+): Promise<string> {
+  const res = await fetch(pageUrl, {
+    method: "POST",
+    headers: {
+      Accept: "text/x-component",
+      "Content-Type": "text/plain;charset=UTF-8",
+      "Next-Action": actionId,
+      Origin: OPGG_WEB,
+      Referer: pageUrl,
+      "User-Agent": OPGG_FETCH_HEADERS["User-Agent"] ?? "Mozilla/5.0",
+    },
+    body: JSON.stringify([payload]),
+    cache: "no-store",
+  });
+  return res.text();
+}
+
+/** Mirrors OP.GG "Update" — required before live match data is available. */
+async function triggerOpggRenewal(
+  region: string,
+  puuid: string,
+  pageUrl: string,
+): Promise<OpggRenewalState> {
+  const text = await callOpggServerAction(
+    OPGG_RENEWAL_ACTION,
+    { region, puuid },
+    pageUrl,
+  );
+  const state = parseOpggActionResponse(text);
+  if (!state) {
+    throw new LiveGameError(
+      "OPGG_ERROR",
+      "OP.GG renewal did not return a valid response.",
+    );
+  }
+  if (state.status === "UNKNOWN" || state.status === "REQUEST_FAILED") {
+    throw new LiveGameError(
+      "OPGG_ERROR",
+      "OP.GG could not refresh this summoner. Try again in a moment.",
+    );
+  }
+  return state;
+}
+
+async function pollOpggRenewalUntilFinish(
+  region: string,
+  puuid: string,
+  pageUrl: string,
+  initial: OpggRenewalState,
+): Promise<OpggRenewalState> {
+  let state = initial;
+  let polls = 0;
+  while (state.status === "RENEWING" && polls < RENEW_POLL_MAX) {
+    const waitMs = state.delay ?? RENEW_POLL_MS;
+    await new Promise((r) => setTimeout(r, waitMs));
+    const text = await callOpggServerAction(
+      OPGG_RENEWAL_STATUS_ACTION,
+      { region, puuid },
+      pageUrl,
+    );
+    const next = parseOpggActionResponse(text);
+    if (next) state = next;
+    polls++;
+  }
+  if (state.status === "RENEWING") {
+    throw new LiveGameError(
+      "OPGG_ERROR",
+      "OP.GG renewal is still in progress. Wait a few seconds and try again.",
+    );
+  }
+  return state;
+}
+
+function isIsoTimestamp(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}T/.test(value);
+}
+
+/** Spectate `created_at` is an encrypted token, not a profile timestamp. */
+function isLikelySpectateGameToken(value: string): boolean {
+  if (isIsoTimestamp(value)) return false;
+  return value.length >= 24;
+}
+
+function collectSpectateTokensFromUnknown(value: unknown, out: string[]): void {
+  if (value == null) return;
+  if (typeof value === "string") {
+    if (isLikelySpectateGameToken(value)) out.push(value);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectSpectateTokensFromUnknown(item, out);
+    return;
+  }
+  if (typeof value === "object") {
+    for (const v of Object.values(value as Record<string, unknown>)) {
+      collectSpectateTokensFromUnknown(v, out);
+    }
+  }
+}
+
+function extractSpectateTokensFromText(text: string): string[] {
+  const tokens: string[] = [];
+  const trimmed = text.trim();
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    try {
+      collectSpectateTokensFromUnknown(JSON.parse(trimmed) as unknown, tokens);
+    } catch {
+      // not JSON
+    }
+  }
+  for (const m of text.matchAll(/"created_at"\s*:\s*"([^"]+)"/g)) {
+    const token = m[1];
+    if (token && isLikelySpectateGameToken(token)) tokens.push(token);
+  }
+  for (const m of text.matchAll(/"game_id"\s*:\s*"([^"]+)"/g)) {
+    const token = m[1];
+    if (token && isLikelySpectateGameToken(token)) tokens.push(token);
+  }
+  const patterns = [
+    /"live_game"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
+    /"liveGame"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
+    /"spectate"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
+  ];
+  for (const re of patterns) {
+    const m = text.match(re);
+    if (m?.[1] && isLikelySpectateGameToken(m[1])) tokens.push(m[1]);
+  }
+  return [...new Set(tokens)];
+}
+
+async function fetchRenewGameToken(
+  region: string,
+  puuid: string,
+  referer: string,
+): Promise<string | null> {
+  const q = new URLSearchParams({ puuid, hl: "en_US" });
+  const url = `${SUMMONER_API}/v3/${region}/summoners/renew?${q}`;
+  const res = await fetch(url, {
+    headers: { ...OPGG_FETCH_HEADERS, Referer: referer },
+    cache: "no-store",
+  });
+  const text = await res.text();
+  if (res.status === 404) return null;
+  if (!res.ok) return null;
+  try {
+    const body = JSON.parse(text) as { data?: unknown };
+    const tokens: string[] = [];
+    collectSpectateTokensFromUnknown(body.data ?? body, tokens);
+    return tokens[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchRenewGameTokenWithRetries(
+  region: string,
+  puuid: string,
+  referer: string,
+): Promise<string | null> {
+  for (let i = 0; i < RENEW_TOKEN_RETRIES; i++) {
+    const token = await fetchRenewGameToken(region, puuid, referer);
+    if (token) return token;
+    if (i < RENEW_TOKEN_RETRIES - 1) {
+      await new Promise((r) => setTimeout(r, 800));
+    }
+  }
+  return null;
+}
+
 async function fetchIngameRsc(
   region: string,
   gameName: string,
   tagLine: string,
 ): Promise<string> {
-  const slug = summonerSlug(gameName, tagLine);
-  const url = `${OPGG_WEB}/lol/summoners/${region}/${encodeURIComponent(slug)}/ingame`;
+  const url = ingamePageUrl(region, gameName, tagLine);
   const res = await fetch(url, { headers: RSC_HEADERS, cache: "no-store" });
   if (!res.ok) {
     throw new LiveGameError(
@@ -215,29 +433,17 @@ async function fetchIngameRsc(
   return res.text();
 }
 
-/** Try to find live-game created_at embedded in ingame RSC when a match is active. */
-function extractLiveCreatedAtFromRsc(rsc: string): string | null {
-  const patterns = [
-    /"live_game"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
-    /"liveGame"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
-    /"game_start_time"\s*:\s*"([^"]+)"/,
-    /"spectate"\s*:\s*\{[^}]*"created_at"\s*:\s*"([^"]+)"/,
-  ];
-  for (const re of patterns) {
-    const m = rsc.match(re);
-    if (m?.[1]) return m[1];
+function candidateSpectateTokens(
+  sources: string[],
+  renewal: OpggRenewalState,
+): string[] {
+  const candidates: string[] = [];
+  for (const src of sources) {
+    candidates.push(...extractSpectateTokensFromText(src));
   }
-  return null;
-}
-
-function candidateCreatedAtTimes(summoner: OpggSummonerRecord, rsc: string): string[] {
-  const fromRsc = extractLiveCreatedAtFromRsc(rsc);
-  const candidates = [
-    fromRsc,
-    summoner.revision_at,
-    summoner.updated_at,
-    summoner.renewable_at,
-  ].filter((x): x is string => Boolean(x));
+  if (renewal.lastUpdatedAt && isLikelySpectateGameToken(renewal.lastUpdatedAt)) {
+    candidates.push(renewal.lastUpdatedAt);
+  }
   return [...new Set(candidates)];
 }
 
@@ -428,21 +634,61 @@ export async function fetchOpggLiveGame(params: {
 }): Promise<LiveGameImport> {
   const region = normalizeOpggRegion(params.region);
   const summoner = await searchSummoner(region, params.gameName, params.tagLine);
-  const rsc = await fetchIngameRsc(region, params.gameName, params.tagLine);
+  const pageUrl = ingamePageUrl(region, params.gameName, params.tagLine);
+  const spectateSummonerId = resolveSpectateSummonerId(summoner);
 
-  const embedded = tryParseEmbeddedLiveGame(rsc);
-  if (embedded) {
-    return buildImportFromSpectateAsync(embedded, summoner);
+  let rsc = await fetchIngameRsc(region, params.gameName, params.tagLine);
+  const embeddedInitial = tryParseEmbeddedLiveGame(rsc);
+  if (embeddedInitial) {
+    return buildImportFromSpectateAsync(embeddedInitial, summoner);
   }
 
-  const times = candidateCreatedAtTimes(summoner, rsc);
+  let renewal = await triggerOpggRenewal(region, summoner.puuid, pageUrl);
+  if (renewal.status === "RENEWING") {
+    renewal = await pollOpggRenewalUntilFinish(
+      region,
+      summoner.puuid,
+      pageUrl,
+      renewal,
+    );
+  }
+
+  const renewToken = await fetchRenewGameTokenWithRetries(
+    region,
+    summoner.puuid,
+    pageUrl,
+  );
+
+  rsc = await fetchIngameRsc(region, params.gameName, params.tagLine);
+  const embeddedAfterRenew = tryParseEmbeddedLiveGame(rsc);
+  if (embeddedAfterRenew) {
+    return buildImportFromSpectateAsync(embeddedAfterRenew, summoner);
+  }
+
+  const tokens = candidateSpectateTokens(
+    [rsc, renewToken ?? ""],
+    renewal,
+  );
+  if (renewToken && !tokens.includes(renewToken)) {
+    tokens.unshift(renewToken);
+  }
+
   let lastStatus = 0;
-  for (const createdAt of times) {
-    const result = await fetchSpectate(region, summoner.summoner_id, createdAt);
+  let triedSpectate = false;
+  for (const createdAt of tokens) {
+    triedSpectate = true;
+    const result = await fetchSpectate(region, spectateSummonerId, createdAt);
     if (result.ok) {
       return buildImportFromSpectateAsync(result.data, summoner);
     }
     lastStatus = result.status;
+  }
+
+  if (!triedSpectate || renewToken == null) {
+    throw new LiveGameError(
+      "NOT_IN_GAME",
+      `${params.gameName}#${params.tagLine} is not in an active game on OP.GG. Start a match, wait until OP.GG shows Live Game, then try again.`,
+    );
   }
 
   if (lastStatus === 404) {
