@@ -21,10 +21,14 @@ import {
   championIncomingPhysShare,
   championUsesApScaling,
   championUsesMana,
+  computeHealthRegenHPS,
+  computeRotationHealHPS,
   isManaScalingItem,
   itemOnHitScaleForChampion,
   Item as ItemModel,
   Items,
+  resolveChampionSimulation,
+  resolveSimulationScenario,
 } from "@/app/actions/sim";
 import { goldEfficiencyTieBreak, totalBuildGold } from "@/lib/itemGold";
 import { resolveItemByDDName } from "@/lib/itemNameMap";
@@ -138,9 +142,10 @@ export function applyRealisticApproximation(item: Item, _melee: boolean): Item {
 /** Per-profile sim tweaks: spell-only scoring assumes no autos / no on-hit cadence. */
 function mergeProfileSimulation(
   profile: BuildProfileId,
+  champion: Character,
   simulation: SimulationScenario | undefined,
 ): SimulationScenario {
-  const base: SimulationScenario = simulation ? { ...simulation } : {};
+  const base = resolveChampionSimulation(champion, simulation);
   if (profile === "spell" || profile === "ability_burst") {
     return { ...base, spellOnlyNoAutos: true };
   }
@@ -400,17 +405,10 @@ export function cloneChampionWithLoadout(
   return c;
 }
 
-/**
- * Effective HP index for 1v1 durability.
- * Accounts for HP × resistances, lifesteal/omnivamp sustain over fight duration,
- * and item shield value.
- */
-export function mixedEffectiveHP(
+/** HP + shields weighted by incoming damage mix (no sustain inflation). */
+export function baseEffectiveHP(
   stats: ReturnType<Character["getTotalStats"]>,
   incomingPhysShare = 0.5,
-  ownDPS = 0,
-  fightDurationSeconds = 8,
-  autoAttackDPS = 0,
 ): number {
   const hp = stats.hp;
   const vsPhys = (hp * (100 + stats.armor)) / 100;
@@ -418,32 +416,193 @@ export function mixedEffectiveHP(
   const p = clamp(incomingPhysShare, 0, 1);
   const baseEHP = vsPhys * p + vsMag * (1 - p);
 
-  // Sustain from item healPerSecond passives (e.g. Cryptbloom)
+  const shieldHP = stats.shieldValue ?? 0;
+  const shieldEHP =
+    shieldHP > 0
+      ? ((shieldHP * (100 + stats.armor)) / 100) * p +
+        ((shieldHP * (100 + stats.mr)) / 100) * (1 - p)
+      : 0;
+
+  return baseEHP + shieldEHP;
+}
+
+export type HealHPSInput = {
+  champion: Character;
+  stats: ReturnType<Character["getTotalStats"]>;
+  dps: ReturnType<Character["calculateDPS"]>;
+  simulation?: SimulationScenario;
+};
+
+/** All in-combat healing sources averaged as HPS. */
+export function computeHealHPS(input: HealHPSInput): number {
+  const { champion, stats, dps, simulation } = input;
+  const sim = resolveSimulationScenario(
+    resolveChampionSimulation(champion, simulation),
+  );
+
   const sustainHPS =
     (stats.sustainHealPerSecond ?? 0) +
     (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
 
-  // Lifesteal only heals from basic attacks + on-hit (physical auto damage)
-  const lifeStealHPS = autoAttackDPS > 0
-    ? (autoAttackDPS * (stats.lifeSteal ?? 0)) / 100
-    : 0;
+  const physicalDamageDPS =
+    dps.autoAttackDPS +
+    dps.onHitDPS +
+    (dps.physicalAbilityDPS ?? 0);
+  const lifeStealHPS = (physicalDamageDPS * (stats.lifeSteal ?? 0)) / 100;
 
-  // Omnivamp heals from all damage (33% effective for AoE — use ~67% avg for single-target blend)
-  const omnivampHPS = ownDPS > 0
-    ? (ownDPS * (stats.omnivamp ?? 0) * 0.67) / 100
-    : 0;
+  const omnivampHPS = (dps.totalDPS * (stats.omnivamp ?? 0) * 0.67) / 100;
 
-  const totalHealingEHP = (sustainHPS + lifeStealHPS + omnivampHPS) * fightDurationSeconds;
+  const regenHPS = computeHealthRegenHPS(
+    champion.HP5,
+    stats.healthRegen ?? champion.HP5,
+  );
 
-  // Shield value: shields absorb post-mitigation damage, so they benefit from
-  // resistances the same way HP does — multiply by the same resistance factor
-  const shieldHP = stats.shieldValue ?? 0;
-  const shieldEHP = shieldHP > 0
-    ? ((shieldHP * (100 + stats.armor)) / 100) * p +
-      ((shieldHP * (100 + stats.mr)) / 100) * (1 - p)
-    : 0;
+  const rotationHealHPS = computeRotationHealHPS(
+    champion,
+    stats,
+    sim,
+    sim.level,
+  );
 
-  return baseEHP + totalHealingEHP + shieldEHP;
+  let total =
+    sustainHPS + lifeStealHPS + omnivampHPS + regenHPS + rotationHealHPS;
+
+  const healAmp = stats.healAmpMultiplicative ?? 0;
+  if (healAmp > 0) {
+    total *= 1 + healAmp / 100;
+  }
+
+  return total;
+}
+
+/** Lifesteal, omnivamp, and ability heals — rewards damage-linked sustain in scoring. */
+export function computeOffensiveHealHPS(input: HealHPSInput): number {
+  const { champion, stats, dps, simulation } = input;
+  const sim = resolveSimulationScenario(
+    resolveChampionSimulation(champion, simulation),
+  );
+
+  const physicalDamageDPS =
+    dps.autoAttackDPS +
+    dps.onHitDPS +
+    (dps.physicalAbilityDPS ?? 0);
+  const lifeStealHPS = (physicalDamageDPS * (stats.lifeSteal ?? 0)) / 100;
+  const omnivampHPS = (dps.totalDPS * (stats.omnivamp ?? 0) * 0.67) / 100;
+  const rotationHealHPS = computeRotationHealHPS(
+    champion,
+    stats,
+    sim,
+    sim.level,
+  );
+
+  let total = lifeStealHPS + omnivampHPS + rotationHealHPS;
+  const healAmp = stats.healAmpMultiplicative ?? 0;
+  if (healAmp > 0) {
+    total *= 1 + healAmp / 100;
+  }
+  return total;
+}
+
+export function computeNetIncomingDPS(
+  rawIncomingDPS: number,
+  healHPS: number,
+): number {
+  if (rawIncomingDPS <= 0) return 0;
+  const net = rawIncomingDPS - healHPS;
+  if (net > 0) {
+    return Math.max(rawIncomingDPS * 0.1, net);
+  }
+  // Out-sustaining incoming DPS — approach 5% floor as heal exceeds enemy damage.
+  const healShare = Math.min(1, healHPS / rawIncomingDPS);
+  return rawIncomingDPS * Math.max(0.05, 1 - healShare);
+}
+
+export function computeDurabilityIndex(
+  baseHP: number,
+  shield: number,
+  netIncomingDPS: number,
+  referenceDPS: number,
+): number {
+  const pool = baseHP + shield;
+  const ttl = netIncomingDPS > 0 ? pool / netIncomingDPS : 100;
+  return ttl * referenceDPS;
+}
+
+export type DuelDurabilityResult = {
+  healHPS: number;
+  estimatedEnemyDPS: number;
+  netIncomingDPS: number;
+  yourTTL: number;
+  enemyTTD: number;
+  duelRatio: number;
+  durabilityEHP: number;
+};
+
+export function computeDuelDurability(
+  champion: Character,
+  stats: ReturnType<Character["getTotalStats"]>,
+  dps: ReturnType<Character["calculateDPS"]>,
+  duel: ResolvedDuel,
+  simulation?: SimulationScenario,
+): DuelDurabilityResult {
+  const healInput = { champion, stats, dps, simulation };
+  const healHPS = computeHealHPS(healInput);
+  const offensiveHealHPS = computeOffensiveHealHPS(healInput);
+  const estimatedEnemyDPS =
+    duel.targetMaxHP / (duel.comboWindowSeconds * 2.5);
+  const netIncomingDPS = computeNetIncomingDPS(
+    estimatedEnemyDPS,
+    healHPS,
+  );
+  const yourHP = stats.hp + (stats.shieldValue ?? 0);
+  const rawTTL =
+    estimatedEnemyDPS > 0 ? yourHP / estimatedEnemyDPS : 100;
+  const yourTTL =
+    netIncomingDPS > 0 ? yourHP / netIncomingDPS : rawTTL;
+  const enemyTTD =
+    dps.totalDPS > 0 ? duel.targetMaxHP / dps.totalDPS : 100;
+  // In 1v1, durability beyond ~2× kill time has no marginal value.
+  const effectiveTTL = Math.min(yourTTL, enemyTTD * 2);
+  const duelRatio = effectiveTTL / Math.max(enemyTTD, 0.1);
+  const sustainBonus =
+    1 + Math.min(1, offensiveHealHPS / estimatedEnemyDPS);
+  const durabilityEHP = effectiveTTL * estimatedEnemyDPS * sustainBonus;
+
+  return {
+    healHPS,
+    estimatedEnemyDPS,
+    netIncomingDPS,
+    yourTTL,
+    enemyTTD,
+    duelRatio,
+    durabilityEHP,
+  };
+}
+
+/**
+ * Effective HP index for 1v1 durability (net-DPS model).
+ * Uses time-to-live against incoming DPS after subtracting healing.
+ */
+export function mixedEffectiveHP(
+  stats: ReturnType<Character["getTotalStats"]>,
+  _incomingPhysShare = 0.5,
+  ownDPS = 0,
+  fightDurationSeconds = 8,
+  autoAttackDPS = 0,
+  physicalAbilityDPS = 0,
+): number {
+  const estimatedEnemyDPS = 3000 / (fightDurationSeconds * 2.5);
+  const sustainHPS =
+    (stats.sustainHealPerSecond ?? 0) +
+    (stats.ap * (stats.sustainHealPerSecondAPPercent ?? 0)) / 100;
+  const physicalDPS = autoAttackDPS + physicalAbilityDPS;
+  const lifeStealHPS = (physicalDPS * (stats.lifeSteal ?? 0)) / 100;
+  const omnivampHPS = (ownDPS * (stats.omnivamp ?? 0) * 0.67) / 100;
+  const healHPS = sustainHPS + lifeStealHPS + omnivampHPS;
+  const netIncomingDPS = computeNetIncomingDPS(estimatedEnemyDPS, healHPS);
+  const yourHP = stats.hp + (stats.shieldValue ?? 0);
+  const yourTTL = yourHP / netIncomingDPS;
+  return yourTTL * estimatedEnemyDPS;
 }
 
 /**
@@ -458,62 +617,63 @@ export function simulateDuel(
   simulation?: SimulationScenario,
   comboWindowSeconds = 8,
 ): { score: number; attackerTTK: number; defenderTTK: number } {
-  const attackerStats = attacker.getTotalStats();
-  const defenderStats = defender.getTotalStats();
+  const attackerBaseStats = attacker.getTotalStats();
+  const defenderBaseStats = defender.getTotalStats();
 
   // Attacker DPS into defender's resistances
   const attackerDps = attacker.calculateDPS(
-    defenderStats.hp,
-    Math.max(0, defenderStats.hp - defender.HP),
+    defenderBaseStats.hp,
+    Math.max(0, defenderBaseStats.hp - defender.HP),
     simulation,
     {
-      targetArmor: defenderStats.armor,
-      targetMR: defenderStats.mr,
+      targetArmor: defenderBaseStats.armor,
+      targetMR: defenderBaseStats.mr,
       comboWindowSeconds,
     },
   );
 
   // Defender DPS into attacker's resistances
   const defenderDps = defender.calculateDPS(
-    attackerStats.hp,
-    Math.max(0, attackerStats.hp - attacker.HP),
+    attackerBaseStats.hp,
+    Math.max(0, attackerBaseStats.hp - attacker.HP),
     simulation,
     {
-      targetArmor: attackerStats.armor,
-      targetMR: attackerStats.mr,
+      targetArmor: attackerBaseStats.armor,
+      targetMR: attackerBaseStats.mr,
       comboWindowSeconds,
     },
   );
 
   const attackerRawDPS = attackerDps.totalDPS;
   const defenderRawDPS = defenderDps.totalDPS;
+  const attackerStats = attackerDps.combatStats;
+  const defenderStats = defenderDps.combatStats;
 
-  // Compute effective HP for each side including sustain
-  // Lifesteal heals based on physical damage dealt (post-mitigation auto+onhit DPS)
-  // Omnivamp heals based on all damage dealt (67% effectiveness avg for AoE blend)
-  const attackerPhysDPS = attackerDps.autoAttackDPS + attackerDps.onHitDPS;
-  const attackerLifestealHPS = (attackerPhysDPS * (attackerStats.lifeSteal ?? 0)) / 100;
-  const attackerOmnivampHPS = (attackerRawDPS * (attackerStats.omnivamp ?? 0) * 0.67) / 100;
-  const attackerSustainHPS =
-    (attackerStats.sustainHealPerSecond ?? 0) +
-    (attackerStats.ap * (attackerStats.sustainHealPerSecondAPPercent ?? 0)) / 100;
-  const attackerTotalHealHPS = attackerLifestealHPS + attackerOmnivampHPS + attackerSustainHPS;
+  const attackerTotalHealHPS = computeHealHPS({
+    champion: attacker,
+    stats: attackerStats,
+    dps: attackerDps,
+    simulation,
+  });
+  const defenderTotalHealHPS = computeHealHPS({
+    champion: defender,
+    stats: defenderStats,
+    dps: defenderDps,
+    simulation,
+  });
 
-  const defenderPhysDPS = defenderDps.autoAttackDPS + defenderDps.onHitDPS;
-  const defenderLifestealHPS = (defenderPhysDPS * (defenderStats.lifeSteal ?? 0)) / 100;
-  const defenderOmnivampHPS = (defenderRawDPS * (defenderStats.omnivamp ?? 0) * 0.67) / 100;
-  const defenderSustainHPS =
-    (defenderStats.sustainHealPerSecond ?? 0) +
-    (defenderStats.ap * (defenderStats.sustainHealPerSecondAPPercent ?? 0)) / 100;
-  const defenderTotalHealHPS = defenderLifestealHPS + defenderOmnivampHPS + defenderSustainHPS;
-
-  // Shield value
   const attackerShield = attackerStats.shieldValue ?? 0;
   const defenderShield = defenderStats.shieldValue ?? 0;
 
   // Net DPS each side takes (incoming DPS minus healing, floored at 10% of raw to avoid immortality)
-  const netDPSIntoAttacker = Math.max(defenderRawDPS * 0.1, defenderRawDPS - attackerTotalHealHPS);
-  const netDPSIntoDefender = Math.max(attackerRawDPS * 0.1, attackerRawDPS - defenderTotalHealHPS);
+  const netDPSIntoAttacker = computeNetIncomingDPS(
+    defenderRawDPS,
+    attackerTotalHealHPS,
+  );
+  const netDPSIntoDefender = computeNetIncomingDPS(
+    attackerRawDPS,
+    defenderTotalHealHPS,
+  );
 
   // TTK = (HP + shield) / net incoming DPS
   const attackerHP = attackerStats.hp + attackerShield;
@@ -607,37 +767,22 @@ function scoreChampion(
   duel: ResolvedDuel,
   simulation?: SimulationScenario,
 ): number {
+  const profileSim = resolveChampionSimulation(c, simulation);
   const dps = c.calculateDPS(
     duel.targetMaxHP,
     duel.targetBonusHP,
-    simulation,
+    profileSim,
     dpsMitigationFromDuel(duel),
   );
-  const stats = c.getTotalStats(simulation?.level ?? 18);
-  const ownTotalDPS = dps.totalDPS;
-  const ownAutoAttackDPS = dps.autoAttackDPS + dps.onHitDPS;
-  const ehp = mixedEffectiveHP(
-    stats,
-    duel.incomingPhysShare,
-    ownTotalDPS,
-    duel.comboWindowSeconds,
-    ownAutoAttackDPS,
+  const { durabilityEHP, duelRatio } = computeDuelDurability(
+    c,
+    dps.combatStats,
+    dps,
+    duel,
+    profileSim,
   );
 
-  // Duel ratio: your TTL vs enemy TTD.
-  // Sustain (lifesteal/omnivamp) is already in mixedEffectiveHP — NOT double-counted here.
-  // Estimate enemy DPS as a proxy from duel target stats.
-  const estimatedEnemyDPS = duel.targetMaxHP / (duel.comboWindowSeconds * 2.5);
-
-  // Your raw HP pool (shields included; sustain is in EHP already)
-  const yourHP = stats.hp + (stats.shieldValue ?? 0);
-
-  const yourTTL = estimatedEnemyDPS > 0 ? yourHP / estimatedEnemyDPS : 100;
-  const enemyTTD = ownTotalDPS > 0 ? duel.targetMaxHP / ownTotalDPS : 100;
-
-  const duelRatio = yourTTL / Math.max(enemyTTD, 0.1);
-
-  return profileScore(profile, dps, ehp, build, duelRatio);
+  return profileScore(profile, dps, durabilityEHP, build, duelRatio);
 }
 
 /**
@@ -1148,7 +1293,7 @@ export function recommendBuildsForChampion(
     options?.onProgress?.(
       `profile ${profile} (${pi + 1}/${profiles.length})`,
     );
-    const profileSim = mergeProfileSimulation(profile, simulation);
+    const profileSim = mergeProfileSimulation(profile, champion, simulation);
     const profilePool = itemPoolForProfile(champion, realisticPool, profile);
     const greedy = greedyFill(
       champion,
@@ -1230,14 +1375,13 @@ export function recommendBuildsForChampion(
       profileSim,
       dpsMitigationFromDuel(duel),
     );
-    const gStats = gc.getTotalStats();
-    const gehp = mixedEffectiveHP(
-      gStats,
-      duel.incomingPhysShare,
-      gd.totalDPS,
-      duel.comboWindowSeconds,
-      gd.autoAttackDPS + gd.onHitDPS,
-    );
+    const gehp = computeDuelDurability(
+      gc,
+      gd.combatStats,
+      gd,
+      duel,
+      profileSim,
+    ).durabilityEHP;
     const gscore = scoreChampion(profile, gc, primary, duel, profileSim);
 
     if (isDistinct(primary, seenItemSets)) {
@@ -1312,14 +1456,13 @@ export function recommendBuildsForChampion(
         profileSim,
         dpsMitigationFromDuel(duel),
       );
-      const altStats = c.getTotalStats();
-      const altEhp = mixedEffectiveHP(
-        altStats,
-        duel.incomingPhysShare,
-        altDps.totalDPS,
-        duel.comboWindowSeconds,
-        altDps.autoAttackDPS + altDps.onHitDPS,
-      );
+      const altEhp = computeDuelDurability(
+        c,
+        altDps.combatStats,
+        altDps,
+        duel,
+        profileSim,
+      ).durabilityEHP;
       const sc = scoreChampion(profile, c, bestAlt, duel, profileSim);
       if (sc > gscore * 0.88) {
         seenItemSets.push(bestAlt);

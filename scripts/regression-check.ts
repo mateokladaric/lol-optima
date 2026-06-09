@@ -350,6 +350,36 @@ if (zed) {
     }
   }
 
+  const kayn = Characters.find((c) => c.Name === "Kayn");
+  if (kayn) {
+    const kaynRecs = recommendBuildsForChampion(kayn, Items, {
+      simulation: { level: 18, enableChampionRotationProfiles: true },
+      monteCarloParams: {
+        iterationsPerRestart: 400,
+        restarts: 3,
+        randomProbeSamples: 60,
+      },
+    });
+    const kaynBalanced = kaynRecs.find((r) => r.profile === "balanced");
+    if (kaynBalanced) {
+      if (/Warmog/i.test(kaynBalanced.items.join(" "))) {
+        fail(
+          `Kayn balanced must not include Warmog's (got: ${kaynBalanced.items.join(", ")})`,
+        );
+      }
+      const sustainHit = kaynBalanced.items.filter((n) =>
+        /Bloodthirster|Death's Dance|Ravenous Hydra|Profane Hydra|Blade of the Ruined King|Maw of Malmortius/i.test(
+          n,
+        ),
+      );
+      if (sustainHit.length < 1) {
+        fail(
+          `Kayn balanced should include a sustain item (BT/Hydra/DD), got: ${kaynBalanced.items.join(", ")}`,
+        );
+      }
+    }
+  }
+
   const collector = Items.find((i) => i.name === "The Collector");
   if (collector) {
     const mitZed = dpsMitigationFromDuel(duel);
@@ -574,6 +604,7 @@ if (garen) {
     cooldownFloorBaseRatio: 0.1,
     enableChampionRotationProfiles: true,
     spellOnlyNoAutos: false,
+    assumedForm: "base" as const,
   };
   const cutDownUptime = runeConditionUptime(
     [{ type: "targetHealthDifference", threshold: 1000, operator: ">" }],

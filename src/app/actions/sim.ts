@@ -482,6 +482,8 @@ export interface ItemStats {
   /** Sustain from item passives (heal nova, etc.) — folded into EHP in optimizer. */
   sustainHealPerSecond?: number;
   sustainHealPerSecondAPPercent?: number;
+  /** % increased healing from all sources (e.g. Spirit Visage 25). */
+  healAmpMultiplicative?: number;
   shieldValue?: number; // Effective shield HP from item passives (e.g., Sterak's, Shieldbow)
 
   // Scaling multipliers - for stats that scale with other stats
@@ -2245,6 +2247,7 @@ const SpiritVisage = new Item(
     hp: 400,
     abilityHaste: 10,
     healthRegen: 100,
+    healAmpMultiplicative: 25,
   },
   [],
   "Spirit Visage",
@@ -2936,6 +2939,12 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     comboAutoWeight: 0.3,
     itemOnHitScale: 0.3,
   },
+  Kayn: {
+    castOrder: ["R", "W", "Q", "E"],
+    comboAutoWeight: 0.3,
+    /** Rhaast: ability-heavy bruiser — limited auto weaving for on-hit item passives. */
+    itemOnHitScale: 0.35,
+  },
   LeBlanc: {
     castOrder: ["R", "W", "Q", "E"],
     comboAutoWeight: 0.2,
@@ -3006,6 +3015,7 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   Kalista: { abilityTypeMultiplier: { Q: 0.95, W: 0.25, E: 1.1, R: 0.2 } },
   Kayle: { abilityTypeMultiplier: { Q: 0.8, W: 0.35, E: 1.15, R: 0.3 } },
   KhaZix: { abilityTypeMultiplier: { Q: 1.2, W: 0.65, E: 0.55, R: 0.35 } },
+  Kayn: { abilityTypeMultiplier: { Q: 1.1, W: 0.85, E: 0.35, R: 0.55 } },
   Kled: { abilityTypeMultiplier: { Q: 0.95, W: 1.05, E: 0.85, R: 0.35 } },
   KogMaw: { abilityTypeMultiplier: { Q: 0.7, W: 1.2, E: 0.6, R: 0.65 } },
   LeBlanc: { abilityTypeMultiplier: { Q: 1.0, W: 0.95, E: 0.7, R: 0.6 } },
@@ -3045,6 +3055,8 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   Zeri: { abilityTypeMultiplier: { Q: 1.25, W: 0.55, E: 0.7, R: 0.55 } },
 };
 
+export type ChampionAssumedForm = "rhaast" | "shadow" | "base";
+
 export type SimulationScenario = {
   level?: number;
   avgCurrentHPRatio?: number;
@@ -3062,6 +3074,8 @@ export type SimulationScenario = {
    * attack-based basic-ability CDR (e.g. Navori). Used for "spell-only" builds.
    */
   spellOnlyNoAutos?: boolean;
+  /** Champion transform for duel sims (e.g. Kayn Rhaast). */
+  assumedForm?: ChampionAssumedForm;
 };
 
 type ResolvedSimulationScenario = {
@@ -3076,6 +3090,13 @@ type ResolvedSimulationScenario = {
   cooldownFloorBaseRatio: number;
   enableChampionRotationProfiles: boolean;
   spellOnlyNoAutos: boolean;
+  assumedForm: ChampionAssumedForm;
+};
+
+const CHAMPION_DEFAULT_ASSUMED_FORM: Partial<
+  Record<string, ChampionAssumedForm>
+> = {
+  Kayn: "rhaast",
 };
 
 const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
@@ -3090,13 +3111,14 @@ const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
   cooldownFloorBaseRatio: 0.1,
   enableChampionRotationProfiles: true,
   spellOnlyNoAutos: false,
+  assumedForm: "base",
 };
 
 function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n));
 }
 
-function resolveSimulationScenario(
+export function resolveSimulationScenario(
   scenario?: SimulationScenario,
 ): ResolvedSimulationScenario {
   return {
@@ -3139,7 +3161,122 @@ function resolveSimulationScenario(
       scenario?.enableChampionRotationProfiles ??
       DEFAULT_SIM_SCENARIO.enableChampionRotationProfiles,
     spellOnlyNoAutos: Boolean(scenario?.spellOnlyNoAutos),
+    assumedForm: scenario?.assumedForm ?? DEFAULT_SIM_SCENARIO.assumedForm,
   };
+}
+
+/** Merge champion-specific duel defaults (e.g. Kayn → Rhaast) into a scenario. */
+export function resolveChampionSimulation(
+  champion: Character,
+  scenario?: SimulationScenario,
+): SimulationScenario {
+  const defaultForm =
+    CHAMPION_DEFAULT_ASSUMED_FORM[champion.Name] ?? "base";
+  return {
+    ...(scenario ?? {}),
+    assumedForm: scenario?.assumedForm ?? defaultForm,
+  };
+}
+
+/** Innate duel modifiers from champion form (spell vamp, etc.). */
+export function applySimulationStatModifiers(
+  champion: Character,
+  stats: ReturnType<Character["getTotalStats"]>,
+  sim: ResolvedSimulationScenario,
+): void {
+  if (champion.Name === "Kayn" && sim.assumedForm === "rhaast") {
+    const bonusHP = Math.max(0, stats.hp - champion.HP);
+    stats.omnivamp = (stats.omnivamp ?? 0) + 25 + (bonusHP / 100) * 0.5;
+  }
+}
+
+/** Flat HP5 regen from base + % bonus health regen items. */
+export function computeHealthRegenHPS(
+  championBaseHp5: number,
+  totalHealthRegenStat: number,
+): number {
+  const bonusPercent = Math.max(0, totalHealthRegenStat - championBaseHp5);
+  const totalHp5 = championBaseHp5 * (1 + bonusPercent / 100);
+  return totalHp5 / 5;
+}
+
+function abilityRankForHeal(
+  champion: Character,
+  ability: Ability,
+  level: number,
+): number {
+  if (ability.abilityType === "R") {
+    return Math.max(1, ultRankAtLevel(level));
+  }
+  if (
+    ability.abilityType === "Q" ||
+    ability.abilityType === "W" ||
+    ability.abilityType === "E"
+  ) {
+    return abilityRankAtLevel(
+      level,
+      ability.abilityType,
+      champion.Name,
+    );
+  }
+  return level;
+}
+
+/** Sustained rotation heal HPS from ability self-heals. */
+export function computeRotationHealHPS(
+  champion: Character,
+  stats: ReturnType<Character["getTotalStats"]>,
+  sim: SimulationScenario | ResolvedSimulationScenario,
+  level?: number,
+): number {
+  const resolved = resolveSimulationScenario(sim);
+  const lvl = level ?? resolved.level;
+  const champBase = championBaseStatsAtLevel(champion, lvl);
+  let healHPS = 0;
+
+  for (const ability of champion.Abilities) {
+    if (ability.abilityType === "passive" || !ability.effects?.heal) continue;
+
+    const rank = abilityRankForHeal(champion, ability, lvl);
+    let healAmount = ability.getValueAtLevel(ability.effects.heal, rank);
+
+    if (champion.Name === "Kayn" && ability.name === "Shadow Step") {
+      const bonusAD = stats.ad - champBase.ad;
+      healAmount += (bonusAD * 45) / 100;
+      const eCd = ability.getValueAtLevel(ability.cooldown.cooldown, rank);
+      healHPS += (healAmount * 0.15) / Math.max(eCd, 1);
+      continue;
+    }
+
+    const rotationProfile = resolved.enableChampionRotationProfiles
+      ? CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)]
+      : undefined;
+    const rotationWeight =
+      rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+
+    const baseCd = ability.getValueAtLevel(ability.cooldown.cooldown, rank);
+    const effectiveCd = Math.max(baseCd, ability.castInfo?.castTime ?? 0.5);
+    healHPS += (healAmount * rotationWeight) / effectiveCd;
+  }
+
+  if (champion.Name === "Kayn" && resolved.assumedForm === "rhaast") {
+    const kaynR = champion.Abilities.find((a) => a.name === "Umbral Trespass");
+    if (kaynR) {
+      const rank = abilityRankForHeal(champion, kaynR, lvl);
+      const bonusAD = stats.ad - champBase.ad;
+      const healPercent = 11.25 + (bonusAD / 100) * 7.5;
+      const healAmount = (stats.hp * healPercent) / 100;
+      const baseCd = kaynR.getValueAtLevel(kaynR.cooldown.cooldown, rank);
+      const rotationProfile = resolved.enableChampionRotationProfiles
+        ? CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)]
+        : undefined;
+      const rotationWeight =
+        rotationProfile?.abilityTypeMultiplier?.R ?? 1;
+      healHPS += (healAmount * rotationWeight) / Math.max(baseCd, 1);
+    }
+  }
+
+  return healHPS;
 }
 
 /** Matches buildOptimizer `blendedDps` combo weight for headline totalDPS. */
@@ -3989,6 +4126,7 @@ class Character {
       damageMultiplicative: 0,
       sustainHealPerSecond: 0,
       sustainHealPerSecondAPPercent: 0,
+      healAmpMultiplicative: 0,
       shieldValue: 0,
     };
 
@@ -4134,16 +4272,23 @@ class Character {
     onHitDPS: number;
     dotDPS: number;
     abilityDPS: number;
+    /** Post-mitigation physical ability DPS (for lifesteal sustain). */
+    physicalAbilityDPS: number;
     burstDPS: number; // One-time burst damage at combat start
     sustainedDPS: number;
     comboDPS: number;
     totalDPS: number;
+    /** Stats after item mechanics and form modifiers (for sustain/EHP). */
+    combatStats: ReturnType<Character["getTotalStats"]>;
     breakdown: string[];
   } {
-    const sim = resolveSimulationScenario(scenario);
+    const sim = resolveSimulationScenario(
+      resolveChampionSimulation(this, scenario),
+    );
     const mit = resolveDpsMitigation(mitigation);
     const champBase = championBaseStatsAtLevel(this, sim.level);
     const stats = this.getTotalStats(sim.level);
+    applySimulationStatModifiers(this, stats, sim);
     const breakdown: string[] = [];
 
     const totalAbilityHasteEarly = stats.abilityHaste + stats.basicAbilityHaste;
@@ -4228,6 +4373,10 @@ class Character {
     }
     if (itemMech.shieldValue > 0) {
       stats.shieldValue = (stats.shieldValue ?? 0) + itemMech.shieldValue;
+    }
+    if (itemMech.sustainHealPerSecond > 0) {
+      stats.sustainHealPerSecond =
+        (stats.sustainHealPerSecond ?? 0) + itemMech.sustainHealPerSecond;
     }
     for (const line of itemMech.breakdown) breakdown.push(line);
 
@@ -4758,6 +4907,14 @@ class Character {
         }
         abilityDamage += (targetMaxHP * effectiveMaxHPPercent) / 100;
       }
+      if (this.Name === "Kayn" && sim.assumedForm === "rhaast" && ability.damage) {
+        const bonusAD = stats.ad - champBase.ad;
+        if (ability.name === "Reaping Slash") {
+          abilityDamage += (targetMaxHP * (12 + (bonusAD / 100) * 7)) / 100;
+        } else if (ability.name === "Umbral Trespass") {
+          abilityDamage += (targetMaxHP * (15 + (bonusAD / 100) * 10)) / 100;
+        }
+      }
       if (
         ability.damage.currentHealthRatio ||
         ability.damage.currentHealthRatioPerAP
@@ -5131,8 +5288,10 @@ class Character {
     abilityMagicDPS += itemMech.abilityMagicDPS;
     abilityTrueDPS += itemMech.abilityTrueDPS;
 
+    const finalPhysicalAbilityDPS =
+      abilityPhysMult * abilityPhysDPS * physMit;
     const finalAbilityDPS =
-      abilityPhysMult * abilityPhysDPS * physMit +
+      finalPhysicalAbilityDPS +
       abilityMagicMult * abilityMagicDPS * magicMit +
       abilityBaseMult * abilityTrueDPS;
 
@@ -5241,10 +5400,12 @@ class Character {
       onHitDPS: finalOnHitDPS,
       dotDPS: finalDotDPS,
       abilityDPS: finalAbilityDPS,
+      physicalAbilityDPS: finalPhysicalAbilityDPS,
       burstDPS: burstSustainDPS,
       sustainedDPS,
       comboDPS,
       totalDPS,
+      combatStats: { ...stats },
       breakdown,
     };
   }

@@ -68,6 +68,8 @@ export type ItemMechanicContributions = {
   burstTrue: number;
   /** Time-averaged shield HP for EHP (Sterak-style passives use item stats). */
   shieldValue: number;
+  /** Passive regen modeled as average HPS over a sustained duel. */
+  sustainHealPerSecond: number;
   breakdown: string[];
 };
 
@@ -260,6 +262,7 @@ export function computeItemMechanicContributions(
     burstMagic: 0,
     burstTrue: 0,
     shieldValue: 0,
+    sustainHealPerSecond: 0,
     breakdown: [],
   };
 
@@ -683,6 +686,25 @@ export function computeItemMechanicContributions(
     out.shieldValue += shield;
     out.breakdown.push(
       `Sterak's Lifeline: ${shield.toFixed(0)} shield (60% of ${bonusHP.toFixed(0)} bonus HP)`,
+    );
+  }
+
+  if (hasGroup(items, "Warmog's Armor")) {
+    const maxHP = stats.hp ?? ctx.championBaseHP;
+    const missingRatio = 1 - ctx.avgCurrentHPRatio;
+    const passiveUptime = 0.35;
+    const warmogHPS = maxHP * 0.05 * missingRatio * passiveUptime;
+    out.sustainHealPerSecond += warmogHPS;
+    out.breakdown.push(
+      `Warmog's Heart: ~${warmogHPS.toFixed(1)} HPS (5% missing HP/s, ~${(passiveUptime * 100).toFixed(0)}% uptime)`,
+    );
+  }
+
+  if (hasGroup(items, "Bloodthirster")) {
+    const lifelineShield = 200 + ctx.level * 5;
+    out.shieldValue += lifelineShield * 0.25;
+    out.breakdown.push(
+      `Bloodthirster Lifeline: ~${(lifelineShield * 0.25).toFixed(0)} avg shield`,
     );
   }
 
