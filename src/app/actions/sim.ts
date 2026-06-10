@@ -2975,6 +2975,11 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     castOrder: ["R", "Q", "W", "E"],
     comboAutoWeight: 0.7,
   },
+  Locke: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.45,
+    itemOnHitScale: 0.5,
+  },
 };
 
 /**
@@ -3020,6 +3025,7 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   KogMaw: { abilityTypeMultiplier: { Q: 0.7, W: 1.2, E: 0.6, R: 0.65 } },
   LeBlanc: { abilityTypeMultiplier: { Q: 1.0, W: 0.95, E: 0.7, R: 0.6 } },
   LeeSin: { abilityTypeMultiplier: { Q: 1.0, W: 0.55, E: 0.85, R: 0.45 } },
+  Locke: { abilityTypeMultiplier: { Q: 1.0, W: 0.7, E: 1.0, R: 0.5 } },
   Lucian: { abilityTypeMultiplier: { Q: 0.95, W: 0.55, E: 1.0, R: 0.45 } },
   MasterYi: { abilityTypeMultiplier: { Q: 0.85, W: 0.25, E: 1.2, R: 0.55 } },
   MissFortune: { abilityTypeMultiplier: { Q: 0.8, W: 0.75, E: 0.55, R: 0.55 } },
@@ -3472,6 +3478,7 @@ const CHAMPION_SKILL_ORDER: Record<string, SkillOrder> = {
   Leona: ["W", "E", "Q"],
   Lillia: ["Q", "W", "E"],
   Lissandra: ["Q", "W", "E"],
+  Locke: ["Q", "E", "W"],
   Lucian: ["Q", "E", "W"],
   Lulu: ["E", "W", "Q"],
   Lux: ["E", "Q", "W"],
@@ -16464,6 +16471,148 @@ const Lissandra = new Character(
   550, // Attack range
   0.656, // Base AS
   [LissandraPassive, LissandraQ, LissandraW, LissandraE, LissandraR],
+  [],
+);
+
+// Locke - The Ashen Exorcist
+const LockePassive = new Ability(
+  "Silver Stake",
+  "passive",
+  "Basic attacks deal bonus magic damage on-hit, increased by target's missing health.",
+  { cooldown: 0, cooldownType: "standard" },
+  undefined,
+  {
+    baseDamage: [5, 44.12],
+    apRatio: 10,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  [
+    "On-hit: 5-44.12 (+10% AP) bonus magic damage",
+    "Amplified 0-100% by target missing health (up to 10-88.24 +20% AP)",
+    "AA or Ashen Pursuit consumes Soul Nails for bonus damage",
+  ],
+  true,
+);
+
+const LockeQ = new Ability(
+  "Ritual Nails",
+  "Q",
+  "Hurls nails in a line dealing magic damage and applying Soul Nails stacks. Can recast twice.",
+  { cooldown: [10, 9, 8, 7, 6], cooldownType: "standard" },
+  { castTime: 0.25, range: 950, width: 100 },
+  {
+    // Total per cast cycle (3 nails + max stack consumption): 210-450 (+135-165% AP)
+    baseDamage: [210, 270, 330, 390, 450],
+    apRatio: [135, 142.5, 150, 157.5, 165],
+    damageType: "magic",
+  },
+  {
+    ccType: "slow",
+    ccDuration: 1,
+    slow: [25, 25, 25, 25, 25],
+  },
+  undefined,
+  undefined,
+  [
+    "Cost: 70 mana",
+    "Per nail: 50-90 (+20% AP), slow 25% for 1s",
+    "2+ stacks: 60% slow for 2s",
+    "3 casts within 5s (0.5s between)",
+    "Stack consume: 20-60 (+25-35% AP) per stack (max 3)",
+    "Total per nail w/ stacks: 70-150 (+45-55% AP)",
+    "Damage already totaled for all 3 casts",
+    "Unused recasts refund 20-35% CD/mana per recast",
+  ],
+);
+
+const LockeW = new Ability(
+  "Soul Ignition",
+  "W",
+  "Ignites soul gaining attack speed and movement speed. Stores grey health and heals on recast.",
+  { cooldown: [20, 18, 16, 14, 12], cooldownType: "standard" },
+  { castTime: 0 },
+  undefined,
+  {
+    bonusStats: { as: [40, 73.53], ms: [50, 70] },
+    duration: 6,
+  },
+  undefined,
+  undefined,
+  [
+    "Cost: 50 mana + 0.5% current HP per 0.25s",
+    "MS: 50-70% (+2% per 100 AP), decays to 20% after 1.5s",
+    "Stores damage taken as grey health (cap scales with missing HP + duration)",
+    "Recast after 0.5s: heal for grey health amount",
+    "Recast usable under cast-inhibiting CC",
+  ],
+);
+
+const LockeE = new Ability(
+  "Ashen Pursuit",
+  "E",
+  "Blinks to location dealing magic damage, then empowers next attack to dash and strike.",
+  { cooldown: 10, cooldownType: "standard" },
+  { castTime: 0.5, range: 700 },
+  {
+    // Blink: 40-80 (+40% AP) + empowered AA: 40-120 (+40% AP)
+    baseDamage: [80, 110, 140, 170, 200],
+    apRatio: 80,
+    damageType: "magic",
+  },
+  undefined,
+  undefined,
+  undefined,
+  [
+    "Cost: 70 mana",
+    "Blink: 40-80 (+40% AP) in 425 radius",
+    "Empowered AA: +275 range, dash + 40-120 (+40% AP)",
+    "Champion takedown resets cooldown",
+    "Consumes Soul Nails stacks on hit",
+  ],
+);
+
+const LockeR = new Ability(
+  "Purgatory",
+  "R",
+  "Throws artifact that latches nails on enemies, slowing and executing low-health targets.",
+  { cooldown: [120, 100, 80], cooldownType: "standard" },
+  { castTime: 0.5, range: 950, radius: 400 },
+  {
+    baseDamage: [150, 225, 300],
+    apRatio: 60,
+    damageType: "magic",
+  },
+  {
+    ccType: "slow",
+    ccDuration: 2,
+    slow: 99,
+  },
+  undefined,
+  undefined,
+  [
+    "Cost: 100 mana",
+    "Execute: 10/11/12% (+0.5% per Sealed Champion) max HP",
+    "Mark duration: 5s (extends on execute)",
+    "Artifact persists 117s if execute; consume for 20% CD reduction + Sealed Champion",
+    "Sealed Champions infinitely scale execute threshold",
+  ],
+);
+
+const Locke = new Character(
+  "Locke",
+  655, // HP
+  9, // HP5
+  32, // AR
+  32, // MR
+  58, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  125, // Attack range
+  0.688, // Base AS
+  [LockePassive, LockeQ, LockeW, LockeE, LockeR],
   [],
 );
 
@@ -29759,6 +29908,7 @@ const CHAMPION_BASE_MANA: Record<string, number> = {
   Leona: 302,
   Lillia: 410,
   Lissandra: 475,
+  Locke: 280,
   Lucian: 320,
   Lulu: 350,
   Lux: 440,
@@ -29919,6 +30069,7 @@ export const Characters: Character[] = [
   Leona,
   Lillia,
   Lissandra,
+  Locke,
   Lucian,
   Lulu,
   Lux,

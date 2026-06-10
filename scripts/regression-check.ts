@@ -994,7 +994,7 @@ if (zedChamp && ahriChamp) {
   }
 }
 
-const EXPECTED_CHAMPION_COUNT = 172;
+const EXPECTED_CHAMPION_COUNT = 173;
 if (Characters.length !== EXPECTED_CHAMPION_COUNT) {
   fail(
     `Expected ${EXPECTED_CHAMPION_COUNT} champions in roster, got ${Characters.length}`,
