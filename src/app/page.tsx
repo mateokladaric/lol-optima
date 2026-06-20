@@ -1,5 +1,8 @@
 "use client";
 import { AppShell } from "@/components/app-shell";
+import { ChampionIcon } from "@/components/champion-icon";
+import { HoverTip } from "@/components/hover-tip";
+import { ItemIcon } from "@/components/item-icon";
 import { SearchInput } from "@/components/search-input";
 import { TabNav } from "@/components/tab-nav";
 import { WidgetCard } from "@/components/widget-card";
@@ -21,6 +24,11 @@ import { purchaseLevelForItemCount } from "@/lib/purchaseOrder";
 import { OPGG_REGION_OPTIONS } from "@/lib/opggLiveGame";
 import { importLiveGameFromOpgg } from "./actions/liveGame";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
+import {
+  DUEL_FIELD_TOOLTIPS,
+  PROFILE_TOOLTIPS,
+  STAT_TOOLTIPS,
+} from "@/lib/statTooltips";
 
 type ScrapedChampionBuild = {
   position: string;
@@ -125,8 +133,9 @@ function EnemyTeamPicker({
           return (
             <span
               key={name}
-              className="inline-flex items-center gap-1 text-xs bg-dpm-accent/12 border border-dpm-accent/30 text-dpm-text px-2 py-1 rounded-full"
+              className="inline-flex items-center gap-1.5 text-xs bg-dpm-accent/10 border border-dpm-accent/25 text-dpm-text px-2 py-1 rounded-full"
             >
+              <ChampionIcon name={name} size={20} />
               {name}
               {data && (
                 <span className="text-dpm-muted text-[10px]">
@@ -172,8 +181,9 @@ function EnemyTeamPicker({
                 addChamp(name);
                 setDropdownOpen(false);
               }}
-              className="w-full text-left px-3 py-1.5 text-xs hover:bg-dpm-widget-hover transition-colors"
+              className="w-full text-left px-3 py-2 text-xs hover:bg-dpm-widget-hover transition-colors flex items-center gap-2"
             >
+              <ChampionIcon name={name} size={24} />
               {name}
               {opggBuilds?.champions[name] && (
                 <span className="text-dpm-muted ml-2">
@@ -338,16 +348,16 @@ function BuildFinder(): React.ReactElement {
   }, [liveImportBusy, liveRiotId, liveRegion]);
 
   return (
-    <div className="flex flex-1 flex-col min-h-0 py-4 overflow-hidden">
+    <div className="flex flex-1 flex-col min-h-0 py-6 overflow-hidden">
       {/* Hero */}
-      <div className="mb-6 shrink-0 text-center">
-        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-1">
+      <div className="mb-8 shrink-0 text-center">
+        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-2">
           Optimize your
         </p>
-        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
           Build Finder
         </h1>
-        <p className="text-dpm-muted text-sm max-w-2xl mx-auto">
+        <p className="text-dpm-muted text-sm max-w-2xl mx-auto leading-relaxed">
           Picks a balanced mix of damage and effective HP for a reference duel.
           Import your live game from OP.GG, pick enemies manually, or auto-fill
           duel stats from OP.GG builds.
@@ -355,7 +365,7 @@ function BuildFinder(): React.ReactElement {
       </div>
 
       {/* Top row: Live Import + Enemy Team */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 shrink-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 shrink-0">
         <WidgetCard
           title="Import live game (OP.GG)"
           subtitle="Requires an active game visible on OP.GG. Enter Riot ID as Name#Tag."
@@ -460,16 +470,18 @@ function BuildFinder(): React.ReactElement {
             : "Configure opponent stats for build scoring"
         }
         glow="purple"
-        className="mb-4 shrink-0"
+        className="mb-6 shrink-0"
       >
-        <div className="flex flex-wrap gap-4 items-end text-sm">
+        <div className="flex flex-wrap gap-5 items-end text-sm">
           <div>
-            <label
-              htmlFor="duel-max-hp"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Opponent max HP
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.maxHP}>
+              <label
+                htmlFor="duel-max-hp"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Opponent max HP
+              </label>
+            </HoverTip>
             <input
               id="duel-max-hp"
               type="number"
@@ -481,16 +493,18 @@ function BuildFinder(): React.ReactElement {
                 setTargetMaxHP(Number(e.target.value) || 3000);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
             />
           </div>
           <div>
-            <label
-              htmlFor="duel-bonus-hp"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Opponent bonus HP
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.bonusHP}>
+              <label
+                htmlFor="duel-bonus-hp"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Opponent bonus HP
+              </label>
+            </HoverTip>
             <input
               id="duel-bonus-hp"
               type="number"
@@ -502,16 +516,18 @@ function BuildFinder(): React.ReactElement {
                 setTargetBonusHP(Number(e.target.value) || 0);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
             />
           </div>
           <div>
-            <label
-              htmlFor="duel-armor"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Opponent armor
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.armor}>
+              <label
+                htmlFor="duel-armor"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Opponent armor
+              </label>
+            </HoverTip>
             <input
               id="duel-armor"
               type="number"
@@ -523,16 +539,18 @@ function BuildFinder(): React.ReactElement {
                 setTargetArmor(Number(e.target.value) || 0);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
             />
           </div>
           <div>
-            <label
-              htmlFor="duel-mr"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Opponent MR
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.mr}>
+              <label
+                htmlFor="duel-mr"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Opponent MR
+              </label>
+            </HoverTip>
             <input
               id="duel-mr"
               type="number"
@@ -544,16 +562,18 @@ function BuildFinder(): React.ReactElement {
                 setTargetMR(Number(e.target.value) || 0);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
             />
           </div>
           <div>
-            <label
-              htmlFor="duel-combo-window"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Burst window (s)
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.burstWindow}>
+              <label
+                htmlFor="duel-combo-window"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Burst window (s)
+              </label>
+            </HoverTip>
             <input
               id="duel-combo-window"
               type="number"
@@ -568,16 +588,18 @@ function BuildFinder(): React.ReactElement {
             />
           </div>
           <div className="min-w-[200px]">
-            <label
-              htmlFor="duel-phys-share"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Incoming damage: {incomingPhysPct}% phys / {100 - incomingPhysPct}
-              % magic
-              {isAutoActive && (
-                <span className="text-dpm-accent ml-1">(from enemy kits + items)</span>
-              )}
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
+              <label
+                htmlFor="duel-phys-share"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Incoming damage: {incomingPhysPct}% phys / {100 - incomingPhysPct}
+                % magic
+                {isAutoActive && (
+                  <span className="text-dpm-accent ml-1">(from enemy kits + items)</span>
+                )}
+              </label>
+            </HoverTip>
             <input
               id="duel-phys-share"
               type="range"
@@ -592,12 +614,14 @@ function BuildFinder(): React.ReactElement {
             />
           </div>
           <div>
-            <label
-              htmlFor="duel-level"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Simulation level
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.level}>
+              <label
+                htmlFor="duel-level"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Simulation level
+              </label>
+            </HoverTip>
             <input
               id="duel-level"
               type="number"
@@ -614,12 +638,14 @@ function BuildFinder(): React.ReactElement {
             />
           </div>
           <div>
-            <label
-              htmlFor="duel-rotation-profiles"
-              className="block text-dpm-muted text-xs mb-1"
-            >
-              Rotation templates
-            </label>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.rotation}>
+              <label
+                htmlFor="duel-rotation-profiles"
+                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+              >
+                Rotation templates
+              </label>
+            </HoverTip>
             <button
               id="duel-rotation-profiles"
               type="button"
@@ -632,11 +658,11 @@ function BuildFinder(): React.ReactElement {
         </div>
       </WidgetCard>
 
-      <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+      <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
         <WidgetCard
           title="Champions"
           glow="purple"
-          className="w-full lg:w-[320px] shrink-0 flex flex-col min-h-0 !p-3"
+          className="w-full lg:w-[360px] shrink-0 flex flex-col min-h-0"
         >
           <label htmlFor="champion-search" className="sr-only">
             Search champion
@@ -646,22 +672,23 @@ function BuildFinder(): React.ReactElement {
             placeholder="Search champion..."
             value={championSearch}
             onChange={(e) => setChampionSearch(e.target.value)}
-            className="mb-2"
+            className="mb-3"
           />
-          <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="grid grid-cols-2 gap-1">
+          <div className="flex-1 overflow-y-auto min-h-0 pr-1">
+            <div className="grid grid-cols-1 gap-2">
               {filteredChampions.map((c) => (
                 <button
                   key={c.Name}
                   type="button"
                   onClick={() => setSelectedChampion(c)}
-                  className={`p-2 rounded text-left text-xs font-medium border transition-colors ${
+                  className={`flex items-center gap-3 p-2.5 rounded-lg text-left text-xs font-medium border transition-colors ${
                     selectedChampion?.Name === c.Name
-                      ? "border-dpm-accent bg-dpm-accent/18 text-white shadow-[0_0_20px_rgba(135,149,240,0.15)]"
+                      ? "border-dpm-accent bg-dpm-accent/15 text-white shadow-[0_0_20px_rgba(121,137,236,0.15)]"
                       : "border-white/10 bg-dpm-bg/50 hover:bg-dpm-widget-hover hover:border-white/20"
                   }`}
                 >
-                  {c.Name}
+                  <ChampionIcon name={c.Name} size={36} />
+                  <span className="truncate">{c.Name}</span>
                 </button>
               ))}
             </div>
@@ -673,98 +700,139 @@ function BuildFinder(): React.ReactElement {
             <div className="text-dpm-muted text-sm">Select a champion.</div>
           )}
           {selectedChampion && busy && (
-            <div className="text-dpm-muted text-sm">Computing builds…</div>
+            <div className="flex items-center gap-3 text-dpm-muted text-sm">
+              <ChampionIcon name={selectedChampion.Name} size={40} />
+              <span>Computing builds for {selectedChampion.Name}…</span>
+            </div>
           )}
           {selectedChampion && !busy && recs.length === 0 && (
             <div className="text-dpm-muted text-sm">No recommendations.</div>
           )}
           {selectedChampion && !busy && recs.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-dpm-muted text-xs">
-                Scores use opponent HP {duelResolved.targetMaxHP} (+{" "}
-                {duelResolved.targetBonusHP} bonus), {duelResolved.targetArmor}{" "}
-                armor / {duelResolved.targetMR} MR, burst window{" "}
-                {duelResolved.comboWindowSeconds}s, and your Eff. HP weights{" "}
-                {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical at
-                level {simulationLevel}. Rotation templates{" "}
-                {useRotationProfiles ? "enabled" : "disabled"}.
-              </p>
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <ChampionIcon name={selectedChampion.Name} size={44} />
+                <p className="text-dpm-muted text-xs leading-relaxed">
+                  Scores for{" "}
+                  <span className="text-dpm-text font-medium">
+                    {selectedChampion.Name}
+                  </span>{" "}
+                  vs {duelResolved.targetMaxHP} HP (+{" "}
+                  {duelResolved.targetBonusHP} bonus), {duelResolved.targetArmor}{" "}
+                  armor / {duelResolved.targetMR} MR, burst window{" "}
+                  {duelResolved.comboWindowSeconds}s, Eff. HP weights{" "}
+                  {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical
+                  at level {simulationLevel}. Rotation templates{" "}
+                  {useRotationProfiles ? "enabled" : "disabled"}.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                 {recs.map((r) => (
                   <div
                     key={`${r.profile}-${r.label}-${r.items.join(",")}`}
-                    className="dpm-widget dpm-widget-glow dpm-widget-glow-purple"
+                    className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-5"
                   >
-                    <div className="flex justify-between items-start gap-2 mb-2">
+                    <div className="flex justify-between items-start gap-3 mb-4">
                       <div>
                         <div className="text-dpm-accent-gold font-semibold text-sm">
                           {r.label}
                         </div>
-                        <div className="text-dpm-muted text-xs mt-0.5">
-                          {r.description}
-                        </div>
+                        <HoverTip label={r.description}>
+                          <div className="text-dpm-muted text-xs mt-1 leading-relaxed cursor-help border-b border-dotted border-dpm-muted/30 w-fit">
+                            {r.description}
+                          </div>
+                        </HoverTip>
                       </div>
-                      <span className="dpm-badge-accent shrink-0">
-                        {r.profile}
-                      </span>
+                      <HoverTip
+                        label={
+                          PROFILE_TOOLTIPS[r.profile] ?? STAT_TOOLTIPS.profile
+                        }
+                      >
+                        <span className="dpm-badge-accent shrink-0 cursor-help">
+                          {r.profile}
+                        </span>
+                      </HoverTip>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs mb-2">
-                      <div className="dpm-stat-tile">
-                        <div className="dpm-stat-tile-label">Combo DPS</div>
-                        <div className="dpm-stat-tile-value text-dpm-accent">
-                          {r.comboDPS.toFixed(0)}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-center text-xs mb-4">
+                      <HoverTip label={STAT_TOOLTIPS.comboDPS}>
+                        <div className="dpm-stat-tile cursor-help">
+                          <div className="dpm-stat-tile-label">Combo DPS</div>
+                          <div className="dpm-stat-tile-value text-dpm-accent">
+                            {r.comboDPS.toFixed(0)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="dpm-stat-tile">
-                        <div className="dpm-stat-tile-label">Sustained</div>
-                        <div className="dpm-stat-tile-value text-dpm-accent-cyan">
-                          {r.sustainedDPS.toFixed(0)}
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.sustainedDPS}>
+                        <div className="dpm-stat-tile cursor-help">
+                          <div className="dpm-stat-tile-label">Sustained</div>
+                          <div className="dpm-stat-tile-value text-dpm-accent-cyan">
+                            {r.sustainedDPS.toFixed(0)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="dpm-stat-tile">
-                        <div className="dpm-stat-tile-label">Eff. HP</div>
-                        <div className="dpm-stat-tile-value text-dpm-up">
-                          {Math.round(r.effectiveHP)}
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.effectiveHP}>
+                        <div className="dpm-stat-tile cursor-help">
+                          <div className="dpm-stat-tile-label">Eff. HP</div>
+                          <div className="dpm-stat-tile-value text-dpm-up">
+                            {Math.round(r.effectiveHP)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="dpm-stat-tile">
-                        <div className="dpm-stat-tile-label">Est. gold</div>
-                        <div className="dpm-stat-tile-value text-dpm-accent-cyan">
-                          ~{r.totalGold.toLocaleString()}g
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.totalGold}>
+                        <div className="dpm-stat-tile cursor-help">
+                          <div className="dpm-stat-tile-label">Est. gold</div>
+                          <div className="dpm-stat-tile-value text-dpm-accent-gold">
+                            ~{r.totalGold.toLocaleString()}g
+                          </div>
                         </div>
-                      </div>
-                      <div className="dpm-stat-tile">
-                        <div className="dpm-stat-tile-label">Keystone</div>
-                        <div className="dpm-stat-tile-value text-dpm-accent-gold truncate">
-                          {r.rune}
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.keystone}>
+                        <div className="dpm-stat-tile cursor-help">
+                          <div className="dpm-stat-tile-label">Keystone</div>
+                          <div className="dpm-stat-tile-value text-dpm-accent-gold truncate">
+                            {r.rune}
+                          </div>
                         </div>
-                      </div>
+                      </HoverTip>
                     </div>
-                    <div className="text-[10px] text-dpm-muted mb-1">
+                    <div className="text-[10px] text-dpm-muted mb-2 leading-relaxed">
                       Items (buy order: best marginal sim spike per gold;
                       expensive legendaries deferred)
                     </div>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-2.5 mb-3">
                       {r.items.map((name) => (
-                        <span
-                          key={name}
-                          className="text-[11px] bg-dpm-accent/12 px-2 py-0.5 rounded-full border border-dpm-accent/30"
-                        >
-                          {name}
-                        </span>
+                        <HoverTip key={name} label={name}>
+                          <ItemIcon name={name} size={40} className="cursor-help" />
+                        </HoverTip>
                       ))}
                     </div>
-                    <div className="grid grid-cols-4 gap-1 mt-2 text-[10px] text-center text-dpm-muted">
-                      <span>AA {r.autoAttackDPS.toFixed(0)}</span>
-                      <span>OH {r.onHitDPS.toFixed(0)}</span>
-                      <span>Ab {r.abilityDPS.toFixed(0)}</span>
-                      <span>DoT {r.dotDPS.toFixed(0)}</span>
+                    <div className="grid grid-cols-4 gap-2 text-[10px] text-center text-dpm-muted">
+                      <HoverTip label={STAT_TOOLTIPS.aa}>
+                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
+                          AA {r.autoAttackDPS.toFixed(0)}
+                        </span>
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.oh}>
+                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
+                          OH {r.onHitDPS.toFixed(0)}
+                        </span>
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.ab}>
+                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
+                          Ab {r.abilityDPS.toFixed(0)}
+                        </span>
+                      </HoverTip>
+                      <HoverTip label={STAT_TOOLTIPS.dotShort}>
+                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
+                          DoT {r.dotDPS.toFixed(0)}
+                        </span>
+                      </HoverTip>
                     </div>
-                    <details className="mt-2 text-xs">
+                    <details className="mt-3 text-xs">
                       <summary className="cursor-pointer text-dpm-muted hover:text-dpm-text">
                         DPS breakdown
                       </summary>
-                      <div className="mt-2 space-y-0.5 font-mono text-[10px] text-dpm-muted max-h-40 overflow-y-auto border border-white/10 rounded p-2 bg-dpm-bg/40">
+                      <div className="mt-2 space-y-0.5 font-mono text-[10px] text-dpm-muted max-h-40 overflow-y-auto border border-white/10 rounded p-3 bg-dpm-bg/40">
                         {r.breakdown.map((line) => (
                           <div key={`${r.profile}-${line}`}>{line}</div>
                         ))}
@@ -919,7 +987,7 @@ function RandomBuildGenerator(): React.ReactElement {
 
       {/* Slot machine container */}
       <div className="relative w-full max-w-2xl mb-8">
-        <div className="absolute inset-0 bg-dpm-accent/12 blur-xl rounded-3xl" />
+        <div className="absolute inset-0 bg-dpm-accent/10 blur-xl rounded-3xl" />
 
         <div className="relative dpm-widget dpm-widget-glow dpm-widget-glow-gold overflow-hidden !p-0 border-2 border-dpm-accent-gold/30">
           {/* Selection indicator */}
@@ -971,7 +1039,7 @@ function RandomBuildGenerator(): React.ReactElement {
         className={`px-12 py-4 text-2xl font-bold rounded-xl transition-all transform dpm-btn dpm-btn-primary ${
           isSpinning
             ? "opacity-50 cursor-not-allowed scale-95"
-            : "hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(135,149,240,0.2)]"
+            : "hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(121,137,236,0.2)]"
         }`}
       >
         {isSpinning ? "SPINNING..." : "SPIN!"}
@@ -989,9 +1057,14 @@ function RandomBuildGenerator(): React.ReactElement {
               X
             </button>
 
-            <div className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-6 shadow-[0_0_40px_rgba(135,149,240,0.15)]">
+            <div className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-6 shadow-[0_0_40px_rgba(121,137,236,0.15)]">
               <div className="text-center mb-4">
                 <div className="text-sm text-dpm-accent mb-1">YOUR BUILD</div>
+                <ChampionIcon
+                  name={selectedBuild.champion}
+                  size={64}
+                  className="mx-auto mb-2"
+                />
                 <h2 className="text-4xl font-bold text-dpm-accent-gold">
                   {selectedBuild.champion}
                 </h2>
@@ -1021,12 +1094,9 @@ function RandomBuildGenerator(): React.ReactElement {
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {selectedBuild.items.map((item) => (
-                    <span
-                      key={item}
-                      className="bg-dpm-accent/12 px-3 py-2 rounded-full border border-dpm-accent/30 text-sm font-medium"
-                    >
-                      {item}
-                    </span>
+                    <HoverTip key={item} label={item}>
+                      <ItemIcon name={item} size={44} className="cursor-help" />
+                    </HoverTip>
                   ))}
                 </div>
               </div>
@@ -1234,17 +1304,6 @@ function MetaAnalysis(): React.ReactElement {
                   phys
                 </>
               )}
-              {metaData.duel &&
-                (metaData.duel.targetMaxHP !== 1500 ||
-                  metaData.duel.targetBonusHP !== 0 ||
-                  metaData.duel.targetArmor !== 0 ||
-                  metaData.duel.targetMR !== 0) && (
-                  <span className="block mt-1 text-dpm-accent-gold">
-                    Stale duel assumptions — run{" "}
-                    <code className="dpm-kbd">npm run compute-meta</code> for
-                    1500 HP / 0 bonus / 0 armor / 0 MR targets.
-                  </span>
-                )}
             </span>
           )}
         </p>
@@ -1365,27 +1424,44 @@ function MetaAnalysis(): React.ReactElement {
                   }}
                   onMouseLeave={() => setHoveredBuild(null)}
                 >
-                  <td className="p-3 font-semibold">{build.champion}</td>
-                  <td className="p-3">
-                    <span className="dpm-badge-gold">{build.rune}</span>
+                  <td className="p-3 font-semibold">
+                    <div className="flex items-center gap-2">
+                      <ChampionIcon name={build.champion} size={28} />
+                      {build.champion}
+                    </div>
                   </td>
                   <td className="p-3">
-                    <div className="flex flex-wrap gap-1">
+                    <HoverTip label={STAT_TOOLTIPS.keystone}>
+                      <span className="dpm-badge-gold cursor-help">{build.rune}</span>
+                    </HoverTip>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-1.5">
                       {build.items.map((item: string) => (
-                        <span
-                          key={`${build.champion}-${item}`}
-                          className="text-xs bg-dpm-accent/12 px-1.5 py-0.5 rounded-full border border-dpm-accent/30"
-                        >
-                          {item}
-                        </span>
+                        <HoverTip key={`${build.champion}-${item}`} label={item}>
+                          <ItemIcon name={item} size={32} className="cursor-help" />
+                        </HoverTip>
                       ))}
                     </div>
                   </td>
                   <td className="p-3">
-                    <span className="dpm-badge-accent">{build.buildType}</span>
+                    <HoverTip
+                      label={
+                        PROFILE_TOOLTIPS[build.buildType] ??
+                        STAT_TOOLTIPS.profile
+                      }
+                    >
+                      <span className="dpm-badge-accent cursor-help">
+                        {build.buildType}
+                      </span>
+                    </HoverTip>
                   </td>
                   <td className="p-3 text-right font-bold text-dpm-accent">
-                    {build.totalDPS.toFixed(1)}
+                    <HoverTip label={STAT_TOOLTIPS.comboDPS}>
+                      <span className="cursor-help border-b border-dotted border-dpm-accent/40">
+                        {build.totalDPS.toFixed(1)}
+                      </span>
+                    </HoverTip>
                   </td>
                   <td className="p-3 text-right text-dpm-muted">
                     {build.autoAttackDPS.toFixed(1)}
@@ -1403,7 +1479,7 @@ function MetaAnalysis(): React.ReactElement {
       {/* DPS Breakdown Tooltip */}
       {hoveredBuild?.breakdown && (
         <div
-          className="fixed z-50 dpm-widget shadow-[0_0_30px_rgba(135,149,240,0.15)] p-4 max-w-md"
+          className="fixed z-50 dpm-widget shadow-[0_0_30px_rgba(121,137,236,0.15)] p-4 max-w-md"
           style={{
             left: Math.min(tooltipPosition.x, window.innerWidth - 420),
             top: Math.max(
@@ -1563,7 +1639,7 @@ export default function Home(): React.ReactElement {
       ) : activeTab === "random" ? (
         <RandomBuildGenerator />
       ) : activeTab === "planner" ? (
-        <div className="flex flex-1 overflow-hidden gap-4 py-4">
+        <div className="flex flex-1 overflow-hidden gap-6 py-6">
           <WidgetCard
             title="Champions"
             glow="purple"
@@ -1573,25 +1649,27 @@ export default function Home(): React.ReactElement {
               placeholder="Search champions..."
               value={championSearch}
               onChange={(e) => setChampionSearch(e.target.value)}
-              className="mb-2"
+              className="mb-3"
             />
-            <div className="flex-1 overflow-y-auto min-h-0">
-              <div className="grid grid-cols-6 gap-1">
+            <div className="flex-1 overflow-y-auto min-h-0 pr-1">
+              <div className="grid grid-cols-4 xl:grid-cols-5 gap-2">
                 {filteredChampions.map((champion) => (
-                  <button
-                    type="button"
-                    key={champion.Name}
-                    onClick={() => handleChampionSelect(champion)}
-                    className={`p-1 rounded border transition-all ${
-                      selectedChampion?.Name === champion.Name
-                        ? "border-dpm-accent bg-dpm-accent/18 shadow-[0_0_12px_rgba(135,149,240,0.15)]"
-                        : "border-white/10 bg-dpm-bg/50 hover:bg-dpm-widget-hover hover:border-white/20"
-                    }`}
-                  >
-                    <div className="text-xs font-semibold truncate">
-                      {champion.Name}
-                    </div>
-                  </button>
+                  <HoverTip key={champion.Name} label={champion.Name}>
+                    <button
+                      type="button"
+                      onClick={() => handleChampionSelect(champion)}
+                      className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-all ${
+                        selectedChampion?.Name === champion.Name
+                          ? "border-dpm-accent bg-dpm-accent/15 shadow-[0_0_12px_rgba(121,137,236,0.15)]"
+                          : "border-white/10 bg-dpm-bg/50 hover:bg-dpm-widget-hover hover:border-white/20"
+                      }`}
+                    >
+                      <ChampionIcon name={champion.Name} size={40} />
+                      <div className="text-[10px] font-semibold truncate w-full text-center">
+                        {champion.Name}
+                      </div>
+                    </button>
+                  </HoverTip>
                 ))}
               </div>
             </div>
@@ -1604,16 +1682,21 @@ export default function Home(): React.ReactElement {
           >
             {selectedChampion ? (
               <>
-                <div className="mb-2 text-center">
+                <div className="mb-3 text-center">
+                  <ChampionIcon
+                    name={selectedChampion.Name}
+                    size={48}
+                    className="mx-auto mb-2"
+                  />
                   <div className="text-sm font-bold text-dpm-accent-gold">
                     {selectedChampion.Name}
                   </div>
                 </div>
                 <div className="flex-1 w-full">
-                  <h3 className="text-xs font-semibold mb-1 text-center text-dpm-muted">
+                  <h3 className="text-xs font-semibold mb-2 text-center text-dpm-muted">
                     Items
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     {Array.from({ length: 6 }).map((_, index) => (
                       <button
                         type="button"
@@ -1621,9 +1704,9 @@ export default function Home(): React.ReactElement {
                         onClick={() =>
                           selectedItems[index] && handleItemRemove(index)
                         }
-                        className={`w-full h-8 rounded border transition-all ${
+                        className={`w-full h-10 rounded-lg border transition-all flex items-center justify-center ${
                           selectedItems[index]
-                            ? "border-dpm-accent bg-dpm-accent/18 hover:border-dpm-down hover:bg-dpm-down/10"
+                            ? "border-dpm-accent bg-dpm-accent/15 hover:border-dpm-down hover:bg-dpm-down/10"
                             : "border-white/10 bg-dpm-bg/50"
                         }`}
                         title={
@@ -1632,11 +1715,11 @@ export default function Home(): React.ReactElement {
                             : "Empty slot"
                         }
                       >
-                        {selectedItems[index] && (
-                          <div className="text-[10px] truncate px-1">
-                            {selectedItems[index].name}
-                          </div>
-                        )}
+                        {selectedItems[index] ? (
+                          <HoverTip label={selectedItems[index].name}>
+                            <ItemIcon name={selectedItems[index].name} size={32} />
+                          </HoverTip>
+                        ) : null}
                       </button>
                     ))}
                   </div>
@@ -1649,7 +1732,7 @@ export default function Home(): React.ReactElement {
             )}
           </WidgetCard>
 
-          <div className="w-[45%] flex flex-col gap-4 min-h-0">
+          <div className="w-[45%] flex flex-col gap-6 min-h-0">
             <WidgetCard
               title="Stats & DPS"
               glow="blue"
@@ -1683,7 +1766,7 @@ export default function Home(): React.ReactElement {
 
                   {dps && (
                     <div className="mt-3 space-y-2">
-                      <div className="dpm-stat-tile !p-2 border border-dpm-accent/30 bg-dpm-accent/12">
+                      <div className="dpm-stat-tile !p-2 border border-dpm-accent/25 bg-dpm-accent/10">
                         <div className="text-dpm-accent text-xs font-semibold mb-1">
                           Total DPS
                         </div>
@@ -1751,33 +1834,32 @@ export default function Home(): React.ReactElement {
                         const isDisabled = isFull || hasConflict;
 
                         return (
-                          <button
-                            type="button"
+                          <HoverTip
                             key={item.name}
-                            onClick={() => handleItemAdd(item)}
-                            disabled={isDisabled}
-                            className={`p-1 rounded border transition-all text-left ${
-                              isDisabled
-                                ? "border-white/5 bg-dpm-bg/30 opacity-50 cursor-not-allowed"
-                                : "border-dpm-accent/30 bg-dpm-accent/5 hover:border-dpm-accent hover:bg-dpm-accent/12"
-                            }`}
-                            title={
+                            label={
                               hasConflict
                                 ? `Cannot equip: ${itemGroupName} already equipped`
                                 : isFull
                                   ? "Item slots full"
-                                  : `Equip ${item.name}`
+                                  : item.name
                             }
                           >
-                            <div className="font-semibold text-[10px] truncate">
-                              {item.name}
-                            </div>
-                            {item.groupName && (
-                              <div className="text-[9px] text-dpm-accent-cyan truncate">
-                                {item.groupName}
+                            <button
+                              type="button"
+                              onClick={() => handleItemAdd(item)}
+                              disabled={isDisabled}
+                              className={`p-2 rounded-lg border transition-all text-left flex flex-col items-center gap-1 ${
+                                isDisabled
+                                  ? "border-white/5 bg-dpm-bg/30 opacity-50 cursor-not-allowed"
+                                  : "border-dpm-accent/25 bg-dpm-accent/5 hover:border-dpm-accent hover:bg-dpm-accent/10"
+                              }`}
+                            >
+                              <ItemIcon name={item.name} size={32} />
+                              <div className="font-semibold text-[9px] truncate w-full text-center">
+                                {item.name}
                               </div>
-                            )}
-                          </button>
+                            </button>
+                          </HoverTip>
                         );
                       })}
                     </div>

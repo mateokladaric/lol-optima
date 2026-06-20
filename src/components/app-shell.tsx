@@ -8,7 +8,7 @@ type AppShellProps = {
 export function AppShell({ children, headerTabs }: AppShellProps) {
   return (
     <div className="dpm-bg-glow flex flex-col h-screen">
-      <header className="sticky top-0 z-40 flex items-center justify-between h-[50px] min-h-[50px] px-4 lg:px-6 bg-dpm-header/85 backdrop-blur-md border-b border-white/12">
+      <header className="sticky top-0 z-40 flex items-center justify-between h-[50px] min-h-[50px] px-4 lg:px-6 bg-dpm-header border-b border-white/10">
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-white">LoL</span>
           <span className="text-lg font-bold text-dpm-accent">Optima</span>
@@ -24,7 +24,7 @@ export function AppShell({ children, headerTabs }: AppShellProps) {
       </header>
 
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="flex-1 flex flex-col min-h-0 max-w-7xl w-full mx-auto px-4 lg:px-6">
+        <div className="flex-1 flex flex-col min-h-0 max-w-7xl w-full mx-auto px-4 lg:px-8 py-2">
           {children}
         </div>
       </main>
