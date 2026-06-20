@@ -1,4 +1,8 @@
 "use client";
+import { AppShell } from "@/components/app-shell";
+import { SearchInput } from "@/components/search-input";
+import { TabNav } from "@/components/tab-nav";
+import { WidgetCard } from "@/components/widget-card";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   BuildRecommendation,
@@ -121,18 +125,18 @@ function EnemyTeamPicker({
           return (
             <span
               key={name}
-              className="inline-flex items-center gap-1 text-xs bg-red-900/40 border border-red-700/60 text-red-200 px-2 py-1 rounded"
+              className="inline-flex items-center gap-1 text-xs bg-dpm-accent/12 border border-dpm-accent/30 text-dpm-text px-2 py-1 rounded-full"
             >
               {name}
               {data && (
-                <span className="text-red-400/70 text-[10px]">
+                <span className="text-dpm-muted text-[10px]">
                   {data.position}
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => removeChamp(name)}
-                className="ml-0.5 text-red-400 hover:text-red-200 font-bold"
+                className="ml-0.5 text-dpm-muted hover:text-dpm-down font-bold"
               >
                 x
               </button>
@@ -155,11 +159,11 @@ function EnemyTeamPicker({
             setDropdownOpen(true);
           }}
           onFocus={() => setDropdownOpen(true)}
-          className="w-full px-2 py-1 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:border-red-500 focus:outline-none disabled:opacity-50"
+          className="dpm-input text-xs"
         />
       )}
       {dropdownOpen && filtered.length > 0 && (
-        <div className="absolute z-30 mt-1 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded shadow-lg">
+        <div className="absolute z-30 mt-1 w-full max-h-48 overflow-y-auto bg-dpm-widget border border-white/10 rounded-lg shadow-lg">
           {filtered.slice(0, 30).map((name) => (
             <button
               key={name}
@@ -168,11 +172,11 @@ function EnemyTeamPicker({
                 addChamp(name);
                 setDropdownOpen(false);
               }}
-              className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-700 transition-colors"
+              className="w-full text-left px-3 py-1.5 text-xs hover:bg-dpm-widget-hover transition-colors"
             >
               {name}
               {opggBuilds?.champions[name] && (
-                <span className="text-gray-500 ml-2">
+                <span className="text-dpm-muted ml-2">
                   {opggBuilds.champions[name].position}
                 </span>
               )}
@@ -334,31 +338,34 @@ function BuildFinder(): React.ReactElement {
   }, [liveImportBusy, liveRiotId, liveRegion]);
 
   return (
-    <div className="flex flex-1 flex-col min-h-0 p-4 overflow-hidden">
-      <div className="mb-4 shrink-0">
-        <h1 className="text-2xl font-bold text-white mb-1">1v1 build finder</h1>
-        <p className="text-gray-400 text-sm max-w-3xl">
-          Picks a balanced mix of damage and effective HP for a reference duel.
-          Import your live game from OP.GG (Riot ID + region), pick enemies
-          manually, or auto-fill duel stats from OP.GG builds. Press{" "}
-          <kbd className="px-1 bg-gray-800 rounded">F4</kbd> for Random / Meta
-          / manual Planner.
+    <div className="flex flex-1 flex-col min-h-0 py-4 overflow-hidden">
+      {/* Hero */}
+      <div className="mb-6 shrink-0 text-center">
+        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-1">
+          Optimize your
         </p>
+        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+          Build Finder
+        </h1>
+        <p className="text-dpm-muted text-sm max-w-2xl mx-auto">
+          Picks a balanced mix of damage and effective HP for a reference duel.
+          Import your live game from OP.GG, pick enemies manually, or auto-fill
+          duel stats from OP.GG builds.
+        </p>
+      </div>
 
-        <fieldset className="mt-3 border border-emerald-900/50 rounded-lg p-3 bg-emerald-950/20 text-sm">
-          <legend className="text-emerald-400 px-1 text-xs font-medium">
-            Import live game (OP.GG)
-          </legend>
-          <p className="text-gray-500 text-xs mb-2">
-            Requires an active game visible on OP.GG (Live Game tab). We
-            refresh OP.GG first, same as the site&apos;s Update button. Enter
-            Riot ID as Name#Tag and your server region.
-          </p>
+      {/* Top row: Live Import + Enemy Team */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 shrink-0">
+        <WidgetCard
+          title="Import live game (OP.GG)"
+          subtitle="Requires an active game visible on OP.GG. Enter Riot ID as Name#Tag."
+          glow="blue"
+        >
           <div className="flex flex-wrap gap-2 items-end">
             <div className="min-w-[200px] flex-1">
               <label
                 htmlFor="live-riot-id"
-                className="block text-gray-500 text-xs mb-1"
+                className="block text-dpm-muted text-xs mb-1"
               >
                 Riot ID (Name#Tag)
               </label>
@@ -368,13 +375,13 @@ function BuildFinder(): React.ReactElement {
                 placeholder="Faker#KR1"
                 value={liveRiotId}
                 onChange={(e) => setLiveRiotId(e.target.value)}
-                className="w-full px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none"
+                className="dpm-input"
               />
             </div>
             <div>
               <label
                 htmlFor="live-region"
-                className="block text-gray-500 text-xs mb-1"
+                className="block text-dpm-muted text-xs mb-1"
               >
                 Region
               </label>
@@ -382,7 +389,7 @@ function BuildFinder(): React.ReactElement {
                 id="live-region"
                 value={liveRegion}
                 onChange={(e) => setLiveRegion(e.target.value)}
-                className="px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white focus:border-emerald-500 focus:outline-none"
+                className="dpm-input"
               >
                 {OPGG_REGION_OPTIONS.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -395,43 +402,39 @@ function BuildFinder(): React.ReactElement {
               type="button"
               disabled={liveImportBusy || !liveRiotId.trim()}
               onClick={() => void handleLiveImport()}
-              className="px-3 py-1 rounded border text-xs font-medium border-emerald-600 bg-emerald-900/50 text-emerald-200 hover:bg-emerald-900/70 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="dpm-btn dpm-btn-primary"
             >
               {liveImportBusy ? "Loading…" : "Load live game"}
             </button>
           </div>
           {liveImportStatus && (
             <p
-              className={`mt-2 text-xs ${liveImportStatus.kind === "success" ? "text-emerald-300" : "text-red-300"}`}
+              className={`mt-2 text-xs ${liveImportStatus.kind === "success" ? "text-dpm-up" : "text-dpm-down"}`}
             >
               {liveImportStatus.message}
             </p>
           )}
-        </fieldset>
+        </WidgetCard>
 
-        <fieldset className="mt-3 border border-red-900/50 rounded-lg p-3 bg-red-950/20 text-sm">
-          <legend className="text-red-400 px-1 text-xs font-medium">
-            Enemy team{" "}
-            {opggBuilds && (
-              <span className="text-gray-500 font-normal">
-                (patch {opggBuilds.patch})
-              </span>
-            )}
-          </legend>
+        <WidgetCard
+          title={`Enemy team${opggBuilds ? ` (patch ${opggBuilds.patch})` : ""}`}
+          subtitle="Add up to 5 enemy champions to auto-fill duel stats."
+          glow="gold"
+        >
           <EnemyTeamPicker
             opggBuilds={opggBuilds}
             enemyTeam={enemyTeam}
             setEnemyTeam={setEnemyTeam}
           />
           {missingOpggEnemies.length > 0 && (
-            <p className="mt-2 text-amber-400/90 text-xs">
+            <p className="mt-2 text-dpm-accent-gold text-xs">
               Auto-stats skip champions missing from scraped OP.GG builds:{" "}
               {missingOpggEnemies.join(", ")}.
             </p>
           )}
           {autoStats && enemyTeam.length > 0 && (
             <div className="mt-2 flex items-center gap-3 text-xs">
-              <span className="text-gray-400">
+              <span className="text-dpm-muted">
                 Avg: {autoStats.targetMaxHP} HP (+{autoStats.targetBonusHP}{" "}
                 bonus), {autoStats.targetArmor} armor, {autoStats.targetMR} MR,{" "}
                 {Math.round(autoStats.incomingPhysShare * 100)}% incoming phys
@@ -439,29 +442,31 @@ function BuildFinder(): React.ReactElement {
               <button
                 type="button"
                 onClick={() => setUseAutoStats((prev) => !prev)}
-                className={`px-2 py-0.5 rounded border text-[10px] font-medium transition-colors ${
-                  useAutoStats
-                    ? "bg-red-900/50 border-red-600 text-red-200"
-                    : "bg-gray-900 border-gray-600 text-gray-400"
-                }`}
+                className={`dpm-btn text-[10px] ${useAutoStats ? "dpm-btn-active" : ""}`}
               >
                 {useAutoStats ? "Auto-fill ON" : "Auto-fill OFF"}
               </button>
             </div>
           )}
-        </fieldset>
+        </WidgetCard>
+      </div>
 
-        <fieldset className="mt-3 flex flex-wrap gap-4 items-end text-sm border border-gray-700 rounded-lg p-3 bg-gray-800/30">
-          <legend className="text-gray-500 px-1 text-xs">
-            Duel assumptions
-            {isAutoActive && (
-              <span className="text-red-400 ml-1">(auto-filled from team)</span>
-            )}
-          </legend>
+      {/* Duel assumptions */}
+      <WidgetCard
+        title="Duel assumptions"
+        subtitle={
+          isAutoActive
+            ? "Auto-filled from enemy team"
+            : "Configure opponent stats for build scoring"
+        }
+        glow="purple"
+        className="mb-4 shrink-0"
+      >
+        <div className="flex flex-wrap gap-4 items-end text-sm">
           <div>
             <label
               htmlFor="duel-max-hp"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Opponent max HP
             </label>
@@ -476,13 +481,13 @@ function BuildFinder(): React.ReactElement {
                 setTargetMaxHP(Number(e.target.value) || 3000);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
             />
           </div>
           <div>
             <label
               htmlFor="duel-bonus-hp"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Opponent bonus HP
             </label>
@@ -497,13 +502,13 @@ function BuildFinder(): React.ReactElement {
                 setTargetBonusHP(Number(e.target.value) || 0);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
             />
           </div>
           <div>
             <label
               htmlFor="duel-armor"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Opponent armor
             </label>
@@ -518,13 +523,13 @@ function BuildFinder(): React.ReactElement {
                 setTargetArmor(Number(e.target.value) || 0);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
             />
           </div>
           <div>
             <label
               htmlFor="duel-mr"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Opponent MR
             </label>
@@ -539,13 +544,13 @@ function BuildFinder(): React.ReactElement {
                 setTargetMR(Number(e.target.value) || 0);
                 if (isAutoActive) setUseAutoStats(false);
               }}
-              className={`w-28 px-2 py-1 border rounded text-white ${isAutoActive ? "bg-gray-900/50 border-red-800/50" : "bg-gray-900 border-gray-600"}`}
+              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/30" : ""}`}
             />
           </div>
           <div>
             <label
               htmlFor="duel-combo-window"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Burst window (s)
             </label>
@@ -559,18 +564,18 @@ function BuildFinder(): React.ReactElement {
               onChange={(e) =>
                 setComboWindowSeconds(Number(e.target.value) || 8)
               }
-              className="w-28 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+              className="dpm-input w-28"
             />
           </div>
           <div className="min-w-[200px]">
             <label
               htmlFor="duel-phys-share"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Incoming damage: {incomingPhysPct}% phys / {100 - incomingPhysPct}
               % magic
               {isAutoActive && (
-                <span className="text-red-400/80 ml-1">(from enemy kits + items)</span>
+                <span className="text-dpm-accent ml-1">(from enemy kits + items)</span>
               )}
             </label>
             <input
@@ -583,13 +588,13 @@ function BuildFinder(): React.ReactElement {
                 setIncomingPhysPct(Number(e.target.value));
                 if (useAutoStats) setUseAutoStats(false);
               }}
-              className="w-full accent-blue-500"
+              className="w-full accent-dpm-accent"
             />
           </div>
           <div>
             <label
               htmlFor="duel-level"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Simulation level
             </label>
@@ -605,13 +610,13 @@ function BuildFinder(): React.ReactElement {
                   Math.max(1, Math.min(18, Number(e.target.value) || 18)),
                 )
               }
-              className="w-24 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+              className="dpm-input w-24"
             />
           </div>
           <div>
             <label
               htmlFor="duel-rotation-profiles"
-              className="block text-gray-500 text-xs mb-1"
+              className="block text-dpm-muted text-xs mb-1"
             >
               Rotation templates
             </label>
@@ -619,32 +624,31 @@ function BuildFinder(): React.ReactElement {
               id="duel-rotation-profiles"
               type="button"
               onClick={() => setUseRotationProfiles((prev) => !prev)}
-              className={`px-3 py-1 rounded border text-xs font-medium transition-colors ${
-                useRotationProfiles
-                  ? "bg-emerald-900/50 border-emerald-600 text-emerald-200"
-                  : "bg-gray-900 border-gray-600 text-gray-300"
-              }`}
+              className={`dpm-btn ${useRotationProfiles ? "dpm-btn-active" : ""}`}
             >
               {useRotationProfiles ? "Enabled" : "Disabled"}
             </button>
           </div>
-        </fieldset>
-      </div>
+        </div>
+      </WidgetCard>
 
       <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
-        <div className="w-full lg:w-[320px] shrink-0 flex flex-col border border-gray-700 rounded-lg bg-gray-800/40">
+        <WidgetCard
+          title="Champions"
+          glow="purple"
+          className="w-full lg:w-[320px] shrink-0 flex flex-col min-h-0 !p-3"
+        >
           <label htmlFor="champion-search" className="sr-only">
             Search champion
           </label>
-          <input
+          <SearchInput
             id="champion-search"
-            type="text"
             placeholder="Search champion..."
             value={championSearch}
             onChange={(e) => setChampionSearch(e.target.value)}
-            className="m-2 px-3 py-2 text-sm bg-gray-900 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            className="mb-2"
           />
-          <div className="flex-1 overflow-y-auto px-2 pb-2">
+          <div className="flex-1 overflow-y-auto min-h-0">
             <div className="grid grid-cols-2 gap-1">
               {filteredChampions.map((c) => (
                 <button
@@ -653,8 +657,8 @@ function BuildFinder(): React.ReactElement {
                   onClick={() => setSelectedChampion(c)}
                   className={`p-2 rounded text-left text-xs font-medium border transition-colors ${
                     selectedChampion?.Name === c.Name
-                      ? "border-blue-500 bg-blue-900/40 text-white"
-                      : "border-gray-600 bg-gray-800/80 hover:border-gray-500"
+                      ? "border-dpm-accent bg-dpm-accent/18 text-white shadow-[0_0_20px_rgba(135,149,240,0.15)]"
+                      : "border-white/10 bg-dpm-bg/50 hover:bg-dpm-widget-hover hover:border-white/20"
                   }`}
                 >
                   {c.Name}
@@ -662,21 +666,21 @@ function BuildFinder(): React.ReactElement {
               ))}
             </div>
           </div>
-        </div>
+        </WidgetCard>
 
-        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto pr-1">
+        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto">
           {!selectedChampion && (
-            <div className="text-gray-500 text-sm">Select a champion.</div>
+            <div className="text-dpm-muted text-sm">Select a champion.</div>
           )}
           {selectedChampion && busy && (
-            <div className="text-gray-400 text-sm">Computing builds…</div>
+            <div className="text-dpm-muted text-sm">Computing builds…</div>
           )}
           {selectedChampion && !busy && recs.length === 0 && (
-            <div className="text-gray-500 text-sm">No recommendations.</div>
+            <div className="text-dpm-muted text-sm">No recommendations.</div>
           )}
           {selectedChampion && !busy && recs.length > 0 && (
             <div className="space-y-3">
-              <p className="text-gray-500 text-xs">
+              <p className="text-dpm-muted text-xs">
                 Scores use opponent HP {duelResolved.targetMaxHP} (+{" "}
                 {duelResolved.targetBonusHP} bonus), {duelResolved.targetArmor}{" "}
                 armor / {duelResolved.targetMR} MR, burst window{" "}
@@ -689,54 +693,54 @@ function BuildFinder(): React.ReactElement {
                 {recs.map((r) => (
                   <div
                     key={`${r.profile}-${r.label}-${r.items.join(",")}`}
-                    className="border border-gray-600 rounded-lg p-3 bg-gray-800/60"
+                    className="dpm-widget dpm-widget-glow dpm-widget-glow-purple"
                   >
                     <div className="flex justify-between items-start gap-2 mb-2">
                       <div>
-                        <div className="text-amber-300 font-semibold text-sm">
+                        <div className="text-dpm-accent-gold font-semibold text-sm">
                           {r.label}
                         </div>
-                        <div className="text-gray-500 text-xs mt-0.5">
+                        <div className="text-dpm-muted text-xs mt-0.5">
                           {r.description}
                         </div>
                       </div>
-                      <span className="text-[10px] uppercase tracking-wide text-gray-500 border border-gray-600 rounded px-1.5 py-0.5 shrink-0">
+                      <span className="dpm-badge-accent shrink-0">
                         {r.profile}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs mb-2">
-                      <div className="bg-gray-900/50 rounded p-1.5">
-                        <div className="text-gray-500">Combo DPS</div>
-                        <div className="font-bold text-blue-300">
+                      <div className="dpm-stat-tile">
+                        <div className="dpm-stat-tile-label">Combo DPS</div>
+                        <div className="dpm-stat-tile-value text-dpm-accent">
                           {r.comboDPS.toFixed(0)}
                         </div>
                       </div>
-                      <div className="bg-gray-900/50 rounded p-1.5">
-                        <div className="text-gray-500">Sustained</div>
-                        <div className="font-bold text-sky-300">
+                      <div className="dpm-stat-tile">
+                        <div className="dpm-stat-tile-label">Sustained</div>
+                        <div className="dpm-stat-tile-value text-dpm-accent-cyan">
                           {r.sustainedDPS.toFixed(0)}
                         </div>
                       </div>
-                      <div className="bg-gray-900/50 rounded p-1.5">
-                        <div className="text-gray-500">Eff. HP</div>
-                        <div className="font-bold text-green-300">
+                      <div className="dpm-stat-tile">
+                        <div className="dpm-stat-tile-label">Eff. HP</div>
+                        <div className="dpm-stat-tile-value text-dpm-up">
                           {Math.round(r.effectiveHP)}
                         </div>
                       </div>
-                      <div className="bg-gray-900/50 rounded p-1.5">
-                        <div className="text-gray-500">Est. gold</div>
-                        <div className="font-bold text-cyan-200">
+                      <div className="dpm-stat-tile">
+                        <div className="dpm-stat-tile-label">Est. gold</div>
+                        <div className="dpm-stat-tile-value text-dpm-accent-cyan">
                           ~{r.totalGold.toLocaleString()}g
                         </div>
                       </div>
-                      <div className="bg-gray-900/50 rounded p-1.5">
-                        <div className="text-gray-500">Keystone</div>
-                        <div className="font-bold text-yellow-200 truncate">
+                      <div className="dpm-stat-tile">
+                        <div className="dpm-stat-tile-label">Keystone</div>
+                        <div className="dpm-stat-tile-value text-dpm-accent-gold truncate">
                           {r.rune}
                         </div>
                       </div>
                     </div>
-                    <div className="text-[10px] text-gray-500 mb-1">
+                    <div className="text-[10px] text-dpm-muted mb-1">
                       Items (buy order: best marginal sim spike per gold;
                       expensive legendaries deferred)
                     </div>
@@ -744,23 +748,23 @@ function BuildFinder(): React.ReactElement {
                       {r.items.map((name) => (
                         <span
                           key={name}
-                          className="text-[11px] bg-purple-900/40 px-2 py-0.5 rounded border border-purple-700/50"
+                          className="text-[11px] bg-dpm-accent/12 px-2 py-0.5 rounded-full border border-dpm-accent/30"
                         >
                           {name}
                         </span>
                       ))}
                     </div>
-                    <div className="grid grid-cols-4 gap-1 mt-2 text-[10px] text-center text-gray-400">
+                    <div className="grid grid-cols-4 gap-1 mt-2 text-[10px] text-center text-dpm-muted">
                       <span>AA {r.autoAttackDPS.toFixed(0)}</span>
                       <span>OH {r.onHitDPS.toFixed(0)}</span>
                       <span>Ab {r.abilityDPS.toFixed(0)}</span>
                       <span>DoT {r.dotDPS.toFixed(0)}</span>
                     </div>
                     <details className="mt-2 text-xs">
-                      <summary className="cursor-pointer text-gray-400 hover:text-gray-300">
+                      <summary className="cursor-pointer text-dpm-muted hover:text-dpm-text">
                         DPS breakdown
                       </summary>
-                      <div className="mt-2 space-y-0.5 font-mono text-[10px] text-gray-400 max-h-40 overflow-y-auto border border-gray-700/50 rounded p-2 bg-gray-900/40">
+                      <div className="mt-2 space-y-0.5 font-mono text-[10px] text-dpm-muted max-h-40 overflow-y-auto border border-white/10 rounded p-2 bg-dpm-bg/40">
                         {r.breakdown.map((line) => (
                           <div key={`${r.profile}-${line}`}>{line}</div>
                         ))}
@@ -881,7 +885,7 @@ function RandomBuildGenerator(): React.ReactElement {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-gray-400 text-xl">Loading builds...</div>
+        <div className="text-dpm-muted text-xl">Loading builds...</div>
       </div>
     );
   }
@@ -890,13 +894,11 @@ function RandomBuildGenerator(): React.ReactElement {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-400 text-xl mb-2">No builds available</div>
-          <div className="text-gray-500 text-xs">
+          <div className="text-dpm-down text-xl mb-2">No builds available</div>
+          <div className="text-dpm-muted text-xs">
             Run{" "}
-            <code className="bg-gray-800 px-2 py-1 rounded">
-              npm run compute-meta
-            </code>{" "}
-            to generate builds
+            <code className="dpm-kbd">npm run compute-meta</code> to generate
+            builds
           </div>
         </div>
       </div>
@@ -905,22 +907,25 @@ function RandomBuildGenerator(): React.ReactElement {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8">
-      <h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-        Random Build Generator
-      </h1>
-      <p className="text-gray-400 mb-8">Click to discover your destiny</p>
+      <div className="mb-8 text-center">
+        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-1">
+          Discover your
+        </p>
+        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+          Random Build
+        </h1>
+        <p className="text-dpm-muted">Click to discover your destiny</p>
+      </div>
 
       {/* Slot machine container */}
       <div className="relative w-full max-w-2xl mb-8">
-        {/* Glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 blur-xl rounded-3xl" />
+        <div className="absolute inset-0 bg-dpm-accent/12 blur-xl rounded-3xl" />
 
-        {/* Main container */}
-        <div className="relative bg-gray-800 rounded-2xl border-4 border-purple-500/50 overflow-hidden">
+        <div className="relative dpm-widget dpm-widget-glow dpm-widget-glow-gold overflow-hidden !p-0 border-2 border-dpm-accent-gold/30">
           {/* Selection indicator */}
-          <div className="absolute top-1/2 left-0 right-0 h-[120px] -translate-y-1/2 border-y-4 border-yellow-400 bg-yellow-400/10 z-10 pointer-events-none" />
-          <div className="absolute top-1/2 left-0 w-4 h-8 -translate-y-1/2 bg-yellow-400 z-20" />
-          <div className="absolute top-1/2 right-0 w-4 h-8 -translate-y-1/2 bg-yellow-400 z-20" />
+          <div className="absolute top-1/2 left-0 right-0 h-[120px] -translate-y-1/2 border-y-2 border-dpm-accent-gold bg-dpm-accent-gold/10 z-10 pointer-events-none" />
+          <div className="absolute top-1/2 left-0 w-4 h-8 -translate-y-1/2 bg-dpm-accent-gold z-20" />
+          <div className="absolute top-1/2 right-0 w-4 h-8 -translate-y-1/2 bg-dpm-accent-gold z-20" />
 
           {/* Scrolling items */}
           <div className="h-[360px] overflow-hidden">
@@ -934,13 +939,13 @@ function RandomBuildGenerator(): React.ReactElement {
                 {spinItems.map((build, idx) => (
                   <div
                     key={`${build.champion}-${build.buildType}-${idx}`}
-                    className="h-[120px] flex items-center justify-center px-6 border-b border-gray-700"
+                    className="h-[120px] flex items-center justify-center px-6 border-b border-white/10"
                   >
                     <div className="text-center">
                       <div className="text-2xl font-bold text-white mb-1">
                         {build.champion}
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-dpm-muted">
                         {build.buildType} • {build.totalDPS.toFixed(0)} DPS
                       </div>
                     </div>
@@ -949,7 +954,7 @@ function RandomBuildGenerator(): React.ReactElement {
               </div>
             ) : (
               <div className="h-full flex items-center justify-center">
-                <div className="text-gray-500 text-xl">
+                <div className="text-dpm-muted text-xl">
                   Press the button to spin!
                 </div>
               </div>
@@ -963,10 +968,10 @@ function RandomBuildGenerator(): React.ReactElement {
         type="button"
         onClick={startSpin}
         disabled={isSpinning}
-        className={`px-12 py-4 text-2xl font-bold rounded-xl transition-all transform ${
+        className={`px-12 py-4 text-2xl font-bold rounded-xl transition-all transform dpm-btn dpm-btn-primary ${
           isSpinning
-            ? "bg-gray-600 cursor-not-allowed scale-95"
-            : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/30"
+            ? "opacity-50 cursor-not-allowed scale-95"
+            : "hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(135,149,240,0.2)]"
         }`}
       >
         {isSpinning ? "SPINNING..." : "SPIN!"}
@@ -974,57 +979,51 @@ function RandomBuildGenerator(): React.ReactElement {
 
       {/* Selected build popup overlay */}
       {selectedBuild && !isSpinning && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div
-            className="relative w-full max-w-2xl mx-4"
-            style={{
-              animation: "scaleIn 0.3s ease-out forwards",
-            }}
-          >
-            {/* Close button */}
+        <div className="fixed inset-0 bg-dpm-header/80 flex items-center justify-center z-50">
+          <div className="relative w-full max-w-2xl mx-4">
             <button
               type="button"
               onClick={() => setSelectedBuild(null)}
-              className="absolute -top-3 -right-3 w-10 h-10 bg-gray-800 hover:bg-red-600 rounded-full border-2 border-gray-600 hover:border-red-500 flex items-center justify-center text-xl font-bold transition-colors z-10"
+              className="absolute -top-3 -right-3 w-10 h-10 bg-dpm-widget hover:bg-dpm-down rounded-full border border-white/10 flex items-center justify-center text-xl font-bold transition-colors z-10"
             >
               X
             </button>
 
-            <div className="bg-gradient-to-r from-purple-900/90 to-pink-900/90 rounded-xl p-6 border-2 border-purple-500/50 shadow-2xl shadow-purple-500/20">
+            <div className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-6 shadow-[0_0_40px_rgba(135,149,240,0.15)]">
               <div className="text-center mb-4">
-                <div className="text-sm text-purple-300 mb-1">YOUR BUILD</div>
-                <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                <div className="text-sm text-dpm-accent mb-1">YOUR BUILD</div>
+                <h2 className="text-4xl font-bold text-dpm-accent-gold">
                   {selectedBuild.champion}
                 </h2>
-                <div className="text-purple-300 mt-1">
+                <div className="text-dpm-accent mt-1">
                   {selectedBuild.buildType}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                  <div className="text-gray-400 text-sm">Total DPS</div>
-                  <div className="text-3xl font-bold text-blue-400">
+                <div className="dpm-stat-tile !p-3">
+                  <div className="dpm-stat-tile-label">Total DPS</div>
+                  <div className="text-3xl font-bold text-dpm-accent">
                     {selectedBuild.totalDPS.toFixed(1)}
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                  <div className="text-gray-400 text-sm">Rune</div>
-                  <div className="text-xl font-bold text-yellow-400">
+                <div className="dpm-stat-tile !p-3">
+                  <div className="dpm-stat-tile-label">Rune</div>
+                  <div className="text-xl font-bold text-dpm-accent-gold">
                     {selectedBuild.rune}
                   </div>
                 </div>
               </div>
 
               <div className="mb-4">
-                <div className="text-gray-400 text-sm mb-2 text-center">
+                <div className="text-dpm-muted text-sm mb-2 text-center">
                   Items
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {selectedBuild.items.map((item) => (
                     <span
                       key={item}
-                      className="bg-purple-900/50 px-3 py-2 rounded-lg border border-purple-500/50 text-sm font-medium"
+                      className="bg-dpm-accent/12 px-3 py-2 rounded-full border border-dpm-accent/30 text-sm font-medium"
                     >
                       {item}
                     </span>
@@ -1033,33 +1032,33 @@ function RandomBuildGenerator(): React.ReactElement {
               </div>
 
               <div className="grid grid-cols-4 gap-2 text-center text-sm">
-                <div className="bg-gray-800/50 rounded p-2">
-                  <div className="text-gray-500 text-xs">Auto</div>
+                <div className="dpm-stat-tile">
+                  <div className="dpm-stat-tile-label">Auto</div>
                   <div className="font-semibold">
                     {selectedBuild.autoAttackDPS.toFixed(0)}
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded p-2">
-                  <div className="text-gray-500 text-xs">On-Hit</div>
+                <div className="dpm-stat-tile">
+                  <div className="dpm-stat-tile-label">On-Hit</div>
                   <div className="font-semibold">
                     {selectedBuild.onHitDPS.toFixed(0)}
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded p-2">
-                  <div className="text-gray-500 text-xs">Ability</div>
+                <div className="dpm-stat-tile">
+                  <div className="dpm-stat-tile-label">Ability</div>
                   <div className="font-semibold">
                     {selectedBuild.abilityDPS.toFixed(0)}
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded p-2">
-                  <div className="text-gray-500 text-xs">Burst</div>
+                <div className="dpm-stat-tile">
+                  <div className="dpm-stat-tile-label">Burst</div>
                   <div className="font-semibold">
                     {selectedBuild.burstDPS.toFixed(0)}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 text-center text-gray-500 text-xs">
+              <div className="mt-4 text-center text-dpm-muted text-xs">
                 Click X or press Escape to spin again
               </div>
             </div>
@@ -1176,7 +1175,7 @@ function MetaAnalysis(): React.ReactElement {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-gray-400 text-xl">Loading meta data...</div>
+        <div className="text-dpm-muted text-xl">Loading meta data...</div>
       </div>
     );
   }
@@ -1185,16 +1184,13 @@ function MetaAnalysis(): React.ReactElement {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-400 text-xl mb-2">
+          <div className="text-dpm-down text-xl mb-2">
             Error loading meta data
           </div>
-          <div className="text-gray-400 text-sm">{error}</div>
-          <div className="text-gray-500 text-xs mt-4">
-            Run{" "}
-            <code className="bg-gray-800 px-2 py-1 rounded">
-              npm run compute-meta
-            </code>{" "}
-            to generate the data
+          <div className="text-dpm-muted text-sm">{error}</div>
+          <div className="text-dpm-muted text-xs mt-4">
+            Run <code className="dpm-kbd">npm run compute-meta</code> to
+            generate the data
           </div>
         </div>
       </div>
@@ -1204,10 +1200,15 @@ function MetaAnalysis(): React.ReactElement {
   const displayBuilds = sortedBuilds;
 
   return (
-    <div className="flex-1 flex flex-col p-4 overflow-hidden">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold mb-2">Meta Analysis</h2>
-        <p className="text-gray-400 text-sm mb-4">
+    <div className="flex-1 flex flex-col py-4 overflow-hidden">
+      <div className="mb-6 text-center shrink-0">
+        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-1">
+          Explore the
+        </p>
+        <h2 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+          Meta Analysis
+        </h2>
+        <p className="text-dpm-muted text-sm max-w-2xl mx-auto">
           Diverse builds for each champion (showing {allBuilds.length} builds),
           scored vs a{" "}
           {metaData?.duel ? (
@@ -1223,7 +1224,7 @@ function MetaAnalysis(): React.ReactElement {
           )}
           .
           {metaData && (
-            <span className="text-gray-500 block mt-1 text-[11px]">
+            <span className="text-dpm-muted block mt-1 text-[11px]">
               Generated {new Date(metaData.generatedAt).toLocaleString()}
               {metaData.duel && (
                 <>
@@ -1238,23 +1239,23 @@ function MetaAnalysis(): React.ReactElement {
                   metaData.duel.targetBonusHP !== 0 ||
                   metaData.duel.targetArmor !== 0 ||
                   metaData.duel.targetMR !== 0) && (
-                  <span className="block mt-1 text-amber-400/90">
+                  <span className="block mt-1 text-dpm-accent-gold">
                     Stale duel assumptions — run{" "}
-                    <code className="bg-gray-800 px-1 rounded">
-                      npm run compute-meta
-                    </code>{" "}
-                    for 1500 HP / 0 bonus / 0 armor / 0 MR targets.
+                    <code className="dpm-kbd">npm run compute-meta</code> for
+                    1500 HP / 0 bonus / 0 armor / 0 MR targets.
                   </span>
                 )}
             </span>
           )}
         </p>
+      </div>
 
-        <div className="flex gap-4 mb-4 items-center">
+      <WidgetCard glow="blue" className="mb-4 shrink-0">
+        <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2">
             <label
               htmlFor="meta-champion-filter"
-              className="text-gray-400 text-sm"
+              className="text-dpm-muted text-sm"
             >
               Champion:
             </label>
@@ -1264,7 +1265,7 @@ function MetaAnalysis(): React.ReactElement {
               onChange={(e) =>
                 setSelectedChampionFilter(e.target.value || null)
               }
-              className="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+              className="dpm-input"
             >
               <option value="">All Champions</option>
               {championNames.map((name) => (
@@ -1278,131 +1279,131 @@ function MetaAnalysis(): React.ReactElement {
             <button
               type="button"
               onClick={() => setSelectedChampionFilter(null)}
-              className="text-gray-400 hover:text-white text-sm underline"
+              className="text-dpm-muted hover:text-dpm-text text-sm underline"
             >
               Clear filter
             </button>
           )}
         </div>
-      </div>
+      </WidgetCard>
 
-      <div className="flex-1 overflow-auto">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-gray-800 border-b border-gray-700">
-            <tr>
-              <th className="p-2 text-left">
-                <button
-                  type="button"
-                  onClick={() => handleSort("champion")}
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  Champion {getSortIcon("champion")}
-                </button>
-              </th>
-              <th className="p-2 text-left">
-                <button
-                  type="button"
-                  onClick={() => handleSort("rune")}
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  Rune {getSortIcon("rune")}
-                </button>
-              </th>
-              <th className="p-2 text-left">Items</th>
-              <th className="p-2 text-left">
-                <button
-                  type="button"
-                  onClick={() => handleSort("buildType")}
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  Type {getSortIcon("buildType")}
-                </button>
-              </th>
-              <th className="p-2 text-right">
-                <button
-                  type="button"
-                  onClick={() => handleSort("totalDPS")}
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  Total {getSortIcon("totalDPS")}
-                </button>
-              </th>
-              <th className="p-2 text-right">
-                <button
-                  type="button"
-                  onClick={() => handleSort("autoAttackDPS")}
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  Auto {getSortIcon("autoAttackDPS")}
-                </button>
-              </th>
-              <th className="p-2 text-right">
-                <button
-                  type="button"
-                  onClick={() => handleSort("abilityDPS")}
-                  className="hover:text-blue-400 transition-colors"
-                >
-                  Ability {getSortIcon("abilityDPS")}
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayBuilds.map((build) => (
-              <tr
-                key={`${build.champion}-${build.buildType}-${build.rune}`}
-                className="border-b border-gray-800 hover:bg-gray-800/50 relative"
-                onMouseEnter={(e) => {
-                  setHoveredBuild(build);
-                  setTooltipPosition({ x: e.clientX + 15, y: e.clientY + 10 });
-                }}
-                onMouseMove={(e) => {
-                  setTooltipPosition({ x: e.clientX + 15, y: e.clientY + 10 });
-                }}
-                onMouseLeave={() => setHoveredBuild(null)}
-              >
-                <td className="p-2 font-semibold">{build.champion}</td>
-                <td className="p-2">
-                  <span className="text-xs bg-yellow-900/30 px-2 py-1 rounded border border-yellow-700 font-medium">
-                    {build.rune}
-                  </span>
-                </td>
-                <td className="p-2">
-                  <div className="flex flex-wrap gap-1">
-                    {build.items.map((item: string) => (
-                      <span
-                        key={`${build.champion}-${item}`}
-                        className="text-xs bg-purple-900/30 px-1 py-0.5 rounded border border-purple-700"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td className="p-2">
-                  <span className="text-xs bg-green-900/30 px-2 py-1 rounded border border-green-700">
-                    {build.buildType}
-                  </span>
-                </td>
-                <td className="p-2 text-right font-bold text-blue-400">
-                  {build.totalDPS.toFixed(1)}
-                </td>
-                <td className="p-2 text-right text-gray-400">
-                  {build.autoAttackDPS.toFixed(1)}
-                </td>
-                <td className="p-2 text-right text-gray-400">
-                  {build.abilityDPS.toFixed(1)}
-                </td>
+      <WidgetCard glow="purple" className="flex-1 overflow-hidden !p-0">
+        <div className="flex-1 overflow-auto max-h-[calc(100vh-320px)]">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 bg-dpm-widget border-b border-white/10">
+              <tr>
+                <th className="p-3 text-left text-dpm-muted font-medium">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("champion")}
+                    className="hover:text-dpm-accent transition-colors"
+                  >
+                    Champion {getSortIcon("champion")}
+                  </button>
+                </th>
+                <th className="p-3 text-left text-dpm-muted font-medium">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("rune")}
+                    className="hover:text-dpm-accent transition-colors"
+                  >
+                    Rune {getSortIcon("rune")}
+                  </button>
+                </th>
+                <th className="p-3 text-left text-dpm-muted font-medium">
+                  Items
+                </th>
+                <th className="p-3 text-left text-dpm-muted font-medium">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("buildType")}
+                    className="hover:text-dpm-accent transition-colors"
+                  >
+                    Type {getSortIcon("buildType")}
+                  </button>
+                </th>
+                <th className="p-3 text-right text-dpm-muted font-medium">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("totalDPS")}
+                    className="hover:text-dpm-accent transition-colors"
+                  >
+                    Total {getSortIcon("totalDPS")}
+                  </button>
+                </th>
+                <th className="p-3 text-right text-dpm-muted font-medium">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("autoAttackDPS")}
+                    className="hover:text-dpm-accent transition-colors"
+                  >
+                    Auto {getSortIcon("autoAttackDPS")}
+                  </button>
+                </th>
+                <th className="p-3 text-right text-dpm-muted font-medium">
+                  <button
+                    type="button"
+                    onClick={() => handleSort("abilityDPS")}
+                    className="hover:text-dpm-accent transition-colors"
+                  >
+                    Ability {getSortIcon("abilityDPS")}
+                  </button>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {displayBuilds.map((build) => (
+                <tr
+                  key={`${build.champion}-${build.buildType}-${build.rune}`}
+                  className="border-b border-white/5 hover:bg-dpm-widget-hover/50 transition-colors"
+                  onMouseEnter={(e) => {
+                    setHoveredBuild(build);
+                    setTooltipPosition({ x: e.clientX + 15, y: e.clientY + 10 });
+                  }}
+                  onMouseMove={(e) => {
+                    setTooltipPosition({ x: e.clientX + 15, y: e.clientY + 10 });
+                  }}
+                  onMouseLeave={() => setHoveredBuild(null)}
+                >
+                  <td className="p-3 font-semibold">{build.champion}</td>
+                  <td className="p-3">
+                    <span className="dpm-badge-gold">{build.rune}</span>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-1">
+                      {build.items.map((item: string) => (
+                        <span
+                          key={`${build.champion}-${item}`}
+                          className="text-xs bg-dpm-accent/12 px-1.5 py-0.5 rounded-full border border-dpm-accent/30"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <span className="dpm-badge-accent">{build.buildType}</span>
+                  </td>
+                  <td className="p-3 text-right font-bold text-dpm-accent">
+                    {build.totalDPS.toFixed(1)}
+                  </td>
+                  <td className="p-3 text-right text-dpm-muted">
+                    {build.autoAttackDPS.toFixed(1)}
+                  </td>
+                  <td className="p-3 text-right text-dpm-muted">
+                    {build.abilityDPS.toFixed(1)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </WidgetCard>
 
       {/* DPS Breakdown Tooltip */}
       {hoveredBuild?.breakdown && (
         <div
-          className="fixed z-50 bg-gray-900 border border-gray-600 rounded-lg shadow-xl p-4 max-w-md"
+          className="fixed z-50 dpm-widget shadow-[0_0_30px_rgba(135,149,240,0.15)] p-4 max-w-md"
           style={{
             left: Math.min(tooltipPosition.x, window.innerWidth - 420),
             top: Math.max(
@@ -1411,21 +1412,22 @@ function MetaAnalysis(): React.ReactElement {
             ),
           }}
         >
-          <div className="text-sm font-bold text-blue-400 mb-2 border-b border-gray-700 pb-2">
+          <div className="text-sm font-bold text-dpm-accent mb-2 border-b border-white/10 pb-2">
             {hoveredBuild.champion} - DPS Breakdown
           </div>
           <div className="space-y-1 text-xs font-mono">
             {hoveredBuild.breakdown.map((line) => {
-              // Color-code different types of breakdown lines
-              let colorClass = "text-gray-300";
-              if (line.includes("Base AA:")) colorClass = "text-yellow-400";
-              else if (line.includes("on-hit")) colorClass = "text-purple-400";
+              let colorClass = "text-dpm-text";
+              if (line.includes("Base AA:"))
+                colorClass = "text-dpm-accent-gold";
+              else if (line.includes("on-hit"))
+                colorClass = "text-dpm-accent";
               else if (line.includes("On-hit total:"))
-                colorClass = "text-purple-300 font-semibold";
+                colorClass = "text-dpm-accent font-semibold";
               else if (line.includes("DPS (") && !line.includes("On-hit"))
-                colorClass = "text-cyan-400";
+                colorClass = "text-dpm-accent-cyan";
               else if (line.includes("Damage multipliers:"))
-                colorClass = "text-orange-400 font-semibold";
+                colorClass = "text-dpm-accent-gold font-semibold";
 
               return (
                 <div key={line} className={colorClass}>
@@ -1434,9 +1436,9 @@ function MetaAnalysis(): React.ReactElement {
               );
             })}
           </div>
-          <div className="mt-3 pt-2 border-t border-gray-700 text-xs text-gray-500">
+          <div className="mt-3 pt-2 border-t border-white/10 text-xs text-dpm-muted">
             Total:{" "}
-            <span className="text-blue-400 font-bold">
+            <span className="text-dpm-accent font-bold">
               {hoveredBuild.totalDPS.toFixed(1)}
             </span>{" "}
             DPS
@@ -1535,76 +1537,45 @@ export default function Home(): React.ReactElement {
   const stats = getTotalStats();
   const dps = getDPS();
 
-  return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Tab Header - Only shown when dev mode enabled via F4 */}
-      {showDevTabs && (
-        <div className="flex border-b border-gray-700">
-          <button
-            type="button"
-            onClick={() => setActiveTab("finder")}
-            className={`px-6 py-3 font-semibold transition-colors ${
-              activeTab === "finder"
-                ? "bg-gray-800 text-white border-b-2 border-emerald-500"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50"
-            }`}
-          >
-            1v1 Finder
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("random")}
-            className={`px-6 py-3 font-semibold transition-colors ${
-              activeTab === "random"
-                ? "bg-gray-800 text-white border-b-2 border-purple-500"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50"
-            }`}
-          >
-            Random
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("planner")}
-            className={`px-6 py-3 font-semibold transition-colors ${
-              activeTab === "planner"
-                ? "bg-gray-800 text-white border-b-2 border-blue-500"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50"
-            }`}
-          >
-            Planner
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("meta")}
-            className={`px-6 py-3 font-semibold transition-colors ${
-              activeTab === "meta"
-                ? "bg-gray-800 text-white border-b-2 border-blue-500"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50"
-            }`}
-          >
-            Meta
-          </button>
-        </div>
-      )}
+  const devTabs = [
+    { id: "finder", label: "1v1 Finder" },
+    { id: "random", label: "Random" },
+    { id: "planner", label: "Planner" },
+    { id: "meta", label: "Meta" },
+  ];
 
-      {/* Tab Content */}
+  return (
+    <AppShell
+      headerTabs={
+        showDevTabs ? (
+          <TabNav
+            tabs={devTabs}
+            activeTab={activeTab}
+            onTabChange={(id) =>
+              setActiveTab(id as "finder" | "random" | "planner" | "meta")
+            }
+          />
+        ) : undefined
+      }
+    >
       {!showDevTabs || activeTab === "finder" ? (
         <BuildFinder />
       ) : activeTab === "random" ? (
         <RandomBuildGenerator />
       ) : activeTab === "planner" ? (
-        <div className="flex flex-1 overflow-hidden">
-          {/* Left: Champions (40%) */}
-          <div className="w-[45%] border-r border-gray-700 p-2 flex flex-col">
-            <h2 className="text-lg font-bold mb-2">Champions</h2>
-            <input
-              type="text"
+        <div className="flex flex-1 overflow-hidden gap-4 py-4">
+          <WidgetCard
+            title="Champions"
+            glow="purple"
+            className="w-[45%] flex flex-col min-h-0"
+          >
+            <SearchInput
               placeholder="Search champions..."
               value={championSearch}
               onChange={(e) => setChampionSearch(e.target.value)}
-              className="mb-2 px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+              className="mb-2"
             />
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-0">
               <div className="grid grid-cols-6 gap-1">
                 {filteredChampions.map((champion) => (
                   <button
@@ -1613,8 +1584,8 @@ export default function Home(): React.ReactElement {
                     onClick={() => handleChampionSelect(champion)}
                     className={`p-1 rounded border transition-all ${
                       selectedChampion?.Name === champion.Name
-                        ? "border-blue-500 bg-blue-900/30"
-                        : "border-gray-600 bg-gray-800 hover:border-gray-500"
+                        ? "border-dpm-accent bg-dpm-accent/18 shadow-[0_0_12px_rgba(135,149,240,0.15)]"
+                        : "border-white/10 bg-dpm-bg/50 hover:bg-dpm-widget-hover hover:border-white/20"
                     }`}
                   >
                     <div className="text-xs font-semibold truncate">
@@ -1624,19 +1595,22 @@ export default function Home(): React.ReactElement {
                 ))}
               </div>
             </div>
-          </div>
+          </WidgetCard>
 
-          {/* Middle: Selected Champion + Items (10%) */}
-          <div className="w-[10%] border-r border-gray-700 p-2 flex flex-col items-center">
+          <WidgetCard
+            title="Build"
+            glow="gold"
+            className="w-[10%] flex flex-col items-center min-h-0"
+          >
             {selectedChampion ? (
               <>
                 <div className="mb-2 text-center">
-                  <div className="text-sm font-bold">
+                  <div className="text-sm font-bold text-dpm-accent-gold">
                     {selectedChampion.Name}
                   </div>
                 </div>
                 <div className="flex-1 w-full">
-                  <h3 className="text-xs font-semibold mb-1 text-center">
+                  <h3 className="text-xs font-semibold mb-1 text-center text-dpm-muted">
                     Items
                   </h3>
                   <div className="space-y-1">
@@ -1649,8 +1623,8 @@ export default function Home(): React.ReactElement {
                         }
                         className={`w-full h-8 rounded border transition-all ${
                           selectedItems[index]
-                            ? "border-purple-500 bg-purple-900/30 hover:border-red-500 hover:bg-red-900/30"
-                            : "border-gray-600 bg-gray-800/50"
+                            ? "border-dpm-accent bg-dpm-accent/18 hover:border-dpm-down hover:bg-dpm-down/10"
+                            : "border-white/10 bg-dpm-bg/50"
                         }`}
                         title={
                           selectedItems[index]
@@ -1669,99 +1643,48 @@ export default function Home(): React.ReactElement {
                 </div>
               </>
             ) : (
-              <div className="text-gray-500 text-center text-xs">
+              <div className="text-dpm-muted text-center text-xs">
                 Select a champion
               </div>
             )}
-          </div>
+          </WidgetCard>
 
-          {/* Right: Stats (top 50%) + Items (bottom 50%) (40%) */}
-          <div className="w-[45%] flex flex-col">
-            {/* Stats (50%) */}
-            <div className="h-[50%] border-b border-gray-700 p-2 overflow-y-auto">
-              <h2 className="text-lg font-bold mb-2">Stats & DPS</h2>
+          <div className="w-[45%] flex flex-col gap-4 min-h-0">
+            <WidgetCard
+              title="Stats & DPS"
+              glow="blue"
+              className="h-[50%] overflow-y-auto min-h-0"
+            >
               {stats ? (
                 <>
                   <div className="grid grid-cols-3 gap-1 mb-3">
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">HP</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.hp)}
+                    {(
+                      [
+                        ["HP", Math.round(stats.hp)],
+                        ["Mana", Math.round(stats.mana)],
+                        ["AD", Math.round(stats.ad)],
+                        ["AP", Math.round(stats.ap)],
+                        ["Armor", Math.round(stats.armor)],
+                        ["MR", Math.round(stats.mr)],
+                        ["AS", stats.as.toFixed(2)],
+                        ["Crit %", `${Math.round(stats.critChance)}%`],
+                        ["AH", Math.round(stats.abilityHaste)],
+                        ["LS %", `${Math.round(stats.lifeSteal)}%`],
+                        ["MS", Math.round(stats.ms)],
+                        ["Leth", Math.round(stats.lethality)],
+                      ] as const
+                    ).map(([label, value]) => (
+                      <div key={label} className="dpm-stat-tile">
+                        <div className="dpm-stat-tile-label">{label}</div>
+                        <div className="dpm-stat-tile-value">{value}</div>
                       </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">Mana</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.mana)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">AD</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.ad)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">AP</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.ap)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">Armor</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.armor)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">MR</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.mr)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">AS</div>
-                      <div className="text-sm font-bold">
-                        {stats.as.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">Crit %</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.critChance)}%
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">AH</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.abilityHaste)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">LS %</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.lifeSteal)}%
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">MS</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.ms)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-1 rounded">
-                      <div className="text-gray-400 text-[10px]">Leth</div>
-                      <div className="text-sm font-bold">
-                        {Math.round(stats.lethality)}
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
-                  {/* DPS Section */}
                   {dps && (
                     <div className="mt-3 space-y-2">
-                      <div className="bg-blue-900/30 p-2 rounded border border-blue-700">
-                        <div className="text-blue-400 text-xs font-semibold mb-1">
+                      <div className="dpm-stat-tile !p-2 border border-dpm-accent/30 bg-dpm-accent/12">
+                        <div className="text-dpm-accent text-xs font-semibold mb-1">
                           Total DPS
                         </div>
                         <div className="text-2xl font-bold">
@@ -1769,38 +1692,23 @@ export default function Home(): React.ReactElement {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-1">
-                        <div className="bg-gray-800 p-1 rounded">
-                          <div className="text-gray-400 text-[10px]">
-                            Auto Attack
+                        {(
+                          [
+                            ["Auto Attack", dps.autoAttackDPS],
+                            ["On-Hit", dps.onHitDPS],
+                            ["DoT", dps.dotDPS],
+                            ["Abilities", dps.abilityDPS],
+                          ] as const
+                        ).map(([label, value]) => (
+                          <div key={label} className="dpm-stat-tile">
+                            <div className="dpm-stat-tile-label">{label}</div>
+                            <div className="dpm-stat-tile-value">
+                              {value.toFixed(1)}
+                            </div>
                           </div>
-                          <div className="text-sm font-bold">
-                            {dps.autoAttackDPS.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="bg-gray-800 p-1 rounded">
-                          <div className="text-gray-400 text-[10px]">
-                            On-Hit
-                          </div>
-                          <div className="text-sm font-bold">
-                            {dps.onHitDPS.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="bg-gray-800 p-1 rounded">
-                          <div className="text-gray-400 text-[10px]">DoT</div>
-                          <div className="text-sm font-bold">
-                            {dps.dotDPS.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="bg-gray-800 p-1 rounded">
-                          <div className="text-gray-400 text-[10px]">
-                            Abilities
-                          </div>
-                          <div className="text-sm font-bold">
-                            {dps.abilityDPS.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="bg-orange-900/30 p-1 rounded border border-orange-700">
-                          <div className="text-orange-400 text-[10px]">
+                        ))}
+                        <div className="dpm-stat-tile border border-dpm-accent-gold/25 bg-dpm-accent-gold/5">
+                          <div className="text-dpm-accent-gold text-[10px]">
                             Burst
                           </div>
                           <div className="text-sm font-bold">
@@ -1812,25 +1720,26 @@ export default function Home(): React.ReactElement {
                   )}
                 </>
               ) : (
-                <div className="text-gray-500 text-xs">
+                <div className="text-dpm-muted text-xs">
                   Select a champion to view stats
                 </div>
               )}
-            </div>
+            </WidgetCard>
 
-            {/* Items (50%) */}
-            <div className="h-[50%] p-2 flex flex-col">
-              <h2 className="text-lg font-bold mb-2">Available Items</h2>
+            <WidgetCard
+              title="Available Items"
+              glow="purple"
+              className="h-[50%] flex flex-col min-h-0"
+            >
               {selectedChampion ? (
                 <>
-                  <input
-                    type="text"
+                  <SearchInput
                     placeholder="Search items..."
                     value={itemSearch}
                     onChange={(e) => setItemSearch(e.target.value)}
-                    className="mb-2 px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                    className="mb-2"
                   />
-                  <div className="flex-1 overflow-y-auto">
+                  <div className="flex-1 overflow-y-auto min-h-0">
                     <div className="grid grid-cols-4 gap-1">
                       {filteredItems.map((item) => {
                         const itemGroupName = item.getGroupName();
@@ -1849,8 +1758,8 @@ export default function Home(): React.ReactElement {
                             disabled={isDisabled}
                             className={`p-1 rounded border transition-all text-left ${
                               isDisabled
-                                ? "border-gray-700 bg-gray-800/50 opacity-50 cursor-not-allowed"
-                                : "border-purple-600 bg-purple-900/20 hover:border-purple-500 hover:bg-purple-900/30"
+                                ? "border-white/5 bg-dpm-bg/30 opacity-50 cursor-not-allowed"
+                                : "border-dpm-accent/30 bg-dpm-accent/5 hover:border-dpm-accent hover:bg-dpm-accent/12"
                             }`}
                             title={
                               hasConflict
@@ -1864,7 +1773,7 @@ export default function Home(): React.ReactElement {
                               {item.name}
                             </div>
                             {item.groupName && (
-                              <div className="text-[9px] text-blue-400 truncate">
+                              <div className="text-[9px] text-dpm-accent-cyan truncate">
                                 {item.groupName}
                               </div>
                             )}
@@ -1875,16 +1784,16 @@ export default function Home(): React.ReactElement {
                   </div>
                 </>
               ) : (
-                <div className="text-gray-500 text-xs">
+                <div className="text-dpm-muted text-xs">
                   Select a champion to add items
                 </div>
               )}
-            </div>
+            </WidgetCard>
           </div>
         </div>
       ) : (
         <MetaAnalysis />
       )}
-    </div>
+    </AppShell>
   );
 }
