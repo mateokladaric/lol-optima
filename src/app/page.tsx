@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app-shell";
 import { ChampionIcon } from "@/components/champion-icon";
 import { HoverTip } from "@/components/hover-tip";
 import { ItemIcon } from "@/components/item-icon";
+import { RuneIcon } from "@/components/rune-icon";
 import { SearchInput } from "@/components/search-input";
 import { TabNav } from "@/components/tab-nav";
 import { WidgetCard } from "@/components/widget-card";
@@ -17,8 +18,11 @@ import type {
 import {
   averageEnemyTeamStats,
   INTERACTIVE_RECOMMEND_OPTIONS,
+  META_DUEL_DEFAULTS,
   recommendBuildsForChampion,
+  rescoreMetaDataset,
   resolveDuel,
+  type SerializedMeta,
 } from "@/lib/buildOptimizer";
 import { purchaseLevelForItemCount } from "@/lib/purchaseOrder";
 import { OPGG_REGION_OPTIONS } from "@/lib/opggLiveGame";
@@ -57,6 +61,7 @@ type BuildResult = {
   dotDPS: number;
   abilityDPS: number;
   burstDPS: number;
+  fightDurationSeconds?: number;
   breakdown: string[];
   buildType: string;
 };
@@ -70,6 +75,19 @@ type SortConfig = {
   key: keyof BuildResult;
   direction: "asc" | "desc";
 };
+
+function useRescoredMeta(raw: MetaData | null): SerializedMeta | null {
+  return useMemo(() => {
+    if (!raw) return null;
+    return rescoreMetaDataset({
+      championBuilds:
+        raw.championBuilds as SerializedMeta["championBuilds"],
+      generatedAt: raw.generatedAt,
+      duel: raw.duel ?? META_DUEL_DEFAULTS,
+      simulation: raw.simulation,
+    });
+  }, [raw]);
+}
 
 function EnemyTeamPicker({
   opggBuilds,
@@ -209,9 +227,7 @@ function BuildFinder(): React.ReactElement {
   const [targetBonusHP, setTargetBonusHP] = useState(1000);
   const [targetArmor, setTargetArmor] = useState(100);
   const [targetMR, setTargetMR] = useState(100);
-  const [comboWindowSeconds, setComboWindowSeconds] = useState(8);
   const [incomingPhysPct, setIncomingPhysPct] = useState(50);
-  const [simulationLevel, setSimulationLevel] = useState(18);
   const [useRotationProfiles, setUseRotationProfiles] = useState(true);
 
   const [opggBuilds, setOpggBuilds] = useState<ScrapedBuildsFile | null>(null);
@@ -268,7 +284,6 @@ function BuildFinder(): React.ReactElement {
       targetBonusHP,
       targetArmor,
       targetMR,
-      comboWindowSeconds,
       incomingPhysShare: incomingPhysPct / 100,
     }),
     [
@@ -276,7 +291,6 @@ function BuildFinder(): React.ReactElement {
       targetBonusHP,
       targetArmor,
       targetMR,
-      comboWindowSeconds,
       incomingPhysPct,
     ],
   );
@@ -304,7 +318,7 @@ function BuildFinder(): React.ReactElement {
           ...INTERACTIVE_RECOMMEND_OPTIONS,
           duel: duelOptions,
           simulation: {
-            level: simulationLevel,
+            level: 18,
             enableChampionRotationProfiles: useRotationProfiles,
           },
         }),
@@ -312,7 +326,7 @@ function BuildFinder(): React.ReactElement {
       setBusy(false);
     }, 400);
     return () => window.clearTimeout(t);
-  }, [selectedChampion, duelOptions, simulationLevel, useRotationProfiles]);
+  }, [selectedChampion, duelOptions, useRotationProfiles]);
 
   const isAutoActive = useAutoStats && enemyTeam.length > 0 && autoStats !== null;
 
@@ -565,28 +579,6 @@ function BuildFinder(): React.ReactElement {
               className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
             />
           </div>
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.burstWindow}>
-              <label
-                htmlFor="duel-combo-window"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Burst window (s)
-              </label>
-            </HoverTip>
-            <input
-              id="duel-combo-window"
-              type="number"
-              min={1}
-              max={30}
-              step={1}
-              value={comboWindowSeconds}
-              onChange={(e) =>
-                setComboWindowSeconds(Number(e.target.value) || 8)
-              }
-              className="dpm-input w-28"
-            />
-          </div>
           <div className="min-w-[200px]">
             <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
               <label
@@ -611,30 +603,6 @@ function BuildFinder(): React.ReactElement {
                 if (useAutoStats) setUseAutoStats(false);
               }}
               className="w-full accent-dpm-accent"
-            />
-          </div>
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.level}>
-              <label
-                htmlFor="duel-level"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Simulation level
-              </label>
-            </HoverTip>
-            <input
-              id="duel-level"
-              type="number"
-              min={1}
-              max={18}
-              step={1}
-              value={simulationLevel}
-              onChange={(e) =>
-                setSimulationLevel(
-                  Math.max(1, Math.min(18, Number(e.target.value) || 18)),
-                )
-              }
-              className="dpm-input w-24"
             />
           </div>
           <div>
@@ -719,29 +687,22 @@ function BuildFinder(): React.ReactElement {
                   </span>{" "}
                   vs {duelResolved.targetMaxHP} HP (+{" "}
                   {duelResolved.targetBonusHP} bonus), {duelResolved.targetArmor}{" "}
-                  armor / {duelResolved.targetMR} MR, burst window{" "}
-                  {duelResolved.comboWindowSeconds}s, Eff. HP weights{" "}
+                  armor / {duelResolved.targetMR} MR, fight length from TTK per
+                  build, Eff. HP weights{" "}
                   {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical
-                  at level {simulationLevel}. Rotation templates{" "}
+                  at level 18. Rotation templates{" "}
                   {useRotationProfiles ? "enabled" : "disabled"}.
                 </p>
               </div>
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+              <div className="flex flex-col gap-5">
                 {recs.map((r) => (
                   <div
                     key={`${r.profile}-${r.label}-${r.items.join(",")}`}
                     className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-5"
                   >
                     <div className="flex justify-between items-start gap-3 mb-4">
-                      <div>
-                        <div className="text-dpm-accent-gold font-semibold text-sm">
-                          {r.label}
-                        </div>
-                        <HoverTip label={r.description}>
-                          <div className="text-dpm-muted text-xs mt-1 leading-relaxed cursor-help border-b border-dotted border-dpm-muted/30 w-fit">
-                            {r.description}
-                          </div>
-                        </HoverTip>
+                      <div className="text-dpm-accent-gold font-semibold text-sm">
+                        {r.label}
                       </div>
                       <HoverTip
                         label={
@@ -753,91 +714,39 @@ function BuildFinder(): React.ReactElement {
                         </span>
                       </HoverTip>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-center text-xs mb-4">
-                      <HoverTip label={STAT_TOOLTIPS.comboDPS}>
-                        <div className="dpm-stat-tile cursor-help">
-                          <div className="dpm-stat-tile-label">Combo DPS</div>
-                          <div className="dpm-stat-tile-value text-dpm-accent">
-                            {r.comboDPS.toFixed(0)}
-                          </div>
-                        </div>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.sustainedDPS}>
-                        <div className="dpm-stat-tile cursor-help">
-                          <div className="dpm-stat-tile-label">Sustained</div>
-                          <div className="dpm-stat-tile-value text-dpm-accent-cyan">
-                            {r.sustainedDPS.toFixed(0)}
-                          </div>
-                        </div>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.effectiveHP}>
-                        <div className="dpm-stat-tile cursor-help">
-                          <div className="dpm-stat-tile-label">Eff. HP</div>
-                          <div className="dpm-stat-tile-value text-dpm-up">
-                            {Math.round(r.effectiveHP)}
-                          </div>
-                        </div>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.totalGold}>
-                        <div className="dpm-stat-tile cursor-help">
-                          <div className="dpm-stat-tile-label">Est. gold</div>
-                          <div className="dpm-stat-tile-value text-dpm-accent-gold">
-                            ~{r.totalGold.toLocaleString()}g
-                          </div>
-                        </div>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.keystone}>
-                        <div className="dpm-stat-tile cursor-help">
-                          <div className="dpm-stat-tile-label">Keystone</div>
-                          <div className="dpm-stat-tile-value text-dpm-accent-gold truncate">
-                            {r.rune}
-                          </div>
-                        </div>
-                      </HoverTip>
-                    </div>
-                    <div className="text-[10px] text-dpm-muted mb-2 leading-relaxed">
-                      Items (buy order: best marginal sim spike per gold;
-                      expensive legendaries deferred)
-                    </div>
-                    <div className="flex flex-wrap gap-2.5 mb-3">
+                    <div className="flex flex-wrap gap-2.5 mb-4">
                       {r.items.map((name) => (
                         <HoverTip key={name} label={name}>
                           <ItemIcon name={name} size={40} className="cursor-help" />
                         </HoverTip>
                       ))}
                     </div>
-                    <div className="grid grid-cols-4 gap-2 text-[10px] text-center text-dpm-muted">
-                      <HoverTip label={STAT_TOOLTIPS.aa}>
-                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
-                          AA {r.autoAttackDPS.toFixed(0)}
-                        </span>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.oh}>
-                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
-                          OH {r.onHitDPS.toFixed(0)}
-                        </span>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.ab}>
-                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
-                          Ab {r.abilityDPS.toFixed(0)}
-                        </span>
-                      </HoverTip>
-                      <HoverTip label={STAT_TOOLTIPS.dotShort}>
-                        <span className="cursor-help border-b border-dotted border-dpm-muted/30">
-                          DoT {r.dotDPS.toFixed(0)}
-                        </span>
-                      </HoverTip>
-                    </div>
-                    <details className="mt-3 text-xs">
-                      <summary className="cursor-pointer text-dpm-muted hover:text-dpm-text">
-                        DPS breakdown
-                      </summary>
-                      <div className="mt-2 space-y-0.5 font-mono text-[10px] text-dpm-muted max-h-40 overflow-y-auto border border-white/10 rounded p-3 bg-dpm-bg/40">
-                        {r.breakdown.map((line) => (
-                          <div key={`${r.profile}-${line}`}>{line}</div>
-                        ))}
+                    <div className="flex items-end justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <HoverTip label={r.rune}>
+                          <RuneIcon
+                            name={r.rune}
+                            size={36}
+                            className="cursor-help"
+                          />
+                        </HoverTip>
+                        <HoverTip label={STAT_TOOLTIPS.fightDuration}>
+                          <span className="text-dpm-muted text-xs cursor-help border-b border-dotted border-dpm-muted/40">
+                            ~{r.fightDurationSeconds.toFixed(1)}s to kill
+                          </span>
+                        </HoverTip>
                       </div>
-                    </details>
+                      <details className="text-xs">
+                        <summary className="cursor-pointer text-dpm-muted hover:text-dpm-text">
+                          DPS breakdown
+                        </summary>
+                        <div className="mt-2 space-y-0.5 font-mono text-[10px] text-dpm-muted max-h-40 overflow-y-auto border border-white/10 rounded p-3 bg-dpm-bg/40">
+                          {r.breakdown.map((line) => (
+                            <div key={`${r.profile}-${line}`}>{line}</div>
+                          ))}
+                        </div>
+                      </details>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -889,14 +798,16 @@ function RandomBuildGenerator(): React.ReactElement {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedBuild, isSpinning]);
 
+  const scoredMeta = useRescoredMeta(metaData);
+
   const allBuilds = useMemo(() => {
-    if (!metaData) return [];
+    if (!scoredMeta) return [];
     let builds: BuildResult[] = [];
-    for (const cb of metaData.championBuilds) {
+    for (const cb of scoredMeta.championBuilds) {
       builds = builds.concat(cb.builds);
     }
     return builds;
-  }, [metaData]);
+  }, [scoredMeta]);
 
   const startSpin = () => {
     if (isSpinning || allBuilds.length === 0) return;
@@ -1183,23 +1094,23 @@ function MetaAnalysis(): React.ReactElement {
     string | null
   >(null);
 
-  // Flatten all builds from all champions
-  const allBuilds = useMemo(() => {
-    if (!metaData) return [];
+  const scoredMeta = useRescoredMeta(metaData);
 
-    // Get all builds from all champions
+  // Flatten all builds from all champions (TTK-rescored per build)
+  const allBuilds = useMemo(() => {
+    if (!scoredMeta) return [];
+
     let builds: BuildResult[] = [];
-    for (const cb of metaData.championBuilds) {
+    for (const cb of scoredMeta.championBuilds) {
       builds = builds.concat(cb.builds);
     }
 
-    // Filter by champion if selected
     if (selectedChampionFilter) {
       builds = builds.filter((b) => b.champion === selectedChampionFilter);
     }
 
     return builds;
-  }, [metaData, selectedChampionFilter]);
+  }, [scoredMeta, selectedChampionFilter]);
 
   // Get unique champion names for filter dropdown
   const championNames = useMemo(() => {
@@ -1299,7 +1210,7 @@ function MetaAnalysis(): React.ReactElement {
               {metaData.duel && (
                 <>
                   {" "}
-                  · burst window {metaData.duel.comboWindowSeconds}s · Eff. HP
+                  · per-build fight length from TTK · Eff. HP
                   weight {(metaData.duel.incomingPhysShare * 100).toFixed(0)}%
                   phys
                 </>
@@ -1457,7 +1368,13 @@ function MetaAnalysis(): React.ReactElement {
                     </HoverTip>
                   </td>
                   <td className="p-3 text-right font-bold text-dpm-accent">
-                    <HoverTip label={STAT_TOOLTIPS.comboDPS}>
+                    <HoverTip
+                      label={
+                        build.fightDurationSeconds != null
+                          ? `${STAT_TOOLTIPS.fightDuration} (~${build.fightDurationSeconds.toFixed(1)}s for this build)`
+                          : STAT_TOOLTIPS.fightDuration
+                      }
+                    >
                       <span className="cursor-help border-b border-dotted border-dpm-accent/40">
                         {build.totalDPS.toFixed(1)}
                       </span>

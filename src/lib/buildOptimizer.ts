@@ -214,8 +214,11 @@ export type ResolvedDuel = {
   targetArmor: number;
   /** Opponent magic resist — magic damage mitigation. */
   targetMR: number;
-  /** Seconds over which one-shot burst damage is amortized into total DPS. */
-  comboWindowSeconds: number;
+  /**
+   * When set, fixes combo/fight window instead of deriving from time-to-kill.
+   * Scripts may pass `LOLOPTIMA_COMBO_WINDOW` to force a value.
+   */
+  comboWindowSeconds?: number;
 };
 
 export type DuelAssumptions = Partial<ResolvedDuel>;
@@ -226,18 +229,23 @@ const DEFAULT_DUEL: ResolvedDuel = {
   incomingPhysShare: 0.5,
   targetArmor: 100,
   targetMR: 100,
-  comboWindowSeconds: 8,
 };
 
-/** Duel assumptions for `npm run compute-meta` / Meta Analysis (squishy carry, short burst). */
+/** Duel assumptions for `npm run compute-meta` / Meta Analysis (squishy carry reference). */
 export const META_DUEL_DEFAULTS: ResolvedDuel = {
   targetMaxHP: 3000,
   targetBonusHP: 0,
   incomingPhysShare: 0.5,
   targetArmor: 150,
   targetMR: 150,
-  comboWindowSeconds: 1,
 };
+
+/** Lower bound for TTK-derived fight length (seconds). */
+export const FIGHT_DURATION_MIN = 1.5;
+/** Upper bound for TTK-derived fight length (seconds). */
+export const FIGHT_DURATION_MAX = 25;
+/** Seed window before the first TTK iteration. */
+export const SEED_FIGHT_DURATION = 6;
 
 export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
   return {
@@ -262,20 +270,115 @@ export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
       500,
     ),
     targetMR: clamp(overrides?.targetMR ?? DEFAULT_DUEL.targetMR, 0, 500),
-    comboWindowSeconds: clamp(
-      overrides?.comboWindowSeconds ?? DEFAULT_DUEL.comboWindowSeconds,
-      1,
-      30,
-    ),
+    comboWindowSeconds:
+      overrides?.comboWindowSeconds != null
+        ? clamp(overrides.comboWindowSeconds, 1, 30)
+        : undefined,
   };
 }
 
+function offensiveDpsRate(
+  dps: ReturnType<Character["calculateDPS"]>,
+  profile: BuildProfileId,
+): number {
+  switch (profile) {
+    case "glass":
+    case "ability_burst":
+      return dps.comboDPS;
+    default:
+      return dps.totalDPS;
+  }
+}
+
+/** Fight length (seconds) from opponent time-to-kill at the build's offensive DPS. */
+export function deriveFightDurationSeconds(
+  dps: ReturnType<Character["calculateDPS"]>,
+  targetMaxHP: number,
+  profile: BuildProfileId,
+): number {
+  const rate = offensiveDpsRate(dps, profile);
+  const enemyTTD = targetMaxHP / Math.max(rate, 1);
+  return clamp(enemyTTD, FIGHT_DURATION_MIN, FIGHT_DURATION_MAX);
+}
+
+export type FightDurationOptions = {
+  /** Skips TTK derivation and uses this window. */
+  comboWindowSecondsOverride?: number;
+  /** TTK refinement passes after the seed window (default 2). */
+  iterations?: number;
+  seedSeconds?: number;
+};
+
+/**
+ * Run {@link Character.calculateDPS} with a fight window derived from TTK (Option A).
+ * Burst profiles use combo DPS; others use blended total DPS for the TTK estimate.
+ */
+export function calculateDpsWithFightDuration(
+  champion: Character,
+  targetMaxHP: number,
+  targetBonusHP: number,
+  simulation: SimulationScenario | undefined,
+  mitigation: Pick<
+    ReturnType<typeof dpsMitigationFromDuel>,
+    "targetArmor" | "targetMR"
+  >,
+  profile: BuildProfileId,
+  options?: FightDurationOptions,
+): {
+  dps: ReturnType<Character["calculateDPS"]>;
+  fightDurationSeconds: number;
+} {
+  if (options?.comboWindowSecondsOverride != null) {
+    const window = clamp(options.comboWindowSecondsOverride, 1, 30);
+    const dps = champion.calculateDPS(
+      targetMaxHP,
+      targetBonusHP,
+      simulation,
+      { ...mitigation, comboWindowSeconds: window },
+    );
+    return { dps, fightDurationSeconds: window };
+  }
+
+  const iterations = options?.iterations ?? 2;
+  let window = options?.seedSeconds ?? SEED_FIGHT_DURATION;
+  let dps = champion.calculateDPS(
+    targetMaxHP,
+    targetBonusHP,
+    simulation,
+    { ...mitigation, comboWindowSeconds: window },
+  );
+
+  for (let i = 0; i < iterations; i++) {
+    const next = deriveFightDurationSeconds(dps, targetMaxHP, profile);
+    if (Math.abs(next - window) < 0.2) {
+      window = next;
+      break;
+    }
+    window = next;
+    dps = champion.calculateDPS(
+      targetMaxHP,
+      targetBonusHP,
+      simulation,
+      { ...mitigation, comboWindowSeconds: window },
+    );
+  }
+
+  return { dps, fightDurationSeconds: window };
+}
+
 /** Arguments for {@link Character.calculateDPS} from duel assumptions. */
-export function dpsMitigationFromDuel(duel: ResolvedDuel) {
+export function dpsMitigationFromDuel(
+  duel: ResolvedDuel,
+  fightDurationSeconds?: number,
+) {
+  const window =
+    fightDurationSeconds ??
+    duel.comboWindowSeconds ??
+    SEED_FIGHT_DURATION;
   return {
     targetArmor: duel.targetArmor,
     targetMR: duel.targetMR,
-    comboWindowSeconds: duel.comboWindowSeconds,
+    comboWindowSeconds: window,
   };
 }
 
@@ -319,7 +422,6 @@ export function dpsMitigationForPurchaseStep(
   return {
     targetArmor: step.targetArmor,
     targetMR: step.targetMR,
-    comboWindowSeconds: step.comboWindowSeconds,
   };
 }
 
@@ -351,6 +453,8 @@ export interface BuildRecommendation {
   sustainedDPS: number;
   comboDPS: number;
   effectiveHP: number;
+  /** TTK-derived fight length used for combo sim and durability (seconds). */
+  fightDurationSeconds: number;
   breakdown: string[];
   duel: ResolvedDuel;
   simulation: SimulationScenario;
@@ -544,12 +648,16 @@ export function computeDuelDurability(
   dps: ReturnType<Character["calculateDPS"]>,
   duel: ResolvedDuel,
   simulation?: SimulationScenario,
+  fightDurationSeconds?: number,
 ): DuelDurabilityResult {
   const healInput = { champion, stats, dps, simulation };
   const healHPS = computeHealHPS(healInput);
   const offensiveHealHPS = computeOffensiveHealHPS(healInput);
-  const estimatedEnemyDPS =
-    duel.targetMaxHP / (duel.comboWindowSeconds * 2.5);
+  const fightSec =
+    fightDurationSeconds ??
+    duel.comboWindowSeconds ??
+    deriveFightDurationSeconds(dps, duel.targetMaxHP, "balanced");
+  const estimatedEnemyDPS = duel.targetMaxHP / (fightSec * 2.5);
   const netIncomingDPS = computeNetIncomingDPS(
     estimatedEnemyDPS,
     healHPS,
@@ -766,13 +874,20 @@ function scoreChampion(
   build: Item[],
   duel: ResolvedDuel,
   simulation?: SimulationScenario,
+  fightDurationIterations = 1,
 ): number {
   const profileSim = resolveChampionSimulation(c, simulation);
-  const dps = c.calculateDPS(
+  const { dps, fightDurationSeconds } = calculateDpsWithFightDuration(
+    c,
     duel.targetMaxHP,
     duel.targetBonusHP,
     profileSim,
-    dpsMitigationFromDuel(duel),
+    { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+    profile,
+    {
+      comboWindowSecondsOverride: duel.comboWindowSeconds,
+      iterations: duel.comboWindowSeconds != null ? 0 : fightDurationIterations,
+    },
   );
   const { durabilityEHP, duelRatio } = computeDuelDurability(
     c,
@@ -780,6 +895,7 @@ function scoreChampion(
     dps,
     duel,
     profileSim,
+    fightDurationSeconds,
   );
 
   return profileScore(profile, dps, durabilityEHP, build, duelRatio);
@@ -846,14 +962,19 @@ export function greedySimPurchaseOrder(
         ...(simulation ?? {}),
         level: opponent.level,
       };
-      const dps = c.calculateDPS(
+      const { dps } = calculateDpsWithFightDuration(
+        c,
         opponent.targetMaxHP,
         opponent.targetBonusHP,
         stepSim,
         {
           targetArmor: opponent.targetArmor,
           targetMR: opponent.targetMR,
-          comboWindowSeconds: opponent.comboWindowSeconds,
+        },
+        profile,
+        {
+          comboWindowSecondsOverride: duel.comboWindowSeconds,
+          iterations: duel.comboWindowSeconds != null ? 0 : 1,
         },
       );
       return purchasePowerScore(profile, dps, c.getTotalStats(stepSim.level));
@@ -879,7 +1000,7 @@ function keystoneCacheKey(
   const simKey = simulation
     ? `${simulation.level ?? ""}:${simulation.spellOnlyNoAutos ?? ""}:${simulation.enableChampionRotationProfiles ?? ""}`
     : "";
-  return `${championName}\0${profile}\0${items}\0${duel.targetMaxHP}\0${duel.targetBonusHP}\0${duel.targetArmor}\0${duel.targetMR}\0${duel.comboWindowSeconds}\0${simKey}`;
+  return `${championName}\0${profile}\0${items}\0${duel.targetMaxHP}\0${duel.targetBonusHP}\0${duel.targetArmor}\0${duel.targetMR}\0${duel.comboWindowSeconds ?? "ttk"}\0${simKey}`;
 }
 
 function bestKeystoneForBuild(
@@ -1369,11 +1490,17 @@ export function recommendBuildsForChampion(
       primary,
       gRune ? makeRunePage(gRune) : null,
     );
-    const gd = gc.calculateDPS(
+    const { dps: gd, fightDurationSeconds } = calculateDpsWithFightDuration(
+      gc,
       duel.targetMaxHP,
       duel.targetBonusHP,
       profileSim,
-      dpsMitigationFromDuel(duel),
+      { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+      profile,
+      {
+        comboWindowSecondsOverride: duel.comboWindowSeconds,
+        iterations: duel.comboWindowSeconds != null ? 0 : 2,
+      },
     );
     const gehp = computeDuelDurability(
       gc,
@@ -1381,6 +1508,7 @@ export function recommendBuildsForChampion(
       gd,
       duel,
       profileSim,
+      fightDurationSeconds,
     ).durabilityEHP;
     const gscore = scoreChampion(profile, gc, primary, duel, profileSim);
 
@@ -1411,6 +1539,7 @@ export function recommendBuildsForChampion(
         dotDPS: gd.dotDPS,
         burstDPS: gd.burstDPS,
         effectiveHP: gehp,
+        fightDurationSeconds,
         breakdown: gd.breakdown,
         duel: { ...duel },
         simulation: { ...profileSim },
@@ -1450,18 +1579,26 @@ export function recommendBuildsForChampion(
         bestAlt,
         aRune ? makeRunePage(aRune) : null,
       );
-      const altDps = c.calculateDPS(
-        duel.targetMaxHP,
-        duel.targetBonusHP,
-        profileSim,
-        dpsMitigationFromDuel(duel),
-      );
+      const { dps: altDps, fightDurationSeconds: altFightSec } =
+        calculateDpsWithFightDuration(
+          c,
+          duel.targetMaxHP,
+          duel.targetBonusHP,
+          profileSim,
+          { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+          profile,
+          {
+            comboWindowSecondsOverride: duel.comboWindowSeconds,
+            iterations: duel.comboWindowSeconds != null ? 0 : 2,
+          },
+        );
       const altEhp = computeDuelDurability(
         c,
         altDps.combatStats,
         altDps,
         duel,
         profileSim,
+        altFightSec,
       ).durabilityEHP;
       const sc = scoreChampion(profile, c, bestAlt, duel, profileSim);
       if (sc > gscore * 0.88) {
@@ -1491,6 +1628,7 @@ export function recommendBuildsForChampion(
           dotDPS: altDps.dotDPS,
           burstDPS: altDps.burstDPS,
           effectiveHP: altEhp,
+          fightDurationSeconds: altFightSec,
           breakdown: altDps.breakdown,
           duel: { ...duel },
           simulation: { ...profileSim },
@@ -1524,6 +1662,7 @@ export type SerializedBuildResult = {
   items: string[];
   totalGold: number;
   rune: string;
+  profile?: BuildProfileId;
   totalDPS: number;
   sustainedDPS: number;
   comboDPS: number;
@@ -1532,6 +1671,8 @@ export type SerializedBuildResult = {
   dotDPS: number;
   abilityDPS: number;
   burstDPS: number;
+  /** TTK-derived fight length used for this row's DPS (seconds). */
+  fightDurationSeconds?: number;
   breakdown: string[];
   buildType: string;
 };
@@ -1542,6 +1683,128 @@ export type SerializedMeta = {
   duel: ResolvedDuel;
   simulation?: SimulationScenario;
 };
+
+const BUILD_PROFILE_IDS: BuildProfileId[] = [
+  "balanced",
+  "glass",
+  "ability_burst",
+  "tank",
+  "ap",
+  "spell",
+  "ad",
+  "bruiser",
+];
+
+/** Duel assumptions for meta display / rescoring — never pins a global combo window. */
+export function metaDuelForTtkScoring(duel: ResolvedDuel): ResolvedDuel {
+  return resolveDuel({
+    targetMaxHP: duel.targetMaxHP,
+    targetBonusHP: duel.targetBonusHP,
+    incomingPhysShare: duel.incomingPhysShare,
+    targetArmor: duel.targetArmor,
+    targetMR: duel.targetMR,
+  });
+}
+
+export function profileFromBuildType(buildType: string): BuildProfileId {
+  const raw = buildType.split(" · ")[0]?.trim() ?? "balanced";
+  if (BUILD_PROFILE_IDS.includes(raw as BuildProfileId)) {
+    return raw as BuildProfileId;
+  }
+  return "balanced";
+}
+
+function serializeBuildRecommendation(
+  championName: string,
+  r: BuildRecommendation,
+  classifiedItems: Item[],
+): SerializedBuildResult {
+  return {
+    champion: championName,
+    items: r.items,
+    totalGold: r.totalGold,
+    rune: r.rune,
+    profile: r.profile,
+    totalDPS: r.totalDPS,
+    sustainedDPS: r.sustainedDPS,
+    comboDPS: r.comboDPS,
+    autoAttackDPS: r.autoAttackDPS,
+    onHitDPS: r.onHitDPS,
+    abilityDPS: r.abilityDPS,
+    dotDPS: r.dotDPS,
+    burstDPS: r.burstDPS,
+    fightDurationSeconds: r.fightDurationSeconds,
+    breakdown: r.breakdown,
+    buildType: `${r.profile} · ${classifyBuildFromItems(classifiedItems)}`,
+  };
+}
+
+/**
+ * Re-score one meta row with per-build TTK fight length (ignores legacy fixed windows).
+ */
+export function rescoreMetaBuildRow(
+  row: SerializedBuildResult,
+  duel: ResolvedDuel,
+  simulation: SimulationScenario | undefined,
+  champions: Character[],
+  itemPool: Item[],
+): SerializedBuildResult {
+  const champion = champions.find((c) => c.Name === row.champion);
+  if (!champion) return row;
+
+  const profile = row.profile ?? profileFromBuildType(row.buildType);
+  const items = row.items
+    .map((name) => itemPool.find((i) => i.name === name))
+    .filter((x): x is Item => Boolean(x));
+  if (items.length === 0) return row;
+
+  const keystone = AllKeystones.find((k) => k.name === row.rune) ?? null;
+  const c = cloneChampionWithLoadout(
+    champion,
+    items,
+    keystone ? makeRunePage(keystone) : null,
+  );
+  const profileSim = mergeProfileSimulation(profile, champion, simulation);
+  const { dps, fightDurationSeconds } = calculateDpsWithFightDuration(
+    c,
+    duel.targetMaxHP,
+    duel.targetBonusHP,
+    profileSim,
+    { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+    profile,
+    { iterations: 2 },
+  );
+
+  return {
+    ...row,
+    profile,
+    totalDPS: dps.totalDPS,
+    sustainedDPS: dps.sustainedDPS,
+    comboDPS: dps.comboDPS,
+    autoAttackDPS: dps.autoAttackDPS,
+    onHitDPS: dps.onHitDPS,
+    abilityDPS: dps.abilityDPS,
+    dotDPS: dps.dotDPS,
+    burstDPS: dps.burstDPS,
+    fightDurationSeconds,
+    breakdown: dps.breakdown,
+  };
+}
+
+/** Re-score all meta builds with per-row TTK fight windows (fixes legacy 1s JSON). */
+export function rescoreMetaDataset(meta: SerializedMeta): SerializedMeta {
+  const duel = metaDuelForTtkScoring(meta.duel);
+  return {
+    ...meta,
+    duel,
+    championBuilds: meta.championBuilds.map((cb) => ({
+      ...cb,
+      builds: cb.builds.map((row) =>
+        rescoreMetaBuildRow(row, duel, meta.simulation, Characters, Items),
+      ),
+    })),
+  };
+}
 
 function classifyBuildFromItems(items: Item[]): string {
   let critScore = 0;
@@ -1633,22 +1896,7 @@ export function computeMetaForChampion(
     const its = r.items
       .map((n) => itemByName.get(n))
       .filter((x): x is Item => Boolean(x));
-    return {
-      champion: champion.Name,
-      items: r.items,
-      totalGold: r.totalGold,
-      rune: r.rune,
-      totalDPS: r.totalDPS,
-      sustainedDPS: r.sustainedDPS,
-      comboDPS: r.comboDPS,
-      autoAttackDPS: r.autoAttackDPS,
-      onHitDPS: r.onHitDPS,
-      abilityDPS: r.abilityDPS,
-      dotDPS: r.dotDPS,
-      burstDPS: r.burstDPS,
-      breakdown: r.breakdown,
-      buildType: `${r.profile} · ${classifyBuildFromItems(its)}`,
-    };
+    return serializeBuildRecommendation(champion.Name, r, its);
   });
   if (builds.length === 0) return null;
   return { champion: champion.Name, builds };
@@ -1683,7 +1931,7 @@ export function computeMetaForAllChampions(
     `[compute-meta] Starting ${total} champions | SA ${mc.iterationsPerRestart} iter × ${mc.restarts} restarts | ${mcParams.randomProbeSamples ?? 320} alt probes per profile`,
   );
   log(
-    `[compute-meta] Duel: ${duel.targetMaxHP} HP (+${duel.targetBonusHP} bonus), ${duel.targetArmor}/${duel.targetMR} armor/MR, ${duel.comboWindowSeconds}s combo`,
+    `[compute-meta] Duel: ${duel.targetMaxHP} HP (+${duel.targetBonusHP} bonus), ${duel.targetArmor}/${duel.targetMR} armor/MR, fight length ${duel.comboWindowSeconds != null ? `${duel.comboWindowSeconds}s fixed` : "TTK-derived"}`,
   );
   const runStarted = Date.now();
 
@@ -1707,22 +1955,7 @@ export function computeMetaForAllChampions(
         const its = r.items
           .map((n) => itemByName.get(n))
           .filter((x): x is Item => Boolean(x));
-        return {
-          champion: champion.Name,
-          items: r.items,
-          totalGold: r.totalGold,
-          rune: r.rune,
-          totalDPS: r.totalDPS,
-          sustainedDPS: r.sustainedDPS,
-          comboDPS: r.comboDPS,
-          autoAttackDPS: r.autoAttackDPS,
-          onHitDPS: r.onHitDPS,
-          dotDPS: r.dotDPS,
-          abilityDPS: r.abilityDPS,
-          burstDPS: r.burstDPS,
-          breakdown: r.breakdown,
-          buildType: `${r.profile} · ${classifyBuildFromItems(its)}`,
-        };
+        return serializeBuildRecommendation(champion.Name, r, its);
       });
       entry = builds.length > 0 ? { champion: champion.Name, builds } : null;
     } else {
@@ -1757,7 +1990,7 @@ export function computeMetaForAllChampions(
   return {
     championBuilds,
     generatedAt: new Date().toISOString(),
-    duel,
+    duel: metaDuelForTtkScoring(duel),
     simulation,
   };
 }

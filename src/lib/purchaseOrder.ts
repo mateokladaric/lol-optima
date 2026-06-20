@@ -6,7 +6,6 @@ import { bestComponentSpikePerGold, shopGoldForItem } from "@/lib/itemRecipes";
 export type PurchaseDuelMitigation = {
   targetArmor: number;
   targetMR: number;
-  comboWindowSeconds: number;
 };
 
 const PURCHASE_OPP_BASE_ARMOR = 48;
@@ -66,7 +65,6 @@ export function opponentAtPurchaseStep(
     targetBonusHP: Math.round(duel.targetBonusHP * levelScale),
     targetArmor: Math.round(baseArmor + itemArmor * pace),
     targetMR: Math.round(baseMR + itemMR * pace),
-    comboWindowSeconds: duel.comboWindowSeconds,
   };
 }
 

@@ -18,6 +18,8 @@ export const STAT_TOOLTIPS = {
   oh: "On-hit DPS component.",
   ab: "Ability DPS component.",
   dotShort: "Damage-over-time DPS component.",
+  fightDuration:
+    "Fight length derived from time-to-kill: opponent HP divided by this build's offensive DPS.",
 } as const;
 
 export const PROFILE_TOOLTIPS: Record<string, string> = {
@@ -36,7 +38,6 @@ export const DUEL_FIELD_TOOLTIPS = {
   bonusHP: "Bonus HP from items, shields, and health scaling.",
   armor: "Target opponent's armor rating.",
   mr: "Target opponent's magic resist rating.",
-  burstWindow: "Seconds used to measure combo/burst DPS.",
   physShare:
     "Share of incoming damage treated as physical for effective HP weighting.",
   level: "Champion level used for stat and ability scaling in the sim.",

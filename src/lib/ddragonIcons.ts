@@ -4,6 +4,7 @@ export type DdragonAssets = {
   version: string;
   championIdByName: Map<string, string>;
   itemIdByName: Map<string, string>;
+  keystoneIconByName: Map<string, string>;
 };
 
 let cache: DdragonAssets | null = null;
@@ -74,6 +75,23 @@ function buildItemLookup(
   return map;
 }
 
+function buildRuneLookup(
+  trees: Array<{
+    slots: Array<{ runes?: Array<{ name: string; icon: string }> }>;
+  }>,
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const tree of trees) {
+    for (const slot of tree.slots) {
+      for (const rune of slot.runes ?? []) {
+        map.set(rune.name, rune.icon);
+        map.set(normalizeName(rune.name), rune.icon);
+      }
+    }
+  }
+  return map;
+}
+
 export function loadDdragonAssets(): Promise<DdragonAssets> {
   if (cache) return Promise.resolve(cache);
   if (loadPromise) return loadPromise;
@@ -86,12 +104,15 @@ export function loadDdragonAssets(): Promise<DdragonAssets> {
     const version = versions[0];
     if (!version) throw new Error("No Data Dragon version");
 
-    const [champRes, itemRes] = await Promise.all([
+    const [champRes, itemRes, runeRes] = await Promise.all([
       fetch(
         `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`,
       ),
       fetch(
         `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`,
+      ),
+      fetch(
+        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/runesReforged.json`,
       ),
     ]);
 
@@ -101,11 +122,15 @@ export function loadDdragonAssets(): Promise<DdragonAssets> {
     const itemJson = (await itemRes.json()) as {
       data: Record<string, { name?: string }>;
     };
+    const runeJson = (await runeRes.json()) as Array<{
+      slots: Array<{ runes?: Array<{ name: string; icon: string }> }>;
+    }>;
 
     cache = {
       version,
       championIdByName: buildChampionLookup(champJson.data),
       itemIdByName: buildItemLookup(itemJson.data),
+      keystoneIconByName: buildRuneLookup(runeJson),
     };
     return cache;
   })();
@@ -159,4 +184,15 @@ export function itemIconUrl(
   const id = resolveItemId(assets, itemName);
   if (!id) return null;
   return `https://ddragon.leagueoflegends.com/cdn/${assets.version}/img/item/${id}.png`;
+}
+
+export function keystoneIconUrl(
+  assets: DdragonAssets,
+  runeName: string,
+): string | null {
+  const icon =
+    assets.keystoneIconByName.get(runeName) ??
+    assets.keystoneIconByName.get(normalizeName(runeName));
+  if (!icon) return null;
+  return `https://ddragon.leagueoflegends.com/cdn/img/${icon}`;
 }

@@ -33,14 +33,14 @@ etc.) are deferred until later slots.
 
 ## Meta generation env vars
 
-Used by `npm run compute-meta` (defaults: **1500** HP, **0** bonus HP, **50**
-armor, **50** MR, **3s** combo window):
+Used by `npm run compute-meta` (defaults: **3000** HP, **0** bonus HP, **150**
+armor, **150** MR; fight length **TTK-derived per build**):
 
 - `LOLOPTIMA_TARGET_MAX_HP`
 - `LOLOPTIMA_TARGET_BONUS_HP`
 - `LOLOPTIMA_TARGET_ARMOR`
 - `LOLOPTIMA_TARGET_MR`
-- `LOLOPTIMA_COMBO_WINDOW`
+- `LOLOPTIMA_COMBO_WINDOW` — optional override to pin a fixed combo window (normally unused)
 - `LOLOPTIMA_INCOMING_PHYS_SHARE`
 - `LOLOPTIMA_SA_ITER`
 - `LOLOPTIMA_SA_RESTARTS`

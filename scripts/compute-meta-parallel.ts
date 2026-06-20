@@ -11,6 +11,7 @@ import {
   type MonteCarloParams,
   type SerializedMeta,
   type SimulationScenario,
+  metaDuelForTtkScoring,
   resolveDuel,
   resolveMonteCarloParams,
 } from "../src/lib/buildOptimizer";
@@ -107,7 +108,7 @@ export async function computeMetaParallel(
     `[compute-meta] Parallel: ${workerCount} workers × ${total} champions | SA ${mc.iterationsPerRestart} iter × ${mc.restarts} restarts | ${mcParams.randomProbeSamples ?? 320} alt probes`,
   );
   log(
-    `[compute-meta] Duel: ${duel.targetMaxHP} HP (+${duel.targetBonusHP} bonus), ${duel.targetArmor}/${duel.targetMR} armor/MR, ${duel.comboWindowSeconds}s combo`,
+    `[compute-meta] Duel: ${duel.targetMaxHP} HP (+${duel.targetBonusHP} bonus), ${duel.targetArmor}/${duel.targetMR} armor/MR, fight length ${duel.comboWindowSeconds != null ? `${duel.comboWindowSeconds}s fixed` : "TTK-derived"}`,
   );
 
   const runStarted = Date.now();
@@ -165,7 +166,7 @@ export async function computeMetaParallel(
   return {
     championBuilds,
     generatedAt: new Date().toISOString(),
-    duel,
+    duel: metaDuelForTtkScoring(duel),
     simulation,
   };
 }

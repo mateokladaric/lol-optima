@@ -163,11 +163,7 @@ if (withVoid < wrongFlat - 0.001) {
 
 const zed = Characters.find((c) => c.Name === "Zed");
 if (zed) {
-  const mit = {
-    targetArmor: duel.targetArmor,
-    targetMR: duel.targetMR,
-    comboWindowSeconds: duel.comboWindowSeconds,
-  };
+  const mit = dpsMitigationFromDuel(duel, 8);
   const lethalityItems = Items.filter((i) => (i.stats.lethality ?? 0) >= 15);
   const adItems = Items.filter(
     (i) =>
