@@ -149,7 +149,7 @@ console.log(`Cam Standard EHP: ${mixedEffectiveHP(camStdStats, 0.5, camStdDps.to
 console.log(`Cam Glass EHP: ${mixedEffectiveHP(camGlassStats, 0.5, camGlassDps.totalDPS, 8, camGlassDps.autoAttackDPS + camGlassDps.onHitDPS, camGlassDps.physicalAbilityDPS).toFixed(0)}`);
 
 // === KAYN RHAAST SUSTAIN ===
-const kayn = findChampion("Kayn");
+const kayn = findChampion("Kayn (Rhaast)");
 
 const kaynSustainItems = [
   findItem("Black Cleaver"),

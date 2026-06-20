@@ -1,10 +1,10 @@
 {
   "championBuilds": [
     {
-      "champion": "Kayn",
+      "champion": "Kayn (Rhaast)",
       "builds": [
         {
-          "champion": "Kayn",
+          "champion": "Kayn (Rhaast)",
           "items": [
             "Voltaic Cyclosword",
             "Bloodthirster",
@@ -32,11 +32,11 @@
             "Target resistances: 150 armor (69.9% phys dmg), 150 MR (40.0% magic dmg)",
             "Base AA: 214.1 DPS (320.0 AD * 1.00 crit * 0.67 AS)",
             "Reaping Slash: 550.3 DPS (1668 dmg / 3.3s CD)",
-            "Reaping Slash: rotation weight ×1.10 (Kayn)",
+            "Reaping Slash: rotation weight ×1.10 (Kayn (Rhaast))",
             "Blade's Reach: 76.8 DPS (542 dmg / 6.0s CD)",
-            "Blade's Reach: rotation weight ×0.85 (Kayn)",
+            "Blade's Reach: rotation weight ×0.85 (Kayn (Rhaast))",
             "Umbral Trespass: 19.9 DPS (1934 dmg / 53.3s CD)",
-            "Umbral Trespass: rotation weight ×0.55 (Kayn)",
+            "Umbral Trespass: rotation weight ×0.55 (Kayn (Rhaast))",
             "Sustained (rotation): 603.9 DPS",
             "Combo (1s window): 2560 total → 2560.4 DPS",
             "Item burst in combo: 191 (191.3 DPS if spread)"
@@ -44,7 +44,7 @@
           "buildType": "balanced · Lethality/Tank"
         },
         {
-          "champion": "Kayn",
+          "champion": "Kayn (Rhaast)",
           "items": [
             "Voltaic Cyclosword",
             "Bastionbreaker",
@@ -73,11 +73,11 @@
             "Base AA: 267.9 DPS (400.5 AD * 1.00 crit * 0.67 AS)",
             "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
             "Reaping Slash: 803.2 DPS (1974 dmg / 2.7s CD)",
-            "Reaping Slash: rotation weight ×1.10 (Kayn)",
+            "Reaping Slash: rotation weight ×1.10 (Kayn (Rhaast))",
             "Blade's Reach: 110.2 DPS (631 dmg / 4.9s CD)",
-            "Blade's Reach: rotation weight ×0.85 (Kayn)",
+            "Blade's Reach: rotation weight ×0.85 (Kayn (Rhaast))",
             "Umbral Trespass: 31.4 DPS (2296 dmg / 40.2s CD)",
-            "Umbral Trespass: rotation weight ×0.55 (Kayn)",
+            "Umbral Trespass: rotation weight ×0.55 (Kayn (Rhaast))",
             "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
             "Sustained (rotation): 1328.3 DPS",
             "Combo (1s window): 4616 total → 4615.6 DPS",
@@ -86,7 +86,7 @@
           "buildType": "glass · Lethality"
         },
         {
-          "champion": "Kayn",
+          "champion": "Kayn (Rhaast)",
           "items": [
             "Bastionbreaker",
             "Spear of Shojin (Base)",
@@ -112,11 +112,11 @@
             "Target resistances: 150 armor (70.2% phys dmg), 150 MR (40.0% magic dmg)",
             "Base AA: 0.0 DPS (340.0 AD * 1.00 crit * 0.67 AS)",
             "Reaping Slash: 652.1 DPS (1744 dmg / 2.9s CD)",
-            "Reaping Slash: rotation weight ×1.10 (Kayn)",
+            "Reaping Slash: rotation weight ×1.10 (Kayn (Rhaast))",
             "Blade's Reach: 90.6 DPS (564 dmg / 5.3s CD)",
-            "Blade's Reach: rotation weight ×0.85 (Kayn)",
+            "Blade's Reach: rotation weight ×0.85 (Kayn (Rhaast))",
             "Umbral Trespass: 20.2 DPS (2024 dmg / 55.2s CD)",
-            "Umbral Trespass: rotation weight ×0.55 (Kayn)",
+            "Umbral Trespass: rotation weight ×0.55 (Kayn (Rhaast))",
             "Damage multipliers: 101.1% (1.01 * 1.00 * 1.00)",
             "Sustained (rotation): 543.8 DPS",
             "Combo (1s window): 2605 total → 2604.5 DPS",
@@ -687,6 +687,92 @@
             "Item burst in combo: 343 (342.9 DPS if spread)"
           ],
           "buildType": "glass · AP/Lethality"
+        }
+      ]
+    },
+    {
+      "champion": "Kayn (Shadow Assassin)",
+      "builds": [
+        {
+          "champion": "Kayn (Shadow Assassin)",
+          "items": [
+            "Voltaic Cyclosword",
+            "Bastionbreaker",
+            "Serylda's Grudge",
+            "Edge of Night",
+            "Heartsteel",
+            "Warmog's Armor"
+          ],
+          "totalGold": 19507,
+          "rune": "Conqueror",
+          "totalDPS": 1378.1223316663625,
+          "sustainedDPS": 446.0549913766389,
+          "comboDPS": 2140.7228828125,
+          "autoAttackDPS": 151.57031250000003,
+          "onHitDPS": 0,
+          "abilityDPS": 294.48467887663884,
+          "dotDPS": 0,
+          "burstDPS": 227.0625,
+          "breakdown": [
+            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
+            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
+            "Bastionbreaker Shaped Charge (melee): ~2.2 true DPS (101 / 45s ICD)",
+            "Warmog's Heart: ~21.4 HPS (5% missing HP/s, ~35% uptime)",
+            "Target resistances: 150 armor (78.1% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 194.0 DPS (290.0 AD * 1.00 crit * 0.67 AS)",
+            "Reaping Slash: 316.2 DPS (982 dmg / 3.6s CD)",
+            "Reaping Slash: rotation weight ×1.15 (Kayn (Shadow Assassin))",
+            "Blade's Reach: 101.6 DPS (687 dmg / 6.4s CD)",
+            "Blade's Reach: rotation weight ×0.95 (Kayn (Shadow Assassin))",
+            "Umbral Trespass: 10.5 DPS (922 dmg / 57.1s CD)",
+            "Umbral Trespass: rotation weight ×0.65 (Kayn (Shadow Assassin))",
+            "Sustained (rotation): 446.1 DPS",
+            "Combo (1s window): 2141 total → 2140.7 DPS",
+            "Item burst in combo: 227 (227.1 DPS if spread)"
+          ],
+          "buildType": "balanced · Lethality"
+        },
+        {
+          "champion": "Kayn (Shadow Assassin)",
+          "items": [
+            "Voltaic Cyclosword",
+            "Bastionbreaker",
+            "Hubris",
+            "Serylda's Grudge",
+            "Umbral Glaive (Base)",
+            "Axiom Arc"
+          ],
+          "totalGold": 19501,
+          "rune": "Press the Attack",
+          "totalDPS": 2455.272923064932,
+          "sustainedDPS": 966.0885196813299,
+          "comboDPS": 3673.6965258333335,
+          "autoAttackDPS": 285.7968,
+          "onHitDPS": 0,
+          "abilityDPS": 680.2917196813298,
+          "dotDPS": 0,
+          "burstDPS": 342.4,
+          "breakdown": [
+            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
+            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Bastionbreaker Shaped Charge (melee): ~3.5 true DPS (159 / 45s ICD)",
+            "Axiom Arc: ~28% ult CD refund on takedown (second R in long fights)",
+            "Target resistances: 150 armor (100.0% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 267.9 DPS (400.5 AD * 1.00 crit * 0.67 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Reaping Slash: 535.4 DPS (1258 dmg / 2.7s CD)",
+            "Reaping Slash: rotation weight ×1.15 (Kayn (Shadow Assassin))",
+            "Blade's Reach: 169.3 DPS (867 dmg / 4.9s CD)",
+            "Blade's Reach: rotation weight ×0.95 (Kayn (Shadow Assassin))",
+            "Umbral Trespass: 18.9 DPS (1167 dmg / 40.2s CD)",
+            "Umbral Trespass: rotation weight ×0.65 (Kayn (Shadow Assassin))",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 966.1 DPS",
+            "Combo (1s window): 3674 total → 3673.7 DPS",
+            "Item burst in combo: 342 (342.4 DPS if spread)"
+          ],
+          "buildType": "glass · Lethality"
         }
       ]
     },
@@ -4020,9 +4106,9 @@
           ],
           "totalGold": 21240,
           "rune": "Press the Attack",
-          "totalDPS": 877.1401628084284,
+          "totalDPS": 876.3568374964285,
           "sustainedDPS": 195.23323195323306,
-          "comboDPS": 1435.0640153263155,
+          "comboDPS": 1433.6397874863155,
           "autoAttackDPS": 28.484556800000004,
           "onHitDPS": 0,
           "abilityDPS": 166.74867515323305,
@@ -4044,7 +4130,7 @@
             "Mimic: rotation weight ×0.60 (LeBlanc)",
             "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
             "Sustained (rotation): 195.2 DPS",
-            "Combo (1s window): 1435 total → 1435.1 DPS",
+            "Combo (1s window): 1434 total → 1433.6 DPS",
             "Item burst in combo: 262 (261.9 DPS if spread)"
           ],
           "buildType": "balanced · AP"
@@ -4061,9 +4147,9 @@
           ],
           "totalGold": 21414,
           "rune": "Press the Attack",
-          "totalDPS": 1445.4235623510417,
+          "totalDPS": 1444.690111684375,
           "sustainedDPS": 259.20915652083335,
-          "comboDPS": 2415.9626216666666,
+          "comboDPS": 2414.629075,
           "autoAttackDPS": 26.670933333333338,
           "onHitDPS": 0,
           "abilityDPS": 232.5382231875,
@@ -4084,7 +4170,7 @@
             "Mimic: rotation weight ×0.60 (LeBlanc)",
             "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
             "Sustained (rotation): 259.2 DPS",
-            "Combo (1s window): 2416 total → 2416.0 DPS",
+            "Combo (1s window): 2415 total → 2414.6 DPS",
             "Item burst in combo: 543 (543.0 DPS if spread)"
           ],
           "buildType": "glass · AP"
@@ -8034,93 +8120,6 @@
       ]
     },
     {
-      "champion": "Xin Zhao",
-      "builds": [
-        {
-          "champion": "Xin Zhao",
-          "items": [
-            "Hextech Gunblade",
-            "Voltaic Cyclosword",
-            "Riftmaker",
-            "Serylda's Grudge",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 20300,
-          "rune": "Press the Attack",
-          "totalDPS": 702.918514103234,
-          "sustainedDPS": 208.14378433939396,
-          "comboDPS": 1107.7342020918304,
-          "autoAttackDPS": 90.4006981818182,
-          "onHitDPS": 58.78628258909091,
-          "abilityDPS": 58.95680356848486,
-          "dotDPS": 0,
-          "burstDPS": 254.53124887272728,
-          "breakdown": [
-            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
-            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Gunblade active: 313 magic (combo)",
-            "Warmog's Heart: ~22.0 HPS (5% missing HP/s, ~35% uptime)",
-            "Target resistances: 150 armor (60.6% phys dmg), 150 MR (40.0% magic dmg)",
-            "Base AA: 130.9 DPS (203.0 AD * 1.00 crit * 0.65 AS)",
-            "Determination: +41.4 on-hit (×0.34 sustained)",
-            "Three Talon Strike: +90.6 on-hit (×0.58 sustained)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 85.1 DPS (132.0 * 0.65 AS)",
-            "Wind Becomes Lightning: 22.9 DPS (131 dmg / 5.7s CD)",
-            "Audacious Charge: 31.5 DPS (270 dmg / 8.6s CD)",
-            "Crescent Guard: 12.7 DPS (905 dmg / 71.4s CD)",
-            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 208.1 DPS",
-            "Combo (1s window): 1108 total → 1107.7 DPS",
-            "Item burst in combo: 255 (254.5 DPS if spread)"
-          ],
-          "buildType": "balanced · AP"
-        },
-        {
-          "champion": "Xin Zhao",
-          "items": [
-            "Luden's Echo",
-            "Hextech Gunblade",
-            "Actualizer",
-            "Rabadon's Deathcap",
-            "Stormsurge",
-            "Void Staff"
-          ],
-          "totalGold": 21699,
-          "rune": "Press the Attack",
-          "totalDPS": 1115.2130098159541,
-          "sustainedDPS": 148.57558081462855,
-          "comboDPS": 1906.0981789988568,
-          "autoAttackDPS": 28.345600000000005,
-          "onHitDPS": 24.329881600000004,
-          "abilityDPS": 95.90009921462855,
-          "dotDPS": 0,
-          "burstDPS": 669.1363199999998,
-          "breakdown": [
-            "Stormsurge: ~6.7 DPS (201 magic / 30s ICD)",
-            "Luden's Echo: ~11.3 DPS (sustained 113 / 10s, burst 226)",
-            "Hextech Gunblade active: 481 magic (combo)",
-            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (57.1% magic dmg)",
-            "Base AA: 66.4 DPS (103.0 AD * 1.00 crit * 0.65 AS)",
-            "Determination: +21.0 on-hit (×0.34 sustained)",
-            "Three Talon Strike: +67.4 on-hit (×0.58 sustained)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 57.0 DPS (88.4 * 0.65 AS)",
-            "Wind Becomes Lightning: 15.1 DPS (101 dmg / 6.7s CD)",
-            "Audacious Charge: 60.6 DPS (606 dmg / 10.0s CD)",
-            "Crescent Guard: 17.1 DPS (1422 dmg / 83.3s CD)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 148.6 DPS",
-            "Combo (1s window): 1906 total → 1906.1 DPS",
-            "Item burst in combo: 669 (669.1 DPS if spread)"
-          ],
-          "buildType": "glass · AP"
-        }
-      ]
-    },
-    {
       "champion": "Camille",
       "builds": [
         {
@@ -9337,6 +9336,92 @@
             "Sustained (rotation): 278.8 DPS",
             "Combo (1s window): 1974 total → 1974.1 DPS",
             "Item burst in combo: 672 (671.5 DPS if spread)"
+          ],
+          "buildType": "glass · AP"
+        }
+      ]
+    },
+    {
+      "champion": "Xin Zhao",
+      "builds": [
+        {
+          "champion": "Xin Zhao",
+          "items": [
+            "Hextech Gunblade",
+            "Actualizer",
+            "Hextech Rocketbelt",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 20975,
+          "rune": "Press the Attack",
+          "totalDPS": 633.0024622975627,
+          "sustainedDPS": 113.38840435646824,
+          "comboDPS": 1058.14123697664,
+          "autoAttackDPS": 30.273100800000005,
+          "onHitDPS": 25.984313548800003,
+          "abilityDPS": 57.13099000766823,
+          "dotDPS": 0,
+          "burstDPS": 268.473367277568,
+          "breakdown": [
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Rocketbelt active: 137 magic (combo)",
+            "Hextech Gunblade active: 363 magic (combo)",
+            "Warmog's Heart: ~24.3 HPS (5% missing HP/s, ~35% uptime)",
+            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 66.4 DPS (103.0 AD * 1.00 crit * 0.65 AS)",
+            "Determination: +21.0 on-hit (×0.34 sustained)",
+            "Three Talon Strike: +67.4 on-hit (×0.58 sustained)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 57.0 DPS (88.4 * 0.65 AS)",
+            "Wind Becomes Lightning: 18.3 DPS (101 dmg / 5.5s CD)",
+            "Audacious Charge: 44.7 DPS (370 dmg / 8.3s CD)",
+            "Crescent Guard: 14.3 DPS (989 dmg / 69.0s CD)",
+            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 113.4 DPS",
+            "Combo (1s window): 1058 total → 1058.1 DPS",
+            "Item burst in combo: 268 (268.5 DPS if spread)"
+          ],
+          "buildType": "balanced · AP"
+        },
+        {
+          "champion": "Xin Zhao",
+          "items": [
+            "Luden's Echo",
+            "Hextech Gunblade",
+            "Actualizer",
+            "Rabadon's Deathcap",
+            "Stormsurge",
+            "Void Staff"
+          ],
+          "totalGold": 21699,
+          "rune": "Press the Attack",
+          "totalDPS": 1115.2130098159541,
+          "sustainedDPS": 148.57558081462855,
+          "comboDPS": 1906.0981789988568,
+          "autoAttackDPS": 28.345600000000005,
+          "onHitDPS": 24.329881600000004,
+          "abilityDPS": 95.90009921462855,
+          "dotDPS": 0,
+          "burstDPS": 669.1363199999998,
+          "breakdown": [
+            "Stormsurge: ~6.7 DPS (201 magic / 30s ICD)",
+            "Luden's Echo: ~11.3 DPS (sustained 113 / 10s, burst 226)",
+            "Hextech Gunblade active: 481 magic (combo)",
+            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (57.1% magic dmg)",
+            "Base AA: 66.4 DPS (103.0 AD * 1.00 crit * 0.65 AS)",
+            "Determination: +21.0 on-hit (×0.34 sustained)",
+            "Three Talon Strike: +67.4 on-hit (×0.58 sustained)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 57.0 DPS (88.4 * 0.65 AS)",
+            "Wind Becomes Lightning: 15.1 DPS (101 dmg / 6.7s CD)",
+            "Audacious Charge: 60.6 DPS (606 dmg / 10.0s CD)",
+            "Crescent Guard: 17.1 DPS (1422 dmg / 83.3s CD)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 148.6 DPS",
+            "Combo (1s window): 1906 total → 1906.1 DPS",
+            "Item burst in combo: 669 (669.1 DPS if spread)"
           ],
           "buildType": "glass · AP"
         }
@@ -12421,158 +12506,6 @@
       ]
     },
     {
-      "champion": "Tryndamere",
-      "builds": [
-        {
-          "champion": "Tryndamere",
-          "items": [
-            "Voltaic Cyclosword",
-            "Blade of the Ruined King (Melee)",
-            "Bastionbreaker",
-            "Serylda's Grudge",
-            "Heartsteel",
-            "Warmog's Armor"
-          ],
-          "totalGold": 19809,
-          "rune": "Hail of Blades",
-          "totalDPS": 500.677930944056,
-          "sustainedDPS": 345.7154234654235,
-          "comboDPS": 627.4654370629371,
-          "autoAttackDPS": 189.54440559440562,
-          "onHitDPS": 117.64825174825175,
-          "abilityDPS": 38.52276612276612,
-          "dotDPS": 0,
-          "burstDPS": 191.28671328671328,
-          "breakdown": [
-            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
-            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
-            "Bastionbreaker Shaped Charge (melee): ~1.7 true DPS (78 / 45s ICD)",
-            "Warmog's Heart: ~19.8 HPS (5% missing HP/s, ~35% uptime)",
-            "Target resistances: 150 armor (69.9% phys dmg), 150 MR (40.0% magic dmg)",
-            "Base AA: 271.0 DPS (261.0 AD * 1.00 crit * 1.04 AS)",
-            "Physical on-hit (current HP): +162.0",
-            "On-hit total: 168.2 DPS (162.0 * 1.04 AS)",
-            "Spinning Slash: 52.6 DPS (356 dmg / 6.4s CD)",
-            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
-            "Sustained (rotation): 345.7 DPS",
-            "Combo (1s window): 627 total → 627.5 DPS",
-            "Item burst in combo: 191 (191.3 DPS if spread)"
-          ],
-          "buildType": "balanced · Lethality"
-        },
-        {
-          "champion": "Tryndamere",
-          "items": [
-            "Eclipse",
-            "Voltaic Cyclosword",
-            "Bastionbreaker",
-            "Serylda's Grudge",
-            "Hubris",
-            "Umbral Glaive (Base)"
-          ],
-          "totalGold": 19348,
-          "rune": "Press the Attack",
-          "totalDPS": 795.3226043613707,
-          "sustainedDPS": 420.4696988577363,
-          "comboDPS": 1102.0204361370716,
-          "autoAttackDPS": 269.5028037383178,
-          "onHitDPS": 0,
-          "abilityDPS": 150.9668951194185,
-          "dotDPS": 0,
-          "burstDPS": 481.73457943925234,
-          "breakdown": [
-            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
-            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Bastionbreaker Shaped Charge (melee): ~2.9 true DPS (132 / 45s ICD)",
-            "Eclipse Ever Rising Moon (melee): ~30.0 DPS (180 per proc, 6s CD)",
-            "Eclipse shield: ~108 avg HP (325 for 2s)",
-            "Target resistances: 150 armor (93.5% phys dmg), 150 MR (40.0% magic dmg)",
-            "Base AA: 270.3 DPS (403.5 AD * 1.00 crit * 0.67 AS)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "Spinning Slash: 89.3 DPS (470 dmg / 5.0s CD)",
-            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 420.5 DPS",
-            "Combo (1s window): 1102 total → 1102.0 DPS",
-            "Item burst in combo: 482 (481.7 DPS if spread)"
-          ],
-          "buildType": "glass · Lethality"
-        },
-        {
-          "champion": "Tryndamere",
-          "items": [
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Rabadon's Deathcap",
-            "Void Staff",
-            "Hextech Rocketbelt",
-            "Shadowflame"
-          ],
-          "totalGold": 21379,
-          "rune": "Conqueror (AP)",
-          "totalDPS": 536.9637100000001,
-          "sustainedDPS": 55.77813333333333,
-          "comboDPS": 930.6610000000001,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 55.77813333333333,
-          "dotDPS": 0,
-          "burstDPS": 544.125,
-          "breakdown": [
-            "Stormsurge: ~6.8 DPS (204 magic / 30s ICD)",
-            "Hextech Rocketbelt active: 179 magic (combo)",
-            "Hextech Gunblade active: 489 magic (combo)",
-            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (62.5% magic dmg)",
-            "Base AA: 0.0 DPS (106.0 AD * 1.00 crit * 0.67 AS)",
-            "Spinning Slash: 128.8 DPS (1017 dmg / 7.5s CD)",
-            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
-            "Sustained (rotation): 55.8 DPS",
-            "Combo (1s window): 931 total → 930.7 DPS",
-            "Item burst in combo: 544 (544.1 DPS if spread)"
-          ],
-          "buildType": "ability_burst · AP"
-        },
-        {
-          "champion": "Tryndamere",
-          "items": [
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Hextech Rocketbelt",
-            "Riftmaker",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 20634,
-          "rune": "Conqueror (AP)",
-          "totalDPS": 327.5191613397447,
-          "sustainedDPS": 40.73112980085108,
-          "comboDPS": 562.1639144170213,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 40.73112980085108,
-          "dotDPS": 0,
-          "burstDPS": 307.24769361702124,
-          "breakdown": [
-            "Stormsurge: ~5.5 DPS (165 magic / 30s ICD)",
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Rocketbelt active: 140 magic (combo)",
-            "Hextech Gunblade active: 372 magic (combo)",
-            "Warmog's Heart: ~24.9 HPS (5% missing HP/s, ~35% uptime)",
-            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (42.6% magic dmg)",
-            "Base AA: 0.0 DPS (106.0 AD * 1.00 crit * 0.67 AS)",
-            "Spinning Slash: 89.5 DPS (628 dmg / 6.7s CD)",
-            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
-            "Damage multipliers: 106.8% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 40.7 DPS",
-            "Combo (1s window): 562 total → 562.2 DPS",
-            "Item burst in combo: 307 (307.2 DPS if spread)"
-          ],
-          "buildType": "spell · AP"
-        }
-      ]
-    },
-    {
       "champion": "Aphelios",
       "builds": [
         {
@@ -13567,6 +13500,96 @@
       ]
     },
     {
+      "champion": "Miss Fortune",
+      "builds": [
+        {
+          "champion": "Miss Fortune",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Void Staff",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 20899,
+          "rune": "Press the Attack",
+          "totalDPS": 440.1394863221485,
+          "sustainedDPS": 95.8661930480762,
+          "comboDPS": 721.8176353645713,
+          "autoAttackDPS": 28.397977600000004,
+          "onHitDPS": 12.069140480000002,
+          "abilityDPS": 55.39907496807619,
+          "dotDPS": 0,
+          "burstDPS": 346.4209554285714,
+          "breakdown": [
+            "Stormsurge: ~5.5 DPS (164 magic / 30s ICD)",
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Gunblade active: 369 magic (combo)",
+            "Warmog's Heart: ~22.0 HPS (5% missing HP/s, ~35% uptime)",
+            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (57.1% magic dmg)",
+            "Base AA: 62.3 DPS (95.0 AD * 1.00 crit * 0.66 AS)",
+            "Love Tap: +40.4 on-hit (×0.85 sustained)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 26.5 DPS (40.4 * 0.66 AS)",
+            "Double Up: 34.0 DPS (296 dmg / 7.0s CD)",
+            "Double Up: rotation weight ×0.80 (Miss Fortune)",
+            "Make It Rain: 26.0 DPS (575 dmg / 12.2s CD)",
+            "Make It Rain: rotation weight ×0.55 (Miss Fortune)",
+            "Bullet Time: 1.2 DPS (193 dmg / 87.0s CD)",
+            "Bullet Time: rotation weight ×0.55 (Miss Fortune)",
+            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 95.9 DPS",
+            "Combo (1s window): 722 total → 721.8 DPS",
+            "Item burst in combo: 346 (346.4 DPS if spread)"
+          ],
+          "buildType": "balanced · AP"
+        },
+        {
+          "champion": "Miss Fortune",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Luden's Echo",
+            "Actualizer",
+            "Void Staff",
+            "Rabadon's Deathcap"
+          ],
+          "totalGold": 21699,
+          "rune": "Press the Attack",
+          "totalDPS": 788.935403390585,
+          "sustainedDPS": 133.03236300553286,
+          "comboDPS": 1325.5833455238094,
+          "autoAttackDPS": 26.589866666666666,
+          "onHitDPS": 11.300693333333335,
+          "abilityDPS": 95.14180300553286,
+          "dotDPS": 0,
+          "burstDPS": 669.856,
+          "breakdown": [
+            "Stormsurge: ~6.7 DPS (201 magic / 30s ICD)",
+            "Luden's Echo: ~11.3 DPS (sustained 113 / 10s, burst 226)",
+            "Hextech Gunblade active: 481 magic (combo)",
+            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (57.1% magic dmg)",
+            "Base AA: 62.3 DPS (95.0 AD * 1.00 crit * 0.66 AS)",
+            "Love Tap: +40.4 on-hit (×0.85 sustained)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "On-hit total: 26.5 DPS (40.4 * 0.66 AS)",
+            "Double Up: 51.2 DPS (427 dmg / 6.7s CD)",
+            "Double Up: rotation weight ×0.80 (Miss Fortune)",
+            "Make It Rain: 44.8 DPS (951 dmg / 11.7s CD)",
+            "Make It Rain: rotation weight ×0.55 (Miss Fortune)",
+            "Bullet Time: 1.9 DPS (287 dmg / 83.3s CD)",
+            "Bullet Time: rotation weight ×0.55 (Miss Fortune)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 133.0 DPS",
+            "Combo (1s window): 1326 total → 1325.6 DPS",
+            "Item burst in combo: 670 (669.9 DPS if spread)"
+          ],
+          "buildType": "glass · AP"
+        }
+      ]
+    },
+    {
       "champion": "Caitlyn",
       "builds": [
         {
@@ -13778,6 +13801,123 @@
             "Item burst in combo: 671 (671.2 DPS if spread)"
           ],
           "buildType": "glass · AP"
+        }
+      ]
+    },
+    {
+      "champion": "Tryndamere",
+      "builds": [
+        {
+          "champion": "Tryndamere",
+          "items": [
+            "Hextech Gunblade",
+            "Voltaic Cyclosword",
+            "Bastionbreaker",
+            "Riftmaker",
+            "Warmog's Armor",
+            "Heartsteel"
+          ],
+          "totalGold": 20122,
+          "rune": "Press the Attack",
+          "totalDPS": 434.4660052329412,
+          "sustainedDPS": 148.0157153736857,
+          "comboDPS": 668.8344242086956,
+          "autoAttackDPS": 84.32993554987213,
+          "onHitDPS": 0,
+          "abilityDPS": 63.685779823813576,
+          "dotDPS": 0,
+          "burstDPS": 325.9393031856778,
+          "breakdown": [
+            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
+            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
+            "Bastionbreaker Shaped Charge (melee): ~1.7 true DPS (78 / 45s ICD)",
+            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
+            "Hextech Gunblade active: 313 magic (combo)",
+            "Warmog's Heart: ~22.5 HPS (5% missing HP/s, ~35% uptime)",
+            "Target resistances: 150 armor (51.2% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 144.7 DPS (216.0 AD * 1.00 crit * 0.67 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Spinning Slash: 76.9 DPS (520 dmg / 6.4s CD)",
+            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
+            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
+            "Sustained (rotation): 148.0 DPS",
+            "Combo (1s window): 669 total → 668.8 DPS",
+            "Item burst in combo: 326 (325.9 DPS if spread)"
+          ],
+          "buildType": "balanced · Lethality/AP"
+        },
+        {
+          "champion": "Tryndamere",
+          "items": [
+            "Eclipse",
+            "Voltaic Cyclosword",
+            "Bastionbreaker",
+            "Serylda's Grudge",
+            "Hubris",
+            "Umbral Glaive (Base)"
+          ],
+          "totalGold": 19348,
+          "rune": "Press the Attack",
+          "totalDPS": 795.3226043613707,
+          "sustainedDPS": 420.4696988577363,
+          "comboDPS": 1102.0204361370716,
+          "autoAttackDPS": 269.5028037383178,
+          "onHitDPS": 0,
+          "abilityDPS": 150.9668951194185,
+          "dotDPS": 0,
+          "burstDPS": 481.73457943925234,
+          "breakdown": [
+            "Voltaic Firmament: 162 phys/proc, +15.0 avg lethality",
+            "Energized (): burst 162 + 162.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Bastionbreaker Shaped Charge (melee): ~2.9 true DPS (132 / 45s ICD)",
+            "Eclipse Ever Rising Moon (melee): ~30.0 DPS (180 per proc, 6s CD)",
+            "Eclipse shield: ~108 avg HP (325 for 2s)",
+            "Target resistances: 150 armor (93.5% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 270.3 DPS (403.5 AD * 1.00 crit * 0.67 AS)",
+            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
+            "Spinning Slash: 89.3 DPS (470 dmg / 5.0s CD)",
+            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
+            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
+            "Sustained (rotation): 420.5 DPS",
+            "Combo (1s window): 1102 total → 1102.0 DPS",
+            "Item burst in combo: 482 (481.7 DPS if spread)"
+          ],
+          "buildType": "glass · Lethality"
+        },
+        {
+          "champion": "Tryndamere",
+          "items": [
+            "Hextech Gunblade",
+            "Stormsurge",
+            "Rabadon's Deathcap",
+            "Void Staff",
+            "Hextech Rocketbelt",
+            "Shadowflame"
+          ],
+          "totalGold": 21379,
+          "rune": "Conqueror (AP)",
+          "totalDPS": 536.9637100000001,
+          "sustainedDPS": 55.77813333333333,
+          "comboDPS": 930.6610000000001,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 55.77813333333333,
+          "dotDPS": 0,
+          "burstDPS": 544.125,
+          "breakdown": [
+            "Stormsurge: ~6.8 DPS (204 magic / 30s ICD)",
+            "Hextech Rocketbelt active: 179 magic (combo)",
+            "Hextech Gunblade active: 489 magic (combo)",
+            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (62.5% magic dmg)",
+            "Base AA: 0.0 DPS (106.0 AD * 1.00 crit * 0.67 AS)",
+            "Spinning Slash: 128.8 DPS (1017 dmg / 7.5s CD)",
+            "Spinning Slash: rotation weight ×0.95 (Tryndamere)",
+            "Sustained (rotation): 55.8 DPS",
+            "Combo (1s window): 931 total → 930.7 DPS",
+            "Item burst in combo: 544 (544.1 DPS if spread)"
+          ],
+          "buildType": "ability_burst · AP"
         }
       ]
     },
@@ -14191,96 +14331,6 @@
       ]
     },
     {
-      "champion": "Miss Fortune",
-      "builds": [
-        {
-          "champion": "Miss Fortune",
-          "items": [
-            "Hextech Gunblade",
-            "Hextech Rocketbelt",
-            "Void Staff",
-            "Riftmaker",
-            "Warmog's Armor",
-            "Heartsteel"
-          ],
-          "totalGold": 21205,
-          "rune": "Press the Attack",
-          "totalDPS": 401.6414593885078,
-          "sustainedDPS": 94.27366510606436,
-          "comboDPS": 653.1242001650525,
-          "autoAttackDPS": 28.397977600000004,
-          "onHitDPS": 12.069140480000002,
-          "abilityDPS": 53.80654702606436,
-          "dotDPS": 0,
-          "burstDPS": 300.8974955789473,
-          "breakdown": [
-            "Riftmaker Void Corruption: +6.8% damage (85% combat uptime)",
-            "Hextech Rocketbelt active: 137 magic (combo)",
-            "Hextech Gunblade active: 365 magic (combo)",
-            "Warmog's Heart: ~24.4 HPS (5% missing HP/s, ~35% uptime)",
-            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (52.6% magic dmg)",
-            "Base AA: 62.3 DPS (95.0 AD * 1.00 crit * 0.66 AS)",
-            "Love Tap: +40.4 on-hit (×0.85 sustained)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 26.5 DPS (40.4 * 0.66 AS)",
-            "Double Up: 39.3 DPS (291 dmg / 5.9s CD)",
-            "Double Up: rotation weight ×0.80 (Miss Fortune)",
-            "Make It Rain: 29.8 DPS (562 dmg / 10.4s CD)",
-            "Make It Rain: rotation weight ×0.55 (Miss Fortune)",
-            "Bullet Time: 1.4 DPS (190 dmg / 74.1s CD)",
-            "Bullet Time: rotation weight ×0.55 (Miss Fortune)",
-            "Damage multipliers: 113.9% (1.07 * 1.00 * 1.00)",
-            "Sustained (rotation): 94.3 DPS",
-            "Combo (1s window): 653 total → 653.1 DPS",
-            "Item burst in combo: 301 (300.9 DPS if spread)"
-          ],
-          "buildType": "balanced · AP"
-        },
-        {
-          "champion": "Miss Fortune",
-          "items": [
-            "Hextech Gunblade",
-            "Stormsurge",
-            "Luden's Echo",
-            "Actualizer",
-            "Void Staff",
-            "Rabadon's Deathcap"
-          ],
-          "totalGold": 21699,
-          "rune": "Press the Attack",
-          "totalDPS": 788.935403390585,
-          "sustainedDPS": 133.03236300553286,
-          "comboDPS": 1325.5833455238094,
-          "autoAttackDPS": 26.589866666666666,
-          "onHitDPS": 11.300693333333335,
-          "abilityDPS": 95.14180300553286,
-          "dotDPS": 0,
-          "burstDPS": 669.856,
-          "breakdown": [
-            "Stormsurge: ~6.7 DPS (201 magic / 30s ICD)",
-            "Luden's Echo: ~11.3 DPS (sustained 113 / 10s, burst 226)",
-            "Hextech Gunblade active: 481 magic (combo)",
-            "Target resistances: 150 armor (40.0% phys dmg), 150 MR (57.1% magic dmg)",
-            "Base AA: 62.3 DPS (95.0 AD * 1.00 crit * 0.66 AS)",
-            "Love Tap: +40.4 on-hit (×0.85 sustained)",
-            "Rune (PTA proc): 29.0 DPS (174 / 6.00s)",
-            "On-hit total: 26.5 DPS (40.4 * 0.66 AS)",
-            "Double Up: 51.2 DPS (427 dmg / 6.7s CD)",
-            "Double Up: rotation weight ×0.80 (Miss Fortune)",
-            "Make It Rain: 44.8 DPS (951 dmg / 11.7s CD)",
-            "Make It Rain: rotation weight ×0.55 (Miss Fortune)",
-            "Bullet Time: 1.9 DPS (287 dmg / 83.3s CD)",
-            "Bullet Time: rotation weight ×0.55 (Miss Fortune)",
-            "Damage multipliers: 106.7% (1.00 * 1.00 * 1.00)",
-            "Sustained (rotation): 133.0 DPS",
-            "Combo (1s window): 1326 total → 1325.6 DPS",
-            "Item burst in combo: 670 (669.9 DPS if spread)"
-          ],
-          "buildType": "glass · AP"
-        }
-      ]
-    },
-    {
       "champion": "Lucian",
       "builds": [
         {
@@ -14674,6 +14724,126 @@
       ]
     },
     {
+      "champion": "Vayne",
+      "builds": [
+        {
+          "champion": "Vayne",
+          "items": [
+            "Voltaic Cyclosword",
+            "Blade of the Ruined King (Ranged)",
+            "Trinity Force (Base)",
+            "Serylda's Grudge",
+            "Titanic Hydra (Base)",
+            "Warmog's Armor"
+          ],
+          "totalGold": 20870,
+          "rune": "Hail of Blades",
+          "totalDPS": 347.2635749822655,
+          "sustainedDPS": 369.4902174017699,
+          "comboDPS": 329.07814027539825,
+          "autoAttackDPS": 198.21522123893806,
+          "onHitDPS": 162.0449076672566,
+          "abilityDPS": 9.230088495575222,
+          "dotDPS": 0,
+          "burstDPS": 74.33628318584071,
+          "breakdown": [
+            "Voltaic Firmament: 126 phys/proc, +12.0 avg lethality",
+            "Energized (): burst 126.00000000000001 + 126.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
+            "Warmog's Heart: ~19.0 HPS (5% missing HP/s, ~35% uptime)",
+            "Target resistances: 150 armor (59.0% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 336.0 DPS (276.0 AD * 1.00 crit * 1.22 AS)",
+            "Physical on-hit (current HP): +108.0",
+            "Physical on-hit (target max HP): +30.0",
+            "Tumble: +87.6 on-hit (×0.42 sustained)",
+            "On-hit total: 274.7 DPS (225.6 * 1.22 AS)",
+            "Condemn: 15.6 DPS (298 dmg / 8.6s CD)",
+            "Condemn: rotation weight ×0.45 (Vayne)",
+            "Sustained (rotation): 369.5 DPS",
+            "Combo (1s window): 329 total → 329.1 DPS",
+            "Item burst in combo: 74 (74.3 DPS if spread)"
+          ],
+          "buildType": "balanced · On-Hit"
+        },
+        {
+          "champion": "Vayne",
+          "items": [
+            "Voltaic Cyclosword",
+            "Stormrazor (Ranged)",
+            "Eclipse",
+            "Bastionbreaker",
+            "Serylda's Grudge",
+            "Hubris"
+          ],
+          "totalGold": 19760,
+          "rune": "Hail of Blades",
+          "totalDPS": 570.4976378291506,
+          "sustainedDPS": 496.4607973616474,
+          "comboDPS": 631.0732345752896,
+          "autoAttackDPS": 369.17229729729735,
+          "onHitDPS": 93.77567027027028,
+          "abilityDPS": 33.51282979407979,
+          "dotDPS": 0,
+          "burstDPS": 282.46138996138995,
+          "breakdown": [
+            "Voltaic Firmament: 126 phys/proc, +12.0 avg lethality",
+            "Energized (Stormrazor 100): burst 226 + 226.0 avg DPS (1 procs / 1s, 12 stacks/AA)",
+            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
+            "Bastionbreaker Shaped Charge (ranged): ~1.2 true DPS (53 / 45s ICD)",
+            "Eclipse Ever Rising Moon (ranged): ~20.0 DPS (120 per proc, 6s CD)",
+            "Eclipse shield: ~53 avg HP (160 for 2s)",
+            "Target resistances: 150 armor (77.2% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 478.1 DPS (387.5 AD * 1.25 crit * 0.99 AS)",
+            "Tumble: +123.0 on-hit (×0.42 sustained)",
+            "On-hit total: 121.4 DPS (123.0 * 0.99 AS)",
+            "Condemn: 21.9 DPS (354 dmg / 7.3s CD)",
+            "Condemn: rotation weight ×0.45 (Vayne)",
+            "Sustained (rotation): 496.5 DPS",
+            "Combo (1s window): 631 total → 631.1 DPS",
+            "Item burst in combo: 282 (282.5 DPS if spread)"
+          ],
+          "buildType": "glass · Lethality"
+        },
+        {
+          "champion": "Vayne",
+          "items": [
+            "Eclipse",
+            "Bastionbreaker",
+            "Serylda's Grudge",
+            "Edge of Night",
+            "Heartsteel",
+            "Warmog's Armor"
+          ],
+          "totalGold": 19702,
+          "rune": "Summon Aery",
+          "totalDPS": 131.51447429906543,
+          "sustainedDPS": 47.532943925233646,
+          "comboDPS": 200.22663551401868,
+          "autoAttackDPS": 0,
+          "onHitDPS": 0,
+          "abilityDPS": 47.532943925233646,
+          "dotDPS": 0,
+          "burstDPS": 117.51635514018692,
+          "breakdown": [
+            "Bastionbreaker Shaped Charge (ranged): ~0.9 true DPS (43 / 45s ICD)",
+            "Eclipse Ever Rising Moon (ranged): ~7.2 DPS (120 per proc, 6s CD)",
+            "Eclipse shield: ~44 avg HP (133 for 2s)",
+            "Warmog's Heart: ~20.7 HPS (5% missing HP/s, ~35% uptime)",
+            "Target resistances: 150 armor (62.3% phys dmg), 150 MR (40.0% magic dmg)",
+            "Base AA: 0.0 DPS (270.0 AD * 1.00 crit * 0.66 AS)",
+            "Tumble: +85.7 on-hit (×0.42 sustained)",
+            "On-hit total: 0.0 DPS (85.7 * 0.00 AS)",
+            "Condemn: 16.0 DPS (295 dmg / 8.3s CD)",
+            "Condemn: rotation weight ×0.45 (Vayne)",
+            "Rune (ability): 51.5 DPS (71 / 1.4s)",
+            "Sustained (rotation): 47.5 DPS",
+            "Combo (1s window): 200 total → 200.2 DPS",
+            "Item burst in combo: 118 (117.5 DPS if spread)"
+          ],
+          "buildType": "spell · Lethality"
+        }
+      ]
+    },
+    {
       "champion": "Twitch",
       "builds": [
         {
@@ -14895,126 +15065,6 @@
       ]
     },
     {
-      "champion": "Vayne",
-      "builds": [
-        {
-          "champion": "Vayne",
-          "items": [
-            "Voltaic Cyclosword",
-            "Blade of the Ruined King (Ranged)",
-            "Experimental Hexplate",
-            "Serylda's Grudge",
-            "Titanic Hydra (Base)",
-            "Warmog's Armor"
-          ],
-          "totalGold": 20870,
-          "rune": "Hail of Blades",
-          "totalDPS": 335.72211149026543,
-          "sustainedDPS": 352.66330289085545,
-          "comboDPS": 321.8611367079646,
-          "autoAttackDPS": 190.21828908554573,
-          "onHitDPS": 154.14855362831855,
-          "abilityDPS": 8.296460176991149,
-          "dotDPS": 0,
-          "burstDPS": 74.33628318584071,
-          "breakdown": [
-            "Voltaic Firmament: 126 phys/proc, +12.0 avg lethality",
-            "Energized (): burst 126.00000000000001 + 126.0 avg DPS (1 procs / 1s, 6 stacks/AA)",
-            "Warmog's Heart: ~19.9 HPS (5% missing HP/s, ~35% uptime)",
-            "Target resistances: 150 armor (59.0% phys dmg), 150 MR (40.0% magic dmg)",
-            "Base AA: 322.4 DPS (280.0 AD * 1.00 crit * 1.15 AS)",
-            "Physical on-hit (current HP): +108.0",
-            "Physical on-hit (target max HP): +30.0",
-            "Tumble: +88.9 on-hit (×0.42 sustained)",
-            "On-hit total: 261.3 DPS (226.9 * 1.15 AS)",
-            "Condemn: 14.1 DPS (300 dmg / 9.6s CD)",
-            "Condemn: rotation weight ×0.45 (Vayne)",
-            "Sustained (rotation): 352.7 DPS",
-            "Combo (1s window): 322 total → 321.9 DPS",
-            "Item burst in combo: 74 (74.3 DPS if spread)"
-          ],
-          "buildType": "balanced · On-Hit"
-        },
-        {
-          "champion": "Vayne",
-          "items": [
-            "Voltaic Cyclosword",
-            "Stormrazor (Ranged)",
-            "Eclipse",
-            "Bastionbreaker",
-            "Serylda's Grudge",
-            "Hubris"
-          ],
-          "totalGold": 19760,
-          "rune": "Hail of Blades",
-          "totalDPS": 570.4976378291506,
-          "sustainedDPS": 496.4607973616474,
-          "comboDPS": 631.0732345752896,
-          "autoAttackDPS": 369.17229729729735,
-          "onHitDPS": 93.77567027027028,
-          "abilityDPS": 33.51282979407979,
-          "dotDPS": 0,
-          "burstDPS": 282.46138996138995,
-          "breakdown": [
-            "Voltaic Firmament: 126 phys/proc, +12.0 avg lethality",
-            "Energized (Stormrazor 100): burst 226 + 226.0 avg DPS (1 procs / 1s, 12 stacks/AA)",
-            "Hubris Eminence: +8 AD (1 takedown, 50% fight uptime)",
-            "Bastionbreaker Shaped Charge (ranged): ~1.2 true DPS (53 / 45s ICD)",
-            "Eclipse Ever Rising Moon (ranged): ~20.0 DPS (120 per proc, 6s CD)",
-            "Eclipse shield: ~53 avg HP (160 for 2s)",
-            "Target resistances: 150 armor (77.2% phys dmg), 150 MR (40.0% magic dmg)",
-            "Base AA: 478.1 DPS (387.5 AD * 1.25 crit * 0.99 AS)",
-            "Tumble: +123.0 on-hit (×0.42 sustained)",
-            "On-hit total: 121.4 DPS (123.0 * 0.99 AS)",
-            "Condemn: 21.9 DPS (354 dmg / 7.3s CD)",
-            "Condemn: rotation weight ×0.45 (Vayne)",
-            "Sustained (rotation): 496.5 DPS",
-            "Combo (1s window): 631 total → 631.1 DPS",
-            "Item burst in combo: 282 (282.5 DPS if spread)"
-          ],
-          "buildType": "glass · Lethality"
-        },
-        {
-          "champion": "Vayne",
-          "items": [
-            "Eclipse",
-            "Bastionbreaker",
-            "Serylda's Grudge",
-            "Edge of Night",
-            "Heartsteel",
-            "Warmog's Armor"
-          ],
-          "totalGold": 19702,
-          "rune": "Summon Aery",
-          "totalDPS": 131.51447429906543,
-          "sustainedDPS": 47.532943925233646,
-          "comboDPS": 200.22663551401868,
-          "autoAttackDPS": 0,
-          "onHitDPS": 0,
-          "abilityDPS": 47.532943925233646,
-          "dotDPS": 0,
-          "burstDPS": 117.51635514018692,
-          "breakdown": [
-            "Bastionbreaker Shaped Charge (ranged): ~0.9 true DPS (43 / 45s ICD)",
-            "Eclipse Ever Rising Moon (ranged): ~7.2 DPS (120 per proc, 6s CD)",
-            "Eclipse shield: ~44 avg HP (133 for 2s)",
-            "Warmog's Heart: ~20.7 HPS (5% missing HP/s, ~35% uptime)",
-            "Target resistances: 150 armor (62.3% phys dmg), 150 MR (40.0% magic dmg)",
-            "Base AA: 0.0 DPS (270.0 AD * 1.00 crit * 0.66 AS)",
-            "Tumble: +85.7 on-hit (×0.42 sustained)",
-            "On-hit total: 0.0 DPS (85.7 * 0.00 AS)",
-            "Condemn: 16.0 DPS (295 dmg / 8.3s CD)",
-            "Condemn: rotation weight ×0.45 (Vayne)",
-            "Rune (ability): 51.5 DPS (71 / 1.4s)",
-            "Sustained (rotation): 47.5 DPS",
-            "Combo (1s window): 200 total → 200.2 DPS",
-            "Item burst in combo: 118 (117.5 DPS if spread)"
-          ],
-          "buildType": "spell · Lethality"
-        }
-      ]
-    },
-    {
       "champion": "Ezreal",
       "builds": [
         {
@@ -15151,7 +15201,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-10T11:29:34.223Z",
+  "generatedAt": "2026-06-20T23:18:25.162Z",
   "duel": {
     "targetMaxHP": 3000,
     "targetBonusHP": 0,

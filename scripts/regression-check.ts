@@ -350,7 +350,7 @@ if (zed) {
     }
   }
 
-  const kayn = Characters.find((c) => c.Name === "Kayn");
+  const kayn = Characters.find((c) => c.Name === "Kayn (Rhaast)");
   if (kayn) {
     const kaynRecs = recommendBuildsForChampion(kayn, Items, {
       simulation: { level: 18, enableChampionRotationProfiles: true },
@@ -364,7 +364,7 @@ if (zed) {
     if (kaynBalanced) {
       if (/Warmog/i.test(kaynBalanced.items.join(" "))) {
         fail(
-          `Kayn balanced must not include Warmog's (got: ${kaynBalanced.items.join(", ")})`,
+          `Kayn (Rhaast) balanced must not include Warmog's (got: ${kaynBalanced.items.join(", ")})`,
         );
       }
       const sustainHit = kaynBalanced.items.filter((n) =>
@@ -374,7 +374,7 @@ if (zed) {
       );
       if (sustainHit.length < 1) {
         fail(
-          `Kayn balanced should include a sustain item (BT/Hydra/DD), got: ${kaynBalanced.items.join(", ")}`,
+          `Kayn (Rhaast) balanced should include a sustain item (BT/Hydra/DD), got: ${kaynBalanced.items.join(", ")}`,
         );
       }
     }

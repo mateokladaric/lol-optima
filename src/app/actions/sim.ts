@@ -2939,11 +2939,16 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     comboAutoWeight: 0.3,
     itemOnHitScale: 0.3,
   },
-  Kayn: {
+  KaynRhaast: {
     castOrder: ["R", "W", "Q", "E"],
     comboAutoWeight: 0.3,
     /** Rhaast: ability-heavy bruiser — limited auto weaving for on-hit item passives. */
     itemOnHitScale: 0.35,
+  },
+  KaynShadowAssassin: {
+    castOrder: ["R", "Q", "W", "E"],
+    comboAutoWeight: 0.35,
+    itemOnHitScale: 0.4,
   },
   LeBlanc: {
     castOrder: ["R", "W", "Q", "E"],
@@ -3020,7 +3025,10 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   Kalista: { abilityTypeMultiplier: { Q: 0.95, W: 0.25, E: 1.1, R: 0.2 } },
   Kayle: { abilityTypeMultiplier: { Q: 0.8, W: 0.35, E: 1.15, R: 0.3 } },
   KhaZix: { abilityTypeMultiplier: { Q: 1.2, W: 0.65, E: 0.55, R: 0.35 } },
-  Kayn: { abilityTypeMultiplier: { Q: 1.1, W: 0.85, E: 0.35, R: 0.55 } },
+  KaynRhaast: { abilityTypeMultiplier: { Q: 1.1, W: 0.85, E: 0.35, R: 0.55 } },
+  KaynShadowAssassin: {
+    abilityTypeMultiplier: { Q: 1.15, W: 0.95, E: 0.45, R: 0.65 },
+  },
   Kled: { abilityTypeMultiplier: { Q: 0.95, W: 1.05, E: 0.85, R: 0.35 } },
   KogMaw: { abilityTypeMultiplier: { Q: 0.7, W: 1.2, E: 0.6, R: 0.65 } },
   LeBlanc: { abilityTypeMultiplier: { Q: 1.0, W: 0.95, E: 0.7, R: 0.6 } },
@@ -3063,6 +3071,11 @@ export const CHAMPION_ROTATION_PROFILES: Record<
 
 export type ChampionAssumedForm = "rhaast" | "shadow" | "base";
 
+/** Kayn base name and both transform variants share the same ability kit. */
+export function isKaynChampion(name: string): boolean {
+  return name === "Kayn" || name.startsWith("Kayn (");
+}
+
 export type SimulationScenario = {
   level?: number;
   avgCurrentHPRatio?: number;
@@ -3102,7 +3115,8 @@ type ResolvedSimulationScenario = {
 const CHAMPION_DEFAULT_ASSUMED_FORM: Partial<
   Record<string, ChampionAssumedForm>
 > = {
-  Kayn: "rhaast",
+  "Kayn (Rhaast)": "rhaast",
+  "Kayn (Shadow Assassin)": "shadow",
 };
 
 const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
@@ -3190,7 +3204,7 @@ export function applySimulationStatModifiers(
   stats: ReturnType<Character["getTotalStats"]>,
   sim: ResolvedSimulationScenario,
 ): void {
-  if (champion.Name === "Kayn" && sim.assumedForm === "rhaast") {
+  if (isKaynChampion(champion.Name) && sim.assumedForm === "rhaast") {
     const bonusHP = Math.max(0, stats.hp - champion.HP);
     stats.omnivamp = (stats.omnivamp ?? 0) + 25 + (bonusHP / 100) * 0.5;
   }
@@ -3246,7 +3260,7 @@ export function computeRotationHealHPS(
     const rank = abilityRankForHeal(champion, ability, lvl);
     let healAmount = ability.getValueAtLevel(ability.effects.heal, rank);
 
-    if (champion.Name === "Kayn" && ability.name === "Shadow Step") {
+    if (isKaynChampion(champion.Name) && ability.name === "Shadow Step") {
       const bonusAD = stats.ad - champBase.ad;
       healAmount += (bonusAD * 45) / 100;
       const eCd = ability.getValueAtLevel(ability.cooldown.cooldown, rank);
@@ -3265,7 +3279,7 @@ export function computeRotationHealHPS(
     healHPS += (healAmount * rotationWeight) / effectiveCd;
   }
 
-  if (champion.Name === "Kayn" && resolved.assumedForm === "rhaast") {
+  if (isKaynChampion(champion.Name) && resolved.assumedForm === "rhaast") {
     const kaynR = champion.Abilities.find((a) => a.name === "Umbral Trespass");
     if (kaynR) {
       const rank = abilityRankForHeal(champion, kaynR, lvl);
@@ -3582,7 +3596,8 @@ export function abilityRankAtLevel(
   abilityType: "Q" | "W" | "E",
   championName: string,
 ): number {
-  const order = CHAMPION_SKILL_ORDER[championName];
+  const orderKey = isKaynChampion(championName) ? "Kayn" : championName;
+  const order = CHAMPION_SKILL_ORDER[orderKey];
   const priority = order ? order.indexOf(abilityType) : 0;
   // Fallback: if ability not found in order (shouldn't happen), treat as first-max
   const levels = SKILL_POINT_TABLE[priority >= 0 ? priority : 0];
@@ -4811,8 +4826,24 @@ class Character {
               this.Name,
             );
       if (abilityRank <= 0) continue;
-      const baseCooldown = ability.getCooldownAtLevel(abilityRank);
+      let baseCooldown = ability.getCooldownAtLevel(abilityRank);
+      if (
+        isKaynChampion(this.Name) &&
+        sim.assumedForm === "shadow" &&
+        ability.name === "Shadow Step"
+      ) {
+        baseCooldown = 10;
+      }
       if (baseCooldown === 0) continue;
+
+      let effectiveCastTime = ability.castInfo?.castTime ?? 0.5;
+      if (
+        isKaynChampion(this.Name) &&
+        sim.assumedForm === "shadow" &&
+        ability.name === "Blade's Reach"
+      ) {
+        effectiveCastTime = 0;
+      }
 
       // Check if this ability has a static or ammo cooldown (not reduced by ability haste/Navori)
       const isStaticCooldown =
@@ -4855,7 +4886,7 @@ class Character {
 
         // Floor cooldown using cast time and a fraction of base CD so sustained DPS does not
         // explode when AH + Navori drive effective CD toward zero (degenerate vs live League).
-        const castFloor = ability.castInfo?.castTime ?? 0.5;
+        const castFloor = effectiveCastTime;
         const rotationFloor = baseCooldown * sim.cooldownFloorBaseRatio;
         actualCooldown = Math.max(actualCooldown, castFloor, rotationFloor);
       }
@@ -4914,7 +4945,7 @@ class Character {
         }
         abilityDamage += (targetMaxHP * effectiveMaxHPPercent) / 100;
       }
-      if (this.Name === "Kayn" && sim.assumedForm === "rhaast" && ability.damage) {
+      if (isKaynChampion(this.Name) && sim.assumedForm === "rhaast" && ability.damage) {
         const bonusAD = stats.ad - champBase.ad;
         if (ability.name === "Reaping Slash") {
           abilityDamage += (targetMaxHP * (12 + (bonusAD / 100) * 7)) / 100;
@@ -4978,6 +5009,13 @@ class Character {
           100;
       }
 
+      let shadowMagicBonus = 0;
+      if (isKaynChampion(this.Name) && sim.assumedForm === "shadow") {
+        const bonusAD = stats.ad - champBase.ad;
+        const shadowBonusPercent = 30 + (bonusAD / 100) * 2.25;
+        shadowMagicBonus = (abilityDamage * shadowBonusPercent) / 100;
+      }
+
       // Add on-ability-hit damage from items (Muramana, etc.). ICD-gated (Bastionbreaker) handled below.
       let onAbilityHitTrue = 0;
       let onAbilityHitPhys = 0;
@@ -4998,7 +5036,7 @@ class Character {
       if (isAmmo) {
         const charges = Math.max(1, castsPerWindow);
         const recharge = baseCooldown;
-        const castTime = ability.castInfo?.castTime ?? 0.25;
+        const castTime = effectiveCastTime;
         const dumpSeconds = castTime + recharge * Math.max(0, charges - 1);
         actualCooldown = Math.max(dumpSeconds / charges, castTime);
         ammoChargeDamage = charges;
@@ -5007,7 +5045,10 @@ class Character {
       const coreDamage = abilityDamage * castsPerWindow * ammoChargeDamage;
       const trueDamage = onAbilityHitTrue * castsPerWindow;
       const physBonusDamage = onAbilityHitPhys * castsPerWindow;
-      const totalDamage = coreDamage + trueDamage + physBonusDamage;
+      const shadowMagicDamage =
+        shadowMagicBonus * castsPerWindow * ammoChargeDamage;
+      const totalDamage =
+        coreDamage + trueDamage + physBonusDamage + shadowMagicDamage;
 
       // DPS = damage / cooldown
       const rotationMultiplier =
@@ -5021,6 +5062,7 @@ class Character {
         if (stats.ad >= stats.ap) abilityPhysDPS += coreDps;
         else abilityMagicDPS += coreDps;
       } else abilityPhysDPS += coreDps;
+      abilityMagicDPS += shadowMagicDamage * scale;
       abilityTrueDPS += trueDamage * scale;
       abilityPhysDPS += physBonusDamage * scale;
       const adjustedDps = totalDamage * scale;
@@ -5032,14 +5074,17 @@ class Character {
         ability.abilityType === "R"
       ) {
         const singleCastDamage =
-          (abilityDamage + onAbilityHitTrue + onAbilityHitPhys) *
+          (abilityDamage +
+            shadowMagicBonus +
+            onAbilityHitTrue +
+            onAbilityHitPhys) *
           rotationMultiplier;
         abilityCasts.push({
           abilityType: ability.abilityType,
           singleCastDamage,
           damageType: dmgType,
           actualCooldown,
-          castTime: ability.castInfo?.castTime ?? 0.25,
+          castTime: effectiveCastTime,
           maxCasts: castsPerWindow,
         });
       }
@@ -14838,8 +14883,23 @@ const KaynR = new Ability(
   ],
 );
 
-const Kayn = new Character(
-  "Kayn",
+const KaynRhaast = new Character(
+  "Kayn (Rhaast)",
+  655, // HP
+  8, // HP5
+  38, // AR
+  32, // MR
+  68, // AD
+  200, // Crit DMG (%)
+  340, // MS
+  175, // Attack range
+  0.669, // Base AS
+  [KaynPassive, KaynQ, KaynW, KaynE, KaynR],
+  [],
+);
+
+const KaynShadowAssassin = new Character(
+  "Kayn (Shadow Assassin)",
   655, // HP
   8, // HP5
   38, // AR
@@ -29900,7 +29960,8 @@ const CHAMPION_BASE_MANA: Record<string, number> = {
   Karthus: 467,
   Kassadin: 400,
   Kayle: 330,
-  Kayn: 410,
+  "Kayn (Rhaast)": 410,
+  "Kayn (Shadow Assassin)": 410,
   Kindred: 300,
   "Kog'Maw": 325,
   "K'Sante": 320,
@@ -30058,7 +30119,8 @@ export const Characters: Character[] = [
   Kassadin,
   Katarina,
   Kayle,
-  Kayn,
+  KaynRhaast,
+  KaynShadowAssassin,
   Kennen,
   KhaZix,
   Kindred,

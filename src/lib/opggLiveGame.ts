@@ -442,6 +442,7 @@ const CHAMPION_ALIASES: Record<string, string> = {
   "Aurelion Sol": "AurelionSol",
   "BelVeth": "Belveth",
   "Renata Glasc": "Renata",
+  Kayn: "Kayn (Rhaast)",
 };
 
 function mapOpggDisplayChampion(displayName: string): string {
