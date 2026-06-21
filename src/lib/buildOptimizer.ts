@@ -17,8 +17,11 @@ import type {
 import {
   AllKeystones,
   BLENDED_DPS_COMBO_WEIGHT,
+  CHAMPION_COMBO_PROFILES,
   Characters,
+  championApAdScalingScores,
   championIncomingPhysShare,
+  championSimKey,
   championUsesApScaling,
   championUsesMana,
   computeHealthRegenHPS,
@@ -493,6 +496,158 @@ function makeRunePage(keystone: Rune): RunePage {
       { name: "Empty", path: null, slot: "statShard3", description: "", stats: {} },
     ],
   };
+}
+
+const UTILITY_KEYSTONES = new Set([
+  "Fleet Footwork",
+  "Phase Rush",
+  "Guardian",
+  "Glacial Augment",
+  "Unsealed Spellbook",
+]);
+
+function championComboAutoWeight(champion: Character): number {
+  return (
+    CHAMPION_COMBO_PROFILES[championSimKey(champion.Name)]?.comboAutoWeight ??
+    0.65
+  );
+}
+
+/** Low auto-weave kits (assassins, most mages) — Conqueror / PTA are unrealistic. */
+function championIsAbilityForward(champion: Character): boolean {
+  return championComboAutoWeight(champion) <= 0.35;
+}
+
+function championIsBurstAssassin(champion: Character): boolean {
+  if (!championIsAbilityForward(champion)) return false;
+  const { apScore, adScore } = championApAdScalingScores(champion);
+  return adScore >= apScore * 0.85;
+}
+
+function championIsBurstMage(champion: Character): boolean {
+  const usesAp = championUsesApScaling(champion);
+  if (!usesAp) return false;
+  if (championIncomingPhysShare(champion, 18) <= 0.45) return true;
+  return championIsAbilityForward(champion);
+}
+
+/**
+ * Realistic keystone pool for a champion + profile.
+ * Prevents Conqueror on Zed, PTA on Lux, etc.
+ */
+export function keystoneCandidatesFor(
+  champion: Character,
+  profile: BuildProfileId,
+): Rune[] {
+  const usesAp = championUsesApScaling(champion);
+  const physShare = championIncomingPhysShare(champion, 18);
+  const adLean = physShare >= 0.55;
+  const apLean = usesAp && physShare <= 0.5;
+  const burstAssassin = championIsBurstAssassin(champion);
+  const burstMage = championIsBurstMage(champion);
+  const spellOnly = profile === "spell" || profile === "ability_burst";
+  const burst = profile === "glass" || profile === "ability_burst";
+  const tank = profile === "tank";
+
+  return AllKeystones.filter((k) => {
+    const n = k.name;
+
+    if (UTILITY_KEYSTONES.has(n)) return false;
+
+    if (n === "Conqueror (AP)") {
+      if (burstAssassin || burstMage) return false;
+      return (
+        usesAp &&
+        (profile === "ap" ||
+          profile === "bruiser" ||
+          profile === "tank" ||
+          (profile === "balanced" && apLean))
+      );
+    }
+
+    if (n === "Conqueror") {
+      if (burstAssassin || burstMage) return false;
+      if (apLean && !adLean) return false;
+      if (profile === "ap" || profile === "spell") return false;
+      return (
+        profile === "ad" ||
+        profile === "bruiser" ||
+        profile === "tank" ||
+        (profile === "balanced" && adLean && !burstAssassin)
+      );
+    }
+
+    if (n === "Press the Attack" || n.startsWith("Lethal Tempo")) {
+      if (spellOnly || burstMage || burstAssassin) return false;
+      if (apLean && !adLean) return false;
+      return (
+        profile === "ad" ||
+        profile === "bruiser" ||
+        (profile === "balanced" && adLean) ||
+        (profile === "tank" && adLean)
+      );
+    }
+
+    if (n === "Hail of Blades") {
+      if (spellOnly || burstMage || burstAssassin) return false;
+      return (
+        profile === "ad" ||
+        (adLean && (profile === "glass" || profile === "balanced"))
+      );
+    }
+
+    if (n === "Electrocute" || n === "Dark Harvest") {
+      if (tank) return false;
+      return (
+        burst ||
+        burstAssassin ||
+        burstMage ||
+        profile === "ap" ||
+        profile === "spell" ||
+        (profile === "balanced" && (apLean || burstAssassin || burstMage))
+      );
+    }
+
+    if (n === "Arcane Comet" || n === "Summon Aery") {
+      if (profile === "ad" && adLean && !usesAp) return false;
+      if (burstAssassin) return false;
+      return (
+        usesAp ||
+        profile === "ap" ||
+        profile === "spell" ||
+        burstMage ||
+        (profile === "balanced" && apLean)
+      );
+    }
+
+    if (n === "Grasp of the Undying" || n === "Aftershock") {
+      if (burstAssassin || burstMage) return false;
+      return (
+        tank ||
+        profile === "bruiser" ||
+        (profile === "balanced" && !burstAssassin && !burstMage)
+      );
+    }
+
+    if (n === "First Strike") {
+      return (
+        burst ||
+        burstAssassin ||
+        (profile === "balanced" && (burstAssassin || adLean))
+      );
+    }
+
+    return true;
+  });
+}
+
+/** Damage-only score for picking a keystone — avoids Conqueror omnivamp inflating EHP. */
+function keystonePickScore(
+  profile: BuildProfileId,
+  dps: ReturnType<Character["calculateDPS"]>,
+  stats: ReturnType<Character["getTotalStats"]>,
+): number {
+  return purchasePowerScore(profile, dps, stats);
 }
 
 export function cloneChampionWithLoadout(
@@ -1010,17 +1165,50 @@ function bestKeystoneForBuild(
   duel: ResolvedDuel,
   simulation?: SimulationScenario,
 ): KeystoneCacheEntry {
+  const candidates = keystoneCandidatesFor(champion, profile);
+  const profileSim = mergeProfileSimulation(profile, champion, simulation);
   let best: Rune | null = null;
   let bestS = -Infinity;
-  for (const k of AllKeystones) {
+
+  for (const k of candidates) {
     const c = cloneChampionWithLoadout(champion, build, makeRunePage(k));
-    const s = scoreChampion(profile, c, build, duel, simulation);
+    const { dps } = calculateDpsWithFightDuration(
+      c,
+      duel.targetMaxHP,
+      duel.targetBonusHP,
+      profileSim,
+      { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+      profile,
+      {
+        comboWindowSecondsOverride: duel.comboWindowSeconds,
+        iterations: duel.comboWindowSeconds != null ? 0 : 1,
+      },
+    );
+    const s = keystonePickScore(profile, dps, c.getTotalStats(profileSim.level));
     if (s > bestS) {
       bestS = s;
       best = k;
     }
   }
+
   return { rune: best, score: bestS };
+}
+
+/** Public wrapper for meta rescoring / audits. */
+export function pickBestKeystoneForBuild(
+  champion: Character,
+  build: Item[],
+  profile: BuildProfileId,
+  duel: ResolvedDuel,
+  simulation?: SimulationScenario,
+): Rune | null {
+  return bestKeystoneForBuild(
+    champion,
+    build,
+    profile,
+    duel,
+    simulation,
+  ).rune;
 }
 
 function getCachedKeystone(
@@ -1758,7 +1946,10 @@ export function rescoreMetaBuildRow(
     .filter((x): x is Item => Boolean(x));
   if (items.length === 0) return row;
 
-  const keystone = AllKeystones.find((k) => k.name === row.rune) ?? null;
+  const keystone =
+    pickBestKeystoneForBuild(champion, items, profile, duel, simulation) ??
+    AllKeystones.find((k) => k.name === row.rune) ??
+    null;
   const c = cloneChampionWithLoadout(
     champion,
     items,
@@ -1778,6 +1969,7 @@ export function rescoreMetaBuildRow(
   return {
     ...row,
     profile,
+    rune: keystone?.name ?? row.rune,
     totalDPS: dps.totalDPS,
     sustainedDPS: dps.sustainedDPS,
     comboDPS: dps.comboDPS,

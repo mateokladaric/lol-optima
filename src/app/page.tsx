@@ -24,7 +24,6 @@ import {
   resolveDuel,
   type SerializedMeta,
 } from "@/lib/buildOptimizer";
-import { purchaseLevelForItemCount } from "@/lib/purchaseOrder";
 import { OPGG_REGION_OPTIONS } from "@/lib/opggLiveGame";
 import { importLiveGameFromOpgg } from "./actions/liveGame";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
@@ -362,275 +361,282 @@ function BuildFinder(): React.ReactElement {
   }, [liveImportBusy, liveRiotId, liveRegion]);
 
   return (
-    <div className="flex flex-1 flex-col min-h-0 py-6 overflow-hidden">
+    <div className="flex flex-1 flex-col min-h-0 gap-6 py-4 overflow-y-auto overflow-x-hidden">
       {/* Hero */}
-      <div className="mb-8 shrink-0 text-center">
-        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-2">
+      <div className="shrink-0 text-center">
+        <p className="text-xs uppercase tracking-widest text-dpm-muted mb-1.5">
           Optimize your
         </p>
-        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+        <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
           Build Finder
         </h1>
-        <p className="text-dpm-muted text-sm max-w-2xl mx-auto leading-relaxed">
-          Picks a balanced mix of damage and effective HP for a reference duel.
-          Import your live game from OP.GG, pick enemies manually, or auto-fill
-          duel stats from OP.GG builds.
+        <p className="text-dpm-muted text-sm max-w-xl mx-auto leading-relaxed">
+          Import a live game or pick enemies, then select a champion for
+          profile builds scored against your duel assumptions.
         </p>
       </div>
 
-      {/* Top row: Live Import + Enemy Team */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 shrink-0">
-        <WidgetCard
-          title="Import live game (OP.GG)"
-          subtitle="Requires an active game visible on OP.GG. Enter Riot ID as Name#Tag."
-          glow="blue"
-        >
-          <div className="flex flex-wrap gap-2 items-end">
-            <div className="min-w-[200px] flex-1">
-              <label
-                htmlFor="live-riot-id"
-                className="block text-dpm-muted text-xs mb-1"
+      {/* Setup: import, enemies, duel */}
+      <div className="shrink-0 space-y-5">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+          <WidgetCard
+            title="Import live game (OP.GG)"
+            subtitle="Requires an active game visible on OP.GG. Enter Riot ID as Name#Tag."
+            glow="blue"
+            className="min-h-[140px]"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_112px_auto] gap-3 items-end">
+              <div>
+                <label
+                  htmlFor="live-riot-id"
+                  className="block text-dpm-muted text-xs mb-1.5"
+                >
+                  Riot ID (Name#Tag)
+                </label>
+                <input
+                  id="live-riot-id"
+                  type="text"
+                  placeholder="Faker#KR1"
+                  value={liveRiotId}
+                  onChange={(e) => setLiveRiotId(e.target.value)}
+                  className="dpm-input w-full"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="live-region"
+                  className="block text-dpm-muted text-xs mb-1.5"
+                >
+                  Region
+                </label>
+                <select
+                  id="live-region"
+                  value={liveRegion}
+                  onChange={(e) => setLiveRegion(e.target.value)}
+                  className="dpm-input w-full"
+                >
+                  {OPGG_REGION_OPTIONS.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="button"
+                disabled={liveImportBusy || !liveRiotId.trim()}
+                onClick={() => void handleLiveImport()}
+                className="dpm-btn dpm-btn-primary whitespace-nowrap h-[38px]"
               >
-                Riot ID (Name#Tag)
-              </label>
+                {liveImportBusy ? "Loading…" : "Load game"}
+              </button>
+            </div>
+            {liveImportStatus && (
+              <p
+                className={`mt-3 text-xs ${liveImportStatus.kind === "success" ? "text-dpm-up" : "text-dpm-down"}`}
+              >
+                {liveImportStatus.message}
+              </p>
+            )}
+          </WidgetCard>
+
+          <WidgetCard
+            title={`Enemy team${opggBuilds ? ` (patch ${opggBuilds.patch})` : ""}`}
+            subtitle="Add up to 5 enemy champions to auto-fill duel stats."
+            glow="gold"
+            className="min-h-[140px]"
+          >
+            <EnemyTeamPicker
+              opggBuilds={opggBuilds}
+              enemyTeam={enemyTeam}
+              setEnemyTeam={setEnemyTeam}
+            />
+            {missingOpggEnemies.length > 0 && (
+              <p className="mt-2 text-dpm-accent-gold text-xs">
+                Auto-stats skip champions missing from scraped OP.GG builds:{" "}
+                {missingOpggEnemies.join(", ")}.
+              </p>
+            )}
+            {autoStats && enemyTeam.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs">
+                <span className="text-dpm-muted leading-relaxed">
+                  Avg: {autoStats.targetMaxHP} HP (+{autoStats.targetBonusHP}{" "}
+                  bonus), {autoStats.targetArmor} armor, {autoStats.targetMR}{" "}
+                  MR, {Math.round(autoStats.incomingPhysShare * 100)}% incoming
+                  phys
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setUseAutoStats((prev) => !prev)}
+                  className={`dpm-btn text-[10px] shrink-0 ${useAutoStats ? "dpm-btn-active" : ""}`}
+                >
+                  {useAutoStats ? "Auto-fill ON" : "Auto-fill OFF"}
+                </button>
+              </div>
+            )}
+          </WidgetCard>
+        </div>
+
+        <WidgetCard
+          title="Duel assumptions"
+          subtitle={
+            isAutoActive
+              ? "Auto-filled from enemy team"
+              : "Configure opponent stats for build scoring"
+          }
+          glow="purple"
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4">
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.maxHP}>
+                <label
+                  htmlFor="duel-max-hp"
+                  className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+                >
+                  Opponent max HP
+                </label>
+              </HoverTip>
               <input
-                id="live-riot-id"
-                type="text"
-                placeholder="Faker#KR1"
-                value={liveRiotId}
-                onChange={(e) => setLiveRiotId(e.target.value)}
-                className="dpm-input"
+                id="duel-max-hp"
+                type="number"
+                min={400}
+                max={12000}
+                step={100}
+                value={targetMaxHP}
+                onChange={(e) => {
+                  setTargetMaxHP(Number(e.target.value) || 3000);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input w-full ${isAutoActive ? "border-dpm-accent/25" : ""}`}
               />
             </div>
             <div>
-              <label
-                htmlFor="live-region"
-                className="block text-dpm-muted text-xs mb-1"
-              >
-                Region
-              </label>
-              <select
-                id="live-region"
-                value={liveRegion}
-                onChange={(e) => setLiveRegion(e.target.value)}
-                className="dpm-input"
-              >
-                {OPGG_REGION_OPTIONS.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.bonusHP}>
+                <label
+                  htmlFor="duel-bonus-hp"
+                  className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+                >
+                  Opponent bonus HP
+                </label>
+              </HoverTip>
+              <input
+                id="duel-bonus-hp"
+                type="number"
+                min={0}
+                max={8000}
+                step={100}
+                value={targetBonusHP}
+                onChange={(e) => {
+                  setTargetBonusHP(Number(e.target.value) || 0);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input w-full ${isAutoActive ? "border-dpm-accent/25" : ""}`}
+              />
             </div>
-            <button
-              type="button"
-              disabled={liveImportBusy || !liveRiotId.trim()}
-              onClick={() => void handleLiveImport()}
-              className="dpm-btn dpm-btn-primary"
-            >
-              {liveImportBusy ? "Loading…" : "Load live game"}
-            </button>
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.armor}>
+                <label
+                  htmlFor="duel-armor"
+                  className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+                >
+                  Opponent armor
+                </label>
+              </HoverTip>
+              <input
+                id="duel-armor"
+                type="number"
+                min={0}
+                max={500}
+                step={5}
+                value={targetArmor}
+                onChange={(e) => {
+                  setTargetArmor(Number(e.target.value) || 0);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input w-full ${isAutoActive ? "border-dpm-accent/25" : ""}`}
+              />
+            </div>
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.mr}>
+                <label
+                  htmlFor="duel-mr"
+                  className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+                >
+                  Opponent MR
+                </label>
+              </HoverTip>
+              <input
+                id="duel-mr"
+                type="number"
+                min={0}
+                max={500}
+                step={5}
+                value={targetMR}
+                onChange={(e) => {
+                  setTargetMR(Number(e.target.value) || 0);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input w-full ${isAutoActive ? "border-dpm-accent/25" : ""}`}
+              />
+            </div>
           </div>
-          {liveImportStatus && (
-            <p
-              className={`mt-2 text-xs ${liveImportStatus.kind === "success" ? "text-dpm-up" : "text-dpm-down"}`}
-            >
-              {liveImportStatus.message}
-            </p>
-          )}
-        </WidgetCard>
-
-        <WidgetCard
-          title={`Enemy team${opggBuilds ? ` (patch ${opggBuilds.patch})` : ""}`}
-          subtitle="Add up to 5 enemy champions to auto-fill duel stats."
-          glow="gold"
-        >
-          <EnemyTeamPicker
-            opggBuilds={opggBuilds}
-            enemyTeam={enemyTeam}
-            setEnemyTeam={setEnemyTeam}
-          />
-          {missingOpggEnemies.length > 0 && (
-            <p className="mt-2 text-dpm-accent-gold text-xs">
-              Auto-stats skip champions missing from scraped OP.GG builds:{" "}
-              {missingOpggEnemies.join(", ")}.
-            </p>
-          )}
-          {autoStats && enemyTeam.length > 0 && (
-            <div className="mt-2 flex items-center gap-3 text-xs">
-              <span className="text-dpm-muted">
-                Avg: {autoStats.targetMaxHP} HP (+{autoStats.targetBonusHP}{" "}
-                bonus), {autoStats.targetArmor} armor, {autoStats.targetMR} MR,{" "}
-                {Math.round(autoStats.incomingPhysShare * 100)}% incoming phys
-              </span>
+          <div className="mt-5 pt-4 border-t border-white/10 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-4 items-end">
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
+                <label
+                  htmlFor="duel-phys-share"
+                  className="block text-dpm-muted text-xs mb-2 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+                >
+                  Incoming damage: {incomingPhysPct}% physical /{" "}
+                  {100 - incomingPhysPct}% magic
+                  {isAutoActive && (
+                    <span className="text-dpm-accent ml-1">
+                      (from enemy kits + items)
+                    </span>
+                  )}
+                </label>
+              </HoverTip>
+              <input
+                id="duel-phys-share"
+                type="range"
+                min={0}
+                max={100}
+                value={incomingPhysPct}
+                onChange={(e) => {
+                  setIncomingPhysPct(Number(e.target.value));
+                  if (useAutoStats) setUseAutoStats(false);
+                }}
+                className="w-full max-w-md accent-dpm-accent"
+              />
+            </div>
+            <div className="md:pb-0.5">
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.rotation}>
+                <label
+                  htmlFor="duel-rotation-profiles"
+                  className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
+                >
+                  Rotation templates
+                </label>
+              </HoverTip>
               <button
+                id="duel-rotation-profiles"
                 type="button"
-                onClick={() => setUseAutoStats((prev) => !prev)}
-                className={`dpm-btn text-[10px] ${useAutoStats ? "dpm-btn-active" : ""}`}
+                onClick={() => setUseRotationProfiles((prev) => !prev)}
+                className={`dpm-btn ${useRotationProfiles ? "dpm-btn-active" : ""}`}
               >
-                {useAutoStats ? "Auto-fill ON" : "Auto-fill OFF"}
+                {useRotationProfiles ? "Enabled" : "Disabled"}
               </button>
             </div>
-          )}
+          </div>
         </WidgetCard>
       </div>
 
-      {/* Duel assumptions */}
-      <WidgetCard
-        title="Duel assumptions"
-        subtitle={
-          isAutoActive
-            ? "Auto-filled from enemy team"
-            : "Configure opponent stats for build scoring"
-        }
-        glow="purple"
-        className="mb-6 shrink-0"
-      >
-        <div className="flex flex-wrap gap-5 items-end text-sm">
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.maxHP}>
-              <label
-                htmlFor="duel-max-hp"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Opponent max HP
-              </label>
-            </HoverTip>
-            <input
-              id="duel-max-hp"
-              type="number"
-              min={400}
-              max={12000}
-              step={100}
-              value={targetMaxHP}
-              onChange={(e) => {
-                setTargetMaxHP(Number(e.target.value) || 3000);
-                if (isAutoActive) setUseAutoStats(false);
-              }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-            />
-          </div>
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.bonusHP}>
-              <label
-                htmlFor="duel-bonus-hp"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Opponent bonus HP
-              </label>
-            </HoverTip>
-            <input
-              id="duel-bonus-hp"
-              type="number"
-              min={0}
-              max={8000}
-              step={100}
-              value={targetBonusHP}
-              onChange={(e) => {
-                setTargetBonusHP(Number(e.target.value) || 0);
-                if (isAutoActive) setUseAutoStats(false);
-              }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-            />
-          </div>
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.armor}>
-              <label
-                htmlFor="duel-armor"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Opponent armor
-              </label>
-            </HoverTip>
-            <input
-              id="duel-armor"
-              type="number"
-              min={0}
-              max={500}
-              step={5}
-              value={targetArmor}
-              onChange={(e) => {
-                setTargetArmor(Number(e.target.value) || 0);
-                if (isAutoActive) setUseAutoStats(false);
-              }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-            />
-          </div>
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.mr}>
-              <label
-                htmlFor="duel-mr"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Opponent MR
-              </label>
-            </HoverTip>
-            <input
-              id="duel-mr"
-              type="number"
-              min={0}
-              max={500}
-              step={5}
-              value={targetMR}
-              onChange={(e) => {
-                setTargetMR(Number(e.target.value) || 0);
-                if (isAutoActive) setUseAutoStats(false);
-              }}
-              className={`dpm-input w-28 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-            />
-          </div>
-          <div className="min-w-[200px]">
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
-              <label
-                htmlFor="duel-phys-share"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Incoming damage: {incomingPhysPct}% phys / {100 - incomingPhysPct}
-                % magic
-                {isAutoActive && (
-                  <span className="text-dpm-accent ml-1">(from enemy kits + items)</span>
-                )}
-              </label>
-            </HoverTip>
-            <input
-              id="duel-phys-share"
-              type="range"
-              min={0}
-              max={100}
-              value={incomingPhysPct}
-              onChange={(e) => {
-                setIncomingPhysPct(Number(e.target.value));
-                if (useAutoStats) setUseAutoStats(false);
-              }}
-              className="w-full accent-dpm-accent"
-            />
-          </div>
-          <div>
-            <HoverTip label={DUEL_FIELD_TOOLTIPS.rotation}>
-              <label
-                htmlFor="duel-rotation-profiles"
-                className="block text-dpm-muted text-xs mb-1.5 cursor-help border-b border-dotted border-dpm-muted/40 w-fit"
-              >
-                Rotation templates
-              </label>
-            </HoverTip>
-            <button
-              id="duel-rotation-profiles"
-              type="button"
-              onClick={() => setUseRotationProfiles((prev) => !prev)}
-              className={`dpm-btn ${useRotationProfiles ? "dpm-btn-active" : ""}`}
-            >
-              {useRotationProfiles ? "Enabled" : "Disabled"}
-            </button>
-          </div>
-        </div>
-      </WidgetCard>
-
-      <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
+      {/* Champion picker + builds */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)] gap-5 flex-1 min-h-0 pb-2">
         <WidgetCard
           title="Champions"
           glow="purple"
-          className="w-full lg:w-[360px] shrink-0 flex flex-col min-h-0"
+          className="flex flex-col min-h-[320px] lg:min-h-0 lg:max-h-[calc(100vh-11rem)] lg:sticky lg:top-2 lg:self-start"
         >
           <label htmlFor="champion-search" className="sr-only">
             Search champion
@@ -663,44 +669,48 @@ function BuildFinder(): React.ReactElement {
           </div>
         </WidgetCard>
 
-        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto">
+        <div className="min-w-0 flex flex-col gap-4">
           {!selectedChampion && (
-            <div className="text-dpm-muted text-sm">Select a champion.</div>
+            <div className="text-dpm-muted text-sm py-8 text-center lg:text-left">
+              Select a champion to see build recommendations.
+            </div>
           )}
           {selectedChampion && busy && (
-            <div className="flex items-center gap-3 text-dpm-muted text-sm">
+            <div className="flex items-center gap-3 text-dpm-muted text-sm py-4">
               <ChampionIcon name={selectedChampion.Name} size={40} />
               <span>Computing builds for {selectedChampion.Name}…</span>
             </div>
           )}
           {selectedChampion && !busy && recs.length === 0 && (
-            <div className="text-dpm-muted text-sm">No recommendations.</div>
+            <div className="text-dpm-muted text-sm py-4">No recommendations.</div>
           )}
           {selectedChampion && !busy && recs.length > 0 && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <ChampionIcon name={selectedChampion.Name} size={44} />
+            <div className="space-y-4 max-w-2xl">
+              <div className="flex items-start gap-3 rounded-lg border border-white/10 bg-dpm-bg/40 px-4 py-3">
+                <ChampionIcon
+                  name={selectedChampion.Name}
+                  size={40}
+                  className="shrink-0 mt-0.5"
+                />
                 <p className="text-dpm-muted text-xs leading-relaxed">
-                  Scores for{" "}
                   <span className="text-dpm-text font-medium">
                     {selectedChampion.Name}
                   </span>{" "}
                   vs {duelResolved.targetMaxHP} HP (+{" "}
                   {duelResolved.targetBonusHP} bonus), {duelResolved.targetArmor}{" "}
-                  armor / {duelResolved.targetMR} MR, fight length from TTK per
-                  build, Eff. HP weights{" "}
-                  {(duelResolved.incomingPhysShare * 100).toFixed(0)}% physical
-                  at level 18. Rotation templates{" "}
-                  {useRotationProfiles ? "enabled" : "disabled"}.
+                  armor / {duelResolved.targetMR} MR · TTK fight length ·{" "}
+                  {(duelResolved.incomingPhysShare * 100).toFixed(0)}% phys ·
+                  level 18
+                  {useRotationProfiles ? " · rotations on" : ""}
                 </p>
               </div>
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-4">
                 {recs.map((r) => (
                   <div
                     key={`${r.profile}-${r.label}-${r.items.join(",")}`}
-                    className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-5"
+                    className="dpm-widget dpm-widget-glow dpm-widget-glow-purple !p-4"
                   >
-                    <div className="flex justify-between items-start gap-3 mb-4">
+                    <div className="flex justify-between items-start gap-3 mb-3">
                       <div className="text-dpm-accent-gold font-semibold text-sm">
                         {r.label}
                       </div>
@@ -714,19 +724,23 @@ function BuildFinder(): React.ReactElement {
                         </span>
                       </HoverTip>
                     </div>
-                    <div className="flex flex-wrap gap-2.5 mb-4">
+                    <div className="flex flex-wrap gap-2 mb-3">
                       {r.items.map((name) => (
                         <HoverTip key={name} label={name}>
-                          <ItemIcon name={name} size={40} className="cursor-help" />
+                          <ItemIcon
+                            name={name}
+                            size={40}
+                            className="cursor-help"
+                          />
                         </HoverTip>
                       ))}
                     </div>
-                    <div className="flex items-end justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <div className="flex items-center gap-2">
                         <HoverTip label={r.rune}>
                           <RuneIcon
                             name={r.rune}
-                            size={36}
+                            size={32}
                             className="cursor-help"
                           />
                         </HoverTip>
@@ -993,8 +1007,14 @@ function RandomBuildGenerator(): React.ReactElement {
                 </div>
                 <div className="dpm-stat-tile !p-3">
                   <div className="dpm-stat-tile-label">Rune</div>
-                  <div className="text-xl font-bold text-dpm-accent-gold">
-                    {selectedBuild.rune}
+                  <div className="flex items-center justify-center gap-2 mt-1">
+                    <HoverTip label={selectedBuild.rune}>
+                      <RuneIcon
+                        name={selectedBuild.rune}
+                        size={36}
+                        className="cursor-help"
+                      />
+                    </HoverTip>
                   </div>
                 </div>
               </div>
@@ -1342,8 +1362,12 @@ function MetaAnalysis(): React.ReactElement {
                     </div>
                   </td>
                   <td className="p-3">
-                    <HoverTip label={STAT_TOOLTIPS.keystone}>
-                      <span className="dpm-badge-gold cursor-help">{build.rune}</span>
+                    <HoverTip label={build.rune}>
+                      <RuneIcon
+                        name={build.rune}
+                        size={32}
+                        className="cursor-help"
+                      />
                     </HoverTip>
                   </td>
                   <td className="p-3">
@@ -1443,16 +1467,10 @@ function MetaAnalysis(): React.ReactElement {
 }
 
 export default function Home(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<
-    "finder" | "random" | "planner" | "meta"
-  >("finder");
-  const [showDevTabs, setShowDevTabs] = useState(false);
-  const [selectedChampion, setSelectedChampion] = useState<Character | null>(
-    null,
+  const [activeTab, setActiveTab] = useState<"finder" | "random" | "meta">(
+    "finder",
   );
-  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-  const [championSearch, setChampionSearch] = useState("");
-  const [itemSearch, setItemSearch] = useState("");
+  const [showDevTabs, setShowDevTabs] = useState(false);
 
   // F4 key toggles dev tabs visibility
   useEffect(() => {
@@ -1466,74 +1484,9 @@ export default function Home(): React.ReactElement {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Available champions and items
-  const champions = Characters;
-  const availableItems = Items;
-
-  // Filtered lists
-  const filteredChampions = champions.filter((champ) =>
-    champ.Name.toLowerCase().includes(championSearch.toLowerCase()),
-  );
-  const filteredItems = availableItems.filter((item) =>
-    item.name.toLowerCase().includes(itemSearch.toLowerCase()),
-  );
-
-  const handleChampionSelect = (champion: Character) => {
-    setSelectedChampion(champion);
-    setSelectedItems([]);
-  };
-
-  const handleItemAdd = (item: Item) => {
-    if (selectedItems.length >= 6 || !selectedChampion) return;
-
-    // Check if item with same group name already exists
-    const itemGroupName = item.getGroupName();
-    const hasConflict = selectedItems.some(
-      (existingItem) => existingItem.getGroupName() === itemGroupName,
-    );
-
-    if (!hasConflict) {
-      setSelectedItems([...selectedItems, item]);
-    }
-  };
-
-  const handleItemRemove = (index: number) => {
-    setSelectedItems(selectedItems.filter((_, i) => i !== index));
-  };
-
-  const purchaseLevel = purchaseLevelForItemCount(selectedItems.length);
-
-  const getTotalStats = () => {
-    if (!selectedChampion) return null;
-
-    const championWithItems = Object.assign(
-      Object.create(Object.getPrototypeOf(selectedChampion)),
-      selectedChampion,
-    );
-    championWithItems.Items = selectedItems;
-    return championWithItems.getTotalStats(purchaseLevel);
-  };
-
-  const getDPS = () => {
-    if (!selectedChampion) return null;
-
-    const championWithItems = Object.assign(
-      Object.create(Object.getPrototypeOf(selectedChampion)),
-      selectedChampion,
-    );
-    championWithItems.Items = selectedItems;
-    return championWithItems.calculateDPS(undefined, undefined, {
-      level: purchaseLevel,
-    });
-  };
-
-  const stats = getTotalStats();
-  const dps = getDPS();
-
   const devTabs = [
     { id: "finder", label: "1v1 Finder" },
     { id: "random", label: "Random" },
-    { id: "planner", label: "Planner" },
     { id: "meta", label: "Meta" },
   ];
 
@@ -1545,7 +1498,7 @@ export default function Home(): React.ReactElement {
             tabs={devTabs}
             activeTab={activeTab}
             onTabChange={(id) =>
-              setActiveTab(id as "finder" | "random" | "planner" | "meta")
+              setActiveTab(id as "finder" | "random" | "meta")
             }
           />
         ) : undefined
@@ -1555,241 +1508,6 @@ export default function Home(): React.ReactElement {
         <BuildFinder />
       ) : activeTab === "random" ? (
         <RandomBuildGenerator />
-      ) : activeTab === "planner" ? (
-        <div className="flex flex-1 overflow-hidden gap-6 py-6">
-          <WidgetCard
-            title="Champions"
-            glow="purple"
-            className="w-[45%] flex flex-col min-h-0"
-          >
-            <SearchInput
-              placeholder="Search champions..."
-              value={championSearch}
-              onChange={(e) => setChampionSearch(e.target.value)}
-              className="mb-3"
-            />
-            <div className="flex-1 overflow-y-auto min-h-0 pr-1">
-              <div className="grid grid-cols-4 xl:grid-cols-5 gap-2">
-                {filteredChampions.map((champion) => (
-                  <HoverTip key={champion.Name} label={champion.Name}>
-                    <button
-                      type="button"
-                      onClick={() => handleChampionSelect(champion)}
-                      className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-all ${
-                        selectedChampion?.Name === champion.Name
-                          ? "border-dpm-accent bg-dpm-accent/15 shadow-[0_0_12px_rgba(121,137,236,0.15)]"
-                          : "border-white/10 bg-dpm-bg/50 hover:bg-dpm-widget-hover hover:border-white/20"
-                      }`}
-                    >
-                      <ChampionIcon name={champion.Name} size={40} />
-                      <div className="text-[10px] font-semibold truncate w-full text-center">
-                        {champion.Name}
-                      </div>
-                    </button>
-                  </HoverTip>
-                ))}
-              </div>
-            </div>
-          </WidgetCard>
-
-          <WidgetCard
-            title="Build"
-            glow="gold"
-            className="w-[10%] flex flex-col items-center min-h-0"
-          >
-            {selectedChampion ? (
-              <>
-                <div className="mb-3 text-center">
-                  <ChampionIcon
-                    name={selectedChampion.Name}
-                    size={48}
-                    className="mx-auto mb-2"
-                  />
-                  <div className="text-sm font-bold text-dpm-accent-gold">
-                    {selectedChampion.Name}
-                  </div>
-                </div>
-                <div className="flex-1 w-full">
-                  <h3 className="text-xs font-semibold mb-2 text-center text-dpm-muted">
-                    Items
-                  </h3>
-                  <div className="space-y-2">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                      <button
-                        type="button"
-                        key={`slot-${index}-${selectedItems[index]?.name ?? "empty"}`}
-                        onClick={() =>
-                          selectedItems[index] && handleItemRemove(index)
-                        }
-                        className={`w-full h-10 rounded-lg border transition-all flex items-center justify-center ${
-                          selectedItems[index]
-                            ? "border-dpm-accent bg-dpm-accent/15 hover:border-dpm-down hover:bg-dpm-down/10"
-                            : "border-white/10 bg-dpm-bg/50"
-                        }`}
-                        title={
-                          selectedItems[index]
-                            ? `Click to remove ${selectedItems[index].name}`
-                            : "Empty slot"
-                        }
-                      >
-                        {selectedItems[index] ? (
-                          <HoverTip label={selectedItems[index].name}>
-                            <ItemIcon name={selectedItems[index].name} size={32} />
-                          </HoverTip>
-                        ) : null}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-dpm-muted text-center text-xs">
-                Select a champion
-              </div>
-            )}
-          </WidgetCard>
-
-          <div className="w-[45%] flex flex-col gap-6 min-h-0">
-            <WidgetCard
-              title="Stats & DPS"
-              glow="blue"
-              className="h-[50%] overflow-y-auto min-h-0"
-            >
-              {stats ? (
-                <>
-                  <div className="grid grid-cols-3 gap-1 mb-3">
-                    {(
-                      [
-                        ["HP", Math.round(stats.hp)],
-                        ["Mana", Math.round(stats.mana)],
-                        ["AD", Math.round(stats.ad)],
-                        ["AP", Math.round(stats.ap)],
-                        ["Armor", Math.round(stats.armor)],
-                        ["MR", Math.round(stats.mr)],
-                        ["AS", stats.as.toFixed(2)],
-                        ["Crit %", `${Math.round(stats.critChance)}%`],
-                        ["AH", Math.round(stats.abilityHaste)],
-                        ["LS %", `${Math.round(stats.lifeSteal)}%`],
-                        ["MS", Math.round(stats.ms)],
-                        ["Leth", Math.round(stats.lethality)],
-                      ] as const
-                    ).map(([label, value]) => (
-                      <div key={label} className="dpm-stat-tile">
-                        <div className="dpm-stat-tile-label">{label}</div>
-                        <div className="dpm-stat-tile-value">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {dps && (
-                    <div className="mt-3 space-y-2">
-                      <div className="dpm-stat-tile !p-2 border border-dpm-accent/25 bg-dpm-accent/10">
-                        <div className="text-dpm-accent text-xs font-semibold mb-1">
-                          Total DPS
-                        </div>
-                        <div className="text-2xl font-bold">
-                          {dps.totalDPS.toFixed(1)}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1">
-                        {(
-                          [
-                            ["Auto Attack", dps.autoAttackDPS],
-                            ["On-Hit", dps.onHitDPS],
-                            ["DoT", dps.dotDPS],
-                            ["Abilities", dps.abilityDPS],
-                          ] as const
-                        ).map(([label, value]) => (
-                          <div key={label} className="dpm-stat-tile">
-                            <div className="dpm-stat-tile-label">{label}</div>
-                            <div className="dpm-stat-tile-value">
-                              {value.toFixed(1)}
-                            </div>
-                          </div>
-                        ))}
-                        <div className="dpm-stat-tile border border-dpm-accent-gold/25 bg-dpm-accent-gold/5">
-                          <div className="text-dpm-accent-gold text-[10px]">
-                            Burst
-                          </div>
-                          <div className="text-sm font-bold">
-                            {dps.burstDPS.toFixed(1)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-dpm-muted text-xs">
-                  Select a champion to view stats
-                </div>
-              )}
-            </WidgetCard>
-
-            <WidgetCard
-              title="Available Items"
-              glow="purple"
-              className="h-[50%] flex flex-col min-h-0"
-            >
-              {selectedChampion ? (
-                <>
-                  <SearchInput
-                    placeholder="Search items..."
-                    value={itemSearch}
-                    onChange={(e) => setItemSearch(e.target.value)}
-                    className="mb-2"
-                  />
-                  <div className="flex-1 overflow-y-auto min-h-0">
-                    <div className="grid grid-cols-4 gap-1">
-                      {filteredItems.map((item) => {
-                        const itemGroupName = item.getGroupName();
-                        const hasConflict = selectedItems.some(
-                          (existingItem) =>
-                            existingItem.getGroupName() === itemGroupName,
-                        );
-                        const isFull = selectedItems.length >= 6;
-                        const isDisabled = isFull || hasConflict;
-
-                        return (
-                          <HoverTip
-                            key={item.name}
-                            label={
-                              hasConflict
-                                ? `Cannot equip: ${itemGroupName} already equipped`
-                                : isFull
-                                  ? "Item slots full"
-                                  : item.name
-                            }
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleItemAdd(item)}
-                              disabled={isDisabled}
-                              className={`p-2 rounded-lg border transition-all text-left flex flex-col items-center gap-1 ${
-                                isDisabled
-                                  ? "border-white/5 bg-dpm-bg/30 opacity-50 cursor-not-allowed"
-                                  : "border-dpm-accent/25 bg-dpm-accent/5 hover:border-dpm-accent hover:bg-dpm-accent/10"
-                              }`}
-                            >
-                              <ItemIcon name={item.name} size={32} />
-                              <div className="font-semibold text-[9px] truncate w-full text-center">
-                                {item.name}
-                              </div>
-                            </button>
-                          </HoverTip>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="text-dpm-muted text-xs">
-                  Select a champion to add items
-                </div>
-              )}
-            </WidgetCard>
-          </div>
-        </div>
       ) : (
         <MetaAnalysis />
       )}

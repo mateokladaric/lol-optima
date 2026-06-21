@@ -45,6 +45,36 @@ function stripVariantSuffix(name: string): string {
   return name.replace(/\s*\([^)]*\)\s*$/, "").trim();
 }
 
+/** Sim rune names that differ from Data Dragon keystone names. */
+const KEYSTONE_ICON_ALIASES: Record<string, string> = {
+  "Conqueror (AP)": "Conqueror",
+  "Lethal Tempo (sustained avg)": "Lethal Tempo",
+  "Dark Harvest (~5 souls)": "Dark Harvest",
+};
+
+function resolveKeystoneIconPath(
+  assets: DdragonAssets,
+  runeName: string,
+): string | null {
+  const alias = KEYSTONE_ICON_ALIASES[runeName];
+  const stripped = stripVariantSuffix(runeName);
+  const candidates = [
+    runeName,
+    alias,
+    stripped,
+    alias ? stripVariantSuffix(alias) : null,
+    normalizeName(runeName),
+    normalizeName(stripped),
+    alias ? normalizeName(alias) : null,
+  ].filter((c): c is string => Boolean(c));
+
+  for (const key of candidates) {
+    const icon = assets.keystoneIconByName.get(key);
+    if (icon) return icon;
+  }
+  return null;
+}
+
 function buildChampionLookup(
   data: Record<string, { id: string; name: string }>,
 ): Map<string, string> {
@@ -190,9 +220,7 @@ export function keystoneIconUrl(
   assets: DdragonAssets,
   runeName: string,
 ): string | null {
-  const icon =
-    assets.keystoneIconByName.get(runeName) ??
-    assets.keystoneIconByName.get(normalizeName(runeName));
+  const icon = resolveKeystoneIconPath(assets, runeName);
   if (!icon) return null;
   return `https://ddragon.leagueoflegends.com/cdn/img/${icon}`;
 }
