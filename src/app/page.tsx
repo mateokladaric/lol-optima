@@ -21,16 +21,19 @@ import {
   META_DUEL_DEFAULTS,
   recommendBuildsForChampion,
   rescoreMetaDataset,
-  resolveDuel,
   type SerializedMeta,
 } from "@/lib/buildOptimizer";
 import { OPGG_REGION_OPTIONS } from "@/lib/opggLiveGame";
 import { importLiveGameFromOpgg } from "./actions/liveGame";
 import { type Character, Characters, type Item, Items } from "./actions/sim";
 import {
+  breakdownLineColorClass,
   DUEL_FIELD_TOOLTIPS,
+  dpsDamageColorClasses,
+  primaryDamageTypeFromDps,
   PROFILE_TOOLTIPS,
   STAT_TOOLTIPS,
+  type DpsComponents,
 } from "@/lib/statTooltips";
 
 type ScrapedChampionBuild = {
@@ -59,6 +62,7 @@ type BuildResult = {
   onHitDPS: number;
   dotDPS: number;
   abilityDPS: number;
+  physicalAbilityDPS?: number;
   burstDPS: number;
   fightDurationSeconds?: number;
   breakdown: string[];
@@ -74,6 +78,10 @@ type SortConfig = {
   key: keyof BuildResult;
   direction: "asc" | "desc";
 };
+
+function dpsColorForBuild(build: DpsComponents) {
+  return dpsDamageColorClasses(primaryDamageTypeFromDps(build));
+}
 
 function useRescoredMeta(raw: MetaData | null): SerializedMeta | null {
   return useMemo(() => {
@@ -294,8 +302,6 @@ function BuildFinder(): React.ReactElement {
     ],
   );
 
-  const duelResolved = useMemo(() => resolveDuel(duelOptions), [duelOptions]);
-
   const filteredChampions = useMemo(
     () =>
       Characters.filter((c) =>
@@ -360,47 +366,22 @@ function BuildFinder(): React.ReactElement {
     });
   }, [liveImportBusy, liveRiotId, liveRegion]);
 
-  const [matchupOpen, setMatchupOpen] = useState(true);
-  const showChampionGrid =
-    !selectedChampion || championSearch.trim().length > 0;
-
-  const matchupSummary = `${duelResolved.targetMaxHP} HP · ${duelResolved.targetArmor}/${duelResolved.targetMR} · ${incomingPhysPct}% phys${
-    enemyTeam.length > 0 ? ` · ${enemyTeam.length} enemies` : ""
-  }`;
-
   return (
-    <div className="finder-page">
-      <div>
-        <h1 className="finder-page-title">Build Finder</h1>
-        <p className="text-dpm-muted text-xs mt-1">
-          Pick a champion, set the matchup, get profile builds for a 1v1 duel.
-        </p>
-      </div>
-
-      {/* Champion */}
-      <section className="dpm-widget !p-4">
+    <div className="finder-layout">
+      {/* Column 1 — Champion picker */}
+      <aside className="finder-col finder-col-champs finder-col-panel">
         <p className="finder-section-label">Champion</p>
         {selectedChampion && (
-          <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10">
-            <ChampionIcon name={selectedChampion.Name} size={52} />
+          <div className="flex items-center gap-2.5 mb-1 pb-3 border-b border-white/10">
+            <ChampionIcon name={selectedChampion.Name} size={44} />
             <div className="min-w-0 flex-1">
-              <p className="font-semibold text-white truncate">
+              <p className="font-semibold text-white text-sm truncate">
                 {selectedChampion.Name}
               </p>
-              <p className="text-dpm-muted text-[11px] mt-0.5">
-                Level 18 · rotations {useRotationProfiles ? "on" : "off"}
+              <p className="text-dpm-muted text-[10px] mt-0.5">
+                Lv 18 · rot {useRotationProfiles ? "on" : "off"}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedChampion(null);
-                setChampionSearch("");
-              }}
-              className="dpm-btn text-xs shrink-0"
-            >
-              Change
-            </button>
           </div>
         )}
         <label htmlFor="champion-search" className="sr-only">
@@ -408,284 +389,259 @@ function BuildFinder(): React.ReactElement {
         </label>
         <SearchInput
           id="champion-search"
-          placeholder={
-            selectedChampion
-              ? "Search to switch champion…"
-              : "Search champion…"
-          }
+          placeholder="Search champion…"
           value={championSearch}
           onChange={(e) => setChampionSearch(e.target.value)}
-          className="mb-3"
+          className="mb-2 shrink-0"
         />
-        {showChampionGrid && (
-          <div className="finder-champ-grid">
-            {filteredChampions.map((c) => (
-              <HoverTip key={c.Name} label={c.Name}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedChampion(c);
-                    setChampionSearch("");
-                  }}
-                  className={`finder-champ-cell w-full ${
-                    selectedChampion?.Name === c.Name
-                      ? "finder-champ-cell-active"
-                      : ""
-                  }`}
-                >
-                  <ChampionIcon name={c.Name} size={36} />
-                  <span className="text-[9px] font-medium truncate w-full text-center leading-tight">
-                    {c.Name}
-                  </span>
-                </button>
-              </HoverTip>
-            ))}
-          </div>
-        )}
-      </section>
+        <div className="finder-champ-grid">
+          {filteredChampions.map((c) => (
+            <HoverTip key={c.Name} label={c.Name}>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedChampion(c);
+                  setChampionSearch("");
+                }}
+                className={`finder-champ-cell w-full ${
+                  selectedChampion?.Name === c.Name
+                    ? "finder-champ-cell-active"
+                    : ""
+                }`}
+              >
+                <ChampionIcon name={c.Name} size={36} />
+                <span className="text-[9px] font-medium truncate w-full text-center leading-tight">
+                  {c.Name}
+                </span>
+              </button>
+            </HoverTip>
+          ))}
+        </div>
+      </aside>
 
-      {/* Matchup — one collapsible panel */}
-      <details
-        className="dpm-widget finder-matchup"
-        open={matchupOpen}
-        onToggle={(e) =>
-          setMatchupOpen((e.currentTarget as HTMLDetailsElement).open)
-        }
-      >
-        <summary>
-          <span className="text-sm font-medium text-dpm-text">Matchup</span>
-          <span className="text-xs text-dpm-muted truncate">{matchupSummary}</span>
-        </summary>
-        <div className="finder-matchup-body space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Column 2 — Matchup */}
+      <section className="finder-col finder-col-matchup finder-col-panel">
+        <p className="finder-section-label">Matchup</p>
+
+        <div>
+          <p className="finder-section-label">Live import</p>
+          <HoverTip label="Requires an active game visible on OP.GG. Enter Riot ID as Name#Tag.">
+            <label htmlFor="live-riot-id" className="finder-field-label cursor-help">
+              Riot ID (Name#Tag)
+            </label>
+          </HoverTip>
+          <input
+            id="live-riot-id"
+            type="text"
+            placeholder="Faker#KR1"
+            value={liveRiotId}
+            onChange={(e) => setLiveRiotId(e.target.value)}
+            className="dpm-input w-full mb-2"
+          />
+          <div className="flex gap-2">
+            <select
+              id="live-region"
+              value={liveRegion}
+              onChange={(e) => setLiveRegion(e.target.value)}
+              className="dpm-input flex-1 min-w-0"
+            >
+              {OPGG_REGION_OPTIONS.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              disabled={liveImportBusy || !liveRiotId.trim()}
+              onClick={() => void handleLiveImport()}
+              className="dpm-btn dpm-btn-primary shrink-0 px-4"
+            >
+              {liveImportBusy ? "Loading…" : "Load game"}
+            </button>
+          </div>
+          {liveImportStatus && (
+            <p
+              className={`mt-2 text-xs ${liveImportStatus.kind === "success" ? "text-dpm-up" : "text-dpm-down"}`}
+            >
+              {liveImportStatus.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <p className="finder-section-label">
+            Enemy team{opggBuilds ? ` · ${opggBuilds.patch}` : ""}
+          </p>
+          <EnemyTeamPicker
+            opggBuilds={opggBuilds}
+            enemyTeam={enemyTeam}
+            setEnemyTeam={setEnemyTeam}
+          />
+          {missingOpggEnemies.length > 0 && (
+            <p className="mt-2 text-dpm-accent-gold text-xs leading-relaxed">
+              Missing OP.GG data: {missingOpggEnemies.join(", ")}
+            </p>
+          )}
+          {autoStats && enemyTeam.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="text-dpm-muted text-xs leading-relaxed">
+                Avg {autoStats.targetMaxHP} HP (+{autoStats.targetBonusHP}),{" "}
+                {autoStats.targetArmor}/{autoStats.targetMR},{" "}
+                {Math.round(autoStats.incomingPhysShare * 100)}% phys
+              </span>
+              <button
+                type="button"
+                onClick={() => setUseAutoStats((prev) => !prev)}
+                className={`dpm-btn text-[10px] shrink-0 ${useAutoStats ? "dpm-btn-active" : ""}`}
+              >
+                {useAutoStats ? "Auto-fill ON" : "Auto-fill OFF"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p className="finder-section-label">Target stats</p>
+          <div className="finder-stat-grid">
             <div>
-              <p className="finder-section-label">Live import</p>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  id="live-riot-id"
-                  type="text"
-                  placeholder="Riot ID (Name#Tag)"
-                  value={liveRiotId}
-                  onChange={(e) => setLiveRiotId(e.target.value)}
-                  className="dpm-input flex-1 min-w-0"
-                />
-                <select
-                  id="live-region"
-                  value={liveRegion}
-                  onChange={(e) => setLiveRegion(e.target.value)}
-                  className="dpm-input w-full sm:w-24 shrink-0"
-                >
-                  {OPGG_REGION_OPTIONS.map((r) => (
-                    <option key={r.value} value={r.value}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  disabled={liveImportBusy || !liveRiotId.trim()}
-                  onClick={() => void handleLiveImport()}
-                  className="dpm-btn dpm-btn-primary shrink-0"
-                >
-                  {liveImportBusy ? "…" : "Load"}
-                </button>
-              </div>
-              {liveImportStatus && (
-                <p
-                  className={`mt-2 text-xs ${liveImportStatus.kind === "success" ? "text-dpm-up" : "text-dpm-down"}`}
-                >
-                  {liveImportStatus.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <p className="finder-section-label">
-                Enemy team{opggBuilds ? ` · ${opggBuilds.patch}` : ""}
-              </p>
-              <EnemyTeamPicker
-                opggBuilds={opggBuilds}
-                enemyTeam={enemyTeam}
-                setEnemyTeam={setEnemyTeam}
-              />
-              {missingOpggEnemies.length > 0 && (
-                <p className="mt-2 text-dpm-accent-gold text-[10px]">
-                  Missing OP.GG data: {missingOpggEnemies.join(", ")}
-                </p>
-              )}
-              {autoStats && enemyTeam.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setUseAutoStats((prev) => !prev)}
-                  className={`dpm-btn text-[10px] mt-2 ${useAutoStats ? "dpm-btn-active" : ""}`}
-                >
-                  {useAutoStats ? "Auto-fill stats ON" : "Auto-fill stats OFF"}
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <p className="finder-section-label">Target stats</p>
-            <div className="finder-stat-grid">
-              <div>
-                <HoverTip label={DUEL_FIELD_TOOLTIPS.maxHP}>
-                  <label
-                    htmlFor="duel-max-hp"
-                    className="text-[10px] text-dpm-muted cursor-help"
-                  >
-                    Max HP
-                  </label>
-                </HoverTip>
-                <input
-                  id="duel-max-hp"
-                  type="number"
-                  min={400}
-                  max={12000}
-                  step={100}
-                  value={targetMaxHP}
-                  onChange={(e) => {
-                    setTargetMaxHP(Number(e.target.value) || 3000);
-                    if (isAutoActive) setUseAutoStats(false);
-                  }}
-                  className={`dpm-input mt-1 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-                />
-              </div>
-              <div>
-                <HoverTip label={DUEL_FIELD_TOOLTIPS.bonusHP}>
-                  <label
-                    htmlFor="duel-bonus-hp"
-                    className="text-[10px] text-dpm-muted cursor-help"
-                  >
-                    Bonus HP
-                  </label>
-                </HoverTip>
-                <input
-                  id="duel-bonus-hp"
-                  type="number"
-                  min={0}
-                  max={8000}
-                  step={100}
-                  value={targetBonusHP}
-                  onChange={(e) => {
-                    setTargetBonusHP(Number(e.target.value) || 0);
-                    if (isAutoActive) setUseAutoStats(false);
-                  }}
-                  className={`dpm-input mt-1 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-                />
-              </div>
-              <div>
-                <HoverTip label={DUEL_FIELD_TOOLTIPS.armor}>
-                  <label
-                    htmlFor="duel-armor"
-                    className="text-[10px] text-dpm-muted cursor-help"
-                  >
-                    Armor
-                  </label>
-                </HoverTip>
-                <input
-                  id="duel-armor"
-                  type="number"
-                  min={0}
-                  max={500}
-                  step={5}
-                  value={targetArmor}
-                  onChange={(e) => {
-                    setTargetArmor(Number(e.target.value) || 0);
-                    if (isAutoActive) setUseAutoStats(false);
-                  }}
-                  className={`dpm-input mt-1 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-                />
-              </div>
-              <div>
-                <HoverTip label={DUEL_FIELD_TOOLTIPS.mr}>
-                  <label
-                    htmlFor="duel-mr"
-                    className="text-[10px] text-dpm-muted cursor-help"
-                  >
-                    MR
-                  </label>
-                </HoverTip>
-                <input
-                  id="duel-mr"
-                  type="number"
-                  min={0}
-                  max={500}
-                  step={5}
-                  value={targetMR}
-                  onChange={(e) => {
-                    setTargetMR(Number(e.target.value) || 0);
-                    if (isAutoActive) setUseAutoStats(false);
-                  }}
-                  className={`dpm-input mt-1 ${isAutoActive ? "border-dpm-accent/25" : ""}`}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-            <div className="flex-1 min-w-0">
-              <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
-                <label
-                  htmlFor="duel-phys-share"
-                  className="text-[10px] text-dpm-muted cursor-help"
-                >
-                  Incoming {incomingPhysPct}% physical / {100 - incomingPhysPct}%
-                  magic
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.maxHP}>
+                <label htmlFor="duel-max-hp" className="finder-field-label cursor-help">
+                  Max HP
                 </label>
               </HoverTip>
               <input
-                id="duel-phys-share"
-                type="range"
-                min={0}
-                max={100}
-                value={incomingPhysPct}
+                id="duel-max-hp"
+                type="number"
+                min={400}
+                max={12000}
+                step={100}
+                value={targetMaxHP}
                 onChange={(e) => {
-                  setIncomingPhysPct(Number(e.target.value));
-                  if (useAutoStats) setUseAutoStats(false);
+                  setTargetMaxHP(Number(e.target.value) || 3000);
+                  if (isAutoActive) setUseAutoStats(false);
                 }}
-                className="w-full mt-2 accent-dpm-accent"
+                className={`dpm-input ${isAutoActive ? "border-dpm-accent/25" : ""}`}
               />
             </div>
-            <div className="shrink-0">
-              <HoverTip label={DUEL_FIELD_TOOLTIPS.rotation}>
-                <label
-                  htmlFor="duel-rotation-profiles"
-                  className="text-[10px] text-dpm-muted cursor-help block mb-1"
-                >
-                  Rotations
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.bonusHP}>
+                <label htmlFor="duel-bonus-hp" className="finder-field-label cursor-help">
+                  Bonus HP
                 </label>
               </HoverTip>
-              <button
-                id="duel-rotation-profiles"
-                type="button"
-                onClick={() => setUseRotationProfiles((prev) => !prev)}
-                className={`dpm-btn text-xs ${useRotationProfiles ? "dpm-btn-active" : ""}`}
-              >
-                {useRotationProfiles ? "On" : "Off"}
-              </button>
+              <input
+                id="duel-bonus-hp"
+                type="number"
+                min={0}
+                max={8000}
+                step={100}
+                value={targetBonusHP}
+                onChange={(e) => {
+                  setTargetBonusHP(Number(e.target.value) || 0);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input ${isAutoActive ? "border-dpm-accent/25" : ""}`}
+              />
+            </div>
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.armor}>
+                <label htmlFor="duel-armor" className="finder-field-label cursor-help">
+                  Armor
+                </label>
+              </HoverTip>
+              <input
+                id="duel-armor"
+                type="number"
+                min={0}
+                max={500}
+                step={5}
+                value={targetArmor}
+                onChange={(e) => {
+                  setTargetArmor(Number(e.target.value) || 0);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input ${isAutoActive ? "border-dpm-accent/25" : ""}`}
+              />
+            </div>
+            <div>
+              <HoverTip label={DUEL_FIELD_TOOLTIPS.mr}>
+                <label htmlFor="duel-mr" className="finder-field-label cursor-help">
+                  MR
+                </label>
+              </HoverTip>
+              <input
+                id="duel-mr"
+                type="number"
+                min={0}
+                max={500}
+                step={5}
+                value={targetMR}
+                onChange={(e) => {
+                  setTargetMR(Number(e.target.value) || 0);
+                  if (isAutoActive) setUseAutoStats(false);
+                }}
+                className={`dpm-input ${isAutoActive ? "border-dpm-accent/25" : ""}`}
+              />
             </div>
           </div>
         </div>
-      </details>
 
-      {/* Builds */}
-      <section>
-        <p className="finder-section-label mb-2">Builds</p>
+        <div className="space-y-4 pt-1 border-t border-white/10">
+          <div>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
+              <label htmlFor="duel-phys-share" className="finder-field-label cursor-help">
+                Incoming damage: {incomingPhysPct}% physical /{" "}
+                {100 - incomingPhysPct}% magic
+              </label>
+            </HoverTip>
+            <input
+              id="duel-phys-share"
+              type="range"
+              min={0}
+              max={100}
+              value={incomingPhysPct}
+              onChange={(e) => {
+                setIncomingPhysPct(Number(e.target.value));
+                if (useAutoStats) setUseAutoStats(false);
+              }}
+              className="w-full accent-dpm-accent"
+            />
+          </div>
+          <div>
+            <HoverTip label={DUEL_FIELD_TOOLTIPS.rotation}>
+              <label htmlFor="duel-rotation-profiles" className="finder-field-label cursor-help">
+                Rotation templates
+              </label>
+            </HoverTip>
+            <button
+              id="duel-rotation-profiles"
+              type="button"
+              onClick={() => setUseRotationProfiles((prev) => !prev)}
+              className={`dpm-btn ${useRotationProfiles ? "dpm-btn-active" : ""}`}
+            >
+              {useRotationProfiles ? "Enabled" : "Disabled"}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Column 3 — Builds */}
+      <section className="finder-col finder-col-builds min-h-0">
+        <p className="finder-section-label">Builds</p>
         {!selectedChampion && (
-          <p className="text-dpm-muted text-sm py-6 text-center">
-            Choose a champion above.
+          <p className="text-dpm-muted text-sm py-8 text-center lg:text-left">
+            Select a champion to see build recommendations.
           </p>
         )}
         {selectedChampion && busy && (
-          <div className="flex items-center justify-center gap-2 text-dpm-muted text-sm py-8">
+          <div className="flex items-center gap-2 text-dpm-muted text-sm py-8">
             <ChampionIcon name={selectedChampion.Name} size={32} />
-            <span>Computing…</span>
+            <span>Computing builds for {selectedChampion.Name}…</span>
           </div>
         )}
         {selectedChampion && !busy && recs.length === 0 && (
-          <p className="text-dpm-muted text-sm py-6 text-center">
-            No recommendations.
-          </p>
+          <p className="text-dpm-muted text-sm py-8">No recommendations.</p>
         )}
         {selectedChampion && !busy && recs.length > 0 && (
           <div className="finder-build-grid">
@@ -977,7 +933,9 @@ function RandomBuildGenerator(): React.ReactElement {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="dpm-stat-tile !p-3">
                   <div className="dpm-stat-tile-label">Total DPS</div>
-                  <div className="text-3xl font-bold text-dpm-accent">
+                  <div
+                    className={`text-3xl font-bold ${dpsColorForBuild(selectedBuild).text}`}
+                  >
                     {selectedBuild.totalDPS.toFixed(1)}
                   </div>
                 </div>
@@ -1318,7 +1276,9 @@ function MetaAnalysis(): React.ReactElement {
               </tr>
             </thead>
             <tbody>
-              {displayBuilds.map((build) => (
+              {displayBuilds.map((build) => {
+                const dpsColors = dpsColorForBuild(build);
+                return (
                 <tr
                   key={`${build.champion}-${build.buildType}-${build.rune}`}
                   className="border-b border-white/5 hover:bg-dpm-widget-hover/50 transition-colors"
@@ -1367,7 +1327,7 @@ function MetaAnalysis(): React.ReactElement {
                       </span>
                     </HoverTip>
                   </td>
-                  <td className="p-3 text-right font-bold text-dpm-accent">
+                  <td className="p-3 text-right font-bold">
                     <HoverTip
                       label={
                         build.fightDurationSeconds != null
@@ -1375,7 +1335,9 @@ function MetaAnalysis(): React.ReactElement {
                           : STAT_TOOLTIPS.fightDuration
                       }
                     >
-                      <span className="cursor-help border-b border-dotted border-dpm-accent/40">
+                      <span
+                        className={`cursor-help border-b border-dotted ${dpsColors.text} ${dpsColors.border}`}
+                      >
                         {build.totalDPS.toFixed(1)}
                       </span>
                     </HoverTip>
@@ -1387,7 +1349,8 @@ function MetaAnalysis(): React.ReactElement {
                     {build.abilityDPS.toFixed(1)}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -1409,29 +1372,17 @@ function MetaAnalysis(): React.ReactElement {
             {hoveredBuild.champion} - DPS Breakdown
           </div>
           <div className="space-y-1 text-xs font-mono">
-            {hoveredBuild.breakdown.map((line) => {
-              let colorClass = "text-dpm-text";
-              if (line.includes("Base AA:"))
-                colorClass = "text-dpm-accent-gold";
-              else if (line.includes("on-hit"))
-                colorClass = "text-dpm-accent";
-              else if (line.includes("On-hit total:"))
-                colorClass = "text-dpm-accent font-semibold";
-              else if (line.includes("DPS (") && !line.includes("On-hit"))
-                colorClass = "text-dpm-accent-cyan";
-              else if (line.includes("Damage multipliers:"))
-                colorClass = "text-dpm-accent-gold font-semibold";
-
-              return (
-                <div key={line} className={colorClass}>
-                  {line}
-                </div>
-              );
-            })}
+            {hoveredBuild.breakdown.map((line) => (
+              <div key={line} className={breakdownLineColorClass(line)}>
+                {line}
+              </div>
+            ))}
           </div>
           <div className="mt-3 pt-2 border-t border-white/10 text-xs text-dpm-muted">
             Total:{" "}
-            <span className="text-dpm-accent font-bold">
+            <span
+              className={`font-bold ${dpsColorForBuild(hoveredBuild).text}`}
+            >
               {hoveredBuild.totalDPS.toFixed(1)}
             </span>{" "}
             DPS

@@ -31,6 +31,8 @@ export const PROFILE_TOOLTIPS: Record<string, string> = {
   spell: "Ability + DoT focus; sim assumes no auto-attack cadence.",
   ad: "Auto attacks, on-hit, and physical carry patterns.",
   bruiser: "Frontline profile: high HP/resists with solid total output.",
+  cursed:
+    "Meme stat stack — ability haste, mana, move speed, and other kit-leaning scalers your champ naturally wants.",
 };
 
 export const DUEL_FIELD_TOOLTIPS = {
@@ -44,3 +46,59 @@ export const DUEL_FIELD_TOOLTIPS = {
   rotation:
     "When enabled, uses champion-specific ability rotation templates.",
 } as const;
+
+export type PrimaryDamageType = "ad" | "ap";
+
+export type DpsComponents = {
+  autoAttackDPS: number;
+  onHitDPS: number;
+  abilityDPS: number;
+  dotDPS: number;
+  physicalAbilityDPS?: number;
+};
+
+/** AD if physical components dominate; otherwise AP (magic abilities + DoT). */
+export function primaryDamageTypeFromDps(parts: DpsComponents): PrimaryDamageType {
+  const physicalAbility = parts.physicalAbilityDPS ?? 0;
+  const magicAbility = Math.max(0, parts.abilityDPS - physicalAbility);
+  const ad = parts.autoAttackDPS + parts.onHitDPS + physicalAbility;
+  const ap = magicAbility + parts.dotDPS;
+  return ad >= ap ? "ad" : "ap";
+}
+
+export function dpsDamageColorClasses(type: PrimaryDamageType): {
+  text: string;
+  border: string;
+} {
+  return type === "ad"
+    ? { text: "text-dpm-ad", border: "border-dpm-ad/50" }
+    : { text: "text-dpm-ap", border: "border-dpm-ap/50" };
+}
+
+/** Color breakdown lines by inferred damage type. */
+export function breakdownLineColorClass(line: string): string {
+  if (line.includes("Damage multipliers:")) {
+    return "text-dpm-accent-gold font-semibold";
+  }
+  if (
+    line.includes("Base AA:") ||
+    line.includes("On-hit") ||
+    line.includes("on-hit")
+  ) {
+    return "text-dpm-ad";
+  }
+  if (
+    line.includes("Magic DoT") ||
+    /\bmagic\b/i.test(line) ||
+    line.includes("Liandry") ||
+    line.includes("Luden") ||
+    line.includes("Stormsurge") ||
+    line.includes("Torment")
+  ) {
+    return "text-dpm-ap";
+  }
+  if (/\btrue\b/i.test(line)) {
+    return "text-dpm-accent-gold";
+  }
+  return "text-dpm-text";
+}

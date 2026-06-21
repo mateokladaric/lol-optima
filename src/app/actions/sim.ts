@@ -2928,6 +2928,156 @@ export function isManaScalingItem(item: Item): boolean {
   return false;
 }
 
+export type CursedStatId =
+  | "abilityHaste"
+  | "mana"
+  | "moveSpeed"
+  | "attackSpeed"
+  | "crit"
+  | "healShield"
+  | "omnivamp"
+  | "abilityAmp"
+  | "manaScale";
+
+export type ChampionCursedWeights = Record<CursedStatId, number>;
+
+export const CURSED_STAT_LABELS: Record<CursedStatId, string> = {
+  abilityHaste: "ability haste",
+  mana: "mana pool",
+  moveSpeed: "move speed",
+  attackSpeed: "attack speed",
+  crit: "crit",
+  healShield: "heals & shields",
+  omnivamp: "lifesteal & omnivamp",
+  abilityAmp: "ability amplifiers",
+  manaScale: "mana scaling",
+};
+
+function abilityRankForCursedWeights(
+  abilityType: Ability["abilityType"],
+): number {
+  return abilityType === "R" ? 3 : 5;
+}
+
+/**
+ * Per-champion weights for the CURSED build profile — favors fun stat angles
+ * (haste, mana, MS, etc.) the kit naturally leans into, not raw DPS/HP.
+ */
+export function computeChampionCursedWeights(
+  champion: Character,
+  championLevel: number = 18,
+): ChampionCursedWeights {
+  const rot = CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)];
+  const combo = CHAMPION_COMBO_PROFILES[championSimKey(champion.Name)];
+  const { apScore, adScore } = championApAdScalingScores(
+    champion,
+    championLevel,
+  );
+
+  const weights: ChampionCursedWeights = {
+    abilityHaste: 0.22,
+    mana: 0,
+    moveSpeed: 0.06,
+    attackSpeed: 0,
+    crit: 0,
+    healShield: 0,
+    omnivamp: 0,
+    abilityAmp: 0,
+    manaScale: 0,
+  };
+
+  let castAbilityCount = 0;
+  let cdPressure = 0;
+  let manaRatioScore = 0;
+  let healShieldScore = 0;
+  let msScore = 0;
+  let asScore = 0;
+
+  for (const ability of champion.Abilities) {
+    if (ability.abilityType === "passive") continue;
+    castAbilityCount += 1;
+
+    const rank = abilityRankForCursedWeights(ability.abilityType);
+    const rotW = rot?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+
+    const cd = ability.getCooldownAtLevel(rank);
+    if (cd > 0 && cd < 140) {
+      cdPressure += (1 / cd) * rotW * 12;
+    }
+
+    if (ability.effects?.heal) {
+      healShieldScore +=
+        scalingMaxAtLevel(ability.effects.heal, championLevel) * rotW;
+    }
+    if (ability.effects?.shield) {
+      healShieldScore +=
+        scalingMaxAtLevel(ability.effects.shield, championLevel) * rotW;
+    }
+    if (ability.effects?.bonusStats?.ms) {
+      msScore +=
+        scalingMaxAtLevel(ability.effects.bonusStats.ms, championLevel) * rotW;
+    }
+    if (ability.effects?.bonusStats?.as) {
+      asScore +=
+        scalingMaxAtLevel(ability.effects.bonusStats.as, championLevel) * rotW;
+    }
+
+    for (const block of [ability.damage, ability.burstDamage]) {
+      if (!block) continue;
+      if (block.maxManaRatio) {
+        manaRatioScore +=
+          scalingMaxAtLevel(block.maxManaRatio, championLevel) * rotW;
+      }
+    }
+  }
+
+  weights.abilityHaste += Math.min(0.45, cdPressure / 8 + castAbilityCount * 0.04);
+
+  if (championUsesMana(champion)) {
+    weights.mana = 0.12 + Math.min(0.28, manaRatioScore / 45);
+    weights.manaScale = weights.mana * 0.85;
+  }
+
+  if (healShieldScore > 15) {
+    weights.healShield = Math.min(0.55, healShieldScore / 70);
+  }
+
+  weights.moveSpeed += Math.min(0.35, msScore / 80);
+
+  const autoW = combo?.comboAutoWeight ?? 0.65;
+  weights.attackSpeed = Math.min(0.5, autoW * 0.55 + asScore / 120);
+
+  const onHitScale = combo?.itemOnHitScale ?? itemOnHitScaleForChampion(champion.Name);
+  if (autoW >= 0.45 && onHitScale >= 0.4) {
+    weights.omnivamp = 0.1 + autoW * 0.22;
+  }
+
+  if (autoW >= 0.5 && adScore >= 80) {
+    weights.crit = 0.12 + Math.min(0.28, adScore / 450);
+  }
+
+  if (apScore >= adScore * 0.75) {
+    weights.abilityAmp = Math.min(0.38, apScore / 320);
+  }
+
+  const sum = Object.values(weights).reduce((acc, v) => acc + v, 0);
+  if (sum <= 0) return weights;
+  for (const key of Object.keys(weights) as CursedStatId[]) {
+    weights[key] /= sum;
+  }
+  return weights;
+}
+
+/** Human-readable top cursed stat leans for build descriptions. */
+export function formatCursedStatLean(weights: ChampionCursedWeights): string {
+  const ranked = (Object.entries(weights) as [CursedStatId, number][])
+    .filter(([, w]) => w >= 0.08)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([id]) => CURSED_STAT_LABELS[id]);
+  return ranked.length > 0 ? ranked.join(" & ") : "weird stats";
+}
+
 export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
   Akali: {
     castOrder: ["R", "Q", "E", "W"],

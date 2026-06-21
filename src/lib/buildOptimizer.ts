@@ -24,8 +24,12 @@ import {
   championSimKey,
   championUsesApScaling,
   championUsesMana,
+  computeChampionCursedWeights,
   computeHealthRegenHPS,
   computeRotationHealHPS,
+  formatCursedStatLean,
+  type ChampionCursedWeights,
+  type CursedStatId,
   isManaScalingItem,
   itemOnHitScaleForChampion,
   Item as ItemModel,
@@ -428,6 +432,91 @@ export function dpsMitigationForPurchaseStep(
   };
 }
 
+const cursedWeightsCache = new Map<string, ChampionCursedWeights>();
+
+function getChampionCursedWeights(champion: Character): ChampionCursedWeights {
+  const key = championSimKey(champion.Name);
+  const hit = cursedWeightsCache.get(key);
+  if (hit) return hit;
+  const weights = computeChampionCursedWeights(champion);
+  cursedWeightsCache.set(key, weights);
+  return weights;
+}
+
+function scoreCursedStatBundle(
+  stats: ReturnType<Character["getTotalStats"]>,
+  weights: ChampionCursedWeights,
+): number {
+  const haste =
+    (stats.abilityHaste ?? 0) +
+    (stats.basicAbilityHaste ?? 0) * 0.55 +
+    (stats.ultAbilityHaste ?? 0) * 0.35;
+  const mana = stats.mana ?? 0;
+  const moveSpeed =
+    (stats.msPercent ?? 0) + Math.max(0, (stats.ms ?? 0) - 325) * 0.35;
+  const attackSpeed = stats.attackSpeed ?? 0;
+  const crit =
+    (stats.critChance ?? 0) + Math.max(0, (stats.critDmg ?? 175) - 175) * 0.12;
+  const healShield =
+    (stats.shieldValue ?? 0) / 12 +
+    (stats.healthRegen ?? 0) * 0.45 +
+    (stats.manaRegen ?? 0) * 0.08;
+  const omnivamp = (stats.lifeSteal ?? 0) + (stats.omnivamp ?? 0);
+  const abilityAmp =
+    (stats.abilityDamageMultiplicative ?? 0) +
+    (stats.apMultiplicative ?? 0) +
+    (stats.adMultiplicative ?? 0) * 0.35;
+  const manaScale =
+    (stats.adPerMaxManaPercent ?? 0) * (mana / 120) +
+    (stats.apPerBonusManaPercent ?? 0) * (mana / 120) +
+    (stats.hpPerBonusManaPercent ?? 0) * (mana / 200) +
+    (stats.abilityDamagePerManaMultiplicative ?? 0) * (mana / 450) +
+    (stats.physicalOnHitMaxManaPercent ?? 0) +
+    (stats.physicalOnAbilityHitMaxManaPercent ?? 0) +
+    (stats.apPerManaRegenMultiplicative ?? 0) * 0.5;
+
+  const components: Record<CursedStatId, number> = {
+    abilityHaste: Math.log1p(haste / 14) * 26,
+    mana: Math.log1p(mana / 350) * 20,
+    moveSpeed: Math.log1p(moveSpeed / 7) * 22,
+    attackSpeed: Math.log1p(attackSpeed / 22) * 24,
+    crit: Math.log1p(Math.max(0, crit) / 14) * 21,
+    healShield: Math.log1p(Math.max(0, healShield) / 7) * 20,
+    omnivamp: Math.log1p(Math.max(0, omnivamp) / 7) * 23,
+    abilityAmp: Math.log1p(Math.max(0, abilityAmp) / 9) * 22,
+    manaScale: Math.log1p(Math.max(0, manaScale) / 4) * 25,
+  };
+
+  let score = 0;
+  for (const id of Object.keys(components) as CursedStatId[]) {
+    score += weights[id] * components[id];
+  }
+  return score;
+}
+
+function itemCursedStatContribution(item: Item): number {
+  const s = item.stats;
+  return (
+    (s.abilityHaste ?? 0) * 1.4 +
+    (s.basicAbilityHaste ?? 0) * 0.9 +
+    (s.mana ?? 0) / 55 +
+    (s.msPercent ?? 0) * 2.2 +
+    (s.ms ?? 0) * 0.08 +
+    (s.attackSpeed ?? 0) * 0.85 +
+    (s.critChance ?? 0) * 1.6 +
+    (s.lifeSteal ?? 0) * 1.8 +
+    (s.omnivamp ?? 0) * 1.8 +
+    (s.abilityDamageMultiplicative ?? 0) * 4 +
+    (s.apMultiplicative ?? 0) * 3.5 +
+    (s.adPerMaxManaPercent ?? 0) * 2.5 +
+    (s.apPerBonusManaPercent ?? 0) * 2.5 +
+    (s.abilityDamagePerManaMultiplicative ?? 0) * 0.15 +
+    (s.physicalOnHitMaxManaPercent ?? 0) * 2 +
+    (s.physicalOnAbilityHitMaxManaPercent ?? 0) * 2 +
+    (s.basicAbilityCooldownReductionOnAttack ?? 0) * 2.5
+  );
+}
+
 export type BuildProfileId =
   | "balanced"
   | "glass"
@@ -436,7 +525,8 @@ export type BuildProfileId =
   | "ap"
   | "spell"
   | "ad"
-  | "bruiser";
+  | "bruiser"
+  | "cursed";
 
 export interface BuildRecommendation {
   profile: BuildProfileId;
@@ -452,6 +542,7 @@ export interface BuildRecommendation {
   onHitDPS: number;
   abilityDPS: number;
   dotDPS: number;
+  physicalAbilityDPS?: number;
   burstDPS: number;
   sustainedDPS: number;
   comboDPS: number;
@@ -552,6 +643,8 @@ export function keystoneCandidatesFor(
   return AllKeystones.filter((k) => {
     const n = k.name;
 
+    if (profile === "cursed") return true;
+
     if (UTILITY_KEYSTONES.has(n)) return false;
 
     if (n === "Conqueror (AP)") {
@@ -646,8 +739,9 @@ function keystonePickScore(
   profile: BuildProfileId,
   dps: ReturnType<Character["calculateDPS"]>,
   stats: ReturnType<Character["getTotalStats"]>,
+  champion?: Character,
 ): number {
-  return purchasePowerScore(profile, dps, stats);
+  return purchasePowerScore(profile, dps, stats, champion);
 }
 
 export function cloneChampionWithLoadout(
@@ -1017,6 +1111,9 @@ function profileScore(
     case "bruiser":
       return Math.log1p(mixed / 45) * Math.log1p(ehp / 200) * duelFactor;
 
+    case "cursed":
+      return Math.log1p(mixed / 55) * duelFactor;
+
     case "balanced":
     default:
       return Math.log1p(mixed / 50) * Math.log1p(ehp / 400) * duelFactor;
@@ -1053,6 +1150,21 @@ function scoreChampion(
     fightDurationSeconds,
   );
 
+  if (profile === "cursed") {
+    const weights = getChampionCursedWeights(c);
+    const cursed = scoreCursedStatBundle(dps.combatStats, weights);
+    const itemMeme = build.reduce(
+      (acc, item) => acc + itemCursedStatContribution(item),
+      0,
+    );
+    const mixed = blendedDps(dps, DEFAULT_COMBO_DPS_WEIGHT);
+    return (
+      Math.pow(cursed + itemMeme * 0.035, 1.08) *
+      Math.pow(Math.log1p(mixed / 50), 0.38) *
+      Math.sqrt(Math.max(0.1, duelRatio))
+    );
+  }
+
   return profileScore(profile, dps, durabilityEHP, build, duelRatio);
 }
 
@@ -1064,6 +1176,7 @@ function purchasePowerScore(
   profile: BuildProfileId,
   dps: ReturnType<Character["calculateDPS"]>,
   stats: ReturnType<Character["getTotalStats"]>,
+  champion?: Character,
 ): number {
   switch (profile) {
     case "glass":
@@ -1085,6 +1198,12 @@ function purchasePowerScore(
       return (
         blendedDps(dps, 0.45) + Math.log1p((stats.hp ?? 0) / 800) * 6
       );
+    case "cursed": {
+      if (!champion) return blendedDps(dps, 0.35);
+      const weights = getChampionCursedWeights(champion);
+      const cursed = scoreCursedStatBundle(stats, weights);
+      return cursed * 0.78 + blendedDps(dps, 0.32) * 0.22;
+    }
     case "balanced":
     default:
       return blendedDps(dps, DEFAULT_COMBO_DPS_WEIGHT);
@@ -1132,7 +1251,7 @@ export function greedySimPurchaseOrder(
           iterations: duel.comboWindowSeconds != null ? 0 : 1,
         },
       );
-      return purchasePowerScore(profile, dps, c.getTotalStats(stepSim.level));
+      return purchasePowerScore(profile, dps, c.getTotalStats(stepSim.level), c);
     },
     duel,
   );
@@ -1184,7 +1303,12 @@ function bestKeystoneForBuild(
         iterations: duel.comboWindowSeconds != null ? 0 : 1,
       },
     );
-    const s = keystonePickScore(profile, dps, c.getTotalStats(profileSim.level));
+    const s = keystonePickScore(
+      profile,
+      dps,
+      c.getTotalStats(profileSim.level),
+      c,
+    );
     if (s > bestS) {
       bestS = s;
       best = k;
@@ -1532,6 +1656,11 @@ const PROFILE_META: Record<
     label: "Bruiser",
     description: "Frontline profile: high HP/resists with solid total output.",
   },
+  cursed: {
+    label: "Cursed",
+    description:
+      "Chases the weird stat angles your kit naturally wants — haste, mana, move speed, crit memes, and more.",
+  },
 };
 
 export type RecommendBuildsOptions = {
@@ -1587,6 +1716,7 @@ export function recommendBuildsForChampion(
     "balanced",
     "glass",
     "ability_burst",
+    "cursed",
     "tank",
     "ap",
     "spell",
@@ -1713,7 +1843,10 @@ export function recommendBuildsForChampion(
       results.push({
         profile,
         label: PROFILE_META[profile].label,
-        description: PROFILE_META[profile].description,
+        description:
+          profile === "cursed"
+            ? `${PROFILE_META.cursed.description} Lean: ${formatCursedStatLean(getChampionCursedWeights(champion))}.`
+            : PROFILE_META[profile].description,
         items: purchaseOrder.map((i) => i.name),
         totalGold: totalBuildGold(purchaseOrder),
         rune: gRune?.name ?? "None",
@@ -1725,6 +1858,7 @@ export function recommendBuildsForChampion(
         onHitDPS: gd.onHitDPS,
         abilityDPS: gd.abilityDPS,
         dotDPS: gd.dotDPS,
+        physicalAbilityDPS: gd.physicalAbilityDPS,
         burstDPS: gd.burstDPS,
         effectiveHP: gehp,
         fightDurationSeconds,
@@ -1802,7 +1936,10 @@ export function recommendBuildsForChampion(
         results.push({
           profile,
           label: `${PROFILE_META[profile].label} (alt)`,
-          description: PROFILE_META[profile].description,
+          description:
+            profile === "cursed"
+              ? `${PROFILE_META.cursed.description} Lean: ${formatCursedStatLean(getChampionCursedWeights(champion))}.`
+              : PROFILE_META[profile].description,
           items: altOrder.map((x) => x.name),
           totalGold: totalBuildGold(altOrder),
           rune: aRune?.name ?? "None",
@@ -1814,6 +1951,7 @@ export function recommendBuildsForChampion(
           onHitDPS: altDps.onHitDPS,
           abilityDPS: altDps.abilityDPS,
           dotDPS: altDps.dotDPS,
+          physicalAbilityDPS: altDps.physicalAbilityDPS,
           burstDPS: altDps.burstDPS,
           effectiveHP: altEhp,
           fightDurationSeconds: altFightSec,
@@ -1831,6 +1969,7 @@ export function recommendBuildsForChampion(
         "balanced",
         "glass",
         "ability_burst",
+        "cursed",
         "tank",
         "ap",
         "spell",
@@ -1858,6 +1997,7 @@ export type SerializedBuildResult = {
   onHitDPS: number;
   dotDPS: number;
   abilityDPS: number;
+  physicalAbilityDPS?: number;
   burstDPS: number;
   /** TTK-derived fight length used for this row's DPS (seconds). */
   fightDurationSeconds?: number;
@@ -1876,6 +2016,7 @@ const BUILD_PROFILE_IDS: BuildProfileId[] = [
   "balanced",
   "glass",
   "ability_burst",
+  "cursed",
   "tank",
   "ap",
   "spell",
@@ -1920,6 +2061,7 @@ function serializeBuildRecommendation(
     onHitDPS: r.onHitDPS,
     abilityDPS: r.abilityDPS,
     dotDPS: r.dotDPS,
+    physicalAbilityDPS: r.physicalAbilityDPS,
     burstDPS: r.burstDPS,
     fightDurationSeconds: r.fightDurationSeconds,
     breakdown: r.breakdown,
@@ -1977,6 +2119,7 @@ export function rescoreMetaBuildRow(
     onHitDPS: dps.onHitDPS,
     abilityDPS: dps.abilityDPS,
     dotDPS: dps.dotDPS,
+    physicalAbilityDPS: dps.physicalAbilityDPS,
     burstDPS: dps.burstDPS,
     fightDurationSeconds,
     breakdown: dps.breakdown,
