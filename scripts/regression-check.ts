@@ -36,6 +36,11 @@ import {
   opponentAtPurchaseStep,
   purchaseLevelForItemCount,
 } from "../src/lib/purchaseOrder";
+import {
+  canAddItemToBuild,
+  hasFatalityConflict,
+  isValidFullBuild,
+} from "../src/lib/itemExclusiveGroups";
 
 type CheckCase = {
   champion: string;
@@ -996,6 +1001,46 @@ if (Characters.length !== EXPECTED_CHAMPION_COUNT) {
     `Expected ${EXPECTED_CHAMPION_COUNT} champions in roster, got ${Characters.length}`,
   );
 }
+
+function checkFatalityItemExclusivity() {
+  const terminus = Items.find((i) => i.getGroupName() === "Terminus");
+  const serylda = Items.find((i) => i.name === "Serylda's Grudge");
+  if (!terminus || !serylda) {
+    fail("Missing Terminus or Serylda's Grudge in item pool");
+  }
+  if (canAddItemToBuild(serylda!, [terminus!])) {
+    fail("Serylda's Grudge must not combine with Terminus (Fatality limit)");
+  }
+  if (isValidFullBuild([terminus!, serylda!])) {
+    fail("Terminus + Serylda's is not a valid full build");
+  }
+
+  const jinx = Characters.find((c) => c.Name === "Jinx");
+  if (jinx) {
+    const recs = recommendBuildsForChampion(jinx, Items, {
+      monteCarlo: false,
+      samples: 0,
+      duel: resolveDuel({ targetArmor: 150 }),
+    });
+    for (const rec of recs) {
+      const itemObjs = rec.items
+        .map((name) => Items.find((i) => i.name === name))
+        .filter((i): i is Item => i != null);
+      if (!isValidFullBuild(itemObjs)) {
+        fail(
+          `Jinx ${rec.profile} build violates item limits: ${rec.items.join(", ")}`,
+        );
+      }
+      if (hasFatalityConflict(itemObjs)) {
+        fail(
+          `Jinx ${rec.profile} has Terminus + Last Whisper line: ${rec.items.join(", ")}`,
+        );
+      }
+    }
+  }
+}
+
+checkFatalityItemExclusivity();
 
 console.log(
   `Regression checks passed (${CASES.length} champion scenarios, ${Characters.length} champions).`,

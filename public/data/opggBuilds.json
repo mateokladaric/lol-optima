@@ -1,6 +1,6 @@
 {
-  "patch": "16.10",
-  "scrapedAt": "2026-05-26T20:31:09.771Z",
+  "patch": "16.13",
+  "scrapedAt": "2026-06-25T19:54:25.007Z",
   "champions": {
     "Garen": {
       "position": "TOP",
@@ -15,8 +15,8 @@
         "Phantom Dancer",
         "Mortal Reminder",
         "Berserker's Greaves",
-        "Dead Man's Plate",
-        "Youmuu's Ghostblade"
+        "Youmuu's Ghostblade",
+        "Dead Man's Plate"
       ],
       "baseStatsLv18": {
         "hp": 2356,
@@ -27,17 +27,17 @@
     "Galio": {
       "position": "MID",
       "items": [
-        "Hollow Radiance",
-        "Riftmaker",
+        "Hextech Rocketbelt",
+        "Imperial Mandate",
         "Zhonya's Hourglass"
       ],
       "boots": "Mercury's Treads",
       "fullBuild": [
-        "Hollow Radiance",
-        "Riftmaker",
+        "Hextech Rocketbelt",
+        "Imperial Mandate",
         "Zhonya's Hourglass",
         "Mercury's Treads",
-        "Hextech Rocketbelt",
+        "Hollow Radiance",
         "Dark Seal"
       ],
       "baseStatsLv18": {
@@ -60,7 +60,7 @@
         "Infinity Edge",
         "Plated Steelcaps",
         "Lord Dominik's Regards",
-        "Mortal Reminder"
+        "Immortal Shieldbow"
       ],
       "baseStatsLv18": {
         "hp": 2568,
@@ -104,8 +104,8 @@
         "The Collector",
         "Lord Dominik's Regards",
         "Plated Steelcaps",
-        "Infinity Edge",
-        "Immortal Shieldbow"
+        "Youmuu's Ghostblade",
+        "Infinity Edge"
       ],
       "baseStatsLv18": {
         "hp": 2427,
@@ -117,17 +117,17 @@
       "position": "TOP",
       "items": [
         "Riftmaker",
-        "Dusk and Dawn",
+        "Nashor's Tooth",
         "Shadowflame"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Riftmaker",
-        "Dusk and Dawn",
+        "Nashor's Tooth",
         "Shadowflame",
         "Plated Steelcaps",
-        "Nashor's Tooth",
-        "Rabadon's Deathcap"
+        "Dusk and Dawn",
+        "Zhonya's Hourglass"
       ],
       "baseStatsLv18": {
         "hp": 2575,
@@ -171,7 +171,7 @@
         "Ardent Censer",
         "Ionian Boots of Lucidity",
         "Dream Maker",
-        "Mikael's Blessing"
+        "Echoes of Helia"
       ],
       "baseStatsLv18": {
         "hp": 2056,
@@ -192,8 +192,8 @@
         "Frozen Heart",
         "Spirit Visage",
         "Ionian Boots of Lucidity",
-        "Thornmail",
-        "Bramble Vest"
+        "Bramble Vest",
+        "Iceborn Gauntlet"
       ],
       "baseStatsLv18": {
         "hp": 2418,
@@ -204,17 +204,17 @@
     "Naafiri": {
       "position": "JUNGLE",
       "items": [
-        "Hubris",
+        "Voltaic Cyclosword",
         "Axiom Arc",
         "Serylda's Grudge"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
-        "Hubris",
+        "Voltaic Cyclosword",
         "Axiom Arc",
         "Serylda's Grudge",
         "Ionian Boots of Lucidity",
-        "Voltaic Cyclosword",
+        "Black Cleaver",
         "Edge of Night"
       ],
       "baseStatsLv18": {
@@ -259,7 +259,7 @@
         "Black Cleaver",
         "Plated Steelcaps",
         "Axiom Arc",
-        "Guardian Angel"
+        "Profane Hydra"
       ],
       "baseStatsLv18": {
         "hp": 2508,
@@ -271,17 +271,17 @@
       "position": "JUNGLE",
       "items": [
         "Hextech Rocketbelt",
-        "Zhonya's Hourglass",
-        "Banshee's Veil"
+        "Stormsurge",
+        "Zhonya's Hourglass"
       ],
-      "boots": "Mercury's Treads",
+      "boots": "Sorcerer's Shoes",
       "fullBuild": [
         "Hextech Rocketbelt",
+        "Stormsurge",
         "Zhonya's Hourglass",
-        "Banshee's Veil",
-        "Mercury's Treads",
+        "Sorcerer's Shoes",
         "Dark Seal",
-        "Liandry's Torment"
+        "Thornmail"
       ],
       "baseStatsLv18": {
         "hp": 2140,
@@ -331,6 +331,28 @@
         "hp": 2378,
         "armor": 109,
         "mr": 52
+      }
+    },
+    "Nilah": {
+      "position": "ADC",
+      "items": [
+        "The Collector",
+        "Infinity Edge",
+        "Lord Dominik's Regards"
+      ],
+      "boots": "Gluttonous Greaves",
+      "fullBuild": [
+        "The Collector",
+        "Infinity Edge",
+        "Lord Dominik's Regards",
+        "Gluttonous Greaves",
+        "Immortal Shieldbow",
+        "Mortal Reminder"
+      ],
+      "baseStatsLv18": {
+        "hp": 2287,
+        "armor": 98,
+        "mr": 67
       }
     },
     "Darius": {
@@ -384,14 +406,14 @@
         "The Collector",
         "Infinity Edge"
       ],
-      "boots": "Gluttonous Greaves",
+      "boots": "Berserker's Greaves",
       "fullBuild": [
         "Bloodthirster",
         "The Collector",
         "Infinity Edge",
-        "Gluttonous Greaves",
-        "Hubris",
-        "Hexoptics C44"
+        "Berserker's Greaves",
+        "Hexoptics C44",
+        "Hubris"
       ],
       "baseStatsLv18": {
         "hp": 2443,
@@ -417,7 +439,7 @@
         "Zhonya's Hourglass"
       ],
       "baseStatsLv18": {
-        "hp": 2753,
+        "hp": 2728,
         "armor": 93,
         "mr": 54
       }
@@ -427,13 +449,13 @@
       "items": [
         "Zeke's Convergence",
         "Locket of the Iron Solari",
-        "Bandlepipes"
+        "Knight's Vow"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Zeke's Convergence",
         "Locket of the Iron Solari",
-        "Bandlepipes",
+        "Knight's Vow",
         "Ionian Boots of Lucidity",
         "Celestial Opposition",
         "Solstice Sleigh"
@@ -457,8 +479,8 @@
         "Sunfire Aegis",
         "Jak'Sho, The Protean",
         "Plated Steelcaps",
-        "Protoplasm Harness",
-        "Hollow Radiance"
+        "Hollow Radiance",
+        "Protoplasm Harness"
       ],
       "baseStatsLv18": {
         "hp": 2345,
@@ -510,6 +532,28 @@
         "mr": 54
       }
     },
+    "Renata Glasc": {
+      "position": "SUPPORT",
+      "items": [
+        "Locket of the Iron Solari",
+        "Imperial Mandate",
+        "Shurelya's Battlesong"
+      ],
+      "boots": "Ionian Boots of Lucidity",
+      "fullBuild": [
+        "Locket of the Iron Solari",
+        "Imperial Mandate",
+        "Shurelya's Battlesong",
+        "Ionian Boots of Lucidity",
+        "Celestial Opposition",
+        "Solstice Sleigh"
+      ],
+      "baseStatsLv18": {
+        "hp": 2143,
+        "armor": 107,
+        "mr": 52
+      }
+    },
     "Renekton": {
       "position": "TOP",
       "items": [
@@ -536,17 +580,17 @@
       "position": "SUPPORT",
       "items": [
         "Locket of the Iron Solari",
-        "Bandlepipes",
-        "Knight's Vow"
+        "Knight's Vow",
+        "Bandlepipes"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Locket of the Iron Solari",
-        "Bandlepipes",
         "Knight's Vow",
+        "Bandlepipes",
         "Plated Steelcaps",
         "Celestial Opposition",
-        "Bramble Vest"
+        "Solstice Sleigh"
       ],
       "baseStatsLv18": {
         "hp": 2363,
@@ -567,8 +611,8 @@
         "Spear of Shojin",
         "Sterak's Gage",
         "Plated Steelcaps",
-        "Death's Dance",
-        "Titanic Hydra"
+        "Black Cleaver",
+        "Death's Dance"
       ],
       "baseStatsLv18": {
         "hp": 2283,
@@ -611,12 +655,34 @@
         "Profane Hydra",
         "Lord Dominik's Regards",
         "Ionian Boots of Lucidity",
-        "Voltaic Cyclosword",
-        "Edge of Night"
+        "Edge of Night",
+        "Voltaic Cyclosword"
       ],
       "baseStatsLv18": {
         "hp": 2358,
         "armor": 105,
+        "mr": 67
+      }
+    },
+    "Locke": {
+      "position": "MID",
+      "items": [
+        "Lich Bane",
+        "Shadowflame",
+        "Zhonya's Hourglass"
+      ],
+      "boots": "Sorcerer's Shoes",
+      "fullBuild": [
+        "Lich Bane",
+        "Shadowflame",
+        "Zhonya's Hourglass",
+        "Sorcerer's Shoes",
+        "Hextech Rocketbelt",
+        "Dark Seal"
+      ],
+      "baseStatsLv18": {
+        "hp": 2508,
+        "armor": 103,
         "mr": 67
       }
     },
@@ -647,16 +713,16 @@
       "items": [
         "Ardent Censer",
         "Mikael's Blessing",
-        "Moonstone Renewer"
+        "Shurelya's Battlesong"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Ardent Censer",
         "Mikael's Blessing",
-        "Moonstone Renewer",
+        "Shurelya's Battlesong",
         "Ionian Boots of Lucidity",
         "Dream Maker",
-        "Shurelya's Battlesong"
+        "Moonstone Renewer"
       ],
       "baseStatsLv18": {
         "hp": 2129,
@@ -693,12 +759,12 @@
         "Sundered Sky",
         "Death's Dance"
       ],
-      "boots": "Plated Steelcaps",
+      "boots": "Mercury's Treads",
       "fullBuild": [
         "Eclipse",
         "Sundered Sky",
         "Death's Dance",
-        "Plated Steelcaps",
+        "Mercury's Treads",
         "Black Cleaver",
         "Guardian Angel"
       ],
@@ -721,8 +787,8 @@
         "Sundered Sky",
         "Death's Dance",
         "Ionian Boots of Lucidity",
-        "Black Cleaver",
-        "Eclipse"
+        "Eclipse",
+        "Endless Hunger"
       ],
       "baseStatsLv18": {
         "hp": 2330,
@@ -743,7 +809,7 @@
         "Hextech Rocketbelt",
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
-        "Shadowflame",
+        "Imperial Mandate",
         "Blackfire Torch"
       ],
       "baseStatsLv18": {
@@ -799,15 +865,15 @@
     "Maokai": {
       "position": "SUPPORT",
       "items": [
-        "Bandlepipes",
         "Locket of the Iron Solari",
-        "Protoplasm Harness"
+        "Bandlepipes",
+        "Thornmail"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
-        "Bandlepipes",
         "Locket of the Iron Solari",
-        "Protoplasm Harness",
+        "Bandlepipes",
+        "Thornmail",
         "Boots of Swiftness",
         "Solstice Sleigh",
         "Celestial Opposition"
@@ -831,8 +897,8 @@
         "Liandry's Torment",
         "Rylai's Crystal Scepter",
         "Sorcerer's Shoes",
-        "Zhonya's Hourglass",
-        "Oblivion Orb"
+        "Oblivion Orb",
+        "Zhonya's Hourglass"
       ],
       "baseStatsLv18": {
         "hp": 2297,
@@ -854,7 +920,7 @@
         "Frozen Heart",
         "Plated Steelcaps",
         "Kaenic Rookern",
-        "Hollow Radiance"
+        "Bramble Vest"
       ],
       "baseStatsLv18": {
         "hp": 2433,
@@ -888,17 +954,17 @@
       "position": "TOP",
       "items": [
         "Riftmaker",
-        "Experimental Hexplate",
+        "Dusk and Dawn",
         "Hextech Rocketbelt"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Riftmaker",
-        "Experimental Hexplate",
+        "Dusk and Dawn",
         "Hextech Rocketbelt",
         "Plated Steelcaps",
         "Rylai's Crystal Scepter",
-        "Dusk and Dawn"
+        "Experimental Hexplate"
       ],
       "baseStatsLv18": {
         "hp": 2413,
@@ -997,18 +1063,18 @@
     "Bard": {
       "position": "SUPPORT",
       "items": [
-        "Dead Man's Plate",
+        "Locket of the Iron Solari",
         "Bandlepipes",
-        "Locket of the Iron Solari"
+        "Redemption"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
-        "Dead Man's Plate",
-        "Bandlepipes",
         "Locket of the Iron Solari",
+        "Bandlepipes",
+        "Redemption",
         "Boots of Swiftness",
         "Bloodsong",
-        "Solstice Sleigh"
+        "Dead Man's Plate"
       ],
       "baseStatsLv18": {
         "hp": 2381,
@@ -1030,7 +1096,7 @@
         "Terminus",
         "Gluttonous Greaves",
         "Jak'Sho, The Protean",
-        "Dusk and Dawn"
+        "Youmuu's Ghostblade"
       ],
       "baseStatsLv18": {
         "hp": 2385,
@@ -1118,8 +1184,8 @@
         "Shadowflame",
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
-        "Dark Seal",
-        "Stormsurge"
+        "Stormsurge",
+        "Dark Seal"
       ],
       "baseStatsLv18": {
         "hp": 2358,
@@ -1153,13 +1219,13 @@
       "position": "SUPPORT",
       "items": [
         "Luden's Echo",
-        "Horizon Focus",
+        "Shadowflame",
         "Zhonya's Hourglass"
       ],
       "boots": "Sorcerer's Shoes",
       "fullBuild": [
         "Luden's Echo",
-        "Horizon Focus",
+        "Shadowflame",
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
         "Zaz'Zak's Realmspike",
@@ -1185,7 +1251,7 @@
         "Spirit Visage",
         "Ionian Boots of Lucidity",
         "Unending Despair",
-        "Statikk Shiv"
+        "Fimbulwinter"
       ],
       "baseStatsLv18": {
         "hp": 2418,
@@ -1196,14 +1262,14 @@
     "Braum": {
       "position": "SUPPORT",
       "items": [
-        "Bandlepipes",
         "Locket of the Iron Solari",
+        "Bandlepipes",
         "Knight's Vow"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
-        "Bandlepipes",
         "Locket of the Iron Solari",
+        "Bandlepipes",
         "Knight's Vow",
         "Plated Steelcaps",
         "Solstice Sleigh",
@@ -1219,16 +1285,16 @@
       "position": "JUNGLE",
       "items": [
         "The Collector",
-        "Titanic Hydra",
+        "Profane Hydra",
         "Lord Dominik's Regards"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "The Collector",
-        "Titanic Hydra",
+        "Profane Hydra",
         "Lord Dominik's Regards",
         "Plated Steelcaps",
-        "Black Cleaver",
+        "Titanic Hydra",
         "Hubris"
       ],
       "baseStatsLv18": {
@@ -1255,7 +1321,7 @@
       ],
       "baseStatsLv18": {
         "hp": 2355,
-        "armor": 98,
+        "armor": 95,
         "mr": 52
       }
     },
@@ -1263,16 +1329,16 @@
       "position": "MID",
       "items": [
         "Hextech Rocketbelt",
-        "Riftmaker",
+        "Stormsurge",
         "Rabadon's Deathcap"
       ],
-      "boots": "Gluttonous Greaves",
+      "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Hextech Rocketbelt",
-        "Riftmaker",
-        "Rabadon's Deathcap",
-        "Gluttonous Greaves",
         "Stormsurge",
+        "Rabadon's Deathcap",
+        "Ionian Boots of Lucidity",
+        "Riftmaker",
         "Dark Seal"
       ],
       "baseStatsLv18": {
@@ -1338,8 +1404,8 @@
         "Hextech Rocketbelt",
         "Zhonya's Hourglass",
         "Ionian Boots of Lucidity",
-        "Liandry's Torment",
-        "Dark Seal"
+        "Dark Seal",
+        "Lich Bane"
       ],
       "baseStatsLv18": {
         "hp": 2300,
@@ -1374,15 +1440,15 @@
       "items": [
         "The Collector",
         "Infinity Edge",
-        "Lord Dominik's Regards"
+        "Immortal Shieldbow"
       ],
       "boots": "Gluttonous Greaves",
       "fullBuild": [
         "The Collector",
         "Infinity Edge",
-        "Lord Dominik's Regards",
-        "Gluttonous Greaves",
         "Immortal Shieldbow",
+        "Gluttonous Greaves",
+        "Lord Dominik's Regards",
         "B. F. Sword"
       ],
       "baseStatsLv18": {
@@ -1414,7 +1480,7 @@
       }
     },
     "Sylas": {
-      "position": "MID",
+      "position": "JUNGLE",
       "items": [
         "Hextech Rocketbelt",
         "Riftmaker",
@@ -1426,8 +1492,8 @@
         "Riftmaker",
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
-        "Shadowflame",
-        "Dark Seal"
+        "Dark Seal",
+        "Shadowflame"
       ],
       "baseStatsLv18": {
         "hp": 2674,
@@ -1458,20 +1524,20 @@
       }
     },
     "Senna": {
-      "position": "SUPPORT",
+      "position": "ADC",
       "items": [
-        "Black Cleaver",
         "Statikk Shiv",
-        "Rapid Firecannon"
+        "Black Cleaver",
+        "Hexoptics C44"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
-        "Black Cleaver",
         "Statikk Shiv",
-        "Rapid Firecannon",
+        "Black Cleaver",
+        "Hexoptics C44",
         "Boots of Swiftness",
-        "Bloodsong",
-        "Executioner's Calling"
+        "Infinity Edge",
+        "Rapid Firecannon"
       ],
       "baseStatsLv18": {
         "hp": 2043,
@@ -1515,8 +1581,8 @@
         "Unending Despair",
         "Thornmail",
         "Plated Steelcaps",
-        "Sunfire Aegis",
-        "Protoplasm Harness"
+        "Protoplasm Harness",
+        "Sunfire Aegis"
       ],
       "baseStatsLv18": {
         "hp": 2568,
@@ -1614,19 +1680,19 @@
       }
     },
     "Shyvana": {
-      "position": "JUNGLE",
+      "position": "TOP",
       "items": [
-        "Trinity Force",
-        "Spear of Shojin",
-        "Death's Dance"
+        "Titanic Hydra",
+        "Navori Flickerblade",
+        "Zeke's Convergence"
       ],
-      "boots": "Plated Steelcaps",
+      "boots": "Gluttonous Greaves",
       "fullBuild": [
-        "Trinity Force",
-        "Spear of Shojin",
-        "Death's Dance",
-        "Plated Steelcaps",
-        "Kraken Slayer",
+        "Titanic Hydra",
+        "Navori Flickerblade",
+        "Zeke's Convergence",
+        "Gluttonous Greaves",
+        "Bramble Vest",
         "Dusk and Dawn"
       ],
       "baseStatsLv18": {
@@ -1649,7 +1715,7 @@
         "Spear of Shojin",
         "Gluttonous Greaves",
         "Rapid Firecannon",
-        "Endless Hunger"
+        "Infinity Edge"
       ],
       "baseStatsLv18": {
         "hp": 2275,
@@ -1661,14 +1727,14 @@
       "position": "SUPPORT",
       "items": [
         "Rylai's Crystal Scepter",
-        "Zhonya's Hourglass",
-        "Liandry's Torment"
+        "Liandry's Torment",
+        "Zhonya's Hourglass"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Rylai's Crystal Scepter",
-        "Zhonya's Hourglass",
         "Liandry's Torment",
+        "Zhonya's Hourglass",
         "Plated Steelcaps",
         "Zaz'Zak's Realmspike",
         "Solstice Sleigh"
@@ -1726,18 +1792,18 @@
     "Xin Zhao": {
       "position": "JUNGLE",
       "items": [
-        "Titanic Hydra",
-        "Dusk and Dawn",
-        "Riftmaker"
+        "Sundered Sky",
+        "Black Cleaver",
+        "Death's Dance"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
-        "Titanic Hydra",
-        "Dusk and Dawn",
-        "Riftmaker",
-        "Plated Steelcaps",
         "Sundered Sky",
-        "Black Cleaver"
+        "Black Cleaver",
+        "Death's Dance",
+        "Plated Steelcaps",
+        "Titanic Hydra",
+        "Guardian Angel"
       ],
       "baseStatsLv18": {
         "hp": 2422,
@@ -1758,11 +1824,11 @@
         "Shadowflame",
         "Rabadon's Deathcap",
         "Sorcerer's Shoes",
-        "Zhonya's Hourglass",
-        "Blackfire Torch"
+        "Blackfire Torch",
+        "Hextech Rocketbelt"
       ],
       "baseStatsLv18": {
-        "hp": 2263,
+        "hp": 2283,
         "armor": 93,
         "mr": 52
       }
@@ -1793,14 +1859,14 @@
       "position": "SUPPORT",
       "items": [
         "Locket of the Iron Solari",
-        "Zeke's Convergence",
-        "Knight's Vow"
+        "Knight's Vow",
+        "Zeke's Convergence"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
         "Locket of the Iron Solari",
-        "Zeke's Convergence",
         "Knight's Vow",
+        "Zeke's Convergence",
         "Boots of Swiftness",
         "Celestial Opposition",
         "Solstice Sleigh"
@@ -1838,15 +1904,15 @@
       "items": [
         "Liandry's Torment",
         "Sunfire Aegis",
-        "Thornmail"
+        "Abyssal Mask"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Liandry's Torment",
         "Sunfire Aegis",
-        "Thornmail",
-        "Plated Steelcaps",
         "Abyssal Mask",
+        "Plated Steelcaps",
+        "Thornmail",
         "Jak'Sho, The Protean"
       ],
       "baseStatsLv18": {
@@ -1877,42 +1943,20 @@
         "mr": 52
       }
     },
-    "Ivern": {
-      "position": "JUNGLE",
-      "items": [
-        "Malignance",
-        "Echoes of Helia",
-        "Moonstone Renewer"
-      ],
-      "boots": "Ionian Boots of Lucidity",
-      "fullBuild": [
-        "Malignance",
-        "Echoes of Helia",
-        "Moonstone Renewer",
-        "Ionian Boots of Lucidity",
-        "Redemption",
-        "Dark Seal"
-      ],
-      "baseStatsLv18": {
-        "hp": 2313,
-        "armor": 107,
-        "mr": 52
-      }
-    },
     "Azir": {
       "position": "MID",
       "items": [
         "Nashor's Tooth",
-        "Hextech Rocketbelt",
+        "Shadowflame",
         "Zhonya's Hourglass"
       ],
       "boots": "Sorcerer's Shoes",
       "fullBuild": [
         "Nashor's Tooth",
-        "Hextech Rocketbelt",
+        "Shadowflame",
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
-        "Shadowflame",
+        "Hextech Rocketbelt",
         "Rabadon's Deathcap"
       ],
       "baseStatsLv18": {
@@ -1946,18 +1990,18 @@
     "Akshan": {
       "position": "MID",
       "items": [
-        "Voltaic Cyclosword",
-        "Stormrazor",
+        "The Collector",
+        "Infinity Edge",
         "Lord Dominik's Regards"
       ],
       "boots": "Gluttonous Greaves",
       "fullBuild": [
-        "Voltaic Cyclosword",
-        "Stormrazor",
+        "The Collector",
+        "Infinity Edge",
         "Lord Dominik's Regards",
         "Gluttonous Greaves",
-        "The Collector",
-        "Infinity Edge"
+        "Kraken Slayer",
+        "Hexoptics C44"
       ],
       "baseStatsLv18": {
         "hp": 2429,
@@ -1991,17 +2035,17 @@
       "position": "ADC",
       "items": [
         "Hexoptics C44",
-        "Infinity Edge",
-        "Lord Dominik's Regards"
+        "Phantom Dancer",
+        "Infinity Edge"
       ],
       "boots": "Gluttonous Greaves",
       "fullBuild": [
         "Hexoptics C44",
-        "Infinity Edge",
-        "Lord Dominik's Regards",
-        "Gluttonous Greaves",
         "Phantom Dancer",
-        "B. F. Sword"
+        "Infinity Edge",
+        "Gluttonous Greaves",
+        "Lord Dominik's Regards",
+        "The Collector"
       ],
       "baseStatsLv18": {
         "hp": 2334,
@@ -2067,7 +2111,7 @@
         "Shadowflame",
         "Sorcerer's Shoes",
         "Dark Seal",
-        "Zhonya's Hourglass"
+        "Stormsurge"
       ],
       "baseStatsLv18": {
         "hp": 2192,
@@ -2081,16 +2125,16 @@
         "Tear of the Goddess",
         "Rod of Ages",
         "Seraph's Embrace",
-        "Liandry's Torment"
+        "Zhonya's Hourglass"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
         "Tear of the Goddess",
         "Rod of Ages",
         "Seraph's Embrace",
-        "Liandry's Torment",
+        "Zhonya's Hourglass",
         "Boots of Swiftness",
-        "Zhonya's Hourglass"
+        "Liandry's Torment"
       ],
       "baseStatsLv18": {
         "hp": 2114,
@@ -2111,8 +2155,8 @@
         "Phantom Dancer",
         "Infinity Edge",
         "Berserker's Greaves",
-        "B. F. Sword",
-        "Kraken Slayer"
+        "Mortal Reminder",
+        "B. F. Sword"
       ],
       "baseStatsLv18": {
         "hp": 2327,
@@ -2134,7 +2178,7 @@
         "Infinity Edge",
         "Berserker's Greaves",
         "Kraken Slayer",
-        "B. F. Sword"
+        "Mortal Reminder"
       ],
       "baseStatsLv18": {
         "hp": 2460,
@@ -2156,7 +2200,7 @@
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
         "Hextech Rocketbelt",
-        "Rabadon's Deathcap"
+        "Dark Seal"
       ],
       "baseStatsLv18": {
         "hp": 2338,
@@ -2233,18 +2277,19 @@
     "Ornn": {
       "position": "TOP",
       "items": [
+        "Bramble Vest",
         "Sunfire Aegis",
         "Thornmail",
         "Jak'Sho, The Protean"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
+        "Bramble Vest",
         "Sunfire Aegis",
         "Thornmail",
         "Jak'Sho, The Protean",
         "Plated Steelcaps",
-        "Protoplasm Harness",
-        "Bramble Vest"
+        "Protoplasm Harness"
       ],
       "baseStatsLv18": {
         "hp": 2513,
@@ -2257,19 +2302,19 @@
       "items": [
         "Luden's Echo",
         "Hextech Rocketbelt",
-        "Zhonya's Hourglass"
+        "Shadowflame"
       ],
-      "boots": "Ionian Boots of Lucidity",
+      "boots": "Sorcerer's Shoes",
       "fullBuild": [
         "Luden's Echo",
         "Hextech Rocketbelt",
-        "Zhonya's Hourglass",
-        "Ionian Boots of Lucidity",
         "Shadowflame",
-        "Blackfire Torch"
+        "Sorcerer's Shoes",
+        "Blackfire Torch",
+        "Zhonya's Hourglass"
       ],
       "baseStatsLv18": {
-        "hp": 2455,
+        "hp": 2435,
         "armor": 91,
         "mr": 48
       }
@@ -2277,18 +2322,18 @@
     "Olaf": {
       "position": "TOP",
       "items": [
-        "Ravenous Hydra",
+        "Stridebreaker",
         "Experimental Hexplate",
-        "Fiendhunter Bolts"
+        "Death's Dance"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
-        "Ravenous Hydra",
-        "Experimental Hexplate",
-        "Fiendhunter Bolts",
-        "Plated Steelcaps",
         "Stridebreaker",
-        "Death's Dance"
+        "Experimental Hexplate",
+        "Death's Dance",
+        "Plated Steelcaps",
+        "Ravenous Hydra",
+        "Maw of Malmortius"
       ],
       "baseStatsLv18": {
         "hp": 2668,
@@ -2323,13 +2368,13 @@
       "items": [
         "Voltaic Cyclosword",
         "Youmuu's Ghostblade",
-        "Lord Dominik's Regards"
+        "Serylda's Grudge"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Voltaic Cyclosword",
         "Youmuu's Ghostblade",
-        "Lord Dominik's Regards",
+        "Serylda's Grudge",
         "Plated Steelcaps",
         "Trinity Force",
         "Spear of Shojin"
@@ -2344,17 +2389,17 @@
       "position": "JUNGLE",
       "items": [
         "Spear of Shojin",
-        "Sundered Sky",
+        "Experimental Hexplate",
         "Death's Dance"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
         "Spear of Shojin",
-        "Sundered Sky",
+        "Experimental Hexplate",
         "Death's Dance",
         "Boots of Swiftness",
-        "Stridebreaker",
-        "Titanic Hydra"
+        "Dead Man's Plate",
+        "Stridebreaker"
       ],
       "baseStatsLv18": {
         "hp": 2228,
@@ -2376,7 +2421,7 @@
         "Jak'Sho, The Protean",
         "Plated Steelcaps",
         "Hullbreaker",
-        "Youmuu's Ghostblade"
+        "Stridebreaker"
       ],
       "baseStatsLv18": {
         "hp": 2389,
@@ -2391,12 +2436,12 @@
         "Blade of The Ruined King",
         "Thornmail"
       ],
-      "boots": "Plated Steelcaps",
+      "boots": "Mercury's Treads",
       "fullBuild": [
         "Stridebreaker",
         "Blade of The Ruined King",
         "Thornmail",
-        "Plated Steelcaps",
+        "Mercury's Treads",
         "Kraken Slayer",
         "Spirit Visage"
       ],
@@ -2464,7 +2509,7 @@
         "Wit's End",
         "Plated Steelcaps",
         "Death's Dance",
-        "Guardian Angel"
+        "Kraken Slayer"
       ],
       "baseStatsLv18": {
         "hp": 2585,
@@ -2475,18 +2520,19 @@
     "Evelynn": {
       "position": "JUNGLE",
       "items": [
+        "Dark Seal",
         "Lich Bane",
-        "Shadowflame",
+        "Mejai's Soulstealer",
         "Rabadon's Deathcap"
       ],
       "boots": "Sorcerer's Shoes",
       "fullBuild": [
+        "Dark Seal",
         "Lich Bane",
-        "Shadowflame",
+        "Mejai's Soulstealer",
         "Rabadon's Deathcap",
         "Sorcerer's Shoes",
-        "Dark Seal",
-        "Mejai's Soulstealer"
+        "Shadowflame"
       ],
       "baseStatsLv18": {
         "hp": 2308,
@@ -2531,7 +2577,7 @@
         "Sterak's Gage",
         "Plated Steelcaps",
         "Spirit Visage",
-        "Sundered Sky"
+        "Death's Dance"
       ],
       "baseStatsLv18": {
         "hp": 2611,
@@ -2552,8 +2598,8 @@
         "Black Cleaver",
         "Guardian Angel",
         "Plated Steelcaps",
-        "Frozen Heart",
-        "Profane Hydra"
+        "Profane Hydra",
+        "Frozen Heart"
       ],
       "baseStatsLv18": {
         "hp": 2408,
@@ -2574,8 +2620,8 @@
         "Navori Flickerblade",
         "Infinity Edge",
         "Berserker's Greaves",
-        "Lord Dominik's Regards",
-        "B. F. Sword"
+        "B. F. Sword",
+        "Lord Dominik's Regards"
       ],
       "baseStatsLv18": {
         "hp": 2449,
@@ -2618,8 +2664,8 @@
         "Sunfire Aegis",
         "Spirit Visage",
         "Ionian Boots of Lucidity",
-        "Thornmail",
-        "Dark Seal"
+        "Dark Seal",
+        "Thornmail"
       ],
       "baseStatsLv18": {
         "hp": 2538,
@@ -2631,17 +2677,17 @@
       "position": "TOP",
       "items": [
         "Trinity Force",
-        "Sundered Sky",
+        "Stridebreaker",
         "Death's Dance"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
         "Trinity Force",
-        "Sundered Sky",
+        "Stridebreaker",
         "Death's Dance",
         "Plated Steelcaps",
-        "Stridebreaker",
-        "Endless Hunger"
+        "Sundered Sky",
+        "Maw of Malmortius"
       ],
       "baseStatsLv18": {
         "hp": 2578,
@@ -2663,7 +2709,7 @@
         "Shurelya's Battlesong",
         "Boots of Swiftness",
         "Dream Maker",
-        "Solstice Sleigh"
+        "Mikael's Blessing"
       ],
       "baseStatsLv18": {
         "hp": 2100,
@@ -2706,8 +2752,8 @@
         "Axiom Arc",
         "Serylda's Grudge",
         "Ionian Boots of Lucidity",
-        "Edge of Night",
-        "Eclipse"
+        "Eclipse",
+        "Edge of Night"
       ],
       "baseStatsLv18": {
         "hp": 2337,
@@ -2719,17 +2765,17 @@
       "position": "MID",
       "items": [
         "Luden's Echo",
-        "Shadowflame",
-        "Rabadon's Deathcap"
+        "Horizon Focus",
+        "Shadowflame"
       ],
       "boots": "Sorcerer's Shoes",
       "fullBuild": [
         "Luden's Echo",
-        "Shadowflame",
-        "Rabadon's Deathcap",
-        "Sorcerer's Shoes",
         "Horizon Focus",
-        "Stormsurge"
+        "Shadowflame",
+        "Sorcerer's Shoes",
+        "Stormsurge",
+        "Rabadon's Deathcap"
       ],
       "baseStatsLv18": {
         "hp": 2398,
@@ -2740,18 +2786,19 @@
     "Zeri": {
       "position": "ADC",
       "items": [
-        "Experimental Hexplate",
+        "B. F. Sword",
+        "Stormrazor",
         "Fiendhunter Bolts",
         "Infinity Edge"
       ],
       "boots": "Gluttonous Greaves",
       "fullBuild": [
-        "Experimental Hexplate",
+        "B. F. Sword",
+        "Stormrazor",
         "Fiendhunter Bolts",
         "Infinity Edge",
         "Gluttonous Greaves",
-        "Hexoptics C44",
-        "Lord Dominik's Regards"
+        "Hexoptics C44"
       ],
       "baseStatsLv18": {
         "hp": 2470,
@@ -2765,16 +2812,16 @@
         "Tear of the Goddess",
         "Youmuu's Ghostblade",
         "Muramana",
-        "Serylda's Grudge"
+        "Voltaic Cyclosword"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Tear of the Goddess",
         "Youmuu's Ghostblade",
         "Muramana",
-        "Serylda's Grudge",
+        "Voltaic Cyclosword",
         "Ionian Boots of Lucidity",
-        "Voltaic Cyclosword"
+        "Serylda's Grudge"
       ],
       "baseStatsLv18": {
         "hp": 2443,
@@ -2829,18 +2876,18 @@
     "Jhin": {
       "position": "ADC",
       "items": [
-        "Hexoptics C44",
-        "Rapid Firecannon",
+        "Hubris",
+        "The Collector",
         "Infinity Edge"
       ],
       "boots": "Boots of Swiftness",
       "fullBuild": [
-        "Hexoptics C44",
-        "Rapid Firecannon",
+        "Hubris",
+        "The Collector",
         "Infinity Edge",
         "Boots of Swiftness",
-        "The Collector",
-        "Hubris"
+        "Rapid Firecannon",
+        "Youmuu's Ghostblade"
       ],
       "baseStatsLv18": {
         "hp": 2474,
@@ -2884,7 +2931,7 @@
         "Infinity Edge",
         "Berserker's Greaves",
         "Lord Dominik's Regards",
-        "Kraken Slayer"
+        "B. F. Sword"
       ],
       "baseStatsLv18": {
         "hp": 2415,
@@ -2928,7 +2975,7 @@
         "Redemption",
         "Ionian Boots of Lucidity",
         "Dream Maker",
-        "Mikael's Blessing"
+        "Oblivion Orb"
       ],
       "baseStatsLv18": {
         "hp": 2483,
@@ -2937,20 +2984,20 @@
       }
     },
     "Camille": {
-      "position": "TOP",
+      "position": "SUPPORT",
       "items": [
-        "Trinity Force",
-        "Ravenous Hydra",
-        "Sterak's Gage"
+        "Sundered Sky",
+        "Sterak's Gage",
+        "Guardian Angel"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
-        "Trinity Force",
-        "Ravenous Hydra",
+        "Sundered Sky",
         "Sterak's Gage",
+        "Guardian Angel",
         "Plated Steelcaps",
-        "Death's Dance",
-        "Spear of Shojin"
+        "Bloodsong",
+        "Eclipse"
       ],
       "baseStatsLv18": {
         "hp": 2333,
@@ -2963,17 +3010,17 @@
       "items": [
         "Tear of the Goddess",
         "Rod of Ages",
-        "Muramana",
-        "Seraph's Embrace"
+        "Seraph's Embrace",
+        "Malignance"
       ],
       "boots": "Mercury's Treads",
       "fullBuild": [
         "Tear of the Goddess",
         "Rod of Ages",
-        "Muramana",
         "Seraph's Embrace",
+        "Malignance",
         "Mercury's Treads",
-        "Malignance"
+        "Muramana"
       ],
       "baseStatsLv18": {
         "hp": 2567,
@@ -2994,8 +3041,8 @@
         "Shadowflame",
         "Zhonya's Hourglass",
         "Sorcerer's Shoes",
-        "Rabadon's Deathcap",
-        "Liandry's Torment"
+        "Liandry's Torment",
+        "Rabadon's Deathcap"
       ],
       "baseStatsLv18": {
         "hp": 2490,
@@ -3018,10 +3065,10 @@
         "Seraph's Embrace",
         "Rylai's Crystal Scepter",
         "Boots of Swiftness",
-        "Liandry's Torment"
+        "Zhonya's Hourglass"
       ],
       "baseStatsLv18": {
-        "hp": 2398,
+        "hp": 2296,
         "armor": 98,
         "mr": 54
       }
@@ -3031,16 +3078,16 @@
       "items": [
         "Kraken Slayer",
         "Guinsoo's Rageblade",
-        "Dusk and Dawn"
+        "Nashor's Tooth"
       ],
       "boots": "Berserker's Greaves",
       "fullBuild": [
         "Kraken Slayer",
         "Guinsoo's Rageblade",
-        "Dusk and Dawn",
+        "Nashor's Tooth",
         "Berserker's Greaves",
         "Zhonya's Hourglass",
-        "Nashor's Tooth"
+        "Statikk Shiv"
       ],
       "baseStatsLv18": {
         "hp": 2374,
@@ -3095,18 +3142,18 @@
     "Kalista": {
       "position": "ADC",
       "items": [
-        "Blade of The Ruined King",
+        "Statikk Shiv",
         "Guinsoo's Rageblade",
         "Terminus"
       ],
       "boots": "Berserker's Greaves",
       "fullBuild": [
-        "Blade of The Ruined King",
+        "Statikk Shiv",
         "Guinsoo's Rageblade",
         "Terminus",
         "Berserker's Greaves",
-        "Jak'Sho, The Protean",
-        "Statikk Shiv"
+        "Blade of The Ruined King",
+        "Jak'Sho, The Protean"
       ],
       "baseStatsLv18": {
         "hp": 2498,
@@ -3162,16 +3209,16 @@
       "position": "JUNGLE",
       "items": [
         "Voltaic Cyclosword",
-        "Black Cleaver",
-        "Death's Dance"
+        "Axiom Arc",
+        "Edge of Night"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Voltaic Cyclosword",
-        "Black Cleaver",
-        "Death's Dance",
-        "Ionian Boots of Lucidity",
         "Axiom Arc",
+        "Edge of Night",
+        "Ionian Boots of Lucidity",
+        "Black Cleaver",
         "Hubris"
       ],
       "baseStatsLv18": {
@@ -3205,18 +3252,18 @@
     "Kog'Maw": {
       "position": "ADC",
       "items": [
-        "Blade of The Ruined King",
         "Guinsoo's Rageblade",
-        "Runaan's Hurricane"
+        "Navori Flickerblade",
+        "Terminus"
       ],
       "boots": "Berserker's Greaves",
       "fullBuild": [
-        "Blade of The Ruined King",
         "Guinsoo's Rageblade",
-        "Runaan's Hurricane",
-        "Berserker's Greaves",
+        "Navori Flickerblade",
         "Terminus",
-        "Navori Flickerblade"
+        "Berserker's Greaves",
+        "Blade of The Ruined King",
+        "Runaan's Hurricane"
       ],
       "baseStatsLv18": {
         "hp": 2318,
@@ -3260,7 +3307,7 @@
         "The Collector",
         "Edge of Night",
         "Boots of Swiftness",
-        "Infinity Edge",
+        "Hubris",
         "Lord Dominik's Regards"
       ],
       "baseStatsLv18": {
@@ -3314,20 +3361,20 @@
       }
     },
     "Qiyana": {
-      "position": "MID",
+      "position": "JUNGLE",
       "items": [
-        "Voltaic Cyclosword",
         "Profane Hydra",
-        "Serylda's Grudge"
+        "Voltaic Cyclosword",
+        "Edge of Night"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
-        "Voltaic Cyclosword",
         "Profane Hydra",
-        "Serylda's Grudge",
+        "Voltaic Cyclosword",
+        "Edge of Night",
         "Ionian Boots of Lucidity",
-        "Serpent's Fang",
-        "Edge of Night"
+        "Axiom Arc",
+        "Serylda's Grudge"
       ],
       "baseStatsLv18": {
         "hp": 2545,
@@ -3393,8 +3440,8 @@
         "Voltaic Cyclosword",
         "Edge of Night",
         "Ionian Boots of Lucidity",
-        "Serylda's Grudge",
-        "Umbral Glaive"
+        "Umbral Glaive",
+        "Serylda's Grudge"
       ],
       "baseStatsLv18": {
         "hp": 2511,
@@ -3416,7 +3463,7 @@
         "Liandry's Torment",
         "Ionian Boots of Lucidity",
         "Blackfire Torch",
-        "Zhonya's Hourglass"
+        "Hextech Rocketbelt"
       ],
       "baseStatsLv18": {
         "hp": 2318,
@@ -3447,19 +3494,19 @@
       }
     },
     "Trundle": {
-      "position": "JUNGLE",
+      "position": "TOP",
       "items": [
+        "Ravenous Hydra",
         "Trinity Force",
-        "Dead Man's Plate",
-        "Spirit Visage"
+        "Hullbreaker"
       ],
       "boots": "Plated Steelcaps",
       "fullBuild": [
+        "Ravenous Hydra",
         "Trinity Force",
-        "Dead Man's Plate",
-        "Spirit Visage",
+        "Hullbreaker",
         "Plated Steelcaps",
-        "Thornmail",
+        "Blade of The Ruined King",
         "Titanic Hydra"
       ],
       "baseStatsLv18": {
@@ -3471,18 +3518,18 @@
     "Tristana": {
       "position": "ADC",
       "items": [
-        "The Collector",
+        "Hexoptics C44",
         "Navori Flickerblade",
         "Infinity Edge"
       ],
       "boots": "Berserker's Greaves",
       "fullBuild": [
-        "The Collector",
+        "Hexoptics C44",
         "Navori Flickerblade",
         "Infinity Edge",
         "Berserker's Greaves",
-        "Lord Dominik's Regards",
-        "Hexoptics C44"
+        "The Collector",
+        "Lord Dominik's Regards"
       ],
       "baseStatsLv18": {
         "hp": 2374,
@@ -3493,18 +3540,18 @@
     "Tryndamere": {
       "position": "TOP",
       "items": [
-        "Profane Hydra",
-        "The Collector",
-        "Lord Dominik's Regards"
+        "Ravenous Hydra",
+        "Phantom Dancer",
+        "Infinity Edge"
       ],
       "boots": "Berserker's Greaves",
       "fullBuild": [
-        "Profane Hydra",
-        "The Collector",
-        "Lord Dominik's Regards",
-        "Berserker's Greaves",
         "Ravenous Hydra",
-        "Infinity Edge"
+        "Phantom Dancer",
+        "Infinity Edge",
+        "Berserker's Greaves",
+        "Lord Dominik's Regards",
+        "Navori Flickerblade"
       ],
       "baseStatsLv18": {
         "hp": 2532,
@@ -3563,18 +3610,18 @@
         "Liandry's Torment",
         "Malignance"
       ],
-      "boots": "Sorcerer's Shoes",
+      "boots": "Boots of Swiftness",
       "fullBuild": [
         "Statikk Shiv",
         "Liandry's Torment",
         "Malignance",
-        "Sorcerer's Shoes",
-        "Shadowflame",
-        "Oblivion Orb"
+        "Boots of Swiftness",
+        "Oblivion Orb",
+        "Shadowflame"
       ],
       "baseStatsLv18": {
         "hp": 2383,
-        "armor": 108,
+        "armor": 101,
         "mr": 52
       }
     },
@@ -3725,7 +3772,7 @@
         "Death's Dance",
         "Ionian Boots of Lucidity",
         "Endless Hunger",
-        "Maw of Malmortius"
+        "Axiom Arc"
       ],
       "baseStatsLv18": {
         "hp": 2427,
@@ -3737,17 +3784,17 @@
       "position": "MID",
       "items": [
         "Blackfire Torch",
-        "Liandry's Torment",
+        "Hextech Rocketbelt",
         "Shadowflame"
       ],
       "boots": "Ionian Boots of Lucidity",
       "fullBuild": [
         "Blackfire Torch",
-        "Liandry's Torment",
+        "Hextech Rocketbelt",
         "Shadowflame",
         "Ionian Boots of Lucidity",
-        "Hextech Rocketbelt",
-        "Zhonya's Hourglass"
+        "Liandry's Torment",
+        "Dark Seal"
       ],
       "baseStatsLv18": {
         "hp": 2433,

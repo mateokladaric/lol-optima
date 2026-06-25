@@ -1,0 +1,2856 @@
+{
+  "generatedAt": "2026-06-25T19:41:05.921Z",
+  "championCount": 174,
+  "highShieldKits": [
+    {
+      "champion": "Ivern",
+      "simKey": "Ivern",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 197,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Triggerseed: 33 phys shield HPS",
+        "override: +55 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Janna",
+      "simKey": "Janna",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 318,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 6,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Eye of the Storm: 20 phys shield HPS",
+        "override: +200 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Jarvan IV",
+      "simKey": "JarvanIV",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 517,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Golden Aegis: 100 phys shield HPS",
+        "override: +140 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Karma",
+      "simKey": "Karma",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 396,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Inspire: 35 phys shield HPS",
+        "override: +220 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Lulu",
+      "simKey": "Lulu",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 371,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Help, Pix!: 22 phys shield HPS",
+        "override: +240 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Mordekaiser",
+      "simKey": "Mordekaiser",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 68,
+      "magicShieldPool": 300,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 6,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Indestructible during R"
+      ],
+      "shieldSources": [
+        "Indestructible: 24 phys shield HPS",
+        "override: +300 magic shield pool"
+      ]
+    },
+    {
+      "champion": "Morgana",
+      "simKey": "Morgana",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 50,
+      "magicShieldPool": 378,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Black Shield: magic-only; cleanses CC on application"
+      ],
+      "shieldSources": [
+        "Black Shield: 18 phys shield HPS",
+        "override: +280 magic shield pool"
+      ]
+    },
+    {
+      "champion": "Nautilus",
+      "simKey": "Nautilus",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 136,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Titan's Wrath: 48 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Sion",
+      "simKey": "Sion",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 250,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Soul Furnace: 89 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Skarner",
+      "simKey": "Skarner",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 294,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Seismic Bastion: 105 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Udyr",
+      "simKey": "Udyr",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 228,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Iron Mantle: 81 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Yone",
+      "simKey": "Yone",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 283,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Spirit Cleave shield scales with bonus AD"
+      ],
+      "shieldSources": [
+        "Spirit Cleave: 33 phys shield HPS",
+        "override: +140 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Rakan",
+      "simKey": "Rakan",
+      "antiShieldScore": 99,
+      "physicalShieldPool": 386,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 42,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Battle Dance: 12 phys shield HPS",
+        "override: +120 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Rumble",
+      "simKey": "Rumble",
+      "antiShieldScore": 91,
+      "physicalShieldPool": 93,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Scrap Shield: 33 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Shen",
+      "simKey": "Shen",
+      "antiShieldScore": 85,
+      "physicalShieldPool": 326,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Stand United: 3 phys shield HPS",
+        "override: +180 phys shield pool"
+      ]
+    },
+    {
+      "champion": "K'Sante",
+      "simKey": "KSante",
+      "antiShieldScore": 82,
+      "physicalShieldPool": 84,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Footwork: 30 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Kayle",
+      "simKey": "Kayle",
+      "antiShieldScore": 63,
+      "physicalShieldPool": 210,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 4,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "override: +160 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Sett",
+      "simKey": "Sett",
+      "antiShieldScore": 63,
+      "physicalShieldPool": 385,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Haymaker grey health → true damage conversion"
+      ],
+      "shieldSources": [
+        "Haymaker: 13 phys shield HPS",
+        "override: +350 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Riven",
+      "simKey": "Riven",
+      "antiShieldScore": 58,
+      "physicalShieldPool": 59,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Valor: 21 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Braum",
+      "simKey": "Braum",
+      "antiShieldScore": 55,
+      "physicalShieldPool": 56,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Stand Behind Me!: 20 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Tahm Kench",
+      "simKey": "TahmKench",
+      "antiShieldScore": 46,
+      "physicalShieldPool": 47,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Thick Skin: 17 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Orianna",
+      "simKey": "Orianna",
+      "antiShieldScore": 44,
+      "physicalShieldPool": 46,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Command: Protect: 16 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Thresh",
+      "simKey": "Thresh",
+      "antiShieldScore": 39,
+      "physicalShieldPool": 40,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Dark Passage: 14 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Renata Glasc",
+      "simKey": "RenataGlasc",
+      "antiShieldScore": 36,
+      "physicalShieldPool": 36,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Loyalty Program: 13 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Milio",
+      "simKey": "Milio",
+      "antiShieldScore": 35,
+      "physicalShieldPool": 36,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 14,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Warm Hugs: 13 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Sona",
+      "simKey": "Sona",
+      "antiShieldScore": 34,
+      "physicalShieldPool": 35,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 9,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Aria of Perseverance: 13 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Lee Sin",
+      "simKey": "LeeSin",
+      "antiShieldScore": 31,
+      "physicalShieldPool": 32,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Safeguard / Iron Will: 11 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Viktor",
+      "simKey": "Viktor",
+      "antiShieldScore": 31,
+      "physicalShieldPool": 31,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Siphon Power: 11 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Malzahar",
+      "simKey": "Malzahar",
+      "antiShieldScore": 30,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 200,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Passive shield blocks one spell; 45s CD at 18"
+      ],
+      "shieldSources": [
+        "override: +200 magic shield pool"
+      ]
+    },
+    {
+      "champion": "Rell",
+      "simKey": "Rell",
+      "antiShieldScore": 30,
+      "physicalShieldPool": 31,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Ferromancy: Crash Down / Mount Up: 11 phys shield HPS"
+      ]
+    }
+  ],
+  "spellShieldKits": [
+    {
+      "champion": "Sivir",
+      "simKey": "Sivir",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0.22,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Ricochet can proc on spell-shielded targets differently"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Fiora",
+      "simKey": "Fiora",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0.2,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Riposte stun vs channel interactions"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Nocturne",
+      "simKey": "Nocturne",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0.18,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": []
+    }
+  ],
+  "auditCandidates": [
+    {
+      "name": "Nautilus",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 135.65999999999997,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Sion",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 250.09090909090907,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Skarner",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 294,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Udyr",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 227.75199999999998,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Rumble",
+      "antiShieldScore": 91.11111111111111,
+      "physicalShieldPool": 93.33333333333333,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "K'Sante",
+      "antiShieldScore": 82,
+      "physicalShieldPool": 84,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Riven",
+      "antiShieldScore": 58.083333333333336,
+      "physicalShieldPool": 59.49999999999999,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Braum",
+      "antiShieldScore": 54.666666666666664,
+      "physicalShieldPool": 56,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Tahm Kench",
+      "antiShieldScore": 45.55555555555556,
+      "physicalShieldPool": 46.666666666666664,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Orianna",
+      "antiShieldScore": 44.416666666666664,
+      "physicalShieldPool": 45.5,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Thresh",
+      "antiShieldScore": 39.04761904761905,
+      "physicalShieldPool": 40,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Renata Glasc",
+      "antiShieldScore": 35.53333333333333,
+      "physicalShieldPool": 36.4,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Milio",
+      "antiShieldScore": 34.69230769230769,
+      "physicalShieldPool": 35.53846153846153,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Sona",
+      "antiShieldScore": 34.166666666666664,
+      "physicalShieldPool": 35,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Lee Sin",
+      "antiShieldScore": 31.319444444444446,
+      "physicalShieldPool": 32.083333333333336,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Viktor",
+      "antiShieldScore": 30.75,
+      "physicalShieldPool": 31.499999999999996,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Rell",
+      "antiShieldScore": 30.37037037037037,
+      "physicalShieldPool": 31.111111111111107,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Vex",
+      "antiShieldScore": 29.285714285714285,
+      "physicalShieldPool": 29.999999999999996,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Urgot",
+      "antiShieldScore": 27.333333333333332,
+      "physicalShieldPool": 28,
+      "hasOverride": false,
+      "wikiGaps": []
+    },
+    {
+      "name": "Diana",
+      "antiShieldScore": 27.105555555555554,
+      "physicalShieldPool": 27.766666666666662,
+      "hasOverride": false,
+      "wikiGaps": []
+    }
+  ],
+  "traits": [
+    {
+      "champion": "Aatrox",
+      "simKey": "Aatrox",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 3,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ahri",
+      "simKey": "Ahri",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Akali",
+      "simKey": "Akali",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Akshan",
+      "simKey": "Akshan",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Alistar",
+      "simKey": "Alistar",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ambessa",
+      "simKey": "Ambessa",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Amumu",
+      "simKey": "Amumu",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Anivia",
+      "simKey": "Anivia",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Annie",
+      "simKey": "Annie",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Aphelios",
+      "simKey": "Aphelios",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ashe",
+      "simKey": "Ashe",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Aurelion Sol",
+      "simKey": "AurelionSol",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Aurora",
+      "simKey": "Aurora",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Azir",
+      "simKey": "Azir",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Bard",
+      "simKey": "Bard",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Bel'Veth",
+      "simKey": "BelVeth",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Blitzcrank",
+      "simKey": "Blitzcrank",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Brand",
+      "simKey": "Brand",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Braum",
+      "simKey": "Braum",
+      "antiShieldScore": 55,
+      "physicalShieldPool": 56,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Stand Behind Me!: 20 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Briar",
+      "simKey": "Briar",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Caitlyn",
+      "simKey": "Caitlyn",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Camille",
+      "simKey": "Camille",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Cassiopeia",
+      "simKey": "Cassiopeia",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Cho'Gath",
+      "simKey": "ChoGath",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Corki",
+      "simKey": "Corki",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Darius",
+      "simKey": "Darius",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Diana",
+      "simKey": "Diana",
+      "antiShieldScore": 27,
+      "physicalShieldPool": 28,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Pale Cascade: 10 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Dr. Mundo",
+      "simKey": "DrMundo",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Draven",
+      "simKey": "Draven",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ekko",
+      "simKey": "Ekko",
+      "antiShieldScore": 18,
+      "physicalShieldPool": 18,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 2,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Parallel Convergence: 6 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Elise",
+      "simKey": "Elise",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Evelynn",
+      "simKey": "Evelynn",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ezreal",
+      "simKey": "Ezreal",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Fiddlesticks",
+      "simKey": "Fiddlesticks",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 6,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Fiora",
+      "simKey": "Fiora",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0.2,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Riposte stun vs channel interactions"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Fizz",
+      "simKey": "Fizz",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Galio",
+      "simKey": "Galio",
+      "antiShieldScore": 8,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 53,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Shield of Durand: 6 magic shield HPS"
+      ]
+    },
+    {
+      "champion": "Gangplank",
+      "simKey": "Gangplank",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 4,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Garen",
+      "simKey": "Garen",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Gnar",
+      "simKey": "Gnar",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Gragas",
+      "simKey": "Gragas",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Graves",
+      "simKey": "Graves",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Gwen",
+      "simKey": "Gwen",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Hecarim",
+      "simKey": "Hecarim",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Heimerdinger",
+      "simKey": "Heimerdinger",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Hwei",
+      "simKey": "Hwei",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Illaoi",
+      "simKey": "Illaoi",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Irelia",
+      "simKey": "Irelia",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ivern",
+      "simKey": "Ivern",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 197,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Triggerseed: 33 phys shield HPS",
+        "override: +55 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Janna",
+      "simKey": "Janna",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 318,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 6,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Eye of the Storm: 20 phys shield HPS",
+        "override: +200 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Jarvan IV",
+      "simKey": "JarvanIV",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 517,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Golden Aegis: 100 phys shield HPS",
+        "override: +140 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Jax",
+      "simKey": "Jax",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Jayce",
+      "simKey": "Jayce",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Jhin",
+      "simKey": "Jhin",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Jinx",
+      "simKey": "Jinx",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "K'Sante",
+      "simKey": "KSante",
+      "antiShieldScore": 82,
+      "physicalShieldPool": 84,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Footwork: 30 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Kai'Sa",
+      "simKey": "KaiSa",
+      "antiShieldScore": 2,
+      "physicalShieldPool": 2,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Killer Instinct: 1 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Kalista",
+      "simKey": "Kalista",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Karma",
+      "simKey": "Karma",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 396,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Inspire: 35 phys shield HPS",
+        "override: +220 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Karthus",
+      "simKey": "Karthus",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kassadin",
+      "simKey": "Kassadin",
+      "antiShieldScore": 11,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 70,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Null Sphere: 25 magic shield HPS"
+      ]
+    },
+    {
+      "champion": "Katarina",
+      "simKey": "Katarina",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kayle",
+      "simKey": "Kayle",
+      "antiShieldScore": 63,
+      "physicalShieldPool": 210,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 4,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "override: +160 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Kayn (Rhaast)",
+      "simKey": "KaynRhaast",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 2,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kayn (Shadow Assassin)",
+      "simKey": "KaynShadowAssassin",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 2,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kennen",
+      "simKey": "Kennen",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kha'Zix",
+      "simKey": "KhaZix",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 10,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kindred",
+      "simKey": "Kindred",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 3,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Kled",
+      "simKey": "Kled",
+      "antiShieldScore": 3,
+      "physicalShieldPool": 4,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Chaaaaaaaarge!!!: 1 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Kog'Maw",
+      "simKey": "KogMaw",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "LeBlanc",
+      "simKey": "LeBlanc",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Lee Sin",
+      "simKey": "LeeSin",
+      "antiShieldScore": 31,
+      "physicalShieldPool": 32,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Safeguard / Iron Will: 11 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Leona",
+      "simKey": "Leona",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Lillia",
+      "simKey": "Lillia",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Lissandra",
+      "simKey": "Lissandra",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 3,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Self-R stasis heal scales with missing HP"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Locke",
+      "simKey": "Locke",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 28,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Soul Ignition grey health recast heal"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Lucian",
+      "simKey": "Lucian",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Lulu",
+      "simKey": "Lulu",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 371,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Help, Pix!: 22 phys shield HPS",
+        "override: +240 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Lux",
+      "simKey": "Lux",
+      "antiShieldScore": 25,
+      "physicalShieldPool": 25,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Prismatic Barrier: 9 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Malphite",
+      "simKey": "Malphite",
+      "antiShieldScore": 5,
+      "physicalShieldPool": 57,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Malzahar",
+      "simKey": "Malzahar",
+      "antiShieldScore": 30,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 200,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Passive shield blocks one spell; 45s CD at 18"
+      ],
+      "shieldSources": [
+        "override: +200 magic shield pool"
+      ]
+    },
+    {
+      "champion": "Maokai",
+      "simKey": "Maokai",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Master Yi",
+      "simKey": "MasterYi",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 1,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Mel",
+      "simKey": "Mel",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Milio",
+      "simKey": "Milio",
+      "antiShieldScore": 35,
+      "physicalShieldPool": 36,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 14,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Warm Hugs: 13 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Miss Fortune",
+      "simKey": "MissFortune",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Mordekaiser",
+      "simKey": "Mordekaiser",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 68,
+      "magicShieldPool": 300,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 6,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Indestructible during R"
+      ],
+      "shieldSources": [
+        "Indestructible: 24 phys shield HPS",
+        "override: +300 magic shield pool"
+      ]
+    },
+    {
+      "champion": "Morgana",
+      "simKey": "Morgana",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 50,
+      "magicShieldPool": 378,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Black Shield: magic-only; cleanses CC on application"
+      ],
+      "shieldSources": [
+        "Black Shield: 18 phys shield HPS",
+        "override: +280 magic shield pool"
+      ]
+    },
+    {
+      "champion": "Naafiri",
+      "simKey": "Naafiri",
+      "antiShieldScore": 3,
+      "physicalShieldPool": 3,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Hounds' Pursuit: 1 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Nami",
+      "simKey": "Nami",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 16,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Nasus",
+      "simKey": "Nasus",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Nautilus",
+      "simKey": "Nautilus",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 136,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Titan's Wrath: 48 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Neeko",
+      "simKey": "Neeko",
+      "antiShieldScore": 4,
+      "physicalShieldPool": 4,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Pop Blossom: 1 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Nidalee",
+      "simKey": "Nidalee",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 10,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Nilah",
+      "simKey": "Nilah",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Nocturne",
+      "simKey": "Nocturne",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0.18,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Nunu & Willump",
+      "simKey": "NunuWillump",
+      "antiShieldScore": 3,
+      "physicalShieldPool": 3,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 25,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Absolute Zero: 1 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Olaf",
+      "simKey": "Olaf",
+      "antiShieldScore": 11,
+      "physicalShieldPool": 12,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Tough It Out: 4 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Orianna",
+      "simKey": "Orianna",
+      "antiShieldScore": 44,
+      "physicalShieldPool": 46,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Command: Protect: 16 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Ornn",
+      "simKey": "Ornn",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Pantheon",
+      "simKey": "Pantheon",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Poppy",
+      "simKey": "Poppy",
+      "antiShieldScore": 18,
+      "physicalShieldPool": 217,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Pyke",
+      "simKey": "Pyke",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Qiyana",
+      "simKey": "Qiyana",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Quinn",
+      "simKey": "Quinn",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Rakan",
+      "simKey": "Rakan",
+      "antiShieldScore": 99,
+      "physicalShieldPool": 386,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 42,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Battle Dance: 12 phys shield HPS",
+        "override: +120 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Rammus",
+      "simKey": "Rammus",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Rek'Sai",
+      "simKey": "RekSai",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Rell",
+      "simKey": "Rell",
+      "antiShieldScore": 30,
+      "physicalShieldPool": 31,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Ferromancy: Crash Down / Mount Up: 11 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Renata Glasc",
+      "simKey": "RenataGlasc",
+      "antiShieldScore": 36,
+      "physicalShieldPool": 36,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Loyalty Program: 13 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Renekton",
+      "simKey": "Renekton",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 5,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Rengar",
+      "simKey": "Rengar",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Riven",
+      "simKey": "Riven",
+      "antiShieldScore": 58,
+      "physicalShieldPool": 59,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Valor: 21 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Rumble",
+      "simKey": "Rumble",
+      "antiShieldScore": 91,
+      "physicalShieldPool": 93,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Scrap Shield: 33 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Ryze",
+      "simKey": "Ryze",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Samira",
+      "simKey": "Samira",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Blade Whirl blocks projectiles for 0.75s"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Sejuani",
+      "simKey": "Sejuani",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Senna",
+      "simKey": "Senna",
+      "antiShieldScore": 5,
+      "physicalShieldPool": 6,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 24,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Dawning Shadow: 2 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Seraphine",
+      "simKey": "Seraphine",
+      "antiShieldScore": 21,
+      "physicalShieldPool": 22,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 8,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Surround Sound: 8 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Sett",
+      "simKey": "Sett",
+      "antiShieldScore": 63,
+      "physicalShieldPool": 385,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Haymaker grey health → true damage conversion"
+      ],
+      "shieldSources": [
+        "Haymaker: 13 phys shield HPS",
+        "override: +350 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Shaco",
+      "simKey": "Shaco",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Shen",
+      "simKey": "Shen",
+      "antiShieldScore": 85,
+      "physicalShieldPool": 326,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Stand United: 3 phys shield HPS",
+        "override: +180 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Shyvana",
+      "simKey": "Shyvana",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Singed",
+      "simKey": "Singed",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Sion",
+      "simKey": "Sion",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 250,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Soul Furnace: 89 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Sivir",
+      "simKey": "Sivir",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0.22,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Ricochet can proc on spell-shielded targets differently"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Skarner",
+      "simKey": "Skarner",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 294,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Seismic Bastion: 105 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Smolder",
+      "simKey": "Smolder",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Sona",
+      "simKey": "Sona",
+      "antiShieldScore": 34,
+      "physicalShieldPool": 35,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 9,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Aria of Perseverance: 13 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Soraka",
+      "simKey": "Soraka",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 128,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Swain",
+      "simKey": "Swain",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Sylas",
+      "simKey": "Sylas",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 11,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Syndra",
+      "simKey": "Syndra",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Tahm Kench",
+      "simKey": "TahmKench",
+      "antiShieldScore": 46,
+      "physicalShieldPool": 47,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Thick Skin: 17 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Taliyah",
+      "simKey": "Taliyah",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Talon",
+      "simKey": "Talon",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Taric",
+      "simKey": "Taric",
+      "antiShieldScore": 21,
+      "physicalShieldPool": 21,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 130,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Bastion: 8 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Teemo",
+      "simKey": "Teemo",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Thresh",
+      "simKey": "Thresh",
+      "antiShieldScore": 39,
+      "physicalShieldPool": 40,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Dark Passage: 14 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Tristana",
+      "simKey": "Tristana",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Trundle",
+      "simKey": "Trundle",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Tryndamere",
+      "simKey": "Tryndamere",
+      "antiShieldScore": 17,
+      "physicalShieldPool": 200,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 5,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Undying R: cannot die for 5s (minimum 30 HP)"
+      ],
+      "shieldSources": [
+        "override: +200 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Twisted Fate",
+      "simKey": "TwistedFate",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Twitch",
+      "simKey": "Twitch",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Udyr",
+      "simKey": "Udyr",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 228,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Iron Mantle: 81 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Urgot",
+      "simKey": "Urgot",
+      "antiShieldScore": 27,
+      "physicalShieldPool": 28,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Disdain: 10 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Varus",
+      "simKey": "Varus",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Vayne",
+      "simKey": "Vayne",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Veigar",
+      "simKey": "Veigar",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Vel'Koz",
+      "simKey": "VelKoz",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Vex",
+      "simKey": "Vex",
+      "antiShieldScore": 29,
+      "physicalShieldPool": 30,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Personal Space: 11 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Vi",
+      "simKey": "Vi",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Viego",
+      "simKey": "Viego",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Viktor",
+      "simKey": "Viktor",
+      "antiShieldScore": 31,
+      "physicalShieldPool": 31,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": [
+        "Siphon Power: 11 phys shield HPS"
+      ]
+    },
+    {
+      "champion": "Vladimir",
+      "simKey": "Vladimir",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 13,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Volibear",
+      "simKey": "Volibear",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 16,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Warwick",
+      "simKey": "Warwick",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 16,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Wukong",
+      "simKey": "Wukong",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Xayah",
+      "simKey": "Xayah",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Xerath",
+      "simKey": "Xerath",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Xin Zhao",
+      "simKey": "XinZhao",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Yasuo",
+      "simKey": "Yasuo",
+      "antiShieldScore": 23,
+      "physicalShieldPool": 281,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Wind Wall blocks projectiles, not a sustain shield"
+      ],
+      "shieldSources": []
+    },
+    {
+      "champion": "Yone",
+      "simKey": "Yone",
+      "antiShieldScore": 100,
+      "physicalShieldPool": 283,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": true,
+      "wikiGaps": [
+        "Spirit Cleave shield scales with bonus AD"
+      ],
+      "shieldSources": [
+        "Spirit Cleave: 33 phys shield HPS",
+        "override: +140 phys shield pool"
+      ]
+    },
+    {
+      "champion": "Yorick",
+      "simKey": "Yorick",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 17,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Yuumi",
+      "simKey": "Yuumi",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 15,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Yunara",
+      "simKey": "Yunara",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zaahen",
+      "simKey": "Zaahen",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zac",
+      "simKey": "Zac",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zed",
+      "simKey": "Zed",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zeri",
+      "simKey": "Zeri",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Ziggs",
+      "simKey": "Ziggs",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zilean",
+      "simKey": "Zilean",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 14,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zoe",
+      "simKey": "Zoe",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    },
+    {
+      "champion": "Zyra",
+      "simKey": "Zyra",
+      "antiShieldScore": 0,
+      "physicalShieldPool": 0,
+      "magicShieldPool": 0,
+      "spellShieldBlockChance": 0,
+      "rotationHealHPS": 0,
+      "hasWikiOverride": false,
+      "wikiGaps": [],
+      "shieldSources": []
+    }
+  ],
+  "nextSteps": [
+    "Add CHAMPION_COMBAT_TRAIT_OVERRIDES entries from wiki Details sections",
+    "Fix % max HP shields mis-tagged as flat in sim.ts ability rows",
+    "Model unmodeled interactions listed in wikiGaps",
+    "Re-run regression:sim after trait changes"
+  ]
+}

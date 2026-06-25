@@ -40,10 +40,17 @@ import {
 import { goldEfficiencyTieBreak, totalBuildGold } from "@/lib/itemGold";
 import { resolveItemByDDName } from "@/lib/itemNameMap";
 import {
+  aggregateEnemyCombatTraits,
+} from "@/lib/championCombatTraits";
+import {
   greedyPurchaseOrder,
   opponentAtPurchaseStep,
 } from "@/lib/purchaseOrder";
 import { extractDefensiveStats } from "@/lib/itemNameMap";
+import {
+  canAddItemToBuild,
+  isValidFullBuild,
+} from "@/lib/itemExclusiveGroups";
 
 export type { SimulationScenario };
 
@@ -221,6 +228,16 @@ export type ResolvedDuel = {
   targetArmor: number;
   /** Opponent magic resist — magic damage mitigation. */
   targetMR: number;
+  /** Avg physical shield EHP on opponents (Serpent's Fang counter-value). */
+  targetPhysicalShieldEHP: number;
+  /** Avg magic shield EHP on opponents (not shredded by Serpent's). */
+  targetMagicShieldEHP: number;
+  /** 0–1: fraction of ability damage blocked by enemy spell shields. */
+  targetSpellShieldBlockChance: number;
+  /** 0–1: fraction of projectile ability damage blocked (Wind Wall, Samira W). */
+  targetProjectileBlockChance: number;
+  /** Enemy grievous wounds — reduces attacker in-combat healing (0–100). */
+  targetHealReductionPercent: number;
   /**
    * When set, fixes combo/fight window instead of deriving from time-to-kill.
    * Scripts may pass `LOLOPTIMA_COMBO_WINDOW` to force a value.
@@ -236,7 +253,21 @@ const DEFAULT_DUEL: ResolvedDuel = {
   incomingPhysShare: 0.5,
   targetArmor: 100,
   targetMR: 100,
+  targetPhysicalShieldEHP: 0,
+  targetMagicShieldEHP: 0,
+  targetSpellShieldBlockChance: 0,
+  targetProjectileBlockChance: 0,
+  targetHealReductionPercent: 0,
 };
+
+/** Opponent HP pool for TTK (HP + shields). */
+export function effectiveTargetHP(duel: ResolvedDuel): number {
+  return (
+    duel.targetMaxHP +
+    duel.targetPhysicalShieldEHP +
+    duel.targetMagicShieldEHP
+  );
+}
 
 /** Duel assumptions for `npm run compute-meta` / Meta Analysis (squishy carry reference). */
 export const META_DUEL_DEFAULTS: ResolvedDuel = {
@@ -245,6 +276,11 @@ export const META_DUEL_DEFAULTS: ResolvedDuel = {
   incomingPhysShare: 0.5,
   targetArmor: 150,
   targetMR: 150,
+  targetPhysicalShieldEHP: 0,
+  targetMagicShieldEHP: 0,
+  targetSpellShieldBlockChance: 0,
+  targetProjectileBlockChance: 0,
+  targetHealReductionPercent: 0,
 };
 
 /** Lower bound for TTK-derived fight length (seconds). */
@@ -277,11 +313,81 @@ export function resolveDuel(overrides?: DuelAssumptions): ResolvedDuel {
       500,
     ),
     targetMR: clamp(overrides?.targetMR ?? DEFAULT_DUEL.targetMR, 0, 500),
+    targetPhysicalShieldEHP: clamp(
+      overrides?.targetPhysicalShieldEHP ??
+        DEFAULT_DUEL.targetPhysicalShieldEHP,
+      0,
+      4000,
+    ),
+    targetMagicShieldEHP: clamp(
+      overrides?.targetMagicShieldEHP ?? DEFAULT_DUEL.targetMagicShieldEHP,
+      0,
+      4000,
+    ),
+    targetSpellShieldBlockChance: clamp(
+      overrides?.targetSpellShieldBlockChance ??
+        DEFAULT_DUEL.targetSpellShieldBlockChance,
+      0,
+      0.5,
+    ),
+    targetProjectileBlockChance: clamp(
+      overrides?.targetProjectileBlockChance ??
+        DEFAULT_DUEL.targetProjectileBlockChance,
+      0,
+      0.4,
+    ),
+    targetHealReductionPercent: clamp(
+      overrides?.targetHealReductionPercent ??
+        DEFAULT_DUEL.targetHealReductionPercent,
+      0,
+      100,
+    ),
     comboWindowSeconds:
       overrides?.comboWindowSeconds != null
         ? clamp(overrides.comboWindowSeconds, 1, 30)
         : undefined,
   };
+}
+
+/** Short all-in window for flat-pen burst profiles (seconds). */
+export const FULL_LETHALITY_COMBO_WINDOW_SEC = 3.5;
+
+export function isBurstDamageProfile(profile: BuildProfileId): boolean {
+  return (
+    profile === "glass" ||
+    profile === "ability_burst" ||
+    profile === "full_lethality"
+  );
+}
+
+/** AD physical kits only — AP mages skip the full lethality archetype. */
+export function championEligibleForFullLethality(champion: Character): boolean {
+  const level = 18;
+  const physShare = championIncomingPhysShare(champion, level);
+  const { adScore, apScore } = championApAdScalingScores(champion, level);
+  if (physShare < 0.48) return false;
+  if (apScore > adScore * 1.15) return false;
+  return adScore >= 35;
+}
+
+export function fightDurationOptionsForProfile(
+  profile: BuildProfileId,
+  duel: ResolvedDuel,
+  defaultIterations = 2,
+): FightDurationOptions {
+  if (duel.comboWindowSeconds != null) {
+    return {
+      comboWindowSecondsOverride: duel.comboWindowSeconds,
+      iterations: 0,
+    };
+  }
+  if (profile === "full_lethality") {
+    return {
+      comboWindowSecondsOverride: FULL_LETHALITY_COMBO_WINDOW_SEC,
+      iterations: 0,
+    };
+  }
+  return { iterations: defaultIterations };
 }
 
 function offensiveDpsRate(
@@ -291,6 +397,7 @@ function offensiveDpsRate(
   switch (profile) {
     case "glass":
     case "ability_burst":
+    case "full_lethality":
       return dps.comboDPS;
     default:
       return dps.totalDPS;
@@ -302,9 +409,10 @@ export function deriveFightDurationSeconds(
   dps: ReturnType<Character["calculateDPS"]>,
   targetMaxHP: number,
   profile: BuildProfileId,
+  targetShieldEHP = 0,
 ): number {
   const rate = offensiveDpsRate(dps, profile);
-  const enemyTTD = targetMaxHP / Math.max(rate, 1);
+  const enemyTTD = (targetMaxHP + targetShieldEHP) / Math.max(rate, 1);
   return clamp(enemyTTD, FIGHT_DURATION_MIN, FIGHT_DURATION_MAX);
 }
 
@@ -325,16 +433,15 @@ export function calculateDpsWithFightDuration(
   targetMaxHP: number,
   targetBonusHP: number,
   simulation: SimulationScenario | undefined,
-  mitigation: Pick<
-    ReturnType<typeof dpsMitigationFromDuel>,
-    "targetArmor" | "targetMR"
-  >,
+  mitigation: ReturnType<typeof dpsMitigationFromDuel>,
   profile: BuildProfileId,
   options?: FightDurationOptions,
 ): {
   dps: ReturnType<Character["calculateDPS"]>;
   fightDurationSeconds: number;
 } {
+  const shieldEHP =
+    mitigation.targetPhysicalShieldEHP + mitigation.targetMagicShieldEHP;
   if (options?.comboWindowSecondsOverride != null) {
     const window = clamp(options.comboWindowSecondsOverride, 1, 30);
     const dps = champion.calculateDPS(
@@ -356,7 +463,12 @@ export function calculateDpsWithFightDuration(
   );
 
   for (let i = 0; i < iterations; i++) {
-    const next = deriveFightDurationSeconds(dps, targetMaxHP, profile);
+    const next = deriveFightDurationSeconds(
+      dps,
+      targetMaxHP,
+      profile,
+      shieldEHP,
+    );
     if (Math.abs(next - window) < 0.2) {
       window = next;
       break;
@@ -386,6 +498,10 @@ export function dpsMitigationFromDuel(
     targetArmor: duel.targetArmor,
     targetMR: duel.targetMR,
     comboWindowSeconds: window,
+    targetPhysicalShieldEHP: duel.targetPhysicalShieldEHP,
+    targetMagicShieldEHP: duel.targetMagicShieldEHP,
+    targetSpellShieldBlockChance: duel.targetSpellShieldBlockChance,
+    targetProjectileBlockChance: duel.targetProjectileBlockChance,
   };
 }
 
@@ -520,6 +636,7 @@ function itemCursedStatContribution(item: Item): number {
 export type BuildProfileId =
   | "balanced"
   | "glass"
+  | "full_lethality"
   | "ability_burst"
   | "tank"
   | "ap"
@@ -637,8 +754,23 @@ export function keystoneCandidatesFor(
   const burstAssassin = championIsBurstAssassin(champion);
   const burstMage = championIsBurstMage(champion);
   const spellOnly = profile === "spell" || profile === "ability_burst";
-  const burst = profile === "glass" || profile === "ability_burst";
+  const burst =
+    profile === "glass" ||
+    profile === "ability_burst" ||
+    profile === "full_lethality";
   const tank = profile === "tank";
+
+  if (profile === "full_lethality") {
+    return AllKeystones.filter((k) => {
+      const n = k.name;
+      if (UTILITY_KEYSTONES.has(n)) return false;
+      if (n === "Electrocute" || n === "Dark Harvest" || n === "First Strike") {
+        return true;
+      }
+      if (n === "Hail of Blades" && adLean && !burstMage) return true;
+      return false;
+    });
+  }
 
   return AllKeystones.filter((k) => {
     const n = k.name;
@@ -784,7 +916,39 @@ export type HealHPSInput = {
   stats: ReturnType<Character["getTotalStats"]>;
   dps: ReturnType<Character["calculateDPS"]>;
   simulation?: SimulationScenario;
+  /** Grievous wounds from enemy items (0–100). */
+  healReductionPercent?: number;
 };
+
+const GRIEVOUS_ITEM_NAMES = new Set([
+  "Oblivion Orb",
+  "Morellonomicon",
+  "Chemtech Putrifier",
+  "Executioner's Calling",
+  "Mortal Reminder",
+  "Bramble Vest",
+  "Thornmail",
+  "Chempunk Chainsword",
+]);
+
+/** Max grievous % from enemy completed items (does not stack above 40%). */
+export function healReductionFromEnemyItems(
+  itemNames: string[],
+  isMelee = true,
+): number {
+  let max = 0;
+  for (const name of itemNames) {
+    if (GRIEVOUS_ITEM_NAMES.has(name)) {
+      max = Math.max(max, 40);
+      continue;
+    }
+    const item = resolveItemByDDName(name, isMelee);
+    if (item?.stats.healReductionPercent) {
+      max = Math.max(max, item.stats.healReductionPercent);
+    }
+  }
+  return max;
+}
 
 /** All in-combat healing sources averaged as HPS. */
 export function computeHealHPS(input: HealHPSInput): number {
@@ -823,6 +987,11 @@ export function computeHealHPS(input: HealHPSInput): number {
   const healAmp = stats.healAmpMultiplicative ?? 0;
   if (healAmp > 0) {
     total *= 1 + healAmp / 100;
+  }
+
+  const reduction = input.healReductionPercent ?? 0;
+  if (reduction > 0) {
+    total *= 1 - Math.min(100, reduction) / 100;
   }
 
   return total;
@@ -900,13 +1069,22 @@ export function computeDuelDurability(
   fightDurationSeconds?: number,
 ): DuelDurabilityResult {
   const healInput = { champion, stats, dps, simulation };
-  const healHPS = computeHealHPS(healInput);
+  const healHPS = computeHealHPS({
+    ...healInput,
+    healReductionPercent: duel.targetHealReductionPercent,
+  });
   const offensiveHealHPS = computeOffensiveHealHPS(healInput);
   const fightSec =
     fightDurationSeconds ??
     duel.comboWindowSeconds ??
-    deriveFightDurationSeconds(dps, duel.targetMaxHP, "balanced");
-  const estimatedEnemyDPS = duel.targetMaxHP / (fightSec * 2.5);
+    deriveFightDurationSeconds(
+      dps,
+      duel.targetMaxHP,
+      "balanced",
+      duel.targetPhysicalShieldEHP + duel.targetMagicShieldEHP,
+    );
+  const targetPool = effectiveTargetHP(duel);
+  const estimatedEnemyDPS = targetPool / (fightSec * 2.5);
   const netIncomingDPS = computeNetIncomingDPS(
     estimatedEnemyDPS,
     healHPS,
@@ -917,7 +1095,7 @@ export function computeDuelDurability(
   const yourTTL =
     netIncomingDPS > 0 ? yourHP / netIncomingDPS : rawTTL;
   const enemyTTD =
-    dps.totalDPS > 0 ? duel.targetMaxHP / dps.totalDPS : 100;
+    dps.totalDPS > 0 ? targetPool / dps.totalDPS : 100;
   // In 1v1, durability beyond ~2× kill time has no marginal value.
   const effectiveTTL = Math.min(yourTTL, enemyTTD * 2);
   const duelRatio = effectiveTTL / Math.max(enemyTTD, 0.1);
@@ -1080,6 +1258,9 @@ function profileScore(
     case "ability_burst":
       return Math.max(0, combo);
 
+    case "full_lethality":
+      return Math.max(0, combo + dps.burstDPS * 0.2);
+
     case "tank":
       return (
         Math.log1p(ehp / 150) * 1.35 *
@@ -1134,12 +1315,9 @@ function scoreChampion(
     duel.targetMaxHP,
     duel.targetBonusHP,
     profileSim,
-    { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+    dpsMitigationFromDuel(duel),
     profile,
-    {
-      comboWindowSecondsOverride: duel.comboWindowSeconds,
-      iterations: duel.comboWindowSeconds != null ? 0 : fightDurationIterations,
-    },
+    fightDurationOptionsForProfile(profile, duel, fightDurationIterations),
   );
   const { durabilityEHP, duelRatio } = computeDuelDurability(
     c,
@@ -1181,6 +1359,7 @@ function purchasePowerScore(
   switch (profile) {
     case "glass":
     case "ability_burst":
+    case "full_lethality":
       return dps.comboDPS;
     case "spell":
       return dps.abilityDPS + dps.dotDPS + dps.burstDPS;
@@ -1241,15 +1420,15 @@ export function greedySimPurchaseOrder(
         opponent.targetMaxHP,
         opponent.targetBonusHP,
         stepSim,
-        {
+        dpsMitigationFromDuel({
+          ...duel,
+          targetMaxHP: opponent.targetMaxHP,
+          targetBonusHP: opponent.targetBonusHP,
           targetArmor: opponent.targetArmor,
           targetMR: opponent.targetMR,
-        },
+        }),
         profile,
-        {
-          comboWindowSecondsOverride: duel.comboWindowSeconds,
-          iterations: duel.comboWindowSeconds != null ? 0 : 1,
-        },
+        fightDurationOptionsForProfile(profile, duel, 1),
       );
       return purchasePowerScore(profile, dps, c.getTotalStats(stepSim.level), c);
     },
@@ -1296,12 +1475,9 @@ function bestKeystoneForBuild(
       duel.targetMaxHP,
       duel.targetBonusHP,
       profileSim,
-      { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+      dpsMitigationFromDuel(duel),
       profile,
-      {
-        comboWindowSecondsOverride: duel.comboWindowSeconds,
-        iterations: duel.comboWindowSeconds != null ? 0 : 1,
-      },
+      fightDurationOptionsForProfile(profile, duel, 1),
     );
     const s = keystonePickScore(
       profile,
@@ -1394,15 +1570,12 @@ function scoreBuildFast(
   ).score;
 }
 
-/** One-step neighbor: replace a random slot with any pool item whose group is unused elsewhere. */
+/** One-step neighbor: replace a random slot with any pool item valid for the other 5 slots. */
 function randomNeighbor(build: Item[], pool: Item[]): Item[] {
   if (build.length !== 6) return copyBuild(build);
   const slot = Math.floor(Math.random() * 6);
-  const blocked = new Set<string>();
-  for (let i = 0; i < 6; i++) {
-    if (i !== slot) blocked.add(build[i].getGroupName());
-  }
-  const candidates = pool.filter((it) => !blocked.has(it.getGroupName()));
+  const others = build.filter((_, i) => i !== slot);
+  const candidates = pool.filter((it) => canAddItemToBuild(it, others));
   if (candidates.length === 0) return copyBuild(build);
   const pick = candidates[Math.floor(Math.random() * candidates.length)];
   const next = copyBuild(build);
@@ -1542,15 +1715,13 @@ function greedyFill(
   search: BuildSearchCtx,
 ): Item[] {
   const build: Item[] = [];
-  const used = new Set<string>();
 
   for (let slot = 0; slot < 6; slot++) {
     let bestItem: Item | null = null;
     let bestScore = -Infinity;
 
     for (const item of pool) {
-      const g = item.getGroupName();
-      if (used.has(g)) continue;
+      if (!canAddItemToBuild(item, build)) continue;
       const trial = [...build, item];
       const s = scoreBuildFast(
         champion,
@@ -1568,7 +1739,6 @@ function greedyFill(
 
     if (bestItem) {
       build.push(bestItem);
-      used.add(bestItem.getGroupName());
     } else {
       break;
     }
@@ -1584,13 +1754,10 @@ function sampleFullBuild(pool: Item[]): Item[] {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   const out: Item[] = [];
-  const used = new Set<string>();
   for (const item of shuffled) {
     if (out.length >= 6) break;
-    const g = item.getGroupName();
-    if (!used.has(g)) {
+    if (canAddItemToBuild(item, out)) {
       out.push(item);
-      used.add(g);
     }
   }
   return out.length >= 6 ? out : [];
@@ -1629,6 +1796,11 @@ const PROFILE_META: Record<
   glass: {
     label: "Maximum damage",
     description: "Pure damage focus — lowest survivability tradeoff.",
+  },
+  full_lethality: {
+    label: "Full Lethality",
+    description:
+      "Flat armor pen all-in — shortest combo window, zero durability weight. Best burst vs squishies.",
   },
   ability_burst: {
     label: "Maximum ability damage",
@@ -1715,6 +1887,7 @@ export function recommendBuildsForChampion(
   const profiles: BuildProfileId[] = [
     "balanced",
     "glass",
+    "full_lethality",
     "ability_burst",
     "cursed",
     "tank",
@@ -1729,6 +1902,12 @@ export function recommendBuildsForChampion(
 
   for (let pi = 0; pi < profiles.length; pi++) {
     const profile = profiles[pi];
+    if (
+      profile === "full_lethality" &&
+      !championEligibleForFullLethality(champion)
+    ) {
+      continue;
+    }
     options?.onProgress?.(
       `profile ${profile} (${pi + 1}/${profiles.length})`,
     );
@@ -1793,7 +1972,7 @@ export function recommendBuildsForChampion(
       );
     }
 
-    if (primary.length === 0) continue;
+    if (primary.length === 0 || !isValidFullBuild(primary)) continue;
 
     const { rune: gRune } = getCachedKeystone(
       search.keystoneCache,
@@ -1813,12 +1992,9 @@ export function recommendBuildsForChampion(
       duel.targetMaxHP,
       duel.targetBonusHP,
       profileSim,
-      { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+      dpsMitigationFromDuel(duel),
       profile,
-      {
-        comboWindowSecondsOverride: duel.comboWindowSeconds,
-        iterations: duel.comboWindowSeconds != null ? 0 : 2,
-      },
+      fightDurationOptionsForProfile(profile, duel, 2),
     );
     const gehp = computeDuelDurability(
       gc,
@@ -1830,49 +2006,48 @@ export function recommendBuildsForChampion(
     ).durabilityEHP;
     const gscore = scoreChampion(profile, gc, primary, duel, profileSim);
 
-    if (isDistinct(primary, seenItemSets)) {
-      seenItemSets.push(primary);
-      const purchaseOrder = greedySimPurchaseOrder(
-        champion,
-        primary,
-        profile,
-        duel,
-        profileSim,
-        gRune ? makeRunePage(gRune) : null,
-      );
-      results.push({
-        profile,
-        label: PROFILE_META[profile].label,
-        description:
-          profile === "cursed"
-            ? `${PROFILE_META.cursed.description} Lean: ${formatCursedStatLean(getChampionCursedWeights(champion))}.`
-            : PROFILE_META[profile].description,
-        items: purchaseOrder.map((i) => i.name),
-        totalGold: totalBuildGold(purchaseOrder),
-        rune: gRune?.name ?? "None",
-        score: gscore,
-        totalDPS: gd.totalDPS,
-        sustainedDPS: gd.sustainedDPS,
-        comboDPS: gd.comboDPS,
-        autoAttackDPS: gd.autoAttackDPS,
-        onHitDPS: gd.onHitDPS,
-        abilityDPS: gd.abilityDPS,
-        dotDPS: gd.dotDPS,
-        physicalAbilityDPS: gd.physicalAbilityDPS,
-        burstDPS: gd.burstDPS,
-        effectiveHP: gehp,
-        fightDurationSeconds,
-        breakdown: gd.breakdown,
-        duel: { ...duel },
-        simulation: { ...profileSim },
-      });
-    }
+    seenItemSets.push(primary);
+    const purchaseOrder = greedySimPurchaseOrder(
+      champion,
+      primary,
+      profile,
+      duel,
+      profileSim,
+      gRune ? makeRunePage(gRune) : null,
+    );
+    results.push({
+      profile,
+      label: PROFILE_META[profile].label,
+      description:
+        profile === "cursed"
+          ? `${PROFILE_META.cursed.description} Lean: ${formatCursedStatLean(getChampionCursedWeights(champion))}.`
+          : PROFILE_META[profile].description,
+      items: purchaseOrder.map((i) => i.name),
+      totalGold: totalBuildGold(purchaseOrder),
+      rune: gRune?.name ?? "None",
+      score: gscore,
+      totalDPS: gd.totalDPS,
+      sustainedDPS: gd.sustainedDPS,
+      comboDPS: gd.comboDPS,
+      autoAttackDPS: gd.autoAttackDPS,
+      onHitDPS: gd.onHitDPS,
+      abilityDPS: gd.abilityDPS,
+      dotDPS: gd.dotDPS,
+      physicalAbilityDPS: gd.physicalAbilityDPS,
+      burstDPS: gd.burstDPS,
+      effectiveHP: gehp,
+      fightDurationSeconds,
+      breakdown: gd.breakdown,
+      duel: { ...duel },
+      simulation: { ...profileSim },
+    });
 
     let bestAlt: Item[] | null = null;
     let bestAltScore = -Infinity;
     for (let i = 0; i < nProbes; i++) {
       const b = sampleFullBuild(profilePool);
       if (b.length < 6) continue;
+      if (!isValidFullBuild(b)) continue;
       if (!isDistinct(b, [primary])) continue;
       const s0 = scoreBuildFast(
         champion,
@@ -1907,12 +2082,9 @@ export function recommendBuildsForChampion(
           duel.targetMaxHP,
           duel.targetBonusHP,
           profileSim,
-          { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+          dpsMitigationFromDuel(duel),
           profile,
-          {
-            comboWindowSecondsOverride: duel.comboWindowSeconds,
-            iterations: duel.comboWindowSeconds != null ? 0 : 2,
-          },
+          fightDurationOptionsForProfile(profile, duel, 2),
         );
       const altEhp = computeDuelDurability(
         c,
@@ -1968,6 +2140,7 @@ export function recommendBuildsForChampion(
       const order: BuildProfileId[] = [
         "balanced",
         "glass",
+        "full_lethality",
         "ability_burst",
         "cursed",
         "tank",
@@ -2015,6 +2188,7 @@ export type SerializedMeta = {
 const BUILD_PROFILE_IDS: BuildProfileId[] = [
   "balanced",
   "glass",
+  "full_lethality",
   "ability_burst",
   "cursed",
   "tank",
@@ -2103,9 +2277,9 @@ export function rescoreMetaBuildRow(
     duel.targetMaxHP,
     duel.targetBonusHP,
     profileSim,
-    { targetArmor: duel.targetArmor, targetMR: duel.targetMR },
+    dpsMitigationFromDuel(duel),
     profile,
-    { iterations: 2 },
+    fightDurationOptionsForProfile(profile, duel, 2),
   );
 
   return {
@@ -2421,6 +2595,12 @@ export type AverageEnemyTeamStats = {
   targetArmor: number;
   targetMR: number;
   incomingPhysShare: number;
+  targetPhysicalShieldEHP: number;
+  targetMagicShieldEHP: number;
+  targetSpellShieldBlockChance: number;
+  targetProjectileBlockChance: number;
+  avgAntiShieldScore: number;
+  targetHealReductionPercent: number;
 };
 
 /**
@@ -2436,6 +2616,12 @@ export function averageEnemyTeamStats(
       targetArmor: 100,
       targetMR: 100,
       incomingPhysShare: 0.5,
+      targetPhysicalShieldEHP: 0,
+      targetMagicShieldEHP: 0,
+      targetSpellShieldBlockChance: 0,
+      targetProjectileBlockChance: 0,
+      avgAntiShieldScore: 0,
+      targetHealReductionPercent: 0,
     };
   }
 
@@ -2444,6 +2630,14 @@ export function averageEnemyTeamStats(
   let totalArmor = 0;
   let totalMR = 0;
   let totalPhysShare = 0;
+  let maxGrievous = 0;
+
+  const combatInputs: Array<{
+    champion: string;
+    maxHP: number;
+    items: string[];
+    isMelee?: boolean;
+  }> = [];
 
   for (const enemy of enemies) {
     const s = computeEnemyStatsFromBuild(enemy);
@@ -2452,7 +2646,23 @@ export function averageEnemyTeamStats(
     totalArmor += s.armor;
     totalMR += s.mr;
     totalPhysShare += estimateEnemyIncomingPhysShare(enemy);
+    const champ = Characters.find((c) => c.Name === enemy.champion);
+    maxGrievous = Math.max(
+      maxGrievous,
+      healReductionFromEnemyItems(
+        enemy.items,
+        champ ? champ.AttackRange <= 250 : true,
+      ),
+    );
+    combatInputs.push({
+      champion: enemy.champion,
+      maxHP: s.maxHP,
+      items: enemy.items,
+      isMelee: champ ? champ.AttackRange <= 250 : true,
+    });
   }
+
+  const combat = aggregateEnemyCombatTraits(combatInputs);
 
   const n = enemies.length;
   return {
@@ -2461,5 +2671,11 @@ export function averageEnemyTeamStats(
     targetArmor: Math.round(totalArmor / n),
     targetMR: Math.round(totalMR / n),
     incomingPhysShare: totalPhysShare / n,
+    targetPhysicalShieldEHP: combat.targetPhysicalShieldEHP,
+    targetMagicShieldEHP: combat.targetMagicShieldEHP,
+    targetSpellShieldBlockChance: combat.targetSpellShieldBlockChance,
+    targetProjectileBlockChance: combat.targetProjectileBlockChance,
+    avgAntiShieldScore: combat.avgAntiShieldScore,
+    targetHealReductionPercent: maxGrievous,
   };
 }

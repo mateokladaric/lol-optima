@@ -25,6 +25,8 @@ export const STAT_TOOLTIPS = {
 export const PROFILE_TOOLTIPS: Record<string, string> = {
   balanced: "Mix of sustained damage and durability for a reference 1v1 duel.",
   glass: "Pure damage — lowest survivability tradeoff.",
+  full_lethality:
+    "Flat armor pen all-in — 3.5s burst window, scores combo + item burst only.",
   ability_burst: "Max combo burst without basic attacks in the sim.",
   tank: "Prioritizes effective HP while keeping meaningful threat.",
   ap: "Ability power and spell/DoT itemization.",

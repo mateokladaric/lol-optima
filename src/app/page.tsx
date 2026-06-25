@@ -87,8 +87,7 @@ function useRescoredMeta(raw: MetaData | null): SerializedMeta | null {
   return useMemo(() => {
     if (!raw) return null;
     return rescoreMetaDataset({
-      championBuilds:
-        raw.championBuilds as SerializedMeta["championBuilds"],
+      championBuilds: raw.championBuilds as SerializedMeta["championBuilds"],
       generatedAt: raw.generatedAt,
       duel: raw.duel ?? META_DUEL_DEFAULTS,
       simulation: raw.simulation,
@@ -142,7 +141,10 @@ function EnemyTeamPicker({
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -292,14 +294,18 @@ function BuildFinder(): React.ReactElement {
       targetArmor,
       targetMR,
       incomingPhysShare: incomingPhysPct / 100,
+      ...(autoStats && useAutoStats
+        ? {
+            targetPhysicalShieldEHP: autoStats.targetPhysicalShieldEHP,
+            targetMagicShieldEHP: autoStats.targetMagicShieldEHP,
+            targetSpellShieldBlockChance:
+              autoStats.targetSpellShieldBlockChance,
+            targetProjectileBlockChance: autoStats.targetProjectileBlockChance,
+            targetHealReductionPercent: autoStats.targetHealReductionPercent,
+          }
+        : {}),
     }),
-    [
-      targetMaxHP,
-      targetBonusHP,
-      targetArmor,
-      targetMR,
-      incomingPhysPct,
-    ],
+    [targetMaxHP, targetBonusHP, targetArmor, targetMR, incomingPhysPct, autoStats, useAutoStats],
   );
 
   const filteredChampions = useMemo(
@@ -333,7 +339,8 @@ function BuildFinder(): React.ReactElement {
     return () => window.clearTimeout(t);
   }, [selectedChampion, duelOptions, useRotationProfiles]);
 
-  const isAutoActive = useAutoStats && enemyTeam.length > 0 && autoStats !== null;
+  const isAutoActive =
+    useAutoStats && enemyTeam.length > 0 && autoStats !== null;
 
   const missingOpggEnemies =
     opggBuilds && enemyTeam.length > 0
@@ -426,7 +433,10 @@ function BuildFinder(): React.ReactElement {
         <div>
           <p className="finder-section-label">Live import</p>
           <HoverTip label="Requires an active game visible on OP.GG. Enter Riot ID as Name#Tag.">
-            <label htmlFor="live-riot-id" className="finder-field-label cursor-help">
+            <label
+              htmlFor="live-riot-id"
+              className="finder-field-label cursor-help"
+            >
               Riot ID (Name#Tag)
             </label>
           </HoverTip>
@@ -506,7 +516,10 @@ function BuildFinder(): React.ReactElement {
           <div className="finder-stat-grid">
             <div>
               <HoverTip label={DUEL_FIELD_TOOLTIPS.maxHP}>
-                <label htmlFor="duel-max-hp" className="finder-field-label cursor-help">
+                <label
+                  htmlFor="duel-max-hp"
+                  className="finder-field-label cursor-help"
+                >
                   Max HP
                 </label>
               </HoverTip>
@@ -526,7 +539,10 @@ function BuildFinder(): React.ReactElement {
             </div>
             <div>
               <HoverTip label={DUEL_FIELD_TOOLTIPS.bonusHP}>
-                <label htmlFor="duel-bonus-hp" className="finder-field-label cursor-help">
+                <label
+                  htmlFor="duel-bonus-hp"
+                  className="finder-field-label cursor-help"
+                >
                   Bonus HP
                 </label>
               </HoverTip>
@@ -546,7 +562,10 @@ function BuildFinder(): React.ReactElement {
             </div>
             <div>
               <HoverTip label={DUEL_FIELD_TOOLTIPS.armor}>
-                <label htmlFor="duel-armor" className="finder-field-label cursor-help">
+                <label
+                  htmlFor="duel-armor"
+                  className="finder-field-label cursor-help"
+                >
                   Armor
                 </label>
               </HoverTip>
@@ -566,7 +585,10 @@ function BuildFinder(): React.ReactElement {
             </div>
             <div>
               <HoverTip label={DUEL_FIELD_TOOLTIPS.mr}>
-                <label htmlFor="duel-mr" className="finder-field-label cursor-help">
+                <label
+                  htmlFor="duel-mr"
+                  className="finder-field-label cursor-help"
+                >
                   MR
                 </label>
               </HoverTip>
@@ -590,7 +612,10 @@ function BuildFinder(): React.ReactElement {
         <div className="space-y-4 pt-1 border-t border-white/10">
           <div>
             <HoverTip label={DUEL_FIELD_TOOLTIPS.physShare}>
-              <label htmlFor="duel-phys-share" className="finder-field-label cursor-help">
+              <label
+                htmlFor="duel-phys-share"
+                className="finder-field-label cursor-help"
+              >
                 Incoming damage: {incomingPhysPct}% physical /{" "}
                 {100 - incomingPhysPct}% magic
               </label>
@@ -610,7 +635,10 @@ function BuildFinder(): React.ReactElement {
           </div>
           <div>
             <HoverTip label={DUEL_FIELD_TOOLTIPS.rotation}>
-              <label htmlFor="duel-rotation-profiles" className="finder-field-label cursor-help">
+              <label
+                htmlFor="duel-rotation-profiles"
+                className="finder-field-label cursor-help"
+              >
                 Rotation templates
               </label>
             </HoverTip>
@@ -655,9 +683,7 @@ function BuildFinder(): React.ReactElement {
                     {r.label}
                   </h3>
                   <HoverTip
-                    label={
-                      PROFILE_TOOLTIPS[r.profile] ?? STAT_TOOLTIPS.profile
-                    }
+                    label={PROFILE_TOOLTIPS[r.profile] ?? STAT_TOOLTIPS.profile}
                   >
                     <span className="dpm-badge-accent shrink-0 cursor-help text-[10px]">
                       {r.profile}
@@ -673,11 +699,7 @@ function BuildFinder(): React.ReactElement {
                 </div>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 border-t border-white/8">
                   <HoverTip label={r.rune}>
-                    <RuneIcon
-                      name={r.rune}
-                      size={28}
-                      className="cursor-help"
-                    />
+                    <RuneIcon name={r.rune} size={28} className="cursor-help" />
                   </HoverTip>
                   <HoverTip label={STAT_TOOLTIPS.fightDuration}>
                     <span className="text-dpm-muted text-[11px] cursor-help">
@@ -821,9 +843,8 @@ function RandomBuildGenerator(): React.ReactElement {
         <div className="text-center">
           <div className="text-dpm-down text-xl mb-2">No builds available</div>
           <div className="text-dpm-muted text-xs">
-            Run{" "}
-            <code className="dpm-kbd">npm run compute-meta</code> to generate
-            builds
+            Run <code className="dpm-kbd">npm run compute-meta</code> to
+            generate builds
           </div>
         </div>
       </div>
@@ -1164,9 +1185,8 @@ function MetaAnalysis(): React.ReactElement {
               {metaData.duel && (
                 <>
                   {" "}
-                  · per-build fight length from TTK · Eff. HP
-                  weight {(metaData.duel.incomingPhysShare * 100).toFixed(0)}%
-                  phys
+                  · per-build fight length from TTK · Eff. HP weight{" "}
+                  {(metaData.duel.incomingPhysShare * 100).toFixed(0)}% phys
                 </>
               )}
             </span>
@@ -1279,76 +1299,89 @@ function MetaAnalysis(): React.ReactElement {
               {displayBuilds.map((build) => {
                 const dpsColors = dpsColorForBuild(build);
                 return (
-                <tr
-                  key={`${build.champion}-${build.buildType}-${build.rune}`}
-                  className="border-b border-white/5 hover:bg-dpm-widget-hover/50 transition-colors"
-                  onMouseEnter={(e) => {
-                    setHoveredBuild(build);
-                    setTooltipPosition({ x: e.clientX + 15, y: e.clientY + 10 });
-                  }}
-                  onMouseMove={(e) => {
-                    setTooltipPosition({ x: e.clientX + 15, y: e.clientY + 10 });
-                  }}
-                  onMouseLeave={() => setHoveredBuild(null)}
-                >
-                  <td className="p-3 font-semibold">
-                    <div className="flex items-center gap-2">
-                      <ChampionIcon name={build.champion} size={28} />
-                      {build.champion}
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <HoverTip label={build.rune}>
-                      <RuneIcon
-                        name={build.rune}
-                        size={32}
-                        className="cursor-help"
-                      />
-                    </HoverTip>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {build.items.map((item: string) => (
-                        <HoverTip key={`${build.champion}-${item}`} label={item}>
-                          <ItemIcon name={item} size={32} className="cursor-help" />
-                        </HoverTip>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <HoverTip
-                      label={
-                        PROFILE_TOOLTIPS[build.buildType] ??
-                        STAT_TOOLTIPS.profile
-                      }
-                    >
-                      <span className="dpm-badge-accent cursor-help">
-                        {build.buildType}
-                      </span>
-                    </HoverTip>
-                  </td>
-                  <td className="p-3 text-right font-bold">
-                    <HoverTip
-                      label={
-                        build.fightDurationSeconds != null
-                          ? `${STAT_TOOLTIPS.fightDuration} (~${build.fightDurationSeconds.toFixed(1)}s for this build)`
-                          : STAT_TOOLTIPS.fightDuration
-                      }
-                    >
-                      <span
-                        className={`cursor-help border-b border-dotted ${dpsColors.text} ${dpsColors.border}`}
+                  <tr
+                    key={`${build.champion}-${build.buildType}-${build.rune}`}
+                    className="border-b border-white/5 hover:bg-dpm-widget-hover/50 transition-colors"
+                    onMouseEnter={(e) => {
+                      setHoveredBuild(build);
+                      setTooltipPosition({
+                        x: e.clientX + 15,
+                        y: e.clientY + 10,
+                      });
+                    }}
+                    onMouseMove={(e) => {
+                      setTooltipPosition({
+                        x: e.clientX + 15,
+                        y: e.clientY + 10,
+                      });
+                    }}
+                    onMouseLeave={() => setHoveredBuild(null)}
+                  >
+                    <td className="p-3 font-semibold">
+                      <div className="flex items-center gap-2">
+                        <ChampionIcon name={build.champion} size={28} />
+                        {build.champion}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <HoverTip label={build.rune}>
+                        <RuneIcon
+                          name={build.rune}
+                          size={32}
+                          className="cursor-help"
+                        />
+                      </HoverTip>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {build.items.map((item: string) => (
+                          <HoverTip
+                            key={`${build.champion}-${item}`}
+                            label={item}
+                          >
+                            <ItemIcon
+                              name={item}
+                              size={32}
+                              className="cursor-help"
+                            />
+                          </HoverTip>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <HoverTip
+                        label={
+                          PROFILE_TOOLTIPS[build.buildType] ??
+                          STAT_TOOLTIPS.profile
+                        }
                       >
-                        {build.totalDPS.toFixed(1)}
-                      </span>
-                    </HoverTip>
-                  </td>
-                  <td className="p-3 text-right text-dpm-muted">
-                    {build.autoAttackDPS.toFixed(1)}
-                  </td>
-                  <td className="p-3 text-right text-dpm-muted">
-                    {build.abilityDPS.toFixed(1)}
-                  </td>
-                </tr>
+                        <span className="dpm-badge-accent cursor-help">
+                          {build.buildType}
+                        </span>
+                      </HoverTip>
+                    </td>
+                    <td className="p-3 text-right font-bold">
+                      <HoverTip
+                        label={
+                          build.fightDurationSeconds != null
+                            ? `${STAT_TOOLTIPS.fightDuration} (~${build.fightDurationSeconds.toFixed(1)}s for this build)`
+                            : STAT_TOOLTIPS.fightDuration
+                        }
+                      >
+                        <span
+                          className={`cursor-help border-b border-dotted ${dpsColors.text} ${dpsColors.border}`}
+                        >
+                          {build.totalDPS.toFixed(1)}
+                        </span>
+                      </HoverTip>
+                    </td>
+                    <td className="p-3 text-right text-dpm-muted">
+                      {build.autoAttackDPS.toFixed(1)}
+                    </td>
+                    <td className="p-3 text-right text-dpm-muted">
+                      {build.abilityDPS.toFixed(1)}
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>

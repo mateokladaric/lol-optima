@@ -2,10 +2,28 @@
 //import { join } from "path";
 
 import {
+  abilityDamageWithDoT,
+  critScaledAbilityDamage,
+  effectiveSpellbladeUptime,
+  getChampionInteractionProfile,
+  lucianRCritShotMultiplier,
+  missFortuneQBounceCritDamage,
+  missFortuneRChannelCritDamage,
+  attackSpeedScaledAbilityCooldown,
+  parseAbilityDoTSpec,
+  parseAbilityInteraction,
+  parseArmorReductionPercent,
+  abilityUsesAttackSpeedScaledCooldown,
+  resolveChampionCritStats,
+  stackScaledAbilityDamage,
+  yasuoSteelTempestCooldown,
+} from "@/lib/abilityInteractions";
+import {
   applyStatSuppress,
   buildItemMechanicContext,
   computeItemMechanicContributions,
 } from "@/lib/itemMechanics";
+import { resolveFatalityArmorPenConflict } from "@/lib/itemExclusiveGroups";
 
 type ScalingValue = number | number[] | ((level: number) => number);
 
@@ -417,6 +435,8 @@ export interface ItemStats {
   healthRegen?: number;
   manaRegen?: number;
   attackRange?: number;
+  /** Grievous wounds — reduces enemy healing (40% standard). */
+  healReductionPercent?: number;
 
   // On-hit damage
   magicOnHit?: number; // Flat magic damage on basic attacks
@@ -1747,6 +1767,7 @@ const Morellonomicon = new Item(
     ap: 75,
     hp: 350,
     abilityHaste: 15,
+    healReductionPercent: 40,
   },
   [],
   "Morellonomicon",
@@ -1758,6 +1779,7 @@ const MortalReminder = new Item(
     ad: 30,
     armorPen: 35,
     critChance: 25,
+    healReductionPercent: 40,
   },
   [],
   "Last Whisper",
@@ -2651,7 +2673,7 @@ const ZhonyasHourglass = new Item(
  * rotation sim we scale their contribution toward a sustained 1v1 average.
  */
 const ONHIT_SUSTAINED_FACTOR: Record<string, number> = {
-  Headshot: 0.22,
+  Headshot: 0.28,
   "Crippling Strike": 0.32,
   "Mystic Shot": 0.42,
   "Skip 'n Slash": 0.33,
@@ -2659,6 +2681,10 @@ const ONHIT_SUSTAINED_FACTOR: Record<string, number> = {
   Tumble: 0.42,
   Determination: 0.34,
   "Three Talon Strike": 0.58,
+  "Love Tap": 0.16,
+  "Way of the Hunter": 0.48,
+  "Spinning Axe": 0.72,
+  Hyper: 0.34,
 };
 
 /** Fraction of autos with Lethal Tempo “bonus attack” damage treated as active. */
@@ -2689,6 +2715,8 @@ type ChampionComboProfile = {
    * do not weave enough autos for Kraken/BotRK to reach full value.
    */
   itemOnHitScale?: number;
+  /** Mid-combo kill → extra cast for reset-on-kill abilities (Irelia Q, Kha'Zix E). */
+  assumeComboKill?: boolean;
 };
 
 /** Normalize display names (Kha'Zix, Rek'Sai) to profile map keys (KhaZix, RekSai). */
@@ -3088,6 +3116,28 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     castOrder: ["R", "Q", "W", "E"],
     comboAutoWeight: 0.3,
     itemOnHitScale: 0.3,
+    assumeComboKill: true,
+  },
+  Lucian: {
+    castOrder: ["R", "Q", "E", "W"],
+    comboAutoWeight: 0.58,
+    itemOnHitScale: 0.88,
+  },
+  BelVeth: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.52,
+    itemOnHitScale: 0.8,
+  },
+  Gangplank: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.42,
+    itemOnHitScale: 0.7,
+  },
+  Irelia: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.48,
+    itemOnHitScale: 0.75,
+    assumeComboKill: true,
   },
   KaynRhaast: {
     castOrder: ["R", "W", "Q", "E"],
@@ -3118,10 +3168,6 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     /** Few autos between spells — on-hit item stats (Kraken, BotRK) scale down. */
     itemOnHitScale: 0.3,
   },
-  Irelia: {
-    castOrder: ["R", "E", "Q", "W"],
-    comboAutoWeight: 0.45,
-  },
   Smolder: {
     castOrder: ["R", "Q", "E", "W"],
     comboAutoWeight: 0.55,
@@ -3134,6 +3180,88 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     castOrder: ["R", "E", "Q", "W"],
     comboAutoWeight: 0.45,
     itemOnHitScale: 0.5,
+  },
+  Ezreal: {
+    castOrder: ["R", "Q", "W", "E"],
+    comboAutoWeight: 0.52,
+    itemOnHitScale: 0.85,
+  },
+  Corki: {
+    castOrder: ["R", "Q", "E", "W"],
+    comboAutoWeight: 0.48,
+    itemOnHitScale: 0.8,
+  },
+  Darius: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.4,
+    itemOnHitScale: 0.55,
+  },
+  Jax: {
+    castOrder: ["R", "E", "W", "Q"],
+    comboAutoWeight: 0.55,
+    itemOnHitScale: 0.9,
+  },
+  Nasus: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.42,
+    itemOnHitScale: 0.85,
+  },
+  MissFortune: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.5,
+    itemOnHitScale: 0.75,
+  },
+  Samira: {
+    castOrder: ["R", "W", "E", "Q"],
+    comboAutoWeight: 0.55,
+    itemOnHitScale: 0.8,
+    assumeComboKill: true,
+  },
+  Yone: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.5,
+    itemOnHitScale: 0.82,
+  },
+  Tryndamere: {
+    castOrder: ["Q", "E", "W"],
+    comboAutoWeight: 0.55,
+    itemOnHitScale: 0.88,
+  },
+  Gwen: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.48,
+    itemOnHitScale: 0.92,
+  },
+  Viego: {
+    castOrder: ["R", "Q", "W", "E"],
+    comboAutoWeight: 0.52,
+    itemOnHitScale: 0.88,
+    assumeComboKill: true,
+  },
+  Kayle: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.5,
+    itemOnHitScale: 0.9,
+  },
+  Brand: {
+    castOrder: ["R", "W", "Q", "E"],
+    comboAutoWeight: 0.12,
+    itemOnHitScale: 0.1,
+  },
+  Malzahar: {
+    castOrder: ["R", "E", "Q", "W"],
+    comboAutoWeight: 0.18,
+    itemOnHitScale: 0.12,
+  },
+  Graves: {
+    castOrder: ["R", "Q", "E", "W"],
+    comboAutoWeight: 0.42,
+    itemOnHitScale: 0.32,
+  },
+  Gnar: {
+    castOrder: ["R", "Q", "W", "E"],
+    comboAutoWeight: 0.48,
+    itemOnHitScale: 0.72,
   },
 };
 
@@ -3153,6 +3281,7 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   Ashe: { abilityTypeMultiplier: { Q: 0.95, W: 0.8, E: 0.2, R: 0.35 } },
   Azir: { abilityTypeMultiplier: { Q: 0.85, W: 1.2, E: 0.45, R: 0.3 } },
   BelVeth: { abilityTypeMultiplier: { Q: 1.0, W: 0.55, E: 0.8, R: 0.45 } },
+  Brand: { abilityTypeMultiplier: { Q: 0.85, W: 1.05, E: 0.9, R: 0.35 } },
   Briar: { abilityTypeMultiplier: { Q: 0.9, W: 1.15, E: 0.6, R: 0.35 } },
   Caitlyn: { abilityTypeMultiplier: { Q: 0.75, W: 0.55, E: 0.6, R: 0.35 } },
   Camille: { abilityTypeMultiplier: { Q: 1.15, W: 0.75, E: 0.65, R: 0.45 } },
@@ -3165,6 +3294,8 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   Fiora: { abilityTypeMultiplier: { Q: 1.2, W: 0.45, E: 0.9, R: 0.4 } },
   Gangplank: { abilityTypeMultiplier: { Q: 1.2, W: 0.35, E: 0.95, R: 0.25 } },
   Garen: { abilityTypeMultiplier: { Q: 0.8, W: 0.4, E: 1.15, R: 0.5 } },
+  Gnar: { abilityTypeMultiplier: { Q: 1.0, W: 0.9, E: 0.7, R: 0.4 } },
+  Graves: { abilityTypeMultiplier: { Q: 1.0, W: 0.45, E: 0.85, R: 0.3 } },
   Gwen: { abilityTypeMultiplier: { Q: 1.0, W: 0.35, E: 0.9, R: 0.6 } },
   Hwei: { abilityTypeMultiplier: { Q: 1.0, W: 0.55, E: 0.85, R: 0.4 } },
   Jax: { abilityTypeMultiplier: { Q: 0.95, W: 1.05, E: 0.75, R: 0.45 } },
@@ -3186,6 +3317,7 @@ export const CHAMPION_ROTATION_PROFILES: Record<
   Locke: { abilityTypeMultiplier: { Q: 1.0, W: 0.7, E: 1.0, R: 0.5 } },
   Lucian: { abilityTypeMultiplier: { Q: 0.95, W: 0.55, E: 1.0, R: 0.45 } },
   MasterYi: { abilityTypeMultiplier: { Q: 0.85, W: 0.25, E: 1.2, R: 0.55 } },
+  Malzahar: { abilityTypeMultiplier: { Q: 0.75, W: 0.55, E: 1.25, R: 0.4 } },
   MissFortune: { abilityTypeMultiplier: { Q: 0.8, W: 0.75, E: 0.55, R: 0.55 } },
   Naafiri: { abilityTypeMultiplier: { Q: 1.0, W: 0.7, E: 0.85, R: 0.45 } },
   Nasus: { abilityTypeMultiplier: { Q: 1.35, W: 0.3, E: 0.55, R: 0.45 } },
@@ -3838,12 +3970,24 @@ export type DpsMitigationOptions = {
   targetArmor?: number;
   targetMR?: number;
   comboWindowSeconds?: number;
+  /** Opponent physical shield pool (EHP) — Serpent's Fang shreds these. */
+  targetPhysicalShieldEHP?: number;
+  /** Opponent magic shields (not affected by Serpent's Fang). */
+  targetMagicShieldEHP?: number;
+  /** 0–1 fraction of ability damage blocked by spell shields. */
+  targetSpellShieldBlockChance?: number;
+  /** 0–1 fraction of projectile ability damage blocked (Wind Wall, Samira W). */
+  targetProjectileBlockChance?: number;
 };
 
 const DEFAULT_DPS_MITIGATION: Required<DpsMitigationOptions> = {
   targetArmor: 100,
   targetMR: 100,
   comboWindowSeconds: 8,
+  targetPhysicalShieldEHP: 0,
+  targetMagicShieldEHP: 0,
+  targetSpellShieldBlockChance: 0,
+  targetProjectileBlockChance: 0,
 };
 
 function resolveDpsMitigation(opts?: DpsMitigationOptions) {
@@ -3856,6 +4000,31 @@ function resolveDpsMitigation(opts?: DpsMitigationOptions) {
     comboWindowSeconds: Math.max(
       1,
       opts?.comboWindowSeconds ?? DEFAULT_DPS_MITIGATION.comboWindowSeconds,
+    ),
+    targetPhysicalShieldEHP: Math.max(
+      0,
+      opts?.targetPhysicalShieldEHP ??
+        DEFAULT_DPS_MITIGATION.targetPhysicalShieldEHP,
+    ),
+    targetMagicShieldEHP: Math.max(
+      0,
+      opts?.targetMagicShieldEHP ?? DEFAULT_DPS_MITIGATION.targetMagicShieldEHP,
+    ),
+    targetSpellShieldBlockChance: Math.max(
+      0,
+      Math.min(
+        0.5,
+        opts?.targetSpellShieldBlockChance ??
+          DEFAULT_DPS_MITIGATION.targetSpellShieldBlockChance,
+      ),
+    ),
+    targetProjectileBlockChance: Math.max(
+      0,
+      Math.min(
+        0.4,
+        opts?.targetProjectileBlockChance ??
+          DEFAULT_DPS_MITIGATION.targetProjectileBlockChance,
+      ),
     ),
   };
 }
@@ -3932,6 +4101,7 @@ type ComboCastSpec = {
   actualCooldown: number;
   castTime: number;
   maxCasts: number;
+  cooldownResetOnKill?: boolean;
 };
 
 const DEFAULT_COMBO_CAST_ORDER: Exclude<AbilityType, "passive">[] = [
@@ -4460,6 +4630,7 @@ class Character {
     const mit = resolveDpsMitigation(mitigation);
     const champBase = championBaseStatsAtLevel(this, sim.level);
     const stats = this.getTotalStats(sim.level);
+    resolveFatalityArmorPenConflict(this.Items, stats);
     applySimulationStatModifiers(this, stats, sim);
     const breakdown: string[] = [];
 
@@ -4520,14 +4691,67 @@ class Character {
     }
 
     // Compute mitigation AFTER itemMech has applied armor reduction, magic pen, etc.
-    const physMit = physicalMitigationMultiplier(
-      mit.targetArmor,
+    const champInteraction = getChampionInteractionProfile(this.Name);
+    const rotationProfile = sim.enableChampionRotationProfiles
+      ? CHAMPION_ROTATION_PROFILES[championSimKey(this.Name)]
+      : undefined;
+
+    let rotationArmorReduction = 0;
+    for (const ability of this.getAllAbilities()) {
+      if (ability.abilityType === "passive") continue;
+      const rank =
+        ability.abilityType === "R"
+          ? ultRankAtLevel(sim.level)
+          : abilityRankAtLevel(
+              sim.level,
+              ability.abilityType as "Q" | "W" | "E",
+              this.Name,
+            );
+      if (rank <= 0) continue;
+      const reduction = parseArmorReductionPercent(ability, rank);
+      if (reduction <= 0) continue;
+      const rotW =
+        rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+      const duration = ability.effects?.duration ?? 5;
+      const cd = Math.max(ability.getCooldownAtLevel(rank), 1);
+      const uptime = Math.min(1, (duration / cd) * rotW);
+      rotationArmorReduction = Math.max(
+        rotationArmorReduction,
+        reduction * uptime,
+      );
+    }
+    if (rotationArmorReduction > 0) {
+      stats.armorReduction =
+        (stats.armorReduction ?? 0) + rotationArmorReduction;
+      breakdown.push(
+        `Ability armor shred: -${rotationArmorReduction.toFixed(0)}% effective`,
+      );
+    }
+
+    let effectiveTargetArmor = mit.targetArmor;
+    if (champInteraction.passiveArmorPenPercent) {
+      effectiveTargetArmor *=
+        1 - champInteraction.passiveArmorPenPercent / 100;
+      breakdown.push(
+        `Passive armor pen: -${champInteraction.passiveArmorPenPercent}% (${effectiveTargetArmor.toFixed(0)} effective armor)`,
+      );
+    }
+    let physMit = physicalMitigationMultiplier(
+      effectiveTargetArmor,
       stats,
       sim.level,
     );
     const magicMit = magicMitigationMultiplier(mit.targetMR, stats);
     /** For spell-only scenarios: no AAs, no on-hit DPS, no Navori-style CDR from attacks. */
-    const attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
+    let attackRate = sim.spellOnlyNoAutos ? 0 : stats.as;
+    if (champInteraction.sustainedBonusAttackSpeedPercent && attackRate > 0) {
+      const baseAs = this.AS;
+      const bonusPct = champInteraction.sustainedBonusAttackSpeedPercent;
+      attackRate = baseAs * (1 + (stats.attackSpeed ?? 0) / 100 + bonusPct / 100);
+      breakdown.push(
+        `Passive AS stacks: +${bonusPct}% → ${attackRate.toFixed(2)} AS`,
+      );
+    }
 
     if (itemMech.bonusAP > 0) stats.ap += itemMech.bonusAP;
     if (itemMech.bonusHP > 0) {
@@ -4550,28 +4774,127 @@ class Character {
       stats.sustainHealPerSecond =
         (stats.sustainHealPerSecond ?? 0) + itemMech.sustainHealPerSecond;
     }
+    if (
+      champInteraction.ultimateBonusHP &&
+      champInteraction.ultimateBonusHPUptime
+    ) {
+      const ultHp =
+        champInteraction.ultimateBonusHP *
+        champInteraction.ultimateBonusHPUptime;
+      stats.hp += ultHp;
+      breakdown.push(
+        `Ultimate bonus HP: +${ultHp.toFixed(0)} effective (${this.Name})`,
+      );
+    }
     for (const line of itemMech.breakdown) breakdown.push(line);
 
     breakdown.push(
       `Target resistances: ${mit.targetArmor} armor (${(physMit * 100).toFixed(1)}% phys dmg), ${mit.targetMR} MR (${(magicMit * 100).toFixed(1)}% magic dmg)`,
     );
-    const rotationProfile = sim.enableChampionRotationProfiles
-      ? CHAMPION_ROTATION_PROFILES[championSimKey(this.Name)]
-      : undefined;
+    const comboProfile =
+      CHAMPION_COMBO_PROFILES[championSimKey(this.Name)];
 
     // Calculate effective ability haste for cooldown reduction
     const totalAbilityHaste = stats.abilityHaste + stats.basicAbilityHaste;
     const abilityCDR = totalAbilityHaste / (100 + totalAbilityHaste);
 
     // 1. Base Auto Attack DPS
-    const baseAutoAttackDamage = stats.ad;
-    const effectiveCritChance = Math.min(100, stats.critChance);
+    const resolvedCrit = resolveChampionCritStats(
+      stats.critChance ?? 0,
+      stats.critDmg ?? 175,
+      champInteraction,
+    );
+    let effectiveCritChance = resolvedCrit.critChance;
+    const effectiveCritDmg = resolvedCrit.critDamage;
+    const overflowAD = resolvedCrit.overflowAD;
+    if (champInteraction.averagePassiveCritChancePercent) {
+      effectiveCritChance = Math.min(
+        100,
+        effectiveCritChance + champInteraction.averagePassiveCritChancePercent,
+      );
+      breakdown.push(
+        `Fury crit: +${champInteraction.averagePassiveCritChancePercent}% → ${effectiveCritChance.toFixed(0)}%`,
+      );
+    }
+    if (champInteraction.missingHPBonusADMax) {
+      const missingFrac = 1 - sim.avgCurrentHPRatio;
+      const bloodlustAD =
+        champInteraction.missingHPBonusADMax * missingFrac;
+      stats.ad += bloodlustAD;
+      breakdown.push(
+        `Bloodlust missing-HP AD: +${bloodlustAD.toFixed(0)}`,
+      );
+    }
+    if (overflowAD > 0) {
+      breakdown.push(
+        `Overflow crit AD: +${overflowAD.toFixed(0)} (${this.Name})`,
+      );
+    }
+    if (champInteraction.passiveCritChanceMultiplier) {
+      breakdown.push(
+        `Passive crit chance: ×${champInteraction.passiveCritChanceMultiplier.toFixed(2)} → ${effectiveCritChance.toFixed(0)}%`,
+      );
+    }
+    if (
+      champInteraction.rCritArmorPenPercent &&
+      champInteraction.rCritArmorPenUptime
+    ) {
+      const critFrac = effectiveCritChance / 100;
+      const pen =
+        champInteraction.rCritArmorPenPercent *
+        champInteraction.rCritArmorPenUptime *
+        critFrac;
+      const armAfterR = effectiveTargetArmor * (1 - pen / 100);
+      physMit = physicalMitigationMultiplier(
+        armAfterR,
+        stats,
+        sim.level,
+      );
+      breakdown.push(
+        `Last Breath crit armor ignore: -${pen.toFixed(0)}% effective armor`,
+      );
+    }
+    if (champInteraction.greyHealthHealHPS) {
+      stats.sustainHealPerSecond =
+        (stats.sustainHealPerSecond ?? 0) +
+        champInteraction.greyHealthHealHPS;
+      breakdown.push(
+        `Soul Ignition grey health: +${champInteraction.greyHealthHealHPS.toFixed(0)} heal/s`,
+      );
+    }
+    const effectiveAD = stats.ad + overflowAD;
+    const baseAutoAttackDamage = effectiveAD;
     const critMultiplier =
-      1 + (effectiveCritChance / 100) * ((stats.critDmg - 100) / 100);
+      1 +
+      (effectiveCritChance / 100) * ((effectiveCritDmg - 100) / 100);
     const autoAttackDamagePerHit = baseAutoAttackDamage * critMultiplier;
-    const autoAttackDPS = autoAttackDamagePerHit * attackRate;
+    let autoAttackDPS = autoAttackDamagePerHit * attackRate;
+    if (champInteraction.autoAttackDamageMultiplier) {
+      autoAttackDPS *= champInteraction.autoAttackDamageMultiplier;
+      breakdown.push(
+        `Auto damage scale: ×${champInteraction.autoAttackDamageMultiplier.toFixed(2)} (${this.Name})`,
+      );
+    }
+    if (champInteraction.shotgunAutoAdRatio) {
+      autoAttackDPS *= champInteraction.shotgunAutoAdRatio;
+      breakdown.push(
+        `Shotgun passive: ×${champInteraction.shotgunAutoAdRatio.toFixed(2)} single-target AD`,
+      );
+    }
+    let viegoDoubleHitDPS = 0;
+    if (champInteraction.postAbilityDoubleHitUptime) {
+      const bonusPerHit =
+        effectiveAD * 0.2 + (stats.ap * 15) / 100;
+      viegoDoubleHitDPS =
+        bonusPerHit *
+        attackRate *
+        champInteraction.postAbilityDoubleHitUptime;
+      breakdown.push(
+        `Sovereign's Domination double-hit: +${viegoDoubleHitDPS.toFixed(1)} DPS`,
+      );
+    }
     breakdown.push(
-      `Base AA: ${autoAttackDPS.toFixed(1)} DPS (${stats.ad.toFixed(
+      `Base AA: ${autoAttackDPS.toFixed(1)} DPS (${effectiveAD.toFixed(
         1,
       )} AD * ${critMultiplier.toFixed(2)} crit * ${stats.as.toFixed(2)} AS)`,
     );
@@ -4797,7 +5120,9 @@ class Character {
           effectivePercent +=
             (ability.damage.missingHealthRatioPerAP * stats.ap) / 100;
         }
-        onHitDamage += (avgMissingHP * effectivePercent) / 100;
+        if (ability.name !== "Starfire Spellblade") {
+          onHitDamage += (avgMissingHP * effectivePercent) / 100;
+        }
       }
       if (ability.damage.apRatio) {
         onHitDamage +=
@@ -4838,6 +5163,28 @@ class Character {
           100;
       }
 
+      const onHitNotes = (ability.specialMechanics ?? [])
+        .join(" ")
+        .toLowerCase();
+      if (
+        onHitNotes.includes("missing hp") ||
+        onHitNotes.includes("missing health")
+      ) {
+        const missingFrac = 1 - sim.avgCurrentHPRatio;
+        if (onHitNotes.includes("0-100%")) {
+          onHitDamage *= 1 + missingFrac;
+        }
+      }
+      if (
+        ability.name === "Silver Stake" &&
+        champInteraction.soulNailPassiveAmp
+      ) {
+        onHitDamage *= champInteraction.soulNailPassiveAmp;
+      }
+      if (ability.name === "Headshot") {
+        onHitDamage *= 1 + effectiveCritChance / 100;
+      }
+
       const sustain =
         ONHIT_SUSTAINED_FACTOR[ability.name] ??
         (ability.abilityType === "passive"
@@ -4852,6 +5199,19 @@ class Character {
           ? `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit (×${sustain.toFixed(2)} sustained)`
           : `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit`,
         ability.damage?.damageType,
+      );
+    }
+
+    if (championSimKey(this.Name) === "BelVeth" && attackRate > 0) {
+      const ultRank = ultRankAtLevel(sim.level);
+      const baseTrue = ultRank >= 3 ? 10 : ultRank >= 2 ? 8 : 6;
+      const bonusAD = stats.ad - champBase.ad;
+      const perMarkedHit = baseTrue + (bonusAD * 12) / 100;
+      const sustainedTrue = perMarkedHit * 0.5;
+      addOnHitTyped(
+        sustainedTrue,
+        `Endless Banquet (every 2nd hit): +${(sustainedTrue * attackRate).toFixed(1)} true DPS`,
+        "true",
       );
     }
 
@@ -4904,16 +5264,7 @@ class Character {
 
     // (Spellblade ICD uptime already applied above at the add-site)
 
-    const onHitDPS = onHitDamagePerAttack * attackRate;
-    if (onHitDamagePerAttack > 0) {
-      breakdown.push(
-        `On-hit total: ${onHitDPS.toFixed(
-          1,
-        )} DPS (${onHitDamagePerAttack.toFixed(1)} * ${attackRate.toFixed(
-          2,
-        )} AS)`,
-      );
-    }
+    let onHitDPS = onHitDamagePerAttack * attackRate;
 
     // 3. DoT Damage (per second, not multiplied by AS)
     let dotDPS = 0;
@@ -4941,12 +5292,28 @@ class Character {
     if (itemMech.dotMagicDPS > 0) {
       dotDPS += itemMech.dotMagicDPS;
     }
+    if (champInteraction.blazeDotPerStackMaxHPPercent) {
+      const stacks = champInteraction.averageBlazeStacks ?? 2;
+      const blazeDotPerSec =
+        (targetMaxHP *
+          champInteraction.blazeDotPerStackMaxHPPercent *
+          stacks) /
+        100 /
+        4;
+      dotDPS += blazeDotPerSec;
+      breakdown.push(
+        `Ablaze DoT: +${blazeDotPerSec.toFixed(1)} magic DPS (${stacks} avg stacks)`,
+      );
+    }
 
     // 4. Ability DPS (raw, before offensive multipliers and resistances)
     let abilityPhysDPS = 0;
     let abilityMagicDPS = 0;
     let abilityTrueDPS = 0;
     const abilityCasts: ComboCastSpec[] = [];
+    let abilityResetHitsPerSec = 0;
+    let abilityItemOnHitHitsPerSec = 0;
+    let lightslingerWeaveHitsPerSec = 0;
     const trueAbilityHitIcd = stats.trueOnAbilityHitCooldown ?? 0;
     const physAbilityHitIcd = stats.physicalOnAbilityHitCooldown ?? 0;
     const shapedChargeProc =
@@ -5039,6 +5406,64 @@ class Character {
         const castFloor = effectiveCastTime;
         const rotationFloor = baseCooldown * sim.cooldownFloorBaseRatio;
         actualCooldown = Math.max(actualCooldown, castFloor, rotationFloor);
+      }
+
+      const interaction = parseAbilityInteraction(ability);
+      const cdMult =
+        champInteraction.abilityCooldownMultiplier?.[
+          ability.abilityType as "Q" | "W" | "E" | "R"
+        ];
+      if (cdMult != null) {
+        actualCooldown *= cdMult;
+      }
+      if (
+        champInteraction.globalAbilityCooldownMultiplier &&
+        ability.abilityType !== "R" &&
+        !isStaticCooldown
+      ) {
+        actualCooldown *= champInteraction.globalAbilityCooldownMultiplier;
+      }
+
+      if (ability.name === "Steel Tempest" || ability.name === "Mortal Steel") {
+        actualCooldown = yasuoSteelTempestCooldown(stats.attackSpeed ?? 0);
+      } else if (abilityUsesAttackSpeedScaledCooldown(ability)) {
+        actualCooldown = attackSpeedScaledAbilityCooldown(
+          baseCooldown,
+          stats.attackSpeed ?? 0,
+        );
+      }
+
+      if (ability.name === "Fury of the Sands") {
+        const rotW =
+          rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+        let pctPerSec = ability.damage?.maxHealthRatio
+          ? ability.getValueAtLevel(
+              ability.damage.maxHealthRatio,
+              abilityRank,
+            )
+          : 0;
+        if (ability.damage?.maxHealthRatioPerAP) {
+          pctPerSec +=
+            (ability.damage.maxHealthRatioPerAP * stats.ap) / 100;
+        }
+        let perSec = (targetMaxHP * pctPerSec) / 100;
+        perSec = Math.min(240, perSec);
+        const duration = ability.effects?.duration ?? 15;
+        const avgDotDps = perSec * (duration / actualCooldown) * rotW;
+        dotDPS += avgDotDps;
+        breakdown.push(
+          `Fury of the Sands: +${avgDotDps.toFixed(1)} magic DoT DPS (${perSec.toFixed(0)}/s × ${duration}s / ${actualCooldown.toFixed(0)}s CD)`,
+        );
+        abilityCasts.push({
+          abilityType: ability.abilityType,
+          singleCastDamage: perSec * duration * rotW,
+          damageType: "magic",
+          actualCooldown,
+          castTime: ability.castInfo?.castTime ?? 0,
+          maxCasts: 1,
+          cooldownResetOnKill: false,
+        });
+        continue;
       }
 
       const isAmmo = ability.cooldown.cooldownType === "ammo";
@@ -5159,6 +5584,185 @@ class Character {
           100;
       }
 
+      const dotSpec = parseAbilityDoTSpec(ability, abilityRank, stats.ap);
+      if (dotSpec) {
+        const beforeDot = abilityDamage;
+        abilityDamage = abilityDamageWithDoT(abilityDamage, dotSpec);
+        if (abilityDamage > beforeDot + 0.5) {
+          breakdown.push(
+            `${ability.name} DoT: +${(abilityDamage - beforeDot).toFixed(0)} over ${dotSpec.duration}s`,
+          );
+        } else if (dotSpec.totalOverDuration) {
+          breakdown.push(
+            `${ability.name}: ${abilityDamage.toFixed(0)} total over ${dotSpec.duration}s`,
+          );
+        }
+      }
+
+      const stackKey = ability.abilityType as "Q" | "W" | "E" | "R";
+      const avgStacks = champInteraction.averageAbilityStacks?.[stackKey];
+      if (
+        avgStacks != null &&
+        champInteraction.abilityStackDamagePerStack
+      ) {
+        abilityDamage = stackScaledAbilityDamage(
+          abilityDamage,
+          avgStacks,
+          champInteraction.abilityStackDamagePerStack,
+          champInteraction.abilityStackDamageCap ?? 99,
+        );
+      }
+
+      const hitMult =
+        champInteraction.abilityHitMultipliers?.[ability.name];
+      if (hitMult != null && hitMult > 1) {
+        abilityDamage *= hitMult;
+      }
+
+      if (
+        ability.name === "Ashen Pursuit" &&
+        champInteraction.soulNailConsumeBonus
+      ) {
+        abilityDamage += champInteraction.soulNailConsumeBonus;
+        breakdown.push(
+          `Soul Nails (E consume): +${champInteraction.soulNailConsumeBonus}`,
+        );
+      }
+
+      if (champInteraction.styleGradeDamageAmp) {
+        abilityDamage *= champInteraction.styleGradeDamageAmp;
+      }
+
+      if (ability.name === "Royal Maelstrom") {
+        const bonusAS = stats.attackSpeed ?? 0;
+        const slashCount = 6 + Math.max(0, Math.floor(bonusAS / 33.3));
+        abilityDamage *= slashCount;
+        const missingFrac = 1 - sim.avgCurrentHPRatio;
+        abilityDamage *= 1 + missingFrac * 1.5;
+        breakdown.push(
+          `Royal Maelstrom: ×${slashCount} slashes, missing-HP amp ×${(1 + missingFrac * 1.5).toFixed(2)}`,
+        );
+      }
+
+      if (ability.name === "Siphoning Strike" &&
+        champInteraction.averageSiphoningStacks
+      ) {
+        abilityDamage += champInteraction.averageSiphoningStacks;
+        breakdown.push(
+          `Siphoning Strike: +${champInteraction.averageSiphoningStacks} stack damage`,
+        );
+      }
+
+      if (ability.name === "Flair" &&
+        champInteraction.meleeAbilityUptime &&
+        champInteraction.meleeAbilityDamageBonus
+      ) {
+        const meleeBonus =
+          1 +
+          champInteraction.meleeAbilityDamageBonus *
+            champInteraction.meleeAbilityUptime;
+        abilityDamage *= meleeBonus;
+      }
+
+      if (
+        ability.name === "Pillar of Flame" &&
+        champInteraction.ablazeAbilityDamageAmp
+      ) {
+        abilityDamage *= champInteraction.ablazeAbilityDamageAmp;
+        breakdown.push(
+          `Pillar of Flame (Ablaze): ×${champInteraction.ablazeAbilityDamageAmp.toFixed(2)}`,
+        );
+      }
+
+      if (
+        ability.name === "Explosive Charge" &&
+        champInteraction.explosiveChargeStackMultiplier
+      ) {
+        abilityDamage *= champInteraction.explosiveChargeStackMultiplier;
+        breakdown.push(
+          `Explosive Charge (4 stacks): ×${champInteraction.explosiveChargeStackMultiplier.toFixed(2)}`,
+        );
+      }
+
+      if (ability.name === "End of the Line") {
+        const detBase = ability.getValueAtLevel(
+          [80, 125, 170, 215, 260],
+          abilityRank,
+        );
+        const bonusAD = stats.ad - champBase.ad;
+        const detBonusRatio = ability.getValueAtLevel(
+          [55, 70, 85, 100, 115],
+          abilityRank,
+        );
+        const detonation = detBase + (bonusAD * detBonusRatio) / 100;
+        abilityDamage += detonation;
+        breakdown.push(
+          `End of the Line detonation: +${detonation.toFixed(0)}`,
+        );
+      }
+
+      if (
+        ability.name === "Taste Their Fear" &&
+        champInteraction.isolatedDamageMultiplier
+      ) {
+        abilityDamage *= champInteraction.isolatedDamageMultiplier;
+      }
+
+      const critBonusScale =
+        champInteraction.passiveCritDamageBonusScale ?? 1;
+      if (interaction.canCrit && ability.damage?.damageType === "physical") {
+        abilityDamage = critScaledAbilityDamage(
+          abilityDamage,
+          effectiveCritChance,
+          effectiveCritDmg,
+          critBonusScale,
+        );
+      }
+
+      if (
+        ability.name === "The Culling" &&
+        champInteraction.lucianRShotsPerCrit
+      ) {
+        abilityDamage *= lucianRCritShotMultiplier(effectiveCritChance);
+      }
+
+      if (
+        ability.name === "Missile Barrage" &&
+        champInteraction.ammoCycleDamageMultiplier
+      ) {
+        abilityDamage *= champInteraction.ammoCycleDamageMultiplier;
+      }
+
+      if (
+        ability.name === "Double Up" &&
+        champInteraction.bounceCritUptime
+      ) {
+        abilityDamage = missFortuneQBounceCritDamage(
+          abilityDamage,
+          effectiveCritChance,
+          effectiveCritDmg,
+          champInteraction.bounceCritUptime,
+        );
+      }
+
+      if (ability.name === "Bullet Time") {
+        const waveCount = ability.getValueAtLevel([12, 14, 16], abilityRank);
+        const perWave = abilityDamage;
+        if (champInteraction.channelWaveCritBonusPercent) {
+          abilityDamage = missFortuneRChannelCritDamage(
+            perWave,
+            waveCount,
+            effectiveCritChance,
+            champInteraction.channelWaveCritBonusPercent,
+          );
+        } else {
+          abilityDamage = perWave * waveCount;
+        }
+      }
+
+      const rotationMultiplier =
+        rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
+
       let shadowMagicBonus = 0;
       if (isKaynChampion(this.Name) && sim.assumedForm === "shadow") {
         const bonusAD = stats.ad - champBase.ad;
@@ -5192,21 +5796,51 @@ class Character {
         ammoChargeDamage = charges;
         castsPerWindow = 1;
       }
-      const coreDamage = abilityDamage * castsPerWindow * ammoChargeDamage;
-      const trueDamage = onAbilityHitTrue * castsPerWindow;
-      const physBonusDamage = onAbilityHitPhys * castsPerWindow;
+
+      let effectiveCasts = castsPerWindow;
+      if (
+        interaction.cooldownResetOnKill &&
+        (champInteraction.assumeComboKill ||
+          comboProfile?.assumeComboKill)
+      ) {
+        effectiveCasts += 0.85;
+      }
+
+      const hitsPerSec =
+        (effectiveCasts / Math.max(actualCooldown, 0.5)) * rotationMultiplier;
+      if (interaction.resetsAttackTimer) {
+        abilityResetHitsPerSec += hitsPerSec;
+      }
+      if (interaction.appliesItemOnHitScale > 0) {
+        abilityItemOnHitHitsPerSec +=
+          hitsPerSec * interaction.appliesItemOnHitScale;
+      }
+      if (
+        champInteraction.lightslingerOnHitInstances > 1 &&
+        (ability.abilityType === "Q" ||
+          ability.abilityType === "W" ||
+          ability.abilityType === "E")
+      ) {
+        lightslingerWeaveHitsPerSec += hitsPerSec;
+      }
+
+      const coreDamage =
+        abilityDamage * effectiveCasts * ammoChargeDamage;
+      const trueDamage = onAbilityHitTrue * effectiveCasts;
+      const physBonusDamage = onAbilityHitPhys * effectiveCasts;
       const shadowMagicDamage =
-        shadowMagicBonus * castsPerWindow * ammoChargeDamage;
+        shadowMagicBonus * effectiveCasts * ammoChargeDamage;
       const totalDamage =
         coreDamage + trueDamage + physBonusDamage + shadowMagicDamage;
 
       // DPS = damage / cooldown
-      const rotationMultiplier =
-        rotationProfile?.abilityTypeMultiplier?.[ability.abilityType] ?? 1;
       const scale = rotationMultiplier / actualCooldown;
       const dmgType = ability.damage?.damageType ?? "physical";
       const coreDps = coreDamage * scale;
-      if (dmgType === "magic") abilityMagicDPS += coreDps;
+      if (ability.name === "Fate Sealed") {
+        abilityPhysDPS += coreDps * 0.5;
+        abilityMagicDPS += coreDps * 0.5;
+      } else if (dmgType === "magic") abilityMagicDPS += coreDps;
       else if (dmgType === "true") abilityTrueDPS += coreDps;
       else if (dmgType === "adaptive") {
         if (stats.ad >= stats.ap) abilityPhysDPS += coreDps;
@@ -5229,13 +5863,22 @@ class Character {
             onAbilityHitTrue +
             onAbilityHitPhys) *
           rotationMultiplier;
+        let comboMaxCasts = castsPerWindow;
+        if (
+          interaction.cooldownResetOnKill &&
+          (champInteraction.assumeComboKill ||
+            comboProfile?.assumeComboKill)
+        ) {
+          comboMaxCasts += 1;
+        }
         abilityCasts.push({
           abilityType: ability.abilityType,
           singleCastDamage,
           damageType: dmgType,
           actualCooldown,
           castTime: effectiveCastTime,
-          maxCasts: castsPerWindow,
+          maxCasts: comboMaxCasts,
+          cooldownResetOnKill: interaction.cooldownResetOnKill,
         });
       }
 
@@ -5249,6 +5892,48 @@ class Character {
           `${ability.name}: rotation weight ×${rotationMultiplier.toFixed(2)} (${this.Name})`,
         );
       }
+    }
+
+    let interactionOnHitDPS = 0;
+    if (onHitDamagePerAttack > 0) {
+      if (lightslingerWeaveHitsPerSec > 0) {
+        const weave =
+          onHitDamagePerAttack *
+          champInteraction.lightslingerOnHitInstances *
+          lightslingerWeaveHitsPerSec;
+        interactionOnHitDPS += weave;
+        breakdown.push(
+          `Lightslinger weave on-hit: +${weave.toFixed(1)} DPS (×${champInteraction.lightslingerOnHitInstances.toFixed(2)} per spell-weave)`,
+        );
+      }
+      if (abilityItemOnHitHitsPerSec > 0) {
+        const proc = onHitDamagePerAttack * abilityItemOnHitHitsPerSec;
+        interactionOnHitDPS += proc;
+        breakdown.push(
+          `Ability-applied on-hit: +${proc.toFixed(1)} DPS (${abilityItemOnHitHitsPerSec.toFixed(2)} procs/s)`,
+        );
+      }
+      const sheenPct = stats.physicalOnHitBaseADPercent ?? 0;
+      if (sheenPct > 0 && abilityResetHitsPerSec > 0 && attackRate > 0) {
+        const baseU = spellbladeOnHitUptime(attackRate);
+        const effU = effectiveSpellbladeUptime(
+          attackRate,
+          abilityResetHitsPerSec,
+        );
+        const procDmg = scaleItemOnHit((champBase.ad * sheenPct) / 100);
+        const resetBonusDps = procDmg * (effU - baseU) * attackRate;
+        if (resetBonusDps > 0.1) {
+          interactionOnHitDPS += resetBonusDps;
+          onHitPhysPerAttack += procDmg * (effU - baseU);
+          breakdown.push(
+            `Spellblade (AA-reset): +${resetBonusDps.toFixed(1)} DPS`,
+          );
+        }
+      }
+    }
+    onHitDPS += interactionOnHitDPS;
+    if (onHitDamagePerAttack > 0 || interactionOnHitDPS > 0) {
+      breakdown.push(`On-hit total: ${onHitDPS.toFixed(1)} DPS`);
     }
 
     abilityPhysDPS += runeTimedPhysDPS;
@@ -5492,10 +6177,25 @@ class Character {
 
     const finalPhysicalAbilityDPS =
       abilityPhysMult * abilityPhysDPS * physMit;
-    const finalAbilityDPS =
+    let finalAbilityDPS =
       finalPhysicalAbilityDPS +
       abilityMagicMult * abilityMagicDPS * magicMit +
       abilityBaseMult * abilityTrueDPS;
+
+    if (mit.targetSpellShieldBlockChance > 0 && finalAbilityDPS > 0) {
+      const blocked = finalAbilityDPS * mit.targetSpellShieldBlockChance;
+      finalAbilityDPS -= blocked;
+      breakdown.push(
+        `Enemy spell shield: -${blocked.toFixed(1)} ability DPS (×${mit.targetSpellShieldBlockChance.toFixed(2)} block)`,
+      );
+    }
+    if (mit.targetProjectileBlockChance > 0 && finalAbilityDPS > 0) {
+      const blocked = finalAbilityDPS * mit.targetProjectileBlockChance;
+      finalAbilityDPS -= blocked;
+      breakdown.push(
+        `Enemy projectile block: -${blocked.toFixed(1)} ability DPS (×${mit.targetProjectileBlockChance.toFixed(2)} block)`,
+      );
+    }
 
     const onHitPhysDPS = onHitPhysPerAttack * attackRate;
     const onHitMagicDPS = onHitMagicPerAttack * attackRate;
@@ -5503,10 +6203,12 @@ class Character {
     const finalOnHitDPS =
       onHitPhysDPS * totalPhysicalMultiplier * physMit +
       onHitMagicDPS * totalMagicMultiplier * magicMit +
-      onHitTrueDPS * totalMultiplier;
+      onHitTrueDPS * totalMultiplier +
+      interactionOnHitDPS * totalPhysicalMultiplier * physMit;
 
     const finalAutoAttackDPS =
-      autoAttackDPS * totalPhysicalMultiplier * physMit;
+      autoAttackDPS * totalPhysicalMultiplier * physMit +
+      viegoDoubleHitDPS * totalPhysicalMultiplier * physMit;
     const finalDotDPS = dotDPS * totalMagicMultiplier * magicMit;
 
     const burstAfterMit =
@@ -5514,13 +6216,16 @@ class Character {
       abilityMagicMult * burstMagic * magicMit +
       abilityBaseMult * burstTrue;
 
+    const aaDamageMult = champInteraction.autoAttackDamageMultiplier ?? 1;
     const autoHitAfterMit =
-      autoAttackDamagePerHit * totalPhysicalMultiplier * physMit;
+      autoAttackDamagePerHit *
+      aaDamageMult *
+      totalPhysicalMultiplier *
+      physMit;
     const onHitPerAutoMit =
       onHitPhysPerAttack * totalPhysicalMultiplier * physMit +
       onHitMagicPerAttack * totalMagicMultiplier * magicMit +
       onHitTruePerAttack * totalMultiplier;
-    const comboProfile = CHAMPION_COMBO_PROFILES[championSimKey(this.Name)];
     const castOrder = comboProfile?.castOrder ?? DEFAULT_COMBO_CAST_ORDER;
     const comboResult = simulateComboWindowDamage(
       mit.comboWindowSeconds,
@@ -5547,6 +6252,22 @@ class Character {
         executeThresholdPercent = t;
       }
     }
+    if (champInteraction.comboExecuteMaxHealthPercent) {
+      let kitExecute = champInteraction.comboExecuteMaxHealthPercent;
+      if (
+        champInteraction.sealedChampionStacks &&
+        champInteraction.sealedChampionExecuteBonusPerStack &&
+        (champInteraction.assumeComboKill || comboProfile?.assumeComboKill)
+      ) {
+        kitExecute +=
+          champInteraction.sealedChampionStacks *
+          champInteraction.sealedChampionExecuteBonusPerStack;
+      }
+      executeThresholdPercent = Math.max(
+        executeThresholdPercent,
+        kitExecute,
+      );
+    }
 
     // targetMaxHP already represents the target's full max HP (base + bonus)
     const executeBonus = collectorExecuteBonusDamage(
@@ -5556,10 +6277,34 @@ class Character {
       executeThresholdPercent,
     );
     const comboTotalWithExecute = comboResult.total + executeBonus;
+    let comboEchoBonus = 0;
+    if (champInteraction.comboDamageEchoPercent) {
+      comboEchoBonus =
+        comboResult.total * (champInteraction.comboDamageEchoPercent / 100);
+      breakdown.push(
+        `Soul Unbound echo: +${comboEchoBonus.toFixed(0)} (${champInteraction.comboDamageEchoPercent}% of combo)`,
+      );
+    }
+    const comboTotalWithEcho = comboTotalWithExecute + comboEchoBonus;
+    const abilityBlockComboFactor =
+      1 -
+      mit.targetSpellShieldBlockChance * 0.85 -
+      mit.targetProjectileBlockChance * 0.7;
+    const comboTotalSpellAdjusted =
+      comboTotalWithEcho * Math.max(0.35, abilityBlockComboFactor);
+    if (
+      (mit.targetSpellShieldBlockChance > 0 ||
+        mit.targetProjectileBlockChance > 0) &&
+      comboTotalWithEcho > comboTotalSpellAdjusted
+    ) {
+      breakdown.push(
+        `Enemy ability block (combo): -${(comboTotalWithEcho - comboTotalSpellAdjusted).toFixed(0)} in ${mit.comboWindowSeconds}s window`,
+      );
+    }
 
     let sustainedDPS =
       finalAutoAttackDPS + finalOnHitDPS + finalDotDPS + finalAbilityDPS;
-    let comboDPS = comboTotalWithExecute / mit.comboWindowSeconds;
+    let comboDPS = comboTotalSpellAdjusted / mit.comboWindowSeconds;
 
     const hasFirstStrike = runeEffects.some(
       (e) =>
@@ -5583,8 +6328,14 @@ class Character {
       `Combo (${mit.comboWindowSeconds}s window): ${comboResult.total.toFixed(0)} total → ${(comboResult.total / mit.comboWindowSeconds).toFixed(1)} DPS`,
     );
     if (executeBonus > 0) {
+      const executeLabel =
+        champInteraction.comboExecuteMaxHealthPercent &&
+        executeThresholdPercent ===
+          champInteraction.comboExecuteMaxHealthPercent
+          ? "Kit execute"
+          : "Collector execute";
       breakdown.push(
-        `Collector execute (Death): +${executeBonus.toFixed(0)} vs ${targetMaxHP.toFixed(0)} HP (≤${executeThresholdPercent}% max HP)`,
+        `${executeLabel}: +${executeBonus.toFixed(0)} vs ${targetMaxHP.toFixed(0)} HP (≤${executeThresholdPercent}% max HP)`,
       );
     }
     if (burstAfterMit > 0) {
@@ -9573,6 +10324,7 @@ const DravenQ = new Ability(
     "Catch to regain empowered attack",
     "Max 2 Spinning Axes held",
   ],
+  true,
 );
 
 const DravenW = new Ability(
@@ -10049,7 +10801,6 @@ const EzrealQ = new Ability(
     "On hit: Reduce all ability CDs by 1.5s",
     "Applies on-hit and on-attack effects",
   ],
-  true, // appliesOnHit
 );
 
 const EzrealW = new Ability(
@@ -11250,6 +12001,7 @@ const GnarW1 = new Ability(
     "MS boost: 20/40/60/80% (based on R rank) for 3s",
     "Cap vs monsters: 300 damage",
   ],
+  true,
 );
 
 const GnarE1 = new Ability(
@@ -14759,6 +15511,7 @@ const KaylePassive = new Ability(
     "Wave: 20-41 (+10% bonus AD)(+25% AP)",
     "Lvl 16: Permanent exalted, 625 range",
   ],
+  true,
 );
 
 const KayleQ = new Ability(
@@ -14846,6 +15599,7 @@ const KayleE = new Ability(
     "Active: 8/8.5/9/9.5/10% (+1.5% per 100 AP) missing HP",
     "Monster cap: 400",
   ],
+  true,
 );
 
 const KayleR = new Ability(
@@ -18297,7 +19051,7 @@ const MissFortunePassive = new Ability(
   undefined,
   {
     baseDamage: [0],
-    adRatio: 50,
+    adRatio: (level: number) => 50 + ((level - 1) * 50) / 17,
     damageType: "physical",
   },
   undefined,
@@ -18391,6 +19145,7 @@ const MissFortuneE = new Ability(
     ccType: "slow",
     ccDuration: 2,
     slow: 50,
+    duration: 2,
   },
   undefined,
   undefined,
@@ -19187,7 +19942,9 @@ const NasusE = new Ability(
     apRatio: 60,
     damageType: "magic",
   },
-  undefined,
+  {
+    duration: 5,
+  },
   undefined,
   undefined,
   [
@@ -19212,8 +19969,8 @@ const NasusR = new Ability(
     radius: 350,
   },
   {
-    baseDamage: [3, 4, 5],
-    apRatio: 1,
+    maxHealthRatio: [3, 4, 5],
+    maxHealthRatioPerAP: 1,
     damageType: "magic",
   },
   {
@@ -22657,6 +23414,7 @@ const SamiraPassive = new Ability(
     "Blade attacks: 0-100% bonus damage based on missing HP",
     "Style: 2-3.5% MS per rank",
   ],
+  true,
 );
 
 const SamiraQ = new Ability(
@@ -26750,6 +27508,7 @@ const ViegoPassive = new Ability(
   undefined,
   undefined,
   ["2-6% current HP", "First attack after ability: +0.2 AD +15% AP"],
+  true,
 );
 
 const ViegoQ = new Ability(
@@ -27813,7 +28572,9 @@ const YasuoR = new Ability(
   },
   undefined,
   undefined,
-  ["Crits ignore 60% armor for 15s"],
+  [
+    "Crits ignore 60% armor for 15s",
+  ],
 );
 
 const Yasuo = new Character(
@@ -27850,6 +28611,7 @@ const YonePassive = new Ability(
     "Every 2nd attack: 50% AD as magic damage",
     "+150% crit chance, crits deal 90% damage",
   ],
+  true,
 );
 
 const YoneQ = new Ability(

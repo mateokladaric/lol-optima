@@ -26,6 +26,9 @@ export type ItemMechanicContext = {
   /** 1v1: assume one champion takedown mid-fight for stack items. */
   duelTakedownAtSeconds: number;
   takedownCount: number;
+  /** Opponent physical shields (Serpent's Fang shreds these, not magic shields). */
+  targetPhysicalShieldEHP?: number;
+  targetMagicShieldEHP?: number;
 };
 
 export type ItemMechanicContributions = {
@@ -104,7 +107,12 @@ export const MODELED_ITEM_GROUPS = [
   "Sundered Sky",
   "Bastionbreaker",
   "Liandry's Torment",
+  "Serpent's Fang",
 ] as const;
+
+/** Shield Reaver: melee 50% / ranged 35% active shield reduction (wiki 14.4+). */
+export const SERPENT_SHIELD_SHRED_MELEE = 0.5;
+export const SERPENT_SHIELD_SHRED_RANGED = 0.35;
 
 const BURN_DURATION = 3;
 
@@ -202,7 +210,11 @@ function comboProcs(windowSec: number, icdSeconds: number): number {
 
 export function buildItemMechanicContext(
   champion: Character,
-  mit: { comboWindowSeconds: number },
+  mit: {
+    comboWindowSeconds: number;
+    targetPhysicalShieldEHP?: number;
+    targetMagicShieldEHP?: number;
+  },
   sim: {
     level: number;
     avgCurrentHPRatio: number;
@@ -226,6 +238,8 @@ export function buildItemMechanicContext(
     championBaseAD: championBaseStatsAtLevel(champion, sim.level).ad,
     duelTakedownAtSeconds: window * 0.5,
     takedownCount: 1,
+    targetPhysicalShieldEHP: mit.targetPhysicalShieldEHP ?? 0,
+    targetMagicShieldEHP: mit.targetMagicShieldEHP ?? 0,
   };
 }
 
@@ -715,6 +729,21 @@ export function computeItemMechanicContributions(
     out.breakdown.push(
       `Hullbreaker Skipper: structure/minion on-hit excluded vs champions`,
     );
+  }
+
+  if (hasGroup(items, "Serpent's Fang")) {
+    const physShield = ctx.targetPhysicalShieldEHP ?? 0;
+    if (physShield > 0 && ctx.targetMaxHP > 0) {
+      const shred = ctx.melee
+        ? SERPENT_SHIELD_SHRED_MELEE
+        : SERPENT_SHIELD_SHRED_RANGED;
+      const shreddedHP = physShield * shred;
+      const ampPct = (shreddedHP / ctx.targetMaxHP) * 100;
+      out.effectiveDamageAmplificationOnTarget += ampPct;
+      out.breakdown.push(
+        `Serpent's Fang Shield Reaver: +${ampPct.toFixed(1)}% effective vs ${physShield.toFixed(0)} phys shield (${(shred * 100).toFixed(0)}% shred)`,
+      );
+    }
   }
 
   return out;
