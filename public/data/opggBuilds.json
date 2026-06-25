@@ -1,6 +1,6 @@
 {
   "patch": "16.13",
-  "scrapedAt": "2026-06-25T19:54:25.007Z",
+  "scrapedAt": "2026-06-25T20:27:33.260Z",
   "champions": {
     "Garen": {
       "position": "TOP",
@@ -567,8 +567,8 @@
         "Black Cleaver",
         "Sterak's Gage",
         "Plated Steelcaps",
-        "Spear of Shojin",
-        "Stridebreaker"
+        "Stridebreaker",
+        "Spear of Shojin"
       ],
       "baseStatsLv18": {
         "hp": 2547,
@@ -627,12 +627,12 @@
         "Locket of the Iron Solari",
         "Knight's Vow"
       ],
-      "boots": "Ionian Boots of Lucidity",
+      "boots": "Plated Steelcaps",
       "fullBuild": [
         "Zeke's Convergence",
         "Locket of the Iron Solari",
         "Knight's Vow",
-        "Ionian Boots of Lucidity",
+        "Plated Steelcaps",
         "Celestial Opposition",
         "Solstice Sleigh"
       ],
@@ -3086,8 +3086,8 @@
         "Guinsoo's Rageblade",
         "Nashor's Tooth",
         "Berserker's Greaves",
-        "Zhonya's Hourglass",
-        "Statikk Shiv"
+        "Statikk Shiv",
+        "Zhonya's Hourglass"
       ],
       "baseStatsLv18": {
         "hp": 2374,

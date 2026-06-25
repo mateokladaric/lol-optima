@@ -98,6 +98,10 @@ export type ChampionInteractionProfile = {
   shotgunAutoAdRatio?: number;
   /** Tristana E average stack multiplier (4 stacks × 25%). */
   explosiveChargeStackMultiplier?: number;
+  /** Varus W: average stacks detonated when Q/W/E/R pop Blight. */
+  blightDetonationAvgStacks?: number;
+  /** Varus W: % target max HP magic damage per Blight stack on detonation. */
+  blightDetonationMaxHPPercentPerStack?: number;
   /** Dampen bonus AS scaling (Kalista Martial Poise = 0.75). */
   bonusAttackSpeedScale?: number;
   /** Every Nth auto deals % target max HP true (Vayne W). */

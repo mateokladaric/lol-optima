@@ -2693,6 +2693,14 @@ const ONHIT_SUSTAINED_FACTOR: Record<string, number> = {
   "Toxic Shot": 0.85,
   Switcheroo: 0.35,
   "Spark Surge": 0.38,
+  Absolution: 0.35,
+  "Runic Blade": 0.52,
+  "Eternal Hunger": 0.42,
+  "Spider Queen": 0.38,
+  "Umbra Blades": 0.32,
+  "Clockwork Windup": 0.38,
+  "Assassin's Mark": 0.42,
+  "Dragon Practice": 0.35,
 };
 
 /** Fraction of autos with Lethal Tempo “bonus attack” damage treated as active. */
@@ -5827,20 +5835,21 @@ class Character {
       }
 
       if (
-        ability.name === "Twin Fang" &&
+        (ability.name === "Twin Fang" ||
+          ability.name === "Pillar of Flame" ||
+          ability.name === "Frostbite") &&
         champInteraction.ablazeAbilityDamageAmp
       ) {
         abilityDamage *= champInteraction.ablazeAbilityDamageAmp;
-      }
-
-      if (
-        ability.name === "Pillar of Flame" &&
-        champInteraction.ablazeAbilityDamageAmp
-      ) {
-        abilityDamage *= champInteraction.ablazeAbilityDamageAmp;
-        breakdown.push(
-          `Pillar of Flame (Ablaze): ×${champInteraction.ablazeAbilityDamageAmp.toFixed(2)}`,
-        );
+        if (ability.name === "Pillar of Flame") {
+          breakdown.push(
+            `Pillar of Flame (Ablaze): ×${champInteraction.ablazeAbilityDamageAmp.toFixed(2)}`,
+          );
+        } else if (ability.name === "Frostbite") {
+          breakdown.push(
+            `Frostbite (chilled): ×${champInteraction.ablazeAbilityDamageAmp.toFixed(2)}`,
+          );
+        }
       }
 
       if (
@@ -5850,6 +5859,25 @@ class Character {
         abilityDamage *= champInteraction.explosiveChargeStackMultiplier;
         breakdown.push(
           `Explosive Charge (4 stacks): ×${champInteraction.explosiveChargeStackMultiplier.toFixed(2)}`,
+        );
+      }
+
+      if (
+        this.Name === "Varus" &&
+        champInteraction.blightDetonationAvgStacks &&
+        champInteraction.blightDetonationMaxHPPercentPerStack &&
+        (ability.name === "Piercing Arrow" ||
+          ability.name === "Hail of Arrows" ||
+          ability.name === "Chain of Corruption")
+      ) {
+        const blightDet =
+          (targetMaxHP *
+            champInteraction.blightDetonationAvgStacks *
+            champInteraction.blightDetonationMaxHPPercentPerStack) /
+          100;
+        abilityDamage += blightDet;
+        breakdown.push(
+          `Blight detonation (${champInteraction.blightDetonationAvgStacks} stacks): +${blightDet.toFixed(0)}`,
         );
       }
 
@@ -14763,6 +14791,7 @@ const KaiSaPassive = new Ability(
     "5th stack: 15% (+6% per 100 AP) missing HP",
     "Evolve: Q at 100 AD, W at 100 AP, E at 100% AS",
   ],
+  true,
 );
 
 const KaiSaQ = new Ability(
@@ -23226,6 +23255,7 @@ const RivenPassive = new Ability(
     "+50 bonus damage vs monsters",
     "Can crit, applies lifesteal",
   ],
+  true,
 );
 
 const RivenQ = new Ability(
@@ -23806,6 +23836,7 @@ const SennaPassive = new Ability(
   undefined,
   undefined,
   ["Soul: +0.75 AD, +20 range per 20 souls", "Mist: 20% AD bonus damage"],
+  true,
 );
 
 const SennaQ = new Ability(
@@ -28125,6 +28156,7 @@ const WarwickPassive = new Ability(
   undefined,
   undefined,
   ["6-46 (+15% bonus AD)(+10% AP)", "Heals 100% at <50% HP, 250% at <25% HP"],
+  true,
 );
 
 const WarwickQ = new Ability(

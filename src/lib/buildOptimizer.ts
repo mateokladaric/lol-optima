@@ -1784,6 +1784,68 @@ function isDistinct(
   return true;
 }
 
+function itemsFromNames(names: string[], byName: Map<string, Item>): Item[] {
+  return names
+    .map((n) => byName.get(n))
+    .filter((x): x is Item => Boolean(x));
+}
+
+/** Drop near-duplicate builds (same item groups); keeps highest-DPS variant first. */
+export function dedupeBuildRecommendations(
+  recs: BuildRecommendation[],
+  itemPool: Item[] = Items,
+  minDiff = 0.34,
+): BuildRecommendation[] {
+  const byName = new Map(itemPool.map((i) => [i.name, i]));
+  const kept: BuildRecommendation[] = [];
+  const keptItems: Item[][] = [];
+  const keptExact = new Set<string>();
+
+  const sorted = [...recs].sort(
+    (a, b) => b.totalDPS - a.totalDPS || b.score - a.score,
+  );
+
+  for (const rec of sorted) {
+    const items = itemsFromNames(rec.items, byName);
+    const exactKey = `${[...rec.items].sort().join("|")}::${rec.rune}`;
+    if (keptExact.has(exactKey)) continue;
+    if (items.length === 6 && !isDistinct(items, keptItems, minDiff)) continue;
+
+    keptExact.add(exactKey);
+    if (items.length === 6) keptItems.push(items);
+    kept.push(rec);
+  }
+
+  return kept;
+}
+
+/** Meta JSON rows — same dedupe rules as live recommendations. */
+export function dedupeSerializedMetaBuilds(
+  builds: SerializedBuildResult[],
+  itemPool: Item[] = Items,
+  minDiff = 0.34,
+): SerializedBuildResult[] {
+  const byName = new Map(itemPool.map((i) => [i.name, i]));
+  const kept: SerializedBuildResult[] = [];
+  const keptItems: Item[][] = [];
+  const keptExact = new Set<string>();
+
+  const sorted = [...builds].sort((a, b) => b.totalDPS - a.totalDPS);
+
+  for (const row of sorted) {
+    const items = itemsFromNames(row.items, byName);
+    const exactKey = `${[...row.items].sort().join("|")}::${row.rune}`;
+    if (keptExact.has(exactKey)) continue;
+    if (items.length === 6 && !isDistinct(items, keptItems, minDiff)) continue;
+
+    keptExact.add(exactKey);
+    if (items.length === 6) keptItems.push(items);
+    kept.push(row);
+  }
+
+  return kept;
+}
+
 const PROFILE_META: Record<
   BuildProfileId,
   { label: string; description: string }
@@ -1973,6 +2035,7 @@ export function recommendBuildsForChampion(
     }
 
     if (primary.length === 0 || !isValidFullBuild(primary)) continue;
+    if (!isDistinct(primary, seenItemSets)) continue;
 
     const { rune: gRune } = getCachedKeystone(
       search.keystoneCache,
@@ -2154,7 +2217,7 @@ export function recommendBuildsForChampion(
     return b.score - a.score;
   });
 
-  return results;
+  return dedupeBuildRecommendations(results, itemPool);
 }
 
 export type SerializedBuildResult = {
@@ -2401,12 +2464,15 @@ export function computeMetaForChampion(
     monteCarloParams: mcParams,
     optimizeKeystones: true,
   });
-  const builds: SerializedBuildResult[] = recs.map((r) => {
-    const its = r.items
-      .map((n) => itemByName.get(n))
-      .filter((x): x is Item => Boolean(x));
-    return serializeBuildRecommendation(champion.Name, r, its);
-  });
+  const builds: SerializedBuildResult[] = dedupeSerializedMetaBuilds(
+    recs.map((r) => {
+      const its = r.items
+        .map((n) => itemByName.get(n))
+        .filter((x): x is Item => Boolean(x));
+      return serializeBuildRecommendation(champion.Name, r, its);
+    }),
+    itemPool,
+  );
   if (builds.length === 0) return null;
   return { champion: champion.Name, builds };
 }
@@ -2460,12 +2526,15 @@ export function computeMetaForAllChampions(
         onProgress: (step) =>
           log(`[compute-meta] ${label} ${champion.Name} — ${step}`),
       });
-      const builds: SerializedBuildResult[] = recs.map((r) => {
-        const its = r.items
-          .map((n) => itemByName.get(n))
-          .filter((x): x is Item => Boolean(x));
-        return serializeBuildRecommendation(champion.Name, r, its);
-      });
+      const builds: SerializedBuildResult[] = dedupeSerializedMetaBuilds(
+        recs.map((r) => {
+          const its = r.items
+            .map((n) => itemByName.get(n))
+            .filter((x): x is Item => Boolean(x));
+          return serializeBuildRecommendation(champion.Name, r, its);
+        }),
+        itemPool,
+      );
       entry = builds.length > 0 ? { champion: champion.Name, builds } : null;
     } else {
       entry = computeMetaForChampion(

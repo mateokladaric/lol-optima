@@ -17,6 +17,7 @@ import type {
 } from "@/lib/buildOptimizer";
 import {
   averageEnemyTeamStats,
+  dedupeSerializedMetaBuilds,
   INTERACTIVE_RECOMMEND_OPTIONS,
   META_DUEL_DEFAULTS,
   recommendBuildsForChampion,
@@ -772,7 +773,7 @@ function RandomBuildGenerator(): React.ReactElement {
     if (!scoredMeta) return [];
     let builds: BuildResult[] = [];
     for (const cb of scoredMeta.championBuilds) {
-      builds = builds.concat(cb.builds);
+      builds = builds.concat(dedupeSerializedMetaBuilds(cb.builds, Items));
     }
     return builds;
   }, [scoredMeta]);
@@ -1077,7 +1078,7 @@ function MetaAnalysis(): React.ReactElement {
 
     let builds: BuildResult[] = [];
     for (const cb of scoredMeta.championBuilds) {
-      builds = builds.concat(cb.builds);
+      builds = builds.concat(dedupeSerializedMetaBuilds(cb.builds, Items));
     }
 
     if (selectedChampionFilter) {

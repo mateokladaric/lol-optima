@@ -11,54 +11,103 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   Aatrox: {
     missingHPBonusADMax: 20,
     sustainedBonusAttackSpeedPercent: 15,
+    abilityCooldownMultiplier: {
+      Q: 0.88,
+      E: 0.75,
+    },
   },
   Ahri: {
     sustainedBonusAttackSpeedPercent: 0,
   },
+  Akali: {
+    abilityCooldownMultiplier: {
+      Q: 0.62,
+      E: 0.88,
+    },
+    sustainedBonusAttackSpeedPercent: 15,
+  },
   Akshan: {
     sustainedBonusAttackSpeedPercent: 25,
+    autoAttackDamageMultiplier: 1.48,
+    abilityHitMultipliers: {
+      Avengerang: 1.85,
+    },
   },
   Alistar: {},
   Ambessa: {
     sustainedBonusAttackSpeedPercent: 18,
+    abilityHitMultipliers: {
+      "Public Execution": 1.35,
+    },
   },
   Amumu: {},
   Anivia: {
     sustainedBonusAttackSpeedPercent: 0,
+    ablazeAbilityDamageAmp: 2,
+    abilityCooldownMultiplier: {
+      R: 0.72,
+    },
   },
   Annie: {},
   Aphelios: {
-    ammoCycleDamageMultiplier: 1.2,
+    ammoCycleDamageMultiplier: 1.25,
     sustainedBonusAttackSpeedPercent: 15,
+    abilityHitMultipliers: {
+      Moonshot: 1.1,
+      "Infernum Chains": 1.15,
+    },
   },
   Ashe: {
     passiveCritDamageBonusScale: 1.35,
     sustainedBonusAttackSpeedPercent: 22,
+    abilityHitMultipliers: {
+      "Ranger's Focus": 4.2,
+    },
   },
   AurelionSol: {
     sustainedBonusAttackSpeedPercent: 0,
+    stackDotBasePerSecond: 8,
+    stackDotAPRatioPerSecond: 2.5,
+    averageDotStacks: 3,
   },
   Aurora: {
     sustainedBonusAttackSpeedPercent: 10,
+    abilityHitMultipliers: {
+      "Across the Veil": 1.2,
+    },
   },
   Azir: {
     sustainedBonusAttackSpeedPercent: 5,
+    abilityHitMultipliers: {
+      "Arise!": 1.35,
+      "Conquering Sands": 1.1,
+    },
   },
   Bard: {
     sustainedBonusAttackSpeedPercent: 12,
+    abilityHitMultipliers: {
+      "Cosmic Binding": 1.15,
+    },
   },
   Blitzcrank: {},
   Braum: {},
   Briar: {
     sustainedBonusAttackSpeedPercent: 35,
+    autoAttackDamageMultiplier: 0.92,
+    missingHPBonusADMax: 18,
   },
-  Caitlyn: {},
+  Caitlyn: {
+    sustainedBonusAttackSpeedPercent: 18,
+  },
   Camille: {
     everyNthHitTrueMaxHPPercent: 4,
     everyNthHit: 2,
   },
   Cassiopeia: {
     ablazeAbilityDamageAmp: 1.35,
+    abilityCooldownMultiplier: {
+      E: 0.55,
+    },
   },
   ChoGath: {
     everyNthHitTrueMaxHPPercent: 4,
@@ -77,36 +126,80 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Elise: {
     sustainedBonusAttackSpeedPercent: 15,
+    abilityCooldownMultiplier: {
+      Q: 0.85,
+    },
   },
   Evelynn: {
     assumeComboKill: true,
+    isolatedDamageMultiplier: 1.8,
   },
   Fiddlesticks: {},
-  Fiora: {},
+  Fiora: {
+    sustainedBonusAttackSpeedPercent: 20,
+    abilityHitMultipliers: {
+      Lunge: 1.15,
+    },
+  },
   Fizz: {
     sustainedBonusAttackSpeedPercent: 12,
+    abilityCooldownMultiplier: {
+      E: 0.7,
+    },
   },
   Galio: {},
+  Gangplank: {
+    abilityCooldownMultiplier: {
+      Q: 0.88,
+    },
+    abilityHitMultipliers: {
+      "Powder Keg": 1.75,
+    },
+  },
   Garen: {
     sustainedBonusAttackSpeedPercent: 10,
+    abilityHitMultipliers: {
+      Judgment: 1.15,
+    },
   },
   Gragas: {},
   Hecarim: {
     sustainedBonusAttackSpeedPercent: 15,
+    abilityHitMultipliers: {
+      "Devastating Charge": 1.45,
+    },
   },
   Heimerdinger: {},
   Hwei: {
     sustainedBonusAttackSpeedPercent: 0,
+    abilityHitMultipliers: {
+      "Subject: Disaster": 1.25,
+    },
   },
   Illaoi: {
     abilityHitMultipliers: {
       "Harsh Lesson": 1.8,
+      "Test of Spirit": 1.2,
     },
   },
   Ivern: {},
   Janna: {},
+  JarvanIV: {
+    abilityHitMultipliers: {
+      Cataclysm: 1.15,
+      "Demacian Standard": 1.1,
+    },
+  },
+  Jax: {
+    postAbilityDoubleHitUptime: 0.38,
+    sustainedBonusAttackSpeedPercent: 22,
+  },
   Jayce: {
     sustainedBonusAttackSpeedPercent: 12,
+    ammoCycleDamageMultiplier: 1.45,
+    abilityHitMultipliers: {
+      "To the Skies! / Shock Blast": 1.2,
+    },
   },
   Jhin: {
     passiveCritDamageBonusScale: 0.75,
@@ -114,12 +207,14 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
     ammoCycleDamageMultiplier: 1.12,
   },
   Jinx: {
-    sustainedBonusAttackSpeedPercent: 65,
+    sustainedBonusAttackSpeedPercent: 55,
+    autoAttackDamageMultiplier: 1.08,
   },
   KaiSa: {
     sustainedBonusAttackSpeedPercent: 45,
     abilityCooldownMultiplier: {
       E: 0.72,
+      Q: 0.88,
     },
   },
   Kalista: {
@@ -132,59 +227,118 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   Karma: {},
   Karthus: {
     isolatedDamageMultiplier: 1.65,
+    abilityCooldownMultiplier: {
+      E: 0.65,
+    },
   },
   Kassadin: {
     sustainedBonusAttackSpeedPercent: 8,
+    globalAbilityCooldownMultiplier: 0.88,
   },
   Katarina: {
     assumeComboKill: true,
+    abilityCooldownMultiplier: {
+      Q: 0.82,
+      E: 0.75,
+    },
+  },
+  KaynRhaast: {
+    missingHPBonusADMax: 18,
+    abilityHitMultipliers: {
+      "Reaping Slash": 1.35,
+      "Umbral Trespass": 1.35,
+    },
+  },
+  KaynShadowAssassin: {
+    assumeComboKill: true,
+    isolatedDamageMultiplier: 1.55,
+    abilityHitMultipliers: {
+      "Reaping Slash": 1.25,
+    },
   },
   Kennen: {
     sustainedBonusAttackSpeedPercent: 12,
+    abilityHitMultipliers: {
+      "Slicing Maelstrom": 1.2,
+    },
   },
   Kindred: {
     sustainedBonusAttackSpeedPercent: 25,
+    isolatedDamageMultiplier: 1.45,
   },
   Kled: {
     sustainedBonusAttackSpeedPercent: 20,
+    missingHPBonusADMax: 15,
   },
   KogMaw: {
     sustainedBonusAttackSpeedPercent: 20,
     passiveArmorPenPercent: 22,
   },
+  KSante: {
+    missingHPBonusADMax: 22,
+    abilityHitMultipliers: {
+      "All Out": 1.3,
+    },
+  },
+  LeBlanc: {
+    assumeComboKill: true,
+    abilityHitMultipliers: {
+      Mimic: 1.75,
+      "Sigil of Malice": 1.2,
+    },
+  },
   LeeSin: {
     assumeComboKill: true,
+    abilityHitMultipliers: {
+      "Dragon's Rage": 1.3,
+    },
   },
   Leona: {},
   Lillia: {
     blazeDotPerStackMaxHPPercent: 1,
-    averageBlazeStacks: 2,
+    averageBlazeStacks: 2.5,
   },
   Lissandra: {},
   Lulu: {},
   Lux: {
     sustainedBonusAttackSpeedPercent: 0,
+    abilityHitMultipliers: {
+      "Final Spark": 1.15,
+    },
   },
   Malphite: {},
+  Malzahar: {
+    abilityHitMultipliers: {
+      "Malefic Visions": 1.15,
+      "Void Swarm": 2.2,
+    },
+    globalAbilityCooldownMultiplier: 0.92,
+  },
   Maokai: {},
   MasterYi: {
     sustainedBonusAttackSpeedPercent: 30,
+    autoAttackDamageMultiplier: 1.22,
   },
   Mel: {},
   Milio: {},
   Mordekaiser: {
     sustainedBonusAttackSpeedPercent: 8,
+    everyNthHitTrueMaxHPPercent: 3,
+    everyNthHit: 3,
   },
   Morgana: {},
   Naafiri: {
     assumeComboKill: true,
+    abilityHitMultipliers: {
+      "The Call of the Pack": 1.25,
+    },
   },
   Nami: {},
   Nautilus: {},
   Neeko: {},
   Nidalee: {
     assumeComboKill: true,
-    isolatedDamageMultiplier: 1.5,
+    isolatedDamageMultiplier: 1.55,
   },
   Nilah: {
     passiveArmorPenPercent: 15,
@@ -203,12 +357,22 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Orianna: {
     sustainedBonusAttackSpeedPercent: 0,
+    abilityHitMultipliers: {
+      "Command: Shockwave": 1.2,
+    },
   },
   Ornn: {
     sustainedBonusAttackSpeedPercent: 5,
+    abilityHitMultipliers: {
+      "Call of the Forge God": 1.15,
+    },
   },
   Pantheon: {
     sustainedBonusAttackSpeedPercent: 14,
+    abilityHitMultipliers: {
+      "Comet Spear": 1.2,
+      "Shield Vault": 1.15,
+    },
   },
   Poppy: {},
   Pyke: {
@@ -217,18 +381,36 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Qiyana: {
     assumeComboKill: true,
+    abilityHitMultipliers: {
+      "Supreme Display of Talent": 1.25,
+    },
   },
   Quinn: {
     sustainedBonusAttackSpeedPercent: 25,
+    postAbilityEmpoweredAutoAdPercent: 35,
+    postAbilityEmpoweredUptime: 0.28,
+  },
+  Rakan: {
+    abilityHitMultipliers: {
+      "Grand Entrance": 1.2,
+      "Battle Dance": 1.15,
+    },
   },
   Rammus: {},
   RekSai: {
     sustainedBonusAttackSpeedPercent: 12,
+    abilityHitMultipliers: {
+      "Queen's Wrath": 1.35,
+    },
   },
   Rell: {},
   Renata: {},
   Renekton: {
     sustainedBonusAttackSpeedPercent: 12,
+    abilityHitMultipliers: {
+      "Cull the Meek": 1.3,
+      "Ruthless Predator": 1.25,
+    },
   },
   Rengar: {
     sustainedBonusAttackSpeedPercent: 20,
@@ -236,24 +418,33 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Riven: {
     sustainedBonusAttackSpeedPercent: 18,
+    postAbilityDoubleHitUptime: 0.52,
   },
   Rumble: {
     blazeDotPerStackMaxHPPercent: 1.2,
-    averageBlazeStacks: 1,
+    averageBlazeStacks: 1.2,
   },
   Ryze: {
     sustainedBonusAttackSpeedPercent: 5,
+    globalAbilityCooldownMultiplier: 0.86,
   },
   Sejuani: {},
   Senna: {
     sustainedBonusAttackSpeedPercent: 8,
+    passiveCritChanceMultiplier: 1.08,
   },
   Seraphine: {},
   Sett: {
     missingHPBonusADMax: 22,
+    abilityHitMultipliers: {
+      "The Show Stopper": 1.2,
+    },
   },
   Shaco: {
     assumeComboKill: true,
+    abilityHitMultipliers: {
+      Deceive: 1.35,
+    },
   },
   Shen: {},
   Shyvana: {
@@ -268,23 +459,46 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
     ultimateBonusHP: 400,
     ultimateBonusHPUptime: 0.25,
   },
+  Sivir: {
+    sustainedBonusAttackSpeedPercent: 45,
+    abilityHitMultipliers: {
+      Ricochet: 1.55,
+    },
+  },
   Skarner: {},
+  Smolder: {
+    blazeDotPerStackMaxHPPercent: 0.65,
+    averageBlazeStacks: 1,
+    ablazeAbilityDamageAmp: 1.15,
+    sustainedBonusAttackSpeedPercent: 18,
+  },
   Sona: {},
   Soraka: {},
   Swain: {
     abilityHitMultipliers: {
       "Vision of Empire": 1.85,
+      Nevermove: 1.15,
     },
   },
   Sylas: {
     sustainedBonusAttackSpeedPercent: 10,
+    postAbilityDoubleHitUptime: 0.38,
   },
   Syndra: {
     sustainedBonusAttackSpeedPercent: 0,
+    abilityHitMultipliers: {
+      "Unleashed Power": 1.2,
+      "Force of Will": 1.15,
+    },
   },
   TahmKench: {},
   Taliyah: {
     sustainedBonusAttackSpeedPercent: 8,
+    ammoCycleDamageMultiplier: 1.55,
+  },
+  Talon: {
+    assumeComboKill: true,
+    passiveArmorPenPercent: 18,
   },
   Taric: {},
   Teemo: {
@@ -299,9 +513,13 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Trundle: {
     sustainedBonusAttackSpeedPercent: 12,
+    missingHPBonusADMax: 12,
   },
   TwistedFate: {
     sustainedBonusAttackSpeedPercent: 18,
+    abilityHitMultipliers: {
+      "Pick a Card": 1.2,
+    },
   },
   Twitch: {
     sustainedBonusAttackSpeedPercent: 35,
@@ -312,19 +530,30 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Udyr: {
     sustainedBonusAttackSpeedPercent: 20,
+    blazeDotPerStackMaxHPPercent: 0.8,
+    averageBlazeStacks: 1,
   },
   Urgot: {
     sustainedBonusAttackSpeedPercent: 10,
+    abilityHitMultipliers: {
+      "Fear Beyond Death": 1.4,
+    },
+    missingHPBonusADMax: 10,
   },
   Varus: {
     sustainedBonusAttackSpeedPercent: 12,
-    explosiveChargeStackMultiplier: 2.2,
+    blightDetonationAvgStacks: 3,
+    blightDetonationMaxHPPercentPerStack: 4,
   },
   Vayne: {
     everyNthHitTrueMaxHPPercent: 12,
     everyNthHit: 3,
   },
-  Veigar: {},
+  Veigar: {
+    abilityHitMultipliers: {
+      "Primordial Burst": 1.2,
+    },
+  },
   VelKoz: {
     everyNthHitTrueMaxHPPercent: 8,
     everyNthHit: 3,
@@ -335,21 +564,34 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   Vex: {},
   Vi: {
     sustainedBonusAttackSpeedPercent: 12,
+    abilityHitMultipliers: {
+      "Cease and Desist": 1.15,
+    },
   },
   Viktor: {
     sustainedBonusAttackSpeedPercent: 0,
+    abilityHitMultipliers: {
+      "Chaos Storm": 1.35,
+    },
   },
   Vladimir: {
     sustainedBonusAttackSpeedPercent: 5,
+    missingHPBonusADMax: 8,
   },
   Volibear: {
     sustainedBonusAttackSpeedPercent: 14,
+    everyNthHitTrueMaxHPPercent: 5,
+    everyNthHit: 2,
   },
   Warwick: {
     sustainedBonusAttackSpeedPercent: 25,
+    missingHPBonusADMax: 12,
   },
   Wukong: {
     sustainedBonusAttackSpeedPercent: 22,
+    abilityHitMultipliers: {
+      Cyclone: 1.25,
+    },
   },
   Xayah: {
     postAbilityEmpoweredAutoAdPercent: 45,
@@ -367,15 +609,38 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   },
   Yorick: {
     sustainedBonusAttackSpeedPercent: 8,
+    abilityHitMultipliers: {
+      "Last Rites": 1.2,
+    },
+  },
+  Yunara: {
+    sustainedBonusAttackSpeedPercent: 35,
+    postAbilityEmpoweredAutoAdPercent: 25,
+    postAbilityEmpoweredUptime: 0.45,
+    abilityHitMultipliers: {
+      "Transcend One's Self": 1.25,
+    },
   },
   Yuumi: {},
   Zaahen: {
     sustainedBonusAttackSpeedPercent: 15,
+    abilityHitMultipliers: {
+      "Grim Deliverance": 1.2,
+    },
   },
   Zac: {},
+  Zed: {
+    assumeComboKill: true,
+    sustainedBonusAttackSpeedPercent: 12,
+    everyNthHitTrueMaxHPPercent: 8,
+    everyNthHit: 4,
+  },
   Zeri: {
-    autoAttackDamageMultiplier: 0.15,
+    autoAttackDamageMultiplier: 0.12,
     sustainedBonusAttackSpeedPercent: 10,
+    abilityHitMultipliers: {
+      "Burst Fire": 6.5,
+    },
   },
   Ziggs: {},
   Zilean: {},
