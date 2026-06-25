@@ -3,6 +3,8 @@
  * Human-authored overrides live in CHAMPION_INTERACTION_OVERRIDES when notes are ambiguous.
  */
 
+import { CHAMPION_WIKI_PASS_OVERRIDES } from "./championWikiPassOverrides";
+
 export type AbilityInteraction = {
   /** Ability procs item on-hit effects at this fraction (GP Q = 1, Bel'Veth Q = 0.75). */
   appliesItemOnHitScale: number;
@@ -96,6 +98,21 @@ export type ChampionInteractionProfile = {
   shotgunAutoAdRatio?: number;
   /** Tristana E average stack multiplier (4 stacks × 25%). */
   explosiveChargeStackMultiplier?: number;
+  /** Dampen bonus AS scaling (Kalista Martial Poise = 0.75). */
+  bonusAttackSpeedScale?: number;
+  /** Every Nth auto deals % target max HP true (Vayne W). */
+  everyNthHitTrueMaxHPPercent?: number;
+  everyNthHit?: number;
+  /** Flat + AP poison/venom DPS per stack (Twitch, Teemo). */
+  stackDotBasePerSecond?: number;
+  stackDotAPRatioPerSecond?: number;
+  averageDotStacks?: number;
+  stackDotDamageType?: "magic" | "true";
+  /** Toggle ability sustained uptime (Singed Q). */
+  toggleDotUptime?: number;
+  /** Post-cast empowered auto bonus AD% (Xayah Clean Cuts). */
+  postAbilityEmpoweredAutoAdPercent?: number;
+  postAbilityEmpoweredUptime?: number;
 };
 
 type AbilityLike = {
@@ -333,10 +350,13 @@ export function getChampionInteractionProfile(
   championName: string,
 ): ChampionInteractionProfile {
   const key = championSimKey(championName);
-  const overrides =
+  const core =
     CHAMPION_INTERACTION_OVERRIDES[key] ??
     CHAMPION_INTERACTION_OVERRIDES[championName];
-  return { ...DEFAULT_CHAMPION_PROFILE, ...overrides };
+  const wiki =
+    CHAMPION_WIKI_PASS_OVERRIDES[key] ??
+    CHAMPION_WIKI_PASS_OVERRIDES[championName];
+  return { ...DEFAULT_CHAMPION_PROFILE, ...wiki, ...core };
 }
 
 export function spellbladeUptimeFromAttackRate(attackRate: number): number {

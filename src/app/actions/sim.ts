@@ -2685,6 +2685,14 @@ const ONHIT_SUSTAINED_FACTOR: Record<string, number> = {
   "Way of the Hunter": 0.48,
   "Spinning Axe": 0.72,
   Hyper: 0.34,
+  "Blighted Quiver": 0.55,
+  "Bio-Arcane Barrage": 0.48,
+  "Second Skin": 0.38,
+  "Clean Cuts": 0.32,
+  "Formless Blade": 0.4,
+  "Toxic Shot": 0.85,
+  Switcheroo: 0.35,
+  "Spark Surge": 0.38,
 };
 
 /** Fraction of autos with Lethal Tempo “bonus attack” damage treated as active. */
@@ -2842,7 +2850,7 @@ export function championIncomingPhysShare(
   level: number = 18,
 ): number {
   const rot = CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)];
-  const combo = CHAMPION_COMBO_PROFILES[championSimKey(champion.Name)];
+  const combo = getChampionComboProfile(champion.Name);
   const { apScore, adScore } = championApAdScalingScores(champion, level);
   const prefersMagic = apScore >= adScore * 0.65;
 
@@ -2888,7 +2896,7 @@ export function championIncomingPhysShare(
 
 /** Scale for item stats that only apply on basic attacks (Kraken, BotRK, etc.). */
 export function itemOnHitScaleForChampion(championName: string): number {
-  const profile = CHAMPION_COMBO_PROFILES[championSimKey(championName)];
+  const profile = getChampionComboProfile(championName);
   if (profile?.itemOnHitScale != null) return profile.itemOnHitScale;
   if ((profile?.comboAutoWeight ?? 0.65) <= 0.32) {
     return profile!.comboAutoWeight!;
@@ -2996,7 +3004,7 @@ export function computeChampionCursedWeights(
   championLevel: number = 18,
 ): ChampionCursedWeights {
   const rot = CHAMPION_ROTATION_PROFILES[championSimKey(champion.Name)];
-  const combo = CHAMPION_COMBO_PROFILES[championSimKey(champion.Name)];
+  const combo = getChampionComboProfile(champion.Name);
   const { apScore, adScore } = championApAdScalingScores(
     champion,
     championLevel,
@@ -3264,6 +3272,30 @@ export const CHAMPION_COMBO_PROFILES: Record<string, ChampionComboProfile> = {
     itemOnHitScale: 0.72,
   },
 };
+
+const DEFAULT_COMBO_PROFILE: ChampionComboProfile = {
+  castOrder: ["R", "W", "E", "Q"],
+  comboAutoWeight: 0.45,
+  itemOnHitScale: 0.65,
+};
+
+/** Explicit combo profiles win; otherwise derive cast order from skill priority. */
+export function getChampionComboProfile(
+  championName: string,
+): ChampionComboProfile {
+  const key = championSimKey(championName);
+  const explicit = CHAMPION_COMBO_PROFILES[key];
+  const orderKey = isKaynChampion(championName) ? "Kayn" : championName;
+  const skillOrder = CHAMPION_SKILL_ORDER[orderKey];
+  const derivedCast: Exclude<AbilityType, "passive">[] | undefined = skillOrder
+    ? ["R", skillOrder[0], skillOrder[1], skillOrder[2]]
+    : undefined;
+  return {
+    ...DEFAULT_COMBO_PROFILE,
+    ...(derivedCast ? { castOrder: derivedCast } : {}),
+    ...explicit,
+  };
+}
 
 /**
  * Champion-level rotation weighting for sustained 1v1 sims.
@@ -4747,9 +4779,18 @@ class Character {
     if (champInteraction.sustainedBonusAttackSpeedPercent && attackRate > 0) {
       const baseAs = this.AS;
       const bonusPct = champInteraction.sustainedBonusAttackSpeedPercent;
-      attackRate = baseAs * (1 + (stats.attackSpeed ?? 0) / 100 + bonusPct / 100);
+      const asScale = champInteraction.bonusAttackSpeedScale ?? 1;
+      const itemBonusAs = (stats.attackSpeed ?? 0) * asScale;
+      attackRate = baseAs * (1 + itemBonusAs / 100 + bonusPct / 100);
       breakdown.push(
-        `Passive AS stacks: +${bonusPct}% → ${attackRate.toFixed(2)} AS`,
+        `Passive AS stacks: +${bonusPct}% → ${attackRate.toFixed(2)} AS${asScale < 1 ? ` (×${asScale} AS scale)` : ""}`,
+      );
+    } else if (champInteraction.bonusAttackSpeedScale && attackRate > 0) {
+      const baseAs = this.AS;
+      const asScale = champInteraction.bonusAttackSpeedScale;
+      attackRate = baseAs * (1 + ((stats.attackSpeed ?? 0) * asScale) / 100);
+      breakdown.push(
+        `Martial Poise AS: ${attackRate.toFixed(2)} (bonus AS ×${asScale})`,
       );
     }
 
@@ -4791,8 +4832,7 @@ class Character {
     breakdown.push(
       `Target resistances: ${mit.targetArmor} armor (${(physMit * 100).toFixed(1)}% phys dmg), ${mit.targetMR} MR (${(magicMit * 100).toFixed(1)}% magic dmg)`,
     );
-    const comboProfile =
-      CHAMPION_COMBO_PROFILES[championSimKey(this.Name)];
+    const comboProfile = getChampionComboProfile(this.Name);
 
     // Calculate effective ability haste for cooldown reduction
     const totalAbilityHaste = stats.abilityHaste + stats.basicAbilityHaste;
@@ -4879,6 +4919,15 @@ class Character {
       autoAttackDPS *= champInteraction.shotgunAutoAdRatio;
       breakdown.push(
         `Shotgun passive: ×${champInteraction.shotgunAutoAdRatio.toFixed(2)} single-target AD`,
+      );
+    }
+    if (championSimKey(this.Name) === "Jhin" && attackRate > 0) {
+      const shotsPerReload = 4;
+      const reloadSec = 2.5;
+      const cycleSec = shotsPerReload / attackRate + reloadSec;
+      attackRate = shotsPerReload / cycleSec;
+      breakdown.push(
+        `Whisper reload cadence: ${attackRate.toFixed(2)} effective AS`,
       );
     }
     let viegoDoubleHitDPS = 0;
@@ -5184,6 +5233,32 @@ class Character {
       if (ability.name === "Headshot") {
         onHitDamage *= 1 + effectiveCritChance / 100;
       }
+      if (
+        ability.name === "Second Skin" ||
+        ability.name === "Blighted Quiver"
+      ) {
+        if (ability.damage?.missingHealthRatio) {
+          const avgMissingHP = targetMaxHP * (1 - sim.avgCurrentHPRatio);
+          let mhPct = ability.damage.missingHealthRatio
+            ? ability.getValueAtLevel(ability.damage.missingHealthRatio, level)
+            : 0;
+          if (ability.damage.missingHealthRatioPerAP) {
+            mhPct +=
+              (ability.damage.missingHealthRatioPerAP * stats.ap) / 100;
+          }
+          onHitDamage -= (avgMissingHP * mhPct) / 100;
+        }
+        if (ability.name === "Blighted Quiver" && ability.damage?.maxHealthRatio) {
+          let mhPct = ability.getValueAtLevel(
+            ability.damage.maxHealthRatio,
+            level,
+          );
+          if (ability.damage.maxHealthRatioPerAP) {
+            mhPct += (ability.damage.maxHealthRatioPerAP * stats.ap) / 100;
+          }
+          onHitDamage -= (targetMaxHP * mhPct) / 100;
+        }
+      }
 
       const sustain =
         ONHIT_SUSTAINED_FACTOR[ability.name] ??
@@ -5199,6 +5274,22 @@ class Character {
           ? `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit (×${sustain.toFixed(2)} sustained)`
           : `${ability.name}: +${sustainedOnHit.toFixed(1)} on-hit`,
         ability.damage?.damageType,
+      );
+    }
+
+    if (
+      champInteraction.everyNthHitTrueMaxHPPercent &&
+      attackRate > 0
+    ) {
+      const n = champInteraction.everyNthHit ?? 3;
+      const perHit =
+        (targetMaxHP * champInteraction.everyNthHitTrueMaxHPPercent) /
+        100 /
+        n;
+      addOnHitTyped(
+        perHit,
+        `Every-${n}th hit: +${perHit.toFixed(1)} true on-hit`,
+        "true",
       );
     }
 
@@ -5268,6 +5359,7 @@ class Character {
 
     // 3. DoT Damage (per second, not multiplied by AS)
     let dotDPS = 0;
+    let profileTrueDotDPS = 0;
 
     if (stats.magicDotDamage) {
       dotDPS += stats.magicDotDamage;
@@ -5305,11 +5397,46 @@ class Character {
         `Ablaze DoT: +${blazeDotPerSec.toFixed(1)} magic DPS (${stacks} avg stacks)`,
       );
     }
+    if (
+      champInteraction.stackDotBasePerSecond != null &&
+      champInteraction.averageDotStacks
+    ) {
+      const stacks = champInteraction.averageDotStacks;
+      const perSec =
+        champInteraction.stackDotBasePerSecond * stacks +
+        (stats.ap *
+          (champInteraction.stackDotAPRatioPerSecond ?? 0) *
+          stacks) /
+          100;
+      const dtype = champInteraction.stackDotDamageType ?? "magic";
+      if (dtype === "true") {
+        profileTrueDotDPS += perSec;
+      } else {
+        dotDPS += perSec;
+      }
+      breakdown.push(
+        `Stack DoT (${dtype}): +${perSec.toFixed(1)} DPS (${stacks} avg stacks)`,
+      );
+    }
+    if (
+      champInteraction.postAbilityEmpoweredAutoAdPercent &&
+      attackRate > 0
+    ) {
+      const uptime = champInteraction.postAbilityEmpoweredUptime ?? 0.3;
+      const bonusPerHit =
+        (effectiveAD * champInteraction.postAbilityEmpoweredAutoAdPercent) /
+        100;
+      const empoweredDps = bonusPerHit * attackRate * uptime;
+      autoAttackDPS += empoweredDps;
+      breakdown.push(
+        `Empowered autos: +${empoweredDps.toFixed(1)} DPS (×${uptime.toFixed(2)} uptime)`,
+      );
+    }
 
     // 4. Ability DPS (raw, before offensive multipliers and resistances)
     let abilityPhysDPS = 0;
     let abilityMagicDPS = 0;
-    let abilityTrueDPS = 0;
+    let abilityTrueDPS = profileTrueDotDPS;
     const abilityCasts: ComboCastSpec[] = [];
     let abilityResetHitsPerSec = 0;
     let abilityItemOnHitHitsPerSec = 0;
@@ -5351,7 +5478,32 @@ class Character {
       ) {
         baseCooldown = 10;
       }
-      if (baseCooldown === 0) continue;
+      if (baseCooldown === 0) {
+        const toggleNotes = (ability.specialMechanics ?? [])
+          .join(" ")
+          .toLowerCase();
+        if (ability.damage && toggleNotes.includes("toggle")) {
+          let perSec = 0;
+          if (ability.damage.baseDamage) {
+            perSec += ability.getValueAtLevel(
+              ability.damage.baseDamage,
+              abilityRank,
+            );
+          }
+          if (ability.damage.apRatio) {
+            perSec +=
+              (stats.ap *
+                ability.getValueAtLevel(ability.damage.apRatio, abilityRank)) /
+              100;
+          }
+          const uptime = champInteraction.toggleDotUptime ?? 0.9;
+          dotDPS += perSec * uptime;
+          breakdown.push(
+            `${ability.name} (toggle): +${(perSec * uptime).toFixed(1)} magic DPS`,
+          );
+        }
+        continue;
+      }
 
       let effectiveCastTime = ability.castInfo?.castTime ?? 0.5;
       if (
@@ -5662,6 +5814,23 @@ class Character {
           champInteraction.meleeAbilityDamageBonus *
             champInteraction.meleeAbilityUptime;
         abilityDamage *= meleeBonus;
+      }
+
+      if (
+        ability.name === "Lay Waste" &&
+        champInteraction.isolatedDamageMultiplier
+      ) {
+        abilityDamage *= champInteraction.isolatedDamageMultiplier;
+        breakdown.push(
+          `Lay Waste (isolated): ×${champInteraction.isolatedDamageMultiplier.toFixed(2)}`,
+        );
+      }
+
+      if (
+        ability.name === "Twin Fang" &&
+        champInteraction.ablazeAbilityDamageAmp
+      ) {
+        abilityDamage *= champInteraction.ablazeAbilityDamageAmp;
       }
 
       if (
@@ -16541,6 +16710,7 @@ const KogMawW = new Ability(
     "% Max HP: 3/3.75/4.5/5.25/6% (+1.5% per 100 AP)",
     "Cap vs minions/monsters: 100",
   ],
+  true,
 );
 
 const KogMawE = new Ability(
@@ -25921,6 +26091,7 @@ const TeemoE = new Ability(
   undefined,
   undefined,
   ["On-hit: 9-65 (+30% AP)", "Poison: 6-30 (+10% AP) per second for 4s"],
+  true,
 );
 
 const TeemoR = new Ability(
@@ -26883,6 +27054,7 @@ const VarusW = new Ability(
     "On-hit: 6-38 (+35% AP)",
     "Blight detonation: 3-5% max HP (+1.5% per 100 AP) per stack",
   ],
+  true,
 );
 
 const VarusE = new Ability(
@@ -28167,6 +28339,7 @@ const XayahPassive = new Ability(
   undefined,
   undefined,
   ["35-55% AD to targets past the first", "Leaves Feathers for 6s"],
+  true,
 );
 
 const XayahQ = new Ability(

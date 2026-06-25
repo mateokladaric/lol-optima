@@ -17,7 +17,7 @@ import type {
 import {
   AllKeystones,
   BLENDED_DPS_COMBO_WEIGHT,
-  CHAMPION_COMBO_PROFILES,
+  getChampionComboProfile,
   Characters,
   championApAdScalingScores,
   championIncomingPhysShare,
@@ -716,7 +716,7 @@ const UTILITY_KEYSTONES = new Set([
 
 function championComboAutoWeight(champion: Character): number {
   return (
-    CHAMPION_COMBO_PROFILES[championSimKey(champion.Name)]?.comboAutoWeight ??
+    getChampionComboProfile(champion.Name).comboAutoWeight ??
     0.65
   );
 }
