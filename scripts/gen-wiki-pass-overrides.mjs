@@ -454,7 +454,7 @@ const DEEPEN = {
   XinZhao: { sustainedBonusAttackSpeedPercent: 16 },
   Yorick: { sustainedBonusAttackSpeedPercent: 8, abilityHitMultipliers: { "Last Rites": 1.2 } },
   Zaahen: { sustainedBonusAttackSpeedPercent: 15, abilityHitMultipliers: { "Grim Deliverance": 1.2 } },
-  Zeri: { autoAttackDamageMultiplier: 0.12, sustainedBonusAttackSpeedPercent: 10, abilityHitMultipliers: { "Burst Fire": 6.5 } },
+  Zeri: { autoAttackDamageMultiplier: 0.12, sustainedBonusAttackSpeedPercent: 10 },
   Zyra: { blazeDotPerStackMaxHPPercent: 0.8, averageBlazeStacks: 2 },
   Akali: { sustainedBonusAttackSpeedPercent: 15 },
   Caitlyn: { sustainedBonusAttackSpeedPercent: 18 },

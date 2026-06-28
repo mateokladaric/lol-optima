@@ -638,9 +638,6 @@ export const CHAMPION_WIKI_PASS_OVERRIDES: Record<
   Zeri: {
     autoAttackDamageMultiplier: 0.12,
     sustainedBonusAttackSpeedPercent: 10,
-    abilityHitMultipliers: {
-      "Burst Fire": 6.5,
-    },
   },
   Ziggs: {},
   Zilean: {},
