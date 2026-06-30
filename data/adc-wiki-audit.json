@@ -1,0 +1,232 @@
+{
+  "generatedAt": "2026-06-30T18:31:31.509Z",
+  "summary": {
+    "total": 18,
+    "oneToOne": 6,
+    "fixed": 3,
+    "partial": 9,
+    "mismatch": 0,
+    "gap": 0
+  },
+  "rows": [
+    {
+      "item": "Kraken Slayer",
+      "group": "Kraken Slayer",
+      "wikiStats": "—",
+      "simStats": "45 AD, 40% AS, 4% MS",
+      "wikiPassive": "Bring It Down does interact with Guinsoo's Rageblade Phantom Hit which will grant an additional stack of Bring It Down.",
+      "simPassive": "2-stack Bring It Down: 150–200 (+75% missing HP), 80% ranged",
+      "status": "fixed",
+      "notes": [
+        "Was every-3rd-AA 175/140 flat; now 2-stack 150–200 + missing HP",
+        "—"
+      ]
+    },
+    {
+      "item": "Infinity Edge",
+      "group": "Infinity Edge",
+      "wikiStats": "V26.01: * Total cost increased to {{g|3500}} from {{g|3450}}. | ** Combine cost increased to {{g|725}} from {{g|675}}. | * Attack damage increased to 75 from 65. | * Bonus critical strike damage reduced to 30% from 40%.",
+      "simStats": "75 AD, 25% crit, +30% bonus crit dmg",
+      "wikiPassive": "Unique Passive - Perfection: Gain 35% bonus critical strike damage if you have at least 40% critical strike chance.",
+      "simPassive": "Flat +30% bonus crit damage (V26.01)",
+      "status": "1:1",
+      "notes": [
+        "V26.01 flat +30% bonus crit dmg matches critDmg:30"
+      ]
+    },
+    {
+      "item": "Stormrazor",
+      "group": "Stormrazor",
+      "wikiStats": "V26.11: * {{sbc|Bug Fix:}} Fixed a bug where it wouldn't trigger from ability damage until it was triggered by an attack at least once.",
+      "simStats": "50 AD, 20% AS, 25% crit",
+      "wikiPassive": "Bolt deals proc damage, and thus will not trigger spell effects.",
+      "simPassive": "Energized 100 magic + 45% MS 1.5s",
+      "status": "1:1",
+      "notes": [
+        "Energized 100 magic modeled; legacy magicPeriodicOnHit suppressed"
+      ]
+    },
+    {
+      "item": "Phantom Dancer",
+      "group": "Phantom Dancer",
+      "wikiStats": "—",
+      "simStats": "65% AS, 25% crit, 10% MS",
+      "wikiPassive": "Unique Passive - Spectral Waltz: Become permanently ghosted.",
+      "simPassive": "Spectral Waltz (ghosted) — cosmetic",
+      "status": "1:1",
+      "notes": [
+        "V25.14 65% AS / 10% MS matches"
+      ]
+    },
+    {
+      "item": "Runaan's Hurricane",
+      "group": "Runaan's Hurricane",
+      "wikiStats": "V26.07: * {{sbc|Bug Fix:}} Fixed a bug that caused the additional bolts to still deal damage and apply on hit effects while {{tip|blind|blinded}}.",
+      "simStats": "40% AS, 25% crit, 4% MS",
+      "wikiPassive": "Bug Fix: Bolts now properly apply damage from Ravenous Hydra|Ravenous Hydra's Cleave passive.",
+      "simPassive": "Wind's Fury: 2 bolts at 55% AD",
+      "status": "partial",
+      "notes": [
+        "Wind's Fury multi-target bolts excluded in 1v1"
+      ]
+    },
+    {
+      "item": "Guinsoo's Rageblade",
+      "group": "Guinsoo's Rageblade",
+      "wikiStats": "—",
+      "simStats": "30 AD, 30 AP, 25% AS",
+      "wikiPassive": "Wrath deals proc damage, and thus will not trigger spell effects.",
+      "simPassive": "Wrath stacks + phantom hit; 30 magic on-hit",
+      "status": "partial",
+      "notes": [
+        "Phantom hit / crit conversion not modeled"
+      ]
+    },
+    {
+      "item": "Blade of the Ruined King",
+      "group": "Blade of the Ruined King",
+      "wikiStats": "—",
+      "simStats": "40 AD, 25% AS, 10% LS",
+      "wikiPassive": "Mist's Edge deals proc damage, and thus will not trigger spell effects.",
+      "simPassive": "Mist's Edge 9%/6% current HP on-hit",
+      "status": "1:1",
+      "notes": [
+        "V25.14 9%/6% current HP matches sim"
+      ]
+    },
+    {
+      "item": "Terminus",
+      "group": "Terminus",
+      "wikiStats": "—",
+      "simStats": "30 AD, 35% AS",
+      "wikiPassive": "Juxtaposition's Light or Dark stacks are refreshed with the respective hit of basic attacks.",
+      "simPassive": "Shadow 30 magic + Juxtaposition pen/resist stacks",
+      "status": "partial",
+      "notes": [
+        "Wiki V14.4: max 3 Light/Dark stacks (notes may show old 5)"
+      ]
+    },
+    {
+      "item": "Navori Flickerblade",
+      "group": "Navori Flickerblade",
+      "wikiStats": "—",
+      "simStats": "40% AS, 25% crit, 4% MS",
+      "wikiPassive": "Transcendence will not trigger if the user declares the attack while blinded.",
+      "simPassive": "15% basic ability CDR on attack",
+      "status": "1:1",
+      "notes": [
+        "15% basic ability CDR on attack"
+      ]
+    },
+    {
+      "item": "Essence Reaver",
+      "group": "Essence Reaver",
+      "wikiStats": "V26.01#January 9th Hotfix|V26.01: * Total cost increased to {{g|3050}} from {{g|2900}}. | ** Combine cost increased to {{g|500}} from {{g|350}}. | * Attack damage reduced to 50 from 55.",
+      "simStats": "50 AD, 20 AH, 25% crit",
+      "wikiPassive": "New Unique Passive - Spellblade: After using an ability, your next basic attack within 10 seconds deals 125% base AD (+ ",
+      "simPassive": "Spellblade 125% base AD (no +50% crit scaling)",
+      "status": "partial",
+      "notes": [
+        "Spellblade +50% crit chance scaling on proc not modeled",
+        "V26.01#January 9th Hotfix|V26.01: * Total cost increased to {{g|3050}} from {{g|2900}}. | ** Combine cost increased to {{g|500}} from {{g|350}}. | * Attack damage reduced to 50 from 55."
+      ]
+    },
+    {
+      "item": "Statikk Shiv",
+      "group": "Statikk Shiv",
+      "wikiStats": "V26.11: * Attack damage increased to 45 from 40.",
+      "simStats": "45 AD, 45 AP, 30% AS, 4% MS",
+      "wikiPassive": "Electrospark deals proc damage and is tagged as area of effect without applying spell effects.",
+      "simPassive": "Energized 60 magic chain (90 vs non-champs)",
+      "status": "partial",
+      "notes": [
+        "Chain lightning to extra targets not in 1v1"
+      ]
+    },
+    {
+      "item": "Rapid Firecannon",
+      "group": "Rapid Firecannon",
+      "wikiStats": "V26.11: * {{sbc|Bug Fix:}} Fixed a bug where it wouldn't trigger from ability damage until it was triggered by an attack at least once.",
+      "simStats": "35% AS, 25% crit, 4% MS",
+      "wikiPassive": "Each basic attack on-attack generates 6 Energize stacks while 1 is generated for every 24 in-game units traveled. This i",
+      "simPassive": "Energized +40 magic + 150 range",
+      "status": "partial",
+      "notes": [
+        "Sharpshooter +150 attack range not in DPS sim"
+      ]
+    },
+    {
+      "item": "Yun Tal Wildarrows",
+      "group": "Yun Tal Wildarrows",
+      "wikiStats": "V26.01: * Total cost increased to {{g|3100}} from {{g|3000}}. | ** Combine cost increased to {{g|850}} from {{g|750}}. | * Attack damage reduced to 50 from 55. | * Attack speed increased to 40% from 35%.",
+      "simStats": "50 AD, 40% AS",
+      "wikiPassive": "Unique Passive - Practice Makes Lethal: Basic attacks on-attack grant 0.2% critical strike chance, stacking up to 125 ti",
+      "simPassive": "Practice Makes Lethal → up to 25% crit",
+      "status": "partial",
+      "notes": [
+        "Flurry AS stacks not modeled; crit via avg stack ramp"
+      ]
+    },
+    {
+      "item": "Lord Dominik's Regards",
+      "group": "Lord Dominik's Regards",
+      "wikiStats": "V26.01: * Total cost increased to {{g|3300}} from {{g|3100}}. | ** Combine cost increased to {{g|550}} from {{g|350}}. | * Armor penetration reduced to 35% from 40%. | * {{sbc|New Unique Passive - Giant Slayer:}} Deal {{pp|0 to 15 for 16|0 to 1500|key=%|type=target's '''bonus''' health|formula=1% per 100 bonus health, up to a maximum of 15% at 1500 bonus health.|color=health}} increased damage against enemy champions.",
+      "simStats": "35 AD, 35% armor pen, 25% crit",
+      "wikiPassive": "New Unique Passive - Giant Slayer: Deal increased damage against enemy champions.",
+      "simPassive": "Giant Slayer 1%/100 bonus HP (max 15% @1500)",
+      "status": "fixed",
+      "notes": [
+        "Giant Slayer was 1.5%/100 HP; wiki is 1%/100 up to 15%"
+      ]
+    },
+    {
+      "item": "Mortal Reminder",
+      "group": "Mortal Reminder",
+      "wikiStats": "V26.01: * Total cost reduced to {{g|3000}} from {{g|3300}}. | ** Combine cost reduced to {{g|150}} from {{g|450}}. | * Armor penetration reduced to 30% from 35%.",
+      "simStats": "30 AD, 30% armor pen, 25% crit",
+      "wikiPassive": "Grievous Wounds is applied to the damaged champion even if they are protected by a shield.",
+      "simPassive": "Grievous Wounds 40%",
+      "status": "fixed",
+      "notes": [
+        "Armor pen was 35%; V26.01 is 30%"
+      ]
+    },
+    {
+      "item": "Wit's End",
+      "group": "Wit's End",
+      "wikiStats": "—",
+      "simStats": "45 MR, 50% AS",
+      "wikiPassive": "Fray deals proc damage, and thus will not trigger spell effects.",
+      "simPassive": "Fray 45 magic on-hit",
+      "status": "1:1",
+      "notes": [
+        "V14.19 45 magic on-hit flat"
+      ]
+    },
+    {
+      "item": "Bloodthirster",
+      "group": "Bloodthirster",
+      "wikiStats": "—",
+      "simStats": "80 AD, 15% LS",
+      "wikiPassive": "Ichorshield's maximum shield value is not affected by heal and shield power.",
+      "simPassive": "Ichorshield overflow → shield",
+      "status": "partial",
+      "notes": [
+        "Ichorshield modeled as ~25% uptime shield only"
+      ]
+    },
+    {
+      "item": "Hexoptics C44",
+      "group": "Hexoptics C44",
+      "wikiStats": "V26.04: * Magnification damage changed to {{pp|0 to 10 for 11|0 to 500|key=%|type=distance to target|formula=1% per 50 units away, up to a maximum of 10%.}} from {{pp|0 to 10 for 11|0 to 600|key=%|type=distance to target|showtype=false|formula=1% per 60 units away, up to a maximum of 10%.}}. ''Distance for maximum damage changed.'' | * Arcane Aim duration increased to 8 seconds from 6.",
+      "simStats": "55 AD, 25% crit",
+      "wikiPassive": "Magnification does not proc against Gangplank.",
+      "simPassive": "Magnification 0–10% by distance; Arcane Aim +100 range",
+      "status": "partial",
+      "notes": [
+        "Magnification distance amp not in DPS sim",
+        "AD fixed 50→55 per V26.02"
+      ]
+    }
+  ]
+}

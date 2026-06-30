@@ -493,7 +493,7 @@ export interface ItemStats {
 
   // Debuff damage amplification - applied to target
   damageAmplificationOnTarget?: number; // % increased damage target takes from all sources
-  damagePerTargetBonusHPPercent?: number; // % increased damage per 100 target bonus HP (e.g., 1.5 = 1.5% per 100 bonus HP, max 15% at 1000 bonus HP)
+  damagePerTargetBonusHPPercent?: number; // % increased damage per 100 target bonus HP (e.g., 1 = 1% per 100 bonus HP, max 15% at 1500 bonus HP)
   /**
    * Execute champions when post-mitigation damage would leave them at or below this
    * % of **maximum** health (The Collector Death = 5).
@@ -658,8 +658,8 @@ const AxiomArc = new Item(
     ad: 55,
     abilityHaste: 20,
     lethality: 18,
-    ultCooldownRefundOnTakedown: 15,
-    ultCooldownRefundPerLethalityOnTakedown: 0.15,
+    ultCooldownRefundOnTakedown: 10,
+    ultCooldownRefundPerLethalityOnTakedown: 0.25,
   },
   [],
   "Axiom Arc",
@@ -1262,6 +1262,7 @@ const EssenceReaver = new Item(
     ad: 50,
     abilityHaste: 20,
     critChance: 25,
+    physicalOnHitBaseADPercent: 125,
   },
   [],
   "Spellblade",
@@ -1417,7 +1418,7 @@ const Heartsteel500Stacks = new Item(
 const HexopticsC44 = new Item(
   "Hexoptics C44",
   {
-    ad: 50,
+    ad: 55,
     critChance: 25,
   },
   [],
@@ -1427,7 +1428,7 @@ const HexopticsC44 = new Item(
 const HexopticsC44ArcaneAim = new Item(
   "Hexoptics C44 (Arcane Aim)",
   {
-    ad: 50,
+    ad: 55,
     critChance: 25,
     attackRange: 100,
   },
@@ -1741,7 +1742,7 @@ const LordDominiksRegards = new Item(
     ad: 35,
     armorPen: 35,
     critChance: 25,
-    damagePerTargetBonusHPPercent: 1.5,
+    damagePerTargetBonusHPPercent: 1,
   },
   [],
   "Last Whisper",
@@ -1790,7 +1791,7 @@ const MortalReminder = new Item(
   "Mortal Reminder",
   {
     ad: 30,
-    armorPen: 35,
+    armorPen: 30,
     critChance: 25,
     healReductionPercent: 40,
   },
@@ -2305,7 +2306,7 @@ const StaffOfFlowingWater = new Item(
 const StatikkShiv = new Item(
   "Statikk Shiv",
   {
-    ad: 40,
+    ad: 45,
     ap: 45,
     attackSpeed: 30,
     msPercent: 4,
@@ -2519,9 +2520,6 @@ const UmbralGlaiveNightstalker = new Item(
     ad: 60,
     abilityHaste: 15,
     lethality: 18,
-    trueOnAbilityHit: 50,
-    trueOnAbilityHitPerLethality: 1.5,
-    trueOnAbilityHitCooldown: 45,
   },
   [],
   "Umbral Glaive",
@@ -5179,8 +5177,16 @@ class Character {
       const dmg = scaleItemOnHit(itemMech.onHitMagicPerAttack);
       addOnHitMagic(dmg, `Item mechanics on-hit (magic): +${dmg.toFixed(1)}`);
     }
+    if (itemMech.onHitTruePerAttack > 0) {
+      const dmg = scaleItemOnHit(itemMech.onHitTruePerAttack);
+      onHitDamagePerAttack += dmg;
+      onHitTruePerAttack += dmg;
+      breakdown.push(
+        `Item mechanics on-hit (true): +${dmg.toFixed(1)}`,
+      );
+    }
 
-    // Process on-hit abilities (passives like Gwen's A Thousand Cuts, or buffs like Gwen E)
+    // Process on-hit abilities
     const abilities = this.getAllAbilities();
     for (const ability of abilities) {
       if (!ability.appliesOnHit || !ability.damage) continue;

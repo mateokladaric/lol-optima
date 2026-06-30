@@ -108,6 +108,7 @@ const MODELED = new Set([
   "Bastionbreaker",
   "Liandry's Torment",
   "Serpent's Fang",
+  "Umbral Glaive",
 ]);
 
 const STATIC = new Set([
@@ -192,6 +193,10 @@ function setMeta(
 }
 
 for (const g of MODELED) setMeta(g, "modeled");
+setMeta("Kraken Slayer", "modeled", [
+  "Guinsoo phantom hit stack interaction not modeled",
+  "Runaan bolts do not stack Bring It Down",
+]);
 for (const g of STATIC) setMeta(g, "static");
 for (const g of PARTIAL) setMeta(g, "partial");
 for (const g of SUPPORT) setMeta(g, "support");

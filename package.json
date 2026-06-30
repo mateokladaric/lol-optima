@@ -15,6 +15,7 @@
     "rotation:coverage": "tsx scripts/rotation-coverage.ts",
     "audit:wiki": "tsx scripts/wiki-mechanics-audit.ts",
     "audit:wiki-items": "tsx scripts/wiki-item-notes-audit.ts",
+    "audit:adc-wiki": "tsx scripts/audit-adc-wiki.ts",
     "fetch:wiki-items": "tsx scripts/fetch-wiki-item-notes.ts",
     "find:item-exploits": "tsx scripts/find-item-exploits.ts",
     "meta:diff": "tsx scripts/meta-diff.ts",

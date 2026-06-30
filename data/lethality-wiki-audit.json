@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-06-30T18:30:00.000Z",
+  "scope": "All legendary items with flat lethality + lethality-scaling passives (wiki Notes vs sim, patch-verified)",
+  "summary": {
+    "total": 11,
+    "oneToOne": 4,
+    "partial": 5,
+    "fixedThisPass": 2,
+    "gap": 2
+  },
+  "rows": [
+    {
+      "item": "Axiom Arc",
+      "wikiStats": "55 AD, 20 AH, 18 lethality (current)",
+      "wikiPassive": "Flux: 10% + 0.25% per 1 lethality ult CD refund on takedown (V26.09); min 0.5s CD",
+      "simBefore": "15% + 0.15/leth — wrong",
+      "simAfter": "10% + 0.25/leth (14.5% at 18 leth)",
+      "status": "fixed",
+      "notes": ["Wiki Notes match V26.09 patch", "Sustain/second-R modeled via ultEffectiveHasteBonus"]
+    },
+    {
+      "item": "Bastionbreaker",
+      "wikiStats": "55 AD, 22 lethality, 15 AH (V26.01)",
+      "wikiPassive": "Shaped Charge: 30/15 + 1.5/0.75 true per ability, 45s ICD; Sabotage structure burn",
+      "sim": "Shaped Charge 1:1 with lethality scaling",
+      "status": "partial",
+      "notes": ["Sabotage (turret burn after takedown) not in 1v1 DPS sim", "Proc blocked by spell shield — not modeled"]
+    },
+    {
+      "item": "Edge of Night (Annul)",
+      "wikiStats": "50 AD, 250 HP, 15 lethality",
+      "wikiPassive": "Annul spell shield, 40s refresh OOC",
+      "sim": "15 lethality flat only",
+      "status": "partial",
+      "notes": ["Defensive spell shield — documented wikiGap", "Lethality stat 1:1"]
+    },
+    {
+      "item": "Hubris",
+      "wikiStats": "55 AD, 18 lethality, 10 AH",
+      "wikiPassive": "Eminence: 12 AD + 3 per statue rank for 60s on takedown (wiki item template)",
+      "sim": "hubrisBonusAD 12 + 3×takedowns with fight uptime",
+      "status": "1:1",
+      "notes": ["Ego statue cosmetic only"]
+    },
+    {
+      "item": "Profane Hydra",
+      "wikiStats": "55 AD, 18 lethality, 10 AH (V25.17/V14.19)",
+      "wikiPassive": "Cleave 40%/20% AD AoE on-hit; Heretical Cleave active 80–120% AD",
+      "sim": "40/20% AD cleave single-target; active omitted",
+      "status": "partial",
+      "notes": ["Wiki notes fetch uses Hydra→Titanic page — use Profane_Hydra slug", "Heretical Cleave active gap", "Cleave structure/invuln rules in wikiGaps"]
+    },
+    {
+      "item": "Serpent's Fang",
+      "wikiStats": "55 AD, 15 lethality",
+      "wikiPassive": "Shield Reaver: 50%/35% shred, 3s venom, pre-damage ordering",
+      "sim": "Modeled when targetPhysicalShieldEHP > 0",
+      "status": "partial",
+      "notes": ["Meta duel defaults 0 shields — passive invisible in optimizer", "Magic shields excluded 1:1"]
+    },
+    {
+      "item": "The Collector",
+      "wikiStats": "50 AD, 25% crit, 10 lethality (V14.19)",
+      "wikiPassive": "Death: execute below 5% max HP; Taxes gold not DPS",
+      "sim": "executeMaxHealthThresholdPercent: 5",
+      "status": "1:1",
+      "notes": ["Raw damage, not blocked by spell shield per wiki"]
+    },
+    {
+      "item": "Umbral Glaive",
+      "wikiStats": "60 AD, 18 lethality, 15 AH (V26.01)",
+      "wikiPassive": "Nightstalker: 50 + 1.5/leth true on next AA after OOV; Blackout vision",
+      "simBefore": "Wrong: ability proc + 45s ICD",
+      "simAfter": "On-hit true with ~35% OOV uptime",
+      "status": "fixed",
+      "notes": ["Blackout ward control defensive gap"]
+    },
+    {
+      "item": "Voltaic Cyclosword",
+      "wikiStats": "55 AD, 10 lethality, 10 AH (V26.09)",
+      "wikiPassive": "Firmament: +15/12 leth 4s, 9%/7% current HP; Galvanize energize",
+      "sim": "Energized + burstLethality ordering 1:1",
+      "status": "1:1",
+      "notes": ["Innate 10 leth + temp leth before proc damage per wiki Notes"]
+    },
+    {
+      "item": "Youmuu's Ghostblade",
+      "wikiStats": "55 AD, 18 lethality",
+      "wikiPassive": "Haunt OOC MS + Spectral Shards; Wraith Step active",
+      "sim": "18 lethality flat only",
+      "status": "partial",
+      "notes": ["Movement passives wikiGap for DPS sim"]
+    },
+    {
+      "item": "Opportunity",
+      "wikiStats": "55 AD, 18 lethality + Preparation scaling lethality OOC",
+      "wikiPassive": "Preparation + Extraction MS on takedown",
+      "sim": "Not in item pool",
+      "status": "gap",
+      "notes": ["Component/legendary not in optimizer catalog"]
+    }
+  ],
+  "components": {
+    "Serrated Dirk": "10 lethality, 30 AD — not in pool",
+    "The Brutalizer": "5 lethality (V14.6), 25 AD, 10 AH — not in pool"
+  },
+  "lethalityFormula": "Flat lethality = armor pen (full value since V14.1) — sim correct"
+}

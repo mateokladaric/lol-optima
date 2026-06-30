@@ -56,6 +56,7 @@ export type ItemMechanicContributions = {
   dotMagicDPS: number;
   onHitPhysPerAttack: number;
   onHitMagicPerAttack: number;
+  onHitTruePerAttack: number;
   abilityPhysDPS: number;
   abilityMagicDPS: number;
   abilityTrueDPS: number;
@@ -142,6 +143,11 @@ export const BASTIONBREAKER_TRUE_BASE_MELEE = 30;
 export const BASTIONBREAKER_TRUE_LETHALITY_MELEE = 1.5;
 export const BASTIONBREAKER_TRUE_BASE_RANGED = 15;
 export const BASTIONBREAKER_TRUE_LETHALITY_RANGED = 0.75;
+/** Nightstalker: next AA after leaving enemy vision (wiki V26.01). */
+export const UMBRAL_NIGHTSTALKER_TRUE_BASE = 50;
+export const UMBRAL_NIGHTSTALKER_TRUE_PER_LETHALITY = 1.5;
+/** Rough 1v1 uptime for out-of-vision windows. */
+export const UMBRAL_NIGHTSTALKER_UPTIME = 0.35;
 
 /** Liandry's Torment — 2% target max HP per second while burn is active (3s, refreshed on ability hit). */
 export const LIANDRY_BURN_MAX_HP_PERCENT_PER_SEC = 2;
@@ -197,15 +203,17 @@ function hubrisBonusAD(
   return fullBonus * uptime;
 }
 
+/** Bring It Down (V25.14): 150–200 base by level; 80% for ranged; +up to 75% from target missing HP. */
 function krakenProcDamage(
   melee: boolean,
   level: number,
-  avgCurrentHPRatio: number,
+  targetCurrentHPRatio: number,
 ): number {
-  const base = melee ? 175 : 140;
-  const missingBonus = 0.75 * (1 - avgCurrentHPRatio);
-  const levelScale = 0.85 + (level / 18) * 0.15;
-  return base * levelScale * (1 + missingBonus);
+  const levelT = Math.max(0, Math.min(17, level - 1)) / 17;
+  const base = 150 + (200 - 150) * levelT;
+  const scaledBase = melee ? base : base * 0.8;
+  const missingAmp = 0.75 * (1 - targetCurrentHPRatio);
+  return scaledBase * (1 + missingAmp);
 }
 
 
@@ -283,6 +291,7 @@ export function computeItemMechanicContributions(
     dotMagicDPS: 0,
     onHitPhysPerAttack: 0,
     onHitMagicPerAttack: 0,
+    onHitTruePerAttack: 0,
     abilityPhysDPS: 0,
     abilityMagicDPS: 0,
     abilityTrueDPS: 0,
@@ -322,12 +331,12 @@ export function computeItemMechanicContributions(
       ctx.avgCurrentHPRatio,
     );
     const autosInCombo = ctx.comboWindowSeconds * ctx.attackRate;
-    const fullProcs = Math.floor(autosInCombo / 3);
+    const fullProcs = Math.floor(autosInCombo / 2);
     const perAuto = autosInCombo > 0 && fullProcs > 0 ? proc * fullProcs / autosInCombo : 0;
     const dps = perAuto * ctx.attackRate;
     out.onHitPhysPerAttack += perAuto;
     out.breakdown.push(
-      `Kraken (every 3rd AA): ~${dps.toFixed(1)} DPS (${proc.toFixed(0)} dmg × ${fullProcs} procs in ${autosInCombo.toFixed(1)} AAs)`,
+      `Kraken (2-stack Bring It Down): ~${dps.toFixed(1)} DPS (${proc.toFixed(0)} dmg × ${fullProcs} procs in ${autosInCombo.toFixed(1)} AAs)`,
     );
   }
 
@@ -618,6 +627,19 @@ export function computeItemMechanicContributions(
     out.dotMagicDPS += burnDPS * uptime;
     out.breakdown.push(
       `Liandry's Torment: ${(burnDPS * uptime).toFixed(1)} DPS (${LIANDRY_BURN_MAX_HP_PERCENT_PER_SEC}% max HP/s, ${(uptime * 100).toFixed(0)}% burn uptime)`,
+    );
+  }
+
+  if (hasGroup(items, "Umbral Glaive")) {
+    out.statSuppress.trueOnAbilityHit = true;
+    out.statSuppress.trueOnAbilityHitPerLethality = true;
+    out.statSuppress.trueOnAbilityHitCooldown = true;
+    const proc =
+      UMBRAL_NIGHTSTALKER_TRUE_BASE +
+      (stats.lethality ?? 0) * UMBRAL_NIGHTSTALKER_TRUE_PER_LETHALITY;
+    out.onHitTruePerAttack += proc * UMBRAL_NIGHTSTALKER_UPTIME;
+    out.breakdown.push(
+      `Umbral Nightstalker: +${(proc * UMBRAL_NIGHTSTALKER_UPTIME).toFixed(1)} true/on-hit (${proc.toFixed(0)} bonus AA × ${(UMBRAL_NIGHTSTALKER_UPTIME * 100).toFixed(0)}% OOV uptime)`,
     );
   }
 

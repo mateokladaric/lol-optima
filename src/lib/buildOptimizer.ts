@@ -370,11 +370,12 @@ export function championEligibleForFullLethality(champion: Character): boolean {
   return adScore >= 35;
 }
 
-/** AP-primary kits — balanced AP mirrors balanced but spell itemization. */
+/** AP-lean kits — balanced AP mirrors balanced but spell itemization. */
 export function championEligibleForBalancedAp(
   champion: Character,
 ): boolean {
-  return championUsesApScaling(champion);
+  if (!championUsesApScaling(champion)) return false;
+  return championIncomingPhysShare(champion, 18) <= 0.55;
 }
 
 function isApBuildProfile(profile: BuildProfileId): boolean {
@@ -1835,7 +1836,7 @@ export function dedupeBuildRecommendations(
 
   for (const rec of sorted) {
     const items = itemsFromNames(rec.items, byName);
-    const exactKey = `${[...rec.items].sort().join("|")}::${rec.rune}`;
+    const exactKey = `${[...rec.items].sort().join("|")}::${rec.rune}::${rec.profile}`;
     if (keptExact.has(exactKey)) continue;
     const hasProfile = kept.some((k) => k.profile === rec.profile);
     if (
@@ -1871,9 +1872,9 @@ export function dedupeSerializedMetaBuilds(
 
   for (const row of sorted) {
     const items = itemsFromNames(row.items, byName);
-    const exactKey = `${[...row.items].sort().join("|")}::${row.rune}`;
-    if (keptExact.has(exactKey)) continue;
     const profile = row.profile ?? profileFromBuildType(row.buildType);
+    const exactKey = `${[...row.items].sort().join("|")}::${row.rune}::${profile}`;
+    if (keptExact.has(exactKey)) continue;
     const hasProfile = kept.some(
       (k) => (k.profile ?? profileFromBuildType(k.buildType)) === profile,
     );
@@ -1974,7 +1975,11 @@ export const INTERACTIVE_RECOMMEND_OPTIONS: Pick<
   "optimizeKeystones" | "monteCarloParams"
 > = {
   optimizeKeystones: false,
-  monteCarloParams: { randomProbeSamples: 180 },
+  monteCarloParams: {
+    iterationsPerRestart: 240,
+    restarts: 2,
+    randomProbeSamples: 64,
+  },
 };
 
 export function recommendBuildsForChampion(
