@@ -525,17 +525,21 @@ class Item {
   stats: ItemStats;
   passives: Ability[];
   groupName?: string; // Items with same groupName can't be equipped together
+  /** Bespoke passive sim group (e.g. Black Cleaver uses Last Whisper exclusivity). */
+  mechanicsGroup?: string;
 
   constructor(
     name: string,
     stats: ItemStats,
     passives: Ability[] = [],
     groupName?: string,
+    mechanicsGroup?: string,
   ) {
     this.name = name;
     this.stats = stats;
     this.passives = passives;
     this.groupName = groupName;
+    this.mechanicsGroup = mechanicsGroup;
   }
 
   getTotalStat(statName: keyof ItemStats): number {
@@ -545,6 +549,10 @@ class Item {
   // Get effective group name (use item name if no group specified)
   getGroupName(): string {
     return this.groupName || this.name;
+  }
+
+  getMechanicsGroup(): string {
+    return this.mechanicsGroup ?? this.getGroupName();
   }
 }
 
@@ -755,6 +763,7 @@ const BlackCleaver = new Item(
   },
   [],
   "Last Whisper",
+  "Black Cleaver",
 );
 
 const BlackCleaverCarve = new Item(
@@ -767,6 +776,7 @@ const BlackCleaverCarve = new Item(
   },
   [],
   "Last Whisper",
+  "Black Cleaver",
 );
 
 const BlackCleaverFervor = new Item(
@@ -779,6 +789,7 @@ const BlackCleaverFervor = new Item(
   },
   [],
   "Last Whisper",
+  "Black Cleaver",
 );
 
 const BlackCleaverCarveFervor = new Item(
@@ -792,6 +803,7 @@ const BlackCleaverCarveFervor = new Item(
   },
   [],
   "Last Whisper",
+  "Black Cleaver",
 );
 
 const BlackfireTorch = new Item(
@@ -1733,6 +1745,7 @@ const LordDominiksRegards = new Item(
   },
   [],
   "Last Whisper",
+  "Lord Dominik's Regards",
 );
 
 const LudensEcho = new Item(
@@ -1783,6 +1796,7 @@ const MortalReminder = new Item(
   },
   [],
   "Last Whisper",
+  "Mortal Reminder",
 );
 
 const MawOfMalmortius = new Item(
@@ -2204,6 +2218,7 @@ const SeryldasGrudge = new Item(
   },
   [],
   "Last Whisper",
+  "Serylda's Grudge",
 );
 
 const Shadowflame = new Item(
@@ -3415,6 +3430,8 @@ export type SimulationScenario = {
    * attack-based basic-ability CDR (e.g. Navori). Used for "spell-only" builds.
    */
   spellOnlyNoAutos?: boolean;
+  /** Average movement speed in units/sec for energize stack generation (Voltaic etc.). */
+  movementUnitsPerSecond?: number;
   /** Champion transform for duel sims (e.g. Kayn Rhaast). */
   assumedForm?: ChampionAssumedForm;
 };
@@ -3431,6 +3448,7 @@ type ResolvedSimulationScenario = {
   cooldownFloorBaseRatio: number;
   enableChampionRotationProfiles: boolean;
   spellOnlyNoAutos: boolean;
+  movementUnitsPerSecond: number;
   assumedForm: ChampionAssumedForm;
 };
 
@@ -3453,6 +3471,7 @@ const DEFAULT_SIM_SCENARIO: ResolvedSimulationScenario = {
   cooldownFloorBaseRatio: 0.1,
   enableChampionRotationProfiles: true,
   spellOnlyNoAutos: false,
+  movementUnitsPerSecond: 80,
   assumedForm: "base",
 };
 
@@ -3503,6 +3522,11 @@ export function resolveSimulationScenario(
       scenario?.enableChampionRotationProfiles ??
       DEFAULT_SIM_SCENARIO.enableChampionRotationProfiles,
     spellOnlyNoAutos: Boolean(scenario?.spellOnlyNoAutos),
+    movementUnitsPerSecond: Math.max(
+      0,
+      scenario?.movementUnitsPerSecond ??
+        DEFAULT_SIM_SCENARIO.movementUnitsPerSecond,
+    ),
     assumedForm: scenario?.assumedForm ?? DEFAULT_SIM_SCENARIO.assumedForm,
   };
 }
@@ -4002,6 +4026,50 @@ export function estimateAbilityHitsPerSecond(
     }
     const cd = baseCd * (1 - cdr);
     hits += effectiveAbilityCasts(ability) / Math.max(cd, 0.5);
+  }
+  return hits;
+}
+
+/** On-hit ability hits per second (Mystic Shot, Parrrley, etc.) for Galvanize / energize stacks. */
+export function estimateOnHitAbilityHitsPerSecond(
+  champion: Character,
+  level: number,
+  abilityHaste: number,
+  abilityHasteCap: number,
+): number {
+  const ah = Math.min(abilityHaste, abilityHasteCap);
+  const cdr = ah / (100 + ah);
+  let hits = 0;
+  for (const ability of champion.Abilities) {
+    if (ability.abilityType === "passive") continue;
+    const interaction = parseAbilityInteraction(ability);
+    const onHitScale =
+      interaction.appliesItemOnHitScale > 0
+        ? interaction.appliesItemOnHitScale
+        : ability.appliesOnHit
+          ? ONHIT_SUSTAINED_FACTOR[ability.name] ?? 0.35
+          : 0;
+    if (onHitScale <= 0) continue;
+    const rank =
+      ability.abilityType === "R"
+        ? ultRankAtLevel(level)
+        : abilityRankAtLevel(
+            level,
+            ability.abilityType as "Q" | "W" | "E",
+            champion.Name,
+          );
+    if (rank <= 0) continue;
+    const baseCd = ability.getCooldownAtLevel(rank);
+    if (baseCd <= 0) continue;
+    if (
+      ability.cooldown.cooldownType === "static" ||
+      ability.cooldown.cooldownType === "ammo"
+    ) {
+      continue;
+    }
+    const cd = baseCd * (1 - cdr);
+    hits +=
+      (effectiveAbilityCasts(ability) * onHitScale) / Math.max(cd, 0.5);
   }
   return hits;
 }
@@ -4675,6 +4743,12 @@ class Character {
     const breakdown: string[] = [];
 
     const totalAbilityHasteEarly = stats.abilityHaste + stats.basicAbilityHaste;
+    const onHitAbilityHitsPerSec = estimateOnHitAbilityHitsPerSecond(
+      this,
+      sim.level,
+      totalAbilityHasteEarly,
+      sim.abilityHasteCap,
+    );
     const mechanicCtx = buildItemMechanicContext(
       this,
       mit,
@@ -4682,6 +4756,7 @@ class Character {
       stats,
       targetMaxHP,
       targetBonusHP,
+      onHitAbilityHitsPerSec,
     );
     const abilityHitsPerSec = estimateAbilityHitsPerSecond(
       this,
@@ -6408,8 +6483,23 @@ class Character {
       viegoDoubleHitDPS * totalPhysicalMultiplier * physMit;
     const finalDotDPS = dotDPS * totalMagicMultiplier * magicMit;
 
+    let burstPhysMit = physMit;
+    if (itemMech.burstLethalityBonus > 0) {
+      burstPhysMit = physicalMitigationMultiplier(
+        effectiveTargetArmor,
+        {
+          ...stats,
+          lethality: (stats.lethality ?? 0) + itemMech.burstLethalityBonus,
+        },
+        sim.level,
+      );
+      breakdown.push(
+        `Firmament burst pen: +${itemMech.burstLethalityBonus} lethality on proc damage`,
+      );
+    }
+
     const burstAfterMit =
-      abilityPhysMult * burstPhys * physMit +
+      abilityPhysMult * burstPhys * burstPhysMit +
       abilityMagicMult * burstMagic * magicMit +
       abilityBaseMult * burstTrue;
 

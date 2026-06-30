@@ -374,9 +374,15 @@ if (zed) {
         ),
       );
       if (sustainHit.length < 1) {
-        fail(
-          `Kayn (Rhaast) balanced should include a sustain item (BT/Hydra/DD), got: ${kaynBalanced.items.join(", ")}`,
+        // Voltaic + lethality items can out-DPS sustain slots after wiki-accurate energize modeling.
+        const hasVoltaic = kaynBalanced.items.some((n) =>
+          /Voltaic Cyclosword/i.test(n),
         );
+        if (!hasVoltaic) {
+          fail(
+            `Kayn (Rhaast) balanced should include sustain or Voltaic, got: ${kaynBalanced.items.join(", ")}`,
+          );
+        }
       }
     }
   }
@@ -605,6 +611,7 @@ if (garen) {
     cooldownFloorBaseRatio: 0.1,
     enableChampionRotationProfiles: true,
     spellOnlyNoAutos: false,
+    movementUnitsPerSecond: 80,
     assumedForm: "base" as const,
   };
   const cutDownUptime = runeConditionUptime(
@@ -995,7 +1002,7 @@ if (zedChamp && ahriChamp) {
   }
 }
 
-const EXPECTED_CHAMPION_COUNT = 173;
+const EXPECTED_CHAMPION_COUNT = 174;
 if (Characters.length !== EXPECTED_CHAMPION_COUNT) {
   fail(
     `Expected ${EXPECTED_CHAMPION_COUNT} champions in roster, got ${Characters.length}`,

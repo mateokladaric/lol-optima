@@ -14,6 +14,14 @@ import {
   HORIZON_HYPERSHOT_UPTIME_MELEE,
   HORIZON_HYPERSHOT_UPTIME_RANGED,
 } from "../src/lib/itemMechanics";
+import {
+  getItemWikiNotes,
+  itemsMissingWikiNotes,
+} from "../src/lib/itemWikiNotes";
+import {
+  findUnparsedWikiKeywords,
+  parseItemInteractionFlags,
+} from "../src/lib/itemInteractions";
 
 const PROC_KEYS: (keyof ItemStats)[] = [
   "trueOnAbilityHit",
@@ -311,3 +319,29 @@ if (blockingHigh.length > 0) {
 console.log(
   `\nAudit complete: ${MODELED_ITEM_GROUPS.length} modeled groups, 0 blocking high issues.`,
 );
+
+console.log("\n--- Wiki notes cross-reference (Ezreal pool) ---\n");
+const wikiMissing = itemsMissingWikiNotes(pool);
+if (wikiMissing.length > 0) {
+  console.log(`Missing wiki notes: ${wikiMissing.join(", ")}`);
+} else {
+  console.log("All Ezreal pool groups have wiki notes.");
+}
+const wikiUnparsed: string[] = [];
+for (const item of pool) {
+  const entry = getItemWikiNotes(item);
+  if (!entry) continue;
+  const flags = parseItemInteractionFlags(entry.notes);
+  const unparsed = findUnparsedWikiKeywords(entry, flags);
+  if (unparsed.length > 0) {
+    wikiUnparsed.push(
+      `${item.getMechanicsGroup()}: ${unparsed.join(", ")}`,
+    );
+  }
+}
+if (wikiUnparsed.length > 0) {
+  console.log(`Unparsed keywords (${wikiUnparsed.length}):`);
+  for (const line of wikiUnparsed.slice(0, 12)) console.log(`  ${line}`);
+} else {
+  console.log("No unparsed DPS keywords in pool items.");
+}

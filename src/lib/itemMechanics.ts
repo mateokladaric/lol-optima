@@ -6,6 +6,7 @@
 
 import type { Character, Item, ItemStats } from "@/app/actions/sim";
 import { championBaseStatsAtLevel } from "@/app/actions/sim";
+import { getEquippedItemInteractionFlags } from "./itemInteractions";
 
 function spellbladeUptime(attackRate: number): number {
   if (attackRate <= 0) return 0;
@@ -29,6 +30,10 @@ export type ItemMechanicContext = {
   /** Opponent physical shields (Serpent's Fang shreds these, not magic shields). */
   targetPhysicalShieldEHP?: number;
   targetMagicShieldEHP?: number;
+  /** Movement speed in units/sec for energize stack generation. */
+  movementUnitsPerSecond: number;
+  /** On-hit ability hits per second (Galvanize / energize stacks). */
+  onHitAbilityHitsPerSec: number;
 };
 
 export type ItemMechanicContributions = {
@@ -69,6 +74,8 @@ export type ItemMechanicContributions = {
   burstPhys: number;
   burstMagic: number;
   burstTrue: number;
+  /** Extra lethality applied only to burstPhys (Voltaic Firmament ordering). */
+  burstLethalityBonus: number;
   /** Time-averaged shield HP for EHP (Sterak-style passives use item stats). */
   shieldValue: number;
   /** Passive regen modeled as average HPS over a sustained duel. */
@@ -148,8 +155,13 @@ export const HORIZON_HYPERSHOT_AMP_PERCENT = 10;
 export const HORIZON_HYPERSHOT_UPTIME_MELEE = 0.3;
 export const HORIZON_HYPERSHOT_UPTIME_RANGED = 0.8;
 
+function hasMechanicsGroup(items: Item[], group: string): boolean {
+  return items.some((i) => i.getMechanicsGroup() === group);
+}
+
+/** @deprecated Use hasMechanicsGroup — kept for internal clarity. */
 function hasGroup(items: Item[], group: string): boolean {
-  return items.some((i) => i.getGroupName() === group);
+  return hasMechanicsGroup(items, group);
 }
 
 function avgTerminusStacks(attackRate: number, windowSec: number): number {
@@ -219,10 +231,12 @@ export function buildItemMechanicContext(
     level: number;
     avgCurrentHPRatio: number;
     spellOnlyNoAutos: boolean;
+    movementUnitsPerSecond: number;
   },
   stats: { as: number },
   targetMaxHP: number,
   targetBonusHP: number,
+  onHitAbilityHitsPerSec: number,
 ): ItemMechanicContext {
   const window = mit.comboWindowSeconds;
   return {
@@ -240,6 +254,8 @@ export function buildItemMechanicContext(
     takedownCount: 1,
     targetPhysicalShieldEHP: mit.targetPhysicalShieldEHP ?? 0,
     targetMagicShieldEHP: mit.targetMagicShieldEHP ?? 0,
+    movementUnitsPerSecond: sim.movementUnitsPerSecond,
+    onHitAbilityHitsPerSec,
   };
 }
 
@@ -249,6 +265,7 @@ export function computeItemMechanicContributions(
   stats: ItemStats & { ad: number; ap: number; mana: number },
   abilityHitsPerSec: number,
 ): ItemMechanicContributions {
+  const itemFlags = getEquippedItemInteractionFlags(items);
   const out: ItemMechanicContributions = {
     statSuppress: {},
     bonusAD: 0,
@@ -275,6 +292,7 @@ export function computeItemMechanicContributions(
     burstPhys: 0,
     burstMagic: 0,
     burstTrue: 0,
+    burstLethalityBonus: 0,
     shieldValue: 0,
     sustainHealPerSecond: 0,
     breakdown: [],
@@ -312,66 +330,130 @@ export function computeItemMechanicContributions(
   // All energized items share the same 100-stack charge pool.
   // First proc is ALWAYS pre-charged at combat start (walk-up burst).
   {
-    const hasShiv = hasGroup(items, "Statikk Shiv");
-    const hasStormrazor = hasGroup(items, "Stormrazor");
-    const hasRFC = hasGroup(items, "Rapid Firecannon");
-    const hasVoltaic = hasGroup(items, "Voltaic Cyclosword");
+    const hasShiv = hasMechanicsGroup(items, "Statikk Shiv");
+    const hasStormrazor = hasMechanicsGroup(items, "Stormrazor");
+    const hasRFC = hasMechanicsGroup(items, "Rapid Firecannon");
+    const hasVoltaic = hasMechanicsGroup(items, "Voltaic Cyclosword");
     const hasAnyEnergized = hasShiv || hasStormrazor || hasRFC || hasVoltaic;
 
-    if (hasAnyEnergized && ctx.attackRate > 0) {
+    if (hasAnyEnergized && (ctx.attackRate > 0 || ctx.onHitAbilityHitsPerSec > 0)) {
       if (hasStormrazor) out.statSuppress.magicPeriodicOnHit = true;
 
-      // Combined stacks per auto from all sources
-      let totalStacksPerAuto = 6; // base energize
-      if (hasShiv) totalStacksPerAuto += 9; // Electroshock
-      if (hasStormrazor) totalStacksPerAuto += 6; // Bolt
+      const energizeProfile = itemFlags.energize ?? {
+        stacksPerBasicAttack: 6,
+        stacksPer24Units: 1 / 24,
+        stacksPerOnHitAbility: 6,
+        hasGalvanize: hasVoltaic,
+      };
 
-      // Per-proc damage from each energized item
+      let stacksPerAA = energizeProfile.stacksPerBasicAttack;
+      if (hasShiv) stacksPerAA += 9;
+      if (hasStormrazor) stacksPerAA += 6;
+
+      const stacksPerSec =
+        ctx.attackRate * stacksPerAA +
+        ctx.movementUnitsPerSecond * energizeProfile.stacksPer24Units +
+        (itemFlags.onHitAbilitiesGenerateStacks
+          ? ctx.onHitAbilityHitsPerSec * energizeProfile.stacksPerOnHitAbility
+          : 0);
+
       let procMagic = 0;
       let procPhys = 0;
       if (hasShiv) procMagic += 60;
       if (hasStormrazor) procMagic += 100;
       if (hasRFC) procMagic += 40;
+
       let voltaicProcDmg = 0;
+      let voltaicLethality = 0;
       if (hasVoltaic) {
         const hpRatio = ctx.melee ? 0.09 : 0.07;
         voltaicProcDmg = ctx.targetMaxHP * ctx.avgCurrentHPRatio * hpRatio;
         procPhys += voltaicProcDmg;
+        voltaicLethality = ctx.melee
+          ? itemFlags.temporaryLethalityMelee || 15
+          : itemFlags.temporaryLethalityRanged || 12;
       }
 
-      // First proc: guaranteed burst at combat start
-      out.burstMagic += procMagic;
-      out.burstPhys += procPhys;
+      const procDamage = procMagic + procPhys;
+      const stacksToProc = 100;
+      const additionalProcs = Math.max(
+        0,
+        Math.floor((stacksPerSec * ctx.comboWindowSeconds) / stacksToProc),
+      );
+      const totalProcs = 1 + additionalProcs;
 
-      // Additional procs during sustained combat
-      const autosInCombo = ctx.comboWindowSeconds * ctx.attackRate;
-      const autosPerProc = 100 / totalStacksPerAuto;
-      const additionalProcs = Math.max(0, Math.floor(autosInCombo / autosPerProc));
-      if (additionalProcs > 0 && autosInCombo > 0) {
-        out.onHitMagicPerAttack += procMagic * additionalProcs / autosInCombo;
-        out.onHitPhysPerAttack += procPhys * additionalProcs / autosInCombo;
-      }
-
-      // Voltaic temporary lethality (up from first proc, refreshed on each subsequent)
-      if (hasVoltaic) {
-        const LETHALITY_BONUS = ctx.melee ? 15 : 12;
-        const totalProcs = 1 + additionalProcs;
-        const lethalityCoverage = Math.min(ctx.comboWindowSeconds, totalProcs * 4);
-        const lethalityUptime = lethalityCoverage / ctx.comboWindowSeconds;
-        out.armorPen += LETHALITY_BONUS * lethalityUptime;
-        out.breakdown.push(
-          `Voltaic Firmament: ${voltaicProcDmg.toFixed(0)} phys/proc, +${(LETHALITY_BONUS * lethalityUptime).toFixed(1)} avg lethality`,
+      // Galvanize: abilities trigger energized proc when ready
+      let galvanizeProcs = 0;
+      if (
+        hasVoltaic &&
+        energizeProfile.hasGalvanize &&
+        ctx.onHitAbilityHitsPerSec > 0
+      ) {
+        const galvanizeUptime = Math.min(
+          1,
+          (ctx.onHitAbilityHitsPerSec * ctx.comboWindowSeconds) /
+            Math.max(totalProcs, 1),
+        );
+        galvanizeProcs = Math.floor(
+          ctx.onHitAbilityHitsPerSec *
+            ctx.comboWindowSeconds *
+            galvanizeUptime *
+            0.5,
         );
       }
+      const allProcs = totalProcs + galvanizeProcs;
 
-      // Breakdown
-      const totalDPS = (procMagic + procPhys) * (1 + additionalProcs) / ctx.comboWindowSeconds;
+      const firmamentAsBurst =
+        hasVoltaic && itemFlags.damageBeforeTriggeringHit;
+      if (firmamentAsBurst) {
+        out.burstMagic += procMagic * allProcs;
+        out.burstPhys += voltaicProcDmg * allProcs;
+        if (itemFlags.temporaryPenBeforeProcDamage && voltaicLethality > 0) {
+          out.burstLethalityBonus = Math.max(
+            out.burstLethalityBonus,
+            voltaicLethality,
+          );
+        }
+      } else {
+        out.burstMagic += procMagic;
+        out.burstPhys += procPhys;
+        const autosInCombo = ctx.comboWindowSeconds * ctx.attackRate;
+        if (additionalProcs > 0 && autosInCombo > 0) {
+          out.onHitMagicPerAttack += procMagic * additionalProcs / autosInCombo;
+          out.onHitPhysPerAttack += procPhys * additionalProcs / autosInCombo;
+        }
+      }
+
+      if (hasVoltaic) {
+        const lethalitySec = itemFlags.temporaryLethalitySeconds || 4;
+        const lethalityCoverage = Math.min(
+          ctx.comboWindowSeconds,
+          allProcs * lethalitySec,
+        );
+        const lethalityUptime = lethalityCoverage / ctx.comboWindowSeconds;
+        out.armorPen += voltaicLethality * lethalityUptime;
+        out.breakdown.push(
+          `Voltaic Firmament: ${voltaicProcDmg.toFixed(0)} phys/proc, +${(voltaicLethality * lethalityUptime).toFixed(1)} avg lethality${firmamentAsBurst ? " (pre-attack burst)" : ""}`,
+        );
+        if (galvanizeProcs > 0) {
+          out.breakdown.push(
+            `Galvanize: +${galvanizeProcs} ability-triggered procs (${ctx.onHitAbilityHitsPerSec.toFixed(2)} on-hit ab/s)`,
+          );
+        }
+      }
+
+      const avgDps = (procDamage * allProcs) / ctx.comboWindowSeconds;
       const procNames: string[] = [];
       if (hasShiv) procNames.push("Shiv 60");
       if (hasStormrazor) procNames.push("Stormrazor 100");
       if (hasRFC) procNames.push("RFC 40");
+      const moveStacks = (
+        ctx.movementUnitsPerSecond *
+        energizeProfile.stacksPer24Units *
+        ctx.comboWindowSeconds
+      ).toFixed(0);
       out.breakdown.push(
-        `Energized (${procNames.join("+")}): burst ${procMagic + procPhys} + ${totalDPS.toFixed(1)} avg DPS (${1 + additionalProcs} procs / ${ctx.comboWindowSeconds}s, ${totalStacksPerAuto} stacks/AA)`,
+        `Energized (${procNames.join("+")}): burst ${procDamage.toFixed(0)} + ${avgDps.toFixed(1)} avg DPS (${allProcs} procs / ${ctx.comboWindowSeconds}s, ${stacksPerAA} stacks/AA, +${moveStacks} move stacks)`,
       );
     }
   }
