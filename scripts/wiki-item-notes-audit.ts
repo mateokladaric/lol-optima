@@ -20,6 +20,7 @@ import {
   ITEM_WIKI_NOTES,
   allWikiNoteGroups,
   type ItemWikiEntry,
+  wikiNotesFetchedAt,
 } from "../src/lib/itemWikiNotes";
 
 const WIKI_API = "https://wiki.leagueoflegends.com/en-us/api.php";
@@ -34,39 +35,11 @@ type WikiFetchResult = {
   error?: string;
 };
 
-function wikiPageTitle(group: string): string {
-  const entry = ITEM_WIKI_NOTES[group];
-  if (entry?.wikiUrl) {
-    const slug = entry.wikiUrl.split("/").pop() ?? group;
-    return decodeURIComponent(slug);
-  }
-  return group.replace(/'/g, "%27").replace(/ /g, "_");
-}
-
-function extractNotesSection(wikitext: string): string[] {
-  const notesMatch = wikitext.match(
-    /==\s*Notes\s*==([\s\S]*?)(?=\n==[^=]|\n===$|$)/i,
-  );
-  if (!notesMatch) return [];
-
-  const section = notesMatch[1];
-  const bullets: string[] = [];
-  for (const line of section.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith("*")) {
-      const text = trimmed
-        .replace(/^\*+\s*/, "")
-        .replace(/\{\{[^}]+\}\}/g, "")
-        .replace(/\[\[([^|\]]+\|)?([^\]]+)\]\]/g, "$2")
-        .trim();
-      if (text.length > 10) bullets.push(text.slice(0, 400));
-    }
-  }
-  return bullets;
-}
+import { extractItemWikiBullets } from "../src/lib/wikiItemNotesExtract";
+import { wikiPageSlug, wikiPageUrl } from "../src/lib/itemWikiMeta";
 
 async function fetchWikiItemNotes(group: string): Promise<WikiFetchResult> {
-  const pageTitle = wikiPageTitle(group);
+  const pageTitle = decodeURIComponent(wikiPageSlug(group));
   const url = `${WIKI_API}?action=parse&page=${encodeURIComponent(pageTitle)}&prop=wikitext&format=json&formatversion=2`;
 
   try {
@@ -91,7 +64,7 @@ async function fetchWikiItemNotes(group: string): Promise<WikiFetchResult> {
       group,
       pageTitle,
       ok: true,
-      notesBullets: extractNotesSection(wikitext),
+      notesBullets: extractItemWikiBullets(wikitext),
     };
   } catch (e) {
     return {
@@ -174,6 +147,7 @@ async function main() {
   const unparsed = rows.filter((r) => r.unparsedKeywords.length > 0);
 
   console.log(`Curated wiki entries: ${allWikiNoteGroups().length}`);
+  console.log(`Wiki fetch file: ${wikiNotesFetchedAt()}`);
   console.log(`Catalog mechanics groups: ${catalogGroups.length}`);
   console.log(`Missing notes: ${missingNotes.length}`);
   console.log(`Modeled groups (itemMechanics): ${MODELED_ITEM_GROUPS.length}`);

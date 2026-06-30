@@ -34,6 +34,8 @@ export type ItemMechanicContext = {
   movementUnitsPerSecond: number;
   /** On-hit ability hits per second (Galvanize / energize stacks). */
   onHitAbilityHitsPerSec: number;
+  /** 0–1 spell shield block chance on ability damage (Serpent's Fang proc gate). */
+  targetSpellShieldBlockChance: number;
 };
 
 export type ItemMechanicContributions = {
@@ -120,6 +122,7 @@ export const MODELED_ITEM_GROUPS = [
 /** Shield Reaver: melee 50% / ranged 35% active shield reduction (wiki 14.4+). */
 export const SERPENT_SHIELD_SHRED_MELEE = 0.5;
 export const SERPENT_SHIELD_SHRED_RANGED = 0.35;
+export const SERPENT_VENOM_SECONDS = 3;
 
 const BURN_DURATION = 3;
 
@@ -237,6 +240,7 @@ export function buildItemMechanicContext(
   targetMaxHP: number,
   targetBonusHP: number,
   onHitAbilityHitsPerSec: number,
+  targetSpellShieldBlockChance = 0,
 ): ItemMechanicContext {
   const window = mit.comboWindowSeconds;
   return {
@@ -256,6 +260,7 @@ export function buildItemMechanicContext(
     targetMagicShieldEHP: mit.targetMagicShieldEHP ?? 0,
     movementUnitsPerSecond: sim.movementUnitsPerSecond,
     onHitAbilityHitsPerSec,
+    targetSpellShieldBlockChance,
   };
 }
 
@@ -816,14 +821,41 @@ export function computeItemMechanicContributions(
   if (hasGroup(items, "Serpent's Fang")) {
     const physShield = ctx.targetPhysicalShieldEHP ?? 0;
     if (physShield > 0 && ctx.targetMaxHP > 0) {
+      const reaver = itemFlags.shieldReaver;
       const shred = ctx.melee
-        ? SERPENT_SHIELD_SHRED_MELEE
-        : SERPENT_SHIELD_SHRED_RANGED;
-      const shreddedHP = physShield * shred;
-      const ampPct = (shreddedHP / ctx.targetMaxHP) * 100;
-      out.effectiveDamageAmplificationOnTarget += ampPct;
+        ? (reaver?.meleeShredPercent ?? SERPENT_SHIELD_SHRED_MELEE * 100) / 100
+        : (reaver?.rangedShredPercent ?? SERPENT_SHIELD_SHRED_RANGED * 100) / 100;
+      const venomSec = reaver?.venomSeconds ?? SERPENT_VENOM_SECONDS;
+      const hitRate = Math.max(0, ctx.attackRate + abilityHitsPerSec);
+      const spellBlock = reaver?.blockedBySpellShield
+        ? (ctx.targetSpellShieldBlockChance ?? 0)
+        : 0;
+      const effectiveHits = hitRate * (1 - spellBlock);
+
+      // Wiki: first venom application shreds active shields before triggering damage.
+      const immediateShred = physShield * shred;
+      const ampFromActive = (immediateShred / ctx.targetMaxHP) * 100;
+
+      // Wiki: venom lasts 3s; cannot be refreshed during active venom.
+      const venomCycles =
+        effectiveHits > 0
+          ? 1 +
+            Math.floor(
+              Math.max(0, ctx.comboWindowSeconds - venomSec) / venomSec,
+            )
+          : 0;
+      const venomUptime = Math.min(
+        1,
+        (venomCycles * venomSec) / ctx.comboWindowSeconds,
+      );
+
+      // Wiki: reduces shields gained during venom (magic shields excluded upstream).
+      const ampFromGainReduction = ampFromActive * 0.2 * venomUptime;
+
+      out.effectiveDamageAmplificationOnTarget +=
+        ampFromActive + ampFromGainReduction;
       out.breakdown.push(
-        `Serpent's Fang Shield Reaver: +${ampPct.toFixed(1)}% effective vs ${physShield.toFixed(0)} phys shield (${(shred * 100).toFixed(0)}% shred)`,
+        `Serpent's Fang Shield Reaver: +${(ampFromActive + ampFromGainReduction).toFixed(1)}% effective (${(shred * 100).toFixed(0)}% shred on ${physShield.toFixed(0)} phys shield, ~${(venomUptime * 100).toFixed(0)}% venom uptime; magic shields unaffected)`,
       );
     }
   }

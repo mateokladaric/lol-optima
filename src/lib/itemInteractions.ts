@@ -33,6 +33,16 @@ export type ItemInteractionFlags = {
   onHitAbilitiesGenerateStacks: boolean;
   /** Non-champion damage cap (wikiGap for 1v1). */
   nonChampionDamageCap?: number;
+  /** Shield Reaver (Serpent's Fang) — from wiki Notes. */
+  shieldReaver?: {
+    meleeShredPercent: number;
+    rangedShredPercent: number;
+    venomSeconds: number;
+    excludesMagicShields: boolean;
+    noRefreshDuringVenom: boolean;
+    blockedBySpellShield: boolean;
+    shredsBeforeTriggeringDamage: boolean;
+  };
 };
 
 const DEFAULT_FLAGS: ItemInteractionFlags = {
@@ -142,6 +152,44 @@ export function parseStackCap(notes: string[]): number | undefined {
   return m ? Number(m[1]) : undefined;
 }
 
+export function parseShieldReaver(notes: string[]): ItemInteractionFlags["shieldReaver"] {
+  const text = notesText(notes);
+  if (!text.includes("shield reaver") && !text.includes("serpent")) {
+    return undefined;
+  }
+  const meleeRanged = text.match(/(\d+)%\s*\/\s*(\d+)%/);
+  const rangedBalance = text.match(
+    /ranged champions increased to (\d+)%/i,
+  );
+  const meleeShred = meleeRanged
+    ? Number(meleeRanged[1])
+    : text.includes("50%")
+      ? 50
+      : 50;
+  const rangedShred = rangedBalance
+    ? Number(rangedBalance[1])
+    : meleeRanged
+      ? Number(meleeRanged[2])
+      : text.includes("35%")
+        ? 35
+        : 35;
+  const venomMatch = text.match(/(\d+(?:\.\d+)?)\s*seconds?/);
+  return {
+    meleeShredPercent: meleeShred,
+    rangedShredPercent: rangedShred,
+    venomSeconds: venomMatch ? Number(venomMatch[1]) : 3,
+    excludesMagicShields:
+      text.includes("magic damage shields") ||
+      text.includes("does not affect magic"),
+    noRefreshDuringVenom: text.includes("cannot be refreshed"),
+    blockedBySpellShield: text.includes("spell shield"),
+    shredsBeforeTriggeringDamage:
+      text.includes("before the triggering") ||
+      text.includes("before its own damage") ||
+      text.includes("active shields before"),
+  };
+}
+
 export function parseItemInteractionFlags(notes: string[]): ItemInteractionFlags {
   const energize = parseEnergizeStackRate(notes);
   const tempPen = parseTemporaryPen(notes);
@@ -159,6 +207,7 @@ export function parseItemInteractionFlags(notes: string[]): ItemInteractionFlags
     icdSeconds: icd,
     onHitAbilitiesGenerateStacks: parseOnHitFromAbilities(notes),
     nonChampionDamageCap: parseStackCap(notes),
+    shieldReaver: parseShieldReaver(notes),
   };
 }
 
@@ -196,6 +245,9 @@ export function getEquippedItemInteractionFlags(
     }
     if (perItem.icdSeconds != null) {
       flags.icdSeconds = perItem.icdSeconds;
+    }
+    if (perItem.shieldReaver && !flags.shieldReaver) {
+      flags.shieldReaver = perItem.shieldReaver;
     }
   }
 

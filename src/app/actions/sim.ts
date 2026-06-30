@@ -4757,6 +4757,7 @@ class Character {
       targetMaxHP,
       targetBonusHP,
       onHitAbilityHitsPerSec,
+      mit.targetSpellShieldBlockChance,
     );
     const abilityHitsPerSec = estimateAbilityHitsPerSecond(
       this,

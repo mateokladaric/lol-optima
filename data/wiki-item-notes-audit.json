@@ -1,24 +1,22 @@
 {
-  "generatedAt": "2026-06-30T14:46:46.985Z",
+  "generatedAt": "2026-06-30T15:46:28.577Z",
   "catalogGroupCount": 93,
-  "curatedEntryCount": 124,
+  "curatedEntryCount": 117,
   "missingNotes": [],
   "damageRelevantMissing": [],
   "entries": [
     {
       "group": "Abyssal Mask",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 9,
       "simStatus": "gap",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Aura amp not modeled in 1v1"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Actualizer",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 4,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -26,15 +24,17 @@
     {
       "group": "Annul",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 10,
       "simStatus": "gap",
       "unparsedKeywords": [],
-      "wikiGaps": []
+      "wikiGaps": [
+        "Spell shield not in DPS sim"
+      ]
     },
     {
       "group": "Ardent Censer",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 12,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -42,7 +42,7 @@
     {
       "group": "Axiom Arc",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 7,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -58,7 +58,7 @@
     {
       "group": "Bastionbreaker",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 5,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -66,7 +66,7 @@
     {
       "group": "Black Cleaver",
       "hasNotes": true,
-      "noteCount": 3,
+      "noteCount": 26,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -74,7 +74,7 @@
     {
       "group": "Blackfire Torch",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 13,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -82,18 +82,15 @@
     {
       "group": "Blade of the Ruined King",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 13,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Slow not modeled",
-        "On-hit applies from on-hit abilities at champion scale"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Blight",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 8,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -101,17 +98,15 @@
     {
       "group": "Bloodthirster",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 10,
       "simStatus": "gap",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Shield sustain not in DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Chempunk Chainsword",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 6,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -119,37 +114,31 @@
     {
       "group": "Cosmic Drive",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "MS/AH ramp not fully modeled"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Dawncore",
       "hasNotes": true,
-      "noteCount": 1,
-      "simStatus": "static",
+      "noteCount": 5,
+      "simStatus": "support",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Enchanter item — no DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Death's Dance",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 23,
       "simStatus": "gap",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Damage reduction not in DPS sim"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Diadem of Songs",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 5,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -157,7 +146,7 @@
     {
       "group": "Echoes of Helia",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -165,12 +154,10 @@
     {
       "group": "Eclipse",
       "hasNotes": true,
-      "noteCount": 3,
+      "noteCount": 16,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Shield modeled as EHP only, not damage"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Endless Hunger",
@@ -178,24 +165,20 @@
       "noteCount": 2,
       "simStatus": "partial",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Feast omnivamp on kill only"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Eternity",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 5,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Sustain modeled as average HPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Experimental Hexplate",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 2,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -203,7 +186,7 @@
     {
       "group": "Fiendhunter Bolts",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 4,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -211,7 +194,7 @@
     {
       "group": "Force of Nature",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 34,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -219,7 +202,7 @@
     {
       "group": "Frozen Heart",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -227,17 +210,15 @@
     {
       "group": "Glory",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "support",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Team buff — no solo DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Guardian Angel",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 11,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": [
@@ -247,7 +228,7 @@
     {
       "group": "Guinsoo's Rageblade",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 65,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -255,7 +236,7 @@
     {
       "group": "Heartsteel",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 9,
       "simStatus": "partial",
       "unparsedKeywords": [],
       "wikiGaps": [
@@ -265,7 +246,7 @@
     {
       "group": "Hexoptics C44",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 3,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -273,79 +254,70 @@
     {
       "group": "Hextech Gunblade",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 14,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Active modeled as combo-window burst"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Hextech Rocketbelt",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 15,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Active modeled as combo-window burst"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Horizon Focus",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 11,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": [
-        "Distance threshold modeled as body-type uptime estimate"
+        "Hypershot 600+ unit threshold modeled as body-type uptime"
       ]
     },
     {
       "group": "Hubris",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 5,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Exact stack decay on assist vs kill simplified in sim"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Hullbreaker",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 11,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": [
-        "Structure damage excluded",
+        "Skipper vs structures excluded",
         "Solo resist not in DPS"
       ]
     },
     {
       "group": "Hydra",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 15,
       "simStatus": "partial",
       "unparsedKeywords": [],
       "wikiGaps": [
-        "Cleave AoE suppressed in 1v1",
-        "Structures bonus not modeled"
+        "Cleave AoE suppressed in 1v1"
       ]
     },
     {
       "group": "Immolate",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 15,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "AoE aura — single target in 1v1"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Imperial Mandate",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -353,7 +325,7 @@
     {
       "group": "Infinity Edge",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 9,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -361,7 +333,7 @@
     {
       "group": "Jak'Sho, The Protean",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 5,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -369,7 +341,7 @@
     {
       "group": "Kaenic Rookern",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 3,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -377,7 +349,7 @@
     {
       "group": "Knight's Vow",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 17,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -385,17 +357,15 @@
     {
       "group": "Kraken Slayer",
       "hasNotes": true,
-      "noteCount": 3,
+      "noteCount": 16,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Cleave to secondary targets not modeled in 1v1"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Liandry's Torment",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 13,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -403,7 +373,7 @@
     {
       "group": "Lifeline",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 10,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -411,7 +381,7 @@
     {
       "group": "Locket of the Iron Solari",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 11,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -419,7 +389,7 @@
     {
       "group": "Lord Dominik's Regards",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 8,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -427,7 +397,7 @@
     {
       "group": "Luden's Echo",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 10,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -435,7 +405,7 @@
     {
       "group": "Malignance",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 73,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -443,7 +413,7 @@
     {
       "group": "Manaflow",
       "hasNotes": true,
-      "noteCount": 3,
+      "noteCount": 11,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -451,7 +421,7 @@
     {
       "group": "Mikael's Blessing",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -459,17 +429,15 @@
     {
       "group": "Momentum",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 13,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Momentum at 50% average in sim"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Moonstone Renewer",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 11,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -477,47 +445,39 @@
     {
       "group": "Morellonomicon",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 9,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Grievous not in DPS sim"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Mortal Reminder",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 9,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Grievous not in 1v1 DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Nashor's Tooth",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 6,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "On-hit from abilities at champion interaction scale"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Navori Flickerblade",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 5,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "CDR modeled via stats"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Overlord's Bloodmail",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 10,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -525,7 +485,7 @@
     {
       "group": "Phantom Dancer",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 9,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -533,7 +493,7 @@
     {
       "group": "Quicksilver",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 9,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -541,7 +501,7 @@
     {
       "group": "Rabadon's Deathcap",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 9,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -549,7 +509,7 @@
     {
       "group": "Randuin's Omen",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 18,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -557,17 +517,15 @@
     {
       "group": "Rapid Firecannon",
       "hasNotes": true,
-      "noteCount": 4,
+      "noteCount": 20,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Bonus range not modeled"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Redemption",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 12,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -575,27 +533,25 @@
     {
       "group": "Riftmaker",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 9,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "True damage conversion approximated as amp"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Runaan's Hurricane",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 24,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": [
-        "Multi-target not in 1v1"
+        "Multi-target bolts not in 1v1"
       ]
     },
     {
       "group": "Rylai's Crystal Scepter",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 4,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -603,27 +559,23 @@
     {
       "group": "Serpent's Fang",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 10,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Shield shred affects EHP calc, not direct DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Serylda's Grudge",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 6,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Slow not modeled"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Shadowflame",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 13,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -631,7 +583,7 @@
     {
       "group": "Shurelya's Battlesong",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 6,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -639,7 +591,7 @@
     {
       "group": "Spear of Shojin",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 25,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -647,7 +599,7 @@
     {
       "group": "Spellblade",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 4,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -655,7 +607,7 @@
     {
       "group": "Spirit Visage",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 13,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -663,7 +615,7 @@
     {
       "group": "Staff of Flowing Water",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 8,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -671,15 +623,17 @@
     {
       "group": "Stasis",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 4,
       "simStatus": "gap",
       "unparsedKeywords": [],
-      "wikiGaps": []
+      "wikiGaps": [
+        "Zhonya stasis not in DPS sim"
+      ]
     },
     {
       "group": "Statikk Shiv",
       "hasNotes": true,
-      "noteCount": 5,
+      "noteCount": 7,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": [
@@ -689,7 +643,7 @@
     {
       "group": "Stormrazor",
       "hasNotes": true,
-      "noteCount": 5,
+      "noteCount": 17,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -697,27 +651,23 @@
     {
       "group": "Stormsurge",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 9,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "MS not modeled in DPS sim"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Sundered Sky",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 5,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Heal not counted in DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Support / Jungle",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 3,
       "simStatus": "support",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -725,7 +675,7 @@
     {
       "group": "Terminus",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 7,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -733,37 +683,33 @@
     {
       "group": "The Collector",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 9,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Execute threshold not sequenced with pre-attack procs yet"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Thornmail",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 18,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": [
-        "Reflect not in DPS sim"
+        "Reflect damage not in DPS sim"
       ]
     },
     {
       "group": "Umbral Glaive",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 11,
       "simStatus": "gap",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Vision/stealth not in DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Unending Despair",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 4,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -771,7 +717,7 @@
     {
       "group": "Void Pen",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 6,
       "simStatus": "static",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -779,17 +725,15 @@
     {
       "group": "Voltaic Cyclosword",
       "hasNotes": true,
-      "noteCount": 10,
+      "noteCount": 15,
       "simStatus": "modeled",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Structures, spell shield, non-champion cap — out of 1v1 scope"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Warmog's Armor",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 16,
       "simStatus": "gap",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -797,27 +741,23 @@
     {
       "group": "Wit's End",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 11,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "MR shred on self not modeled for DPS"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Youmuu's Ghostblade",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 12,
       "simStatus": "static",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "MS/active not in DPS sim"
-      ]
+      "wikiGaps": []
     },
     {
       "group": "Yun Tal Wildarrows",
       "hasNotes": true,
-      "noteCount": 2,
+      "noteCount": 5,
       "simStatus": "modeled",
       "unparsedKeywords": [],
       "wikiGaps": []
@@ -825,12 +765,10 @@
     {
       "group": "Zeke's Convergence",
       "hasNotes": true,
-      "noteCount": 1,
+      "noteCount": 12,
       "simStatus": "support",
       "unparsedKeywords": [],
-      "wikiGaps": [
-        "Partner passive — no solo 1v1 damage"
-      ]
+      "wikiGaps": []
     }
   ],
   "nextSteps": [

@@ -1,0 +1,1813 @@
+{
+  "generatedAt": "2026-06-30T15:46:18.060Z",
+  "groupCount": 93,
+  "okCount": 93,
+  "failCount": 0,
+  "entries": {
+    "Abyssal Mask": {
+      "group": "Abyssal Mask",
+      "pageTitle": "Abyssal_Mask",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Abyssal_Mask",
+      "ok": true,
+      "notes": [
+        "The visual indicator of the reduction lasts up to 60 seconds, despite the debuff lasting indefinitely against champions as long as they are within Unmake's aura.",
+        "Unique Passive - Unmake:",
+        "New Effect: Enemy champions within of you become cursed, causing them to receive 12% increased magic damage|magic damage from all sources.",
+        "Removed Unique Passive - Eternity: Restore mana equal to 7% of taken from champions, and heal for an amount equal to 25% of mana spent, up to 20 per cast. Toggled abilities can only heal for up to 20 per second.",
+        "New Unique Passive - Eternity: Restore mana equal to 8% of taken from champions, and health equal to 20% of mana spent, up to 15 health per cast. Toggled abilities can only heal for up to 15|health per second.",
+        "New Effect: Nearby enemy champions become cursed, reducing their magic resistance by 5 (+ 1% bonus health), capped at a reduction of 20 magic resistance. Gain 7 bonus magic resistance per cursed enemy. Champions can only be afflicted by one curse at a time, prioritizing the most potent curse.",
+        "Unique Passive - Unmake: Immobilizing an enemy champion increases the damage they take by 10% for 4 seconds.",
+        "Unique Passive - Eternity: Restore mana equal to 15% of damage taken from champions. Restore health equal to 20% of mana spent, up to 25 health per cast, while toggle abilities can heal for up to 25 per second.",
+        "New Unique Passive - Eternity: 15% of damage taken from champions is gained as mana. Spending mana restores 20% of mana spent as health, up to 25 per cast (toggle spells heal for up to 25 per second)."
+      ]
+    },
+    "Actualizer": {
+      "group": "Actualizer",
+      "pageTitle": "Actualizer",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Actualizer",
+      "ok": true,
+      "notes": [
+        "Actualizer can be purchased by manaless champions.",
+        "They cannot activate Mana Made Real.",
+        "Actualizer's Mana Made Real's increased healing and shielding use the same rules as .",
+        "It stacks multiplicatively with other heal modifiers."
+      ]
+    },
+    "Annul": {
+      "group": "Annul",
+      "pageTitle": "Edge_of_Night",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Edge_of_Night",
+      "ok": true,
+      "notes": [
+        "Annul is placed on cooldown when the user dies.",
+        "Annul will be active on clones of the user after 2 seconds of the clone spawning.",
+        "Unique Passive - Annul: Grants a spell shield that blocks the next enemy ability. This shield refreshes after no damage is taken from enemy champions for 40 seconds.",
+        "Unique Passive: +10 lethality.",
+        "Unique Passive - Spell Shield: Grants a spell shield that blocks the next enemy ability. This shield refreshes after no damage is taken from enemy champions for 40 seconds.",
+        "New Unique Passive - Spell Shield: Grants a spell shield that blocks the next enemy ability. This shield refreshes after no damage is taken from enemy champions for 40 seconds.",
+        "New Effect: Grants 250 health.",
+        "New Effect: Tooltip now mentions how much armor the item's lethality is currently negating.",
+        "New Effect: Using the active ability while Invisible/Camouflaged will no longer break the stealth.",
+        "Unique Passive: +15 lethality."
+      ]
+    },
+    "Ardent Censer": {
+      "group": "Ardent Censer",
+      "pageTitle": "Ardent_Censer",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Ardent_Censer",
+      "ok": true,
+      "notes": [
+        "Sanctify deals proc damage, and thus will not trigger spell effects.",
+        "Sanctify's on-hit damage does not apply to structures.",
+        "The bonus damage dealt by Sanctify benefits from .",
+        "Sanctify's damage is accredited to the attacker.",
+        "Unique Passive - Sanctify: Healing and shielding an ally enhances you and affected allies with and for 6 seconds.",
+        "Unique Passive: Outgoing healing and shielding (excluding yourself) enhances you and affected allies with Frenzy for 6 seconds. Frenzy: Grants and .",
+        "Bug Fix: Passive no longer activates with self shields.",
+        "New Effect: You also gain the unique passive attack speed and on-hit effect when shielding or healing an allied champion.",
+        "New Effect: Buff's on-hit damage now also heals for 20 health.",
+        "Bonus healing and shielding power is now a Unique Passive.",
+        "New Passive: +15% bonus healing and shielding power.",
+        "New Effect: Buff now only affects champions."
+      ]
+    },
+    "Axiom Arc": {
+      "group": "Axiom Arc",
+      "pageTitle": "Axiom_Arc",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Axiom_Arc",
+      "ok": true,
+      "notes": [
+        "Without any additional Lethality, Flux refunds 10+% of ultimate cooldown on its own.",
+        "If Flux would refund the user's ultimate ability cooldown to the point that it is refreshed, the cooldown will instead be modified to 0.5 seconds.",
+        "This will occur even if the ultimate's remaining cooldown is less than 0.5 seconds.",
+        "If the user's ultimate ability does not start its cooldown as soon as it is cast, and Flux is triggered in the meantime, the cooldown refund takes effect after the ability goes on cooldown.",
+        "If Flux is triggered multiple times in this case, the cooldown refund will stack up.",
+        "New Effect: Ultimate cooldown refund now scales with 0.4% per 1 Lethality.",
+        "Unique Passive - Flux: Scoring a takedown against an enemy champion within 3 seconds of damaging them refunds 25% of your ultimate ability's total cooldown. Does not reduce cooldown below 0.5 seconds."
+      ]
+    },
+    "Bandlepipes": {
+      "group": "Bandlepipes",
+      "pageTitle": "Bandlepipes",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Bandlepipes",
+      "ok": true,
+      "notes": [
+        "Unique Passive - Fanfare: Slowing or immobilizing an enemy champion grants Fanfare for 8 / 4 seconds. Fanfare grants you 20 bonus movement speed. While you have Fanfare, nearby allies, including yourself, gain 30 / 20% bonus attack speed."
+      ]
+    },
+    "Bastionbreaker": {
+      "group": "Bastionbreaker",
+      "pageTitle": "Bastionbreaker",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Bastionbreaker",
+      "ok": true,
+      "notes": [
+        "Shaped Charge deals proc damage, and thus will not trigger spell effects.",
+        "Shaped Charge is blocked by spell shield.",
+        "Sabotage deals damage in 0.25-second intervals.",
+        "Unique Passive - Shaped Charge: Abilities deal 30 / 15 bonus true damage}} to champions and epic monsters (45 second cooldown).",
+        "Unique Passive - Sabotage: Taking down a champion within 3 seconds of damaging them grants Sabotage for 90 seconds. While you have Sabotage, your next basic attack against an epic monster or turret deals 300 / 240 over 3 seconds."
+      ]
+    },
+    "Black Cleaver": {
+      "group": "Black Cleaver",
+      "pageTitle": "Black_Cleaver",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Black_Cleaver",
+      "ok": true,
+      "notes": [
+        "Carve will also trigger on 0 physical damage dealt by basic attacks.",
+        "Fervor can grant the bonus movement speed from clones.",
+        "Carve stacks will transfer to clones.",
+        "Carve by itself is not blocked by spell shield.",
+        "Carve triggers on most cases of physical damage being dealt, including pets and effects that apply multiple instances of the damage type.",
+        "The first instance of physical damage dealt does not benefit from Carve's armor reduction.",
+        "The damage dealt is calculated first, and then the armor reduction debuff is applied afterwards.",
+        "This means that every instance of physical damage dealt benefits only from the armor reduction of the previous stacks.",
+        "Black Cleaver will not stack multiple times per frame for the following effects.",
+        "Part of ability cast instance: Aphelios [https://www.youtube.com/watch?v=2AvwAMglC0E], Camille additional damage, multiple Illaoi|Tentacle attacks [https://www.youtube.com/watch?v=llTaCNyNQKQ], Naafiri|Packmates [https://www.youtube.com/watch?v=wZ17CIdXOno], Qiyana additional damage from abilities, multiple Yorick|Mist Walkers hits [https://www.reddit.com/r/yorickmains/comments/1ettvk6/black_cleaver_buff_changed_nothing_on_yorick/], Zed|Razor Shurikens thrown by him and his Zed|Shadows [https://",
+        "Basic damage instance followed by non-basic damage instances: Ambessa, Briar, Aphelios|Chakram, Illaoi, Jarvan IV, K'Sante, Riven, Vayne, Viego on-hit, Xin Zhao, Blade of the Ruined King, Hullbreaker, Muramana, Recurve Bow, Titanic Hydra Passive / Active, , . [https://www.youtube.com/watch?v=ppm6VcDUYTE] [https://www.youtube.com/watch?v=t5iO_hcxyYk&t=1588s]",
+        "Damage dealt in a single instance: Aphelios, Blitzcrank, Caitlyn, Camille, Darius, Dr. Mundo, Draven, Garen, Hecarim, Jhin, Jinx, Nasus, Nautilus, Nocturne, Quinn, Rek'Sai, Sett and Sett, Shaco and Shaco, Trundle, Vi, Volibear, Xin Zhao, Yorick.",
+        "Special exclusions: Kindred, Miss Fortune, Udyr permanent on-hit.",
+        "Black Cleaver will stack multiple times per frame for the following effects.",
+        "Multiple basic damage instances: Aphelios marks, Graves, Ivern, Kled, Malphite, Rengar and Rengar, Viego possession mark, Heartsteel, Kraken Slayer.",
+        "Non-basic damage instance followed by basic damage instances: Qiyana from basic attacks, Senna, Sion, Udyr temporary on-hit, Urgot, Vi, Dead Man's Plate, Eclipse, Runaan's Hurricane 0 physical damage on-hit on primary target, Sheen and other Spellblade effects, Voltaic Cyclosword, .",
+        "Randomly, stacks may be prevented from being applied multiple times. [https://youtu.be/a9slBLWNhZ0?t=216] [https://www.youtube.com/watch?v=HPFnIKcl1mk&t=58] |affectedEffects=Black Cleaver|estimatedPatchOrigin=V14.16|wikiUploadTimestamp=1774001406|pagename=Black Cleaver",
+        "Special inclusions: Kled, and Xayah. [https://www.reddit.com/r/leagueoflegends/comments/7b0xwf/illaoi_cant_get_multiple_stacks_of_black_cleaver/dpf1o98/]",
+        "New Effect: Fervor can now trigger on mitigated damage.",
+        "New Unique Passive - Fervor: Dealing physical damage grants you 20 bonus movement speed for 2 seconds.",
+        "Removed Unique Passive - Rage: Basic attacks on-hit grant 20 / 10 bonus movement speed for 2 seconds.",
+        "Unique Passive - Carve: Dealing physical damage to an enemy champion applies a stack of Carve for 6 seconds, stacking up to 6 times. Each stack inflicts 4% armor reduction, up to 24%|armor at 6 stacks.",
+        "Unique Passive - Rage: Basic attacks on-hit grant 20 / 10 bonus movement speed for 2 seconds.",
+        "Unique Passive - Carve: Dealing physical damage to an enemy champion applies a stack of Carve for 6 seconds, stacking up to 6 times. Each stack inflicts 5% armor reduction, up to 30%|armor at 6 stacks.",
+        "Unique Passive - Rage: Dealing physical damage to an enemy champion grants 3 bonus movement speed per stack of Carve on them for 2 seconds, up to 18|ms.",
+        "Bug Fix: Titanic Hydra Cleave and certain other on-hit effects from items and Champion passives no longer apply an additional stack of Carve on basic attacks if Black Cleaver's effect was acquired later (in a higher buff slot) than the on-hit effect."
+      ]
+    },
+    "Blackfire Torch": {
+      "group": "Blackfire Torch",
+      "pageTitle": "Blackfire_Torch",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Blackfire_Torch",
+      "ok": true,
+      "notes": [
+        "Baleful Blaze can be stacked on a target when applied by multiple users, though not refreshing the debuff for all subsequent sources at a time.",
+        "Baleful Blaze deals proc damage and is tagged as periodic without applying spell effects.",
+        "Baleful Blaze itself is not blocked by spell shield.",
+        "Baleful Blaze's first tick of damage is sometimes applied on the same damage instance as the ability that triggered the burn.",
+        "The remaining 5 ticks are applied every 0.5 seconds over the next 2.5 seconds as normal.",
+        "Blackfire's multiplier stacks additively with other sources of % ability power such as and Rabadon's Deathcap Magical Opus.",
+        "Unique Passive - Baleful Blaze: Dealing ability damage burns enemies, causing them to take 10 magic damage (+ 2% AP) every 0.5 seconds over 3 seconds, for a total of 60|magic damage (+ 12% AP). Against monsters, the burn deals 10 bonus magic damage per tick, dealing a total of 20 magic damage (+ 2% AP) per tick for up to 120|magic damage (+ 12% AP).",
+        "Unique Passive - Blackfire: For each champion, epic monster, and large monster afflicted with Baleful Blaze's burn, increase your ability power by 4%.",
+        "Removed Unique Passive: Burning DoT.",
+        "Unique Passive: +15% cooldown reduction",
+        "Unique Passive: +20 magic penetration",
+        "Unique Passive: Your spells burn for an additional 5% of the target champion's maximum Health in magic damage over 3 seconds. Each second burned consumes a charge. One charge is generated each second.",
+        "Unique Passive: Your spells burn for an additional 5% of the target's current Health in magic damage over 3 seconds (effect halved for AoE and damage over time)."
+      ]
+    },
+    "Blade of the Ruined King": {
+      "group": "Blade of the Ruined King",
+      "pageTitle": "Blade_of_the_Ruined_King",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Blade_of_the_Ruined_King",
+      "ok": true,
+      "notes": [
+        "Mist's Edge deals proc damage, and thus will not trigger spell effects.",
+        "Clawing Shadows is not blocked by spell shield.",
+        "Mist's Edge on-hit damage does not apply to structures.",
+        "The bonus damage dealt by Mist's Edge benefits from .",
+        "As a result of on-hit effects only applying their damage before the basic attack's damage, Mist's Edge's damage will calculate based on the current health of the target before the attack damage is dealt.",
+        "Unique Passive - Clawing Shadows:",
+        "New Effect: Basic attacks on-hit against enemy champions apply a stack for 6 seconds, stacking up to 3 times. The third stack consumes them all to slow the target by 30% for 1 second (15 second cooldown).",
+        "New Unique Passive - Clawing Shadows: The next basic attack against an enemy champion on-hit slows them by 30% / 15% for 1 second (15 second cooldown).",
+        "Removed Unique Passive - Siphon: Basic attacks on-hit against enemy champions apply a stack for 6 seconds, stacking up to 3 times. The third stack consumes them all to deal on-hit and slow the target by 25% for 2 seconds, while also granting you 25% bonus movement speed for the same duration.",
+        "Mist's Edge damage on ranged champions increased to 9% of target's current health from 8%|health.",
+        "Bug Fix: Passive will now always deal the maximum possible % current health damage on each attack, regardless of buff slot ordering.",
+        "Unique Passive - Mist's Edge: Deal 10% / 6% of the target's current health bonus physical damage on-hit, capped at 60 bonus damage against minions and monsters.",
+        "Unique Passive - Siphon: Attacking a champion 3 times deals and steals 25% of their movement speed for 2 seconds (20 second cooldown)."
+      ]
+    },
+    "Blight": {
+      "group": "Blight",
+      "pageTitle": "Bloodletter's_Curse",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Bloodletter%27s_Curse",
+      "ok": true,
+      "notes": [
+        "Vile Decay by itself is not blocked by spell shield.",
+        "The first instance of magic damage dealt does not benefit from Vile Decay's magic resistance reduction.",
+        "The damage dealt is calculated first, and then the magic reduction debuff is applied afterwards.",
+        "This means that every instance of magic damage dealt benefits only from the magic resistance reduction of the previous stacks.",
+        "Unique Passive - Vile Decay: Dealing magic damage to an enemy champion with your innate ability or abilities applies a stack to them for 6 seconds, stacking up to 6 times and up to 1 per basic attack or ability per cast instance every 0.3 seconds. Each stack inflicts 5% magic resistance reduction, up to 30%|mr at 6 stacks.",
+        "Unique Passive - Vile Decay: Dealing magic damage to an enemy champion applies a stack to them for 6 seconds, stacking up to 6 times. Each stack inflicts 5% magic resistance reduction, up to 30%|mr at 6 stacks. Damaging basic attacks and spells can only apply a stack once every 2 seconds.",
+        "Unique Passive - Touch of Death: +15 magic penetration.",
+        "Unique Passive: After hitting an enemy champion with a damaging ability, gain a spell shield for 2 seconds that blocks 1 incoming spell (30 second cooldown)."
+      ]
+    },
+    "Bloodthirster": {
+      "group": "Bloodthirster",
+      "pageTitle": "Bloodthirster",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Bloodthirster",
+      "ok": true,
+      "notes": [
+        "Ichorshield's maximum shield value is not affected by heal and shield power.",
+        "Ichorshield lasts until broken and does not decay out of combat.",
+        "Unique Passive - Ichorshield: Convert excess healing from into a shield for up to .",
+        "Unique Passive - Engorge: While above 70% maximum health, gain .",
+        "New Unique Passive - Engorge: While above 50% maximum health, gain .",
+        "Removed Unique Passive - Ichorshield: Convert the healing received from in excess of maximum health into a shield for up to , which slowly decays after not dealing or taking damage for 25 seconds.",
+        "Undocumented: Passive effect renamed to Ichorshield from Blood Barrier.",
+        "New Effect: Tooltip now tracks damage blocked by Blood Barrier.",
+        "Unique Passive - Blood Barrier: from basic attacks can now overheal you, converting the excess healing into a shield that absorbs up to damage and slowly decays if you haven't dealt or taken damage in the last 25 seconds.",
+        "Unique Passive: Your overheals you, converting the excess healing into a shield that absorbs up to damage and decays when out of combat for 25 seconds."
+      ]
+    },
+    "Chempunk Chainsword": {
+      "group": "Chempunk Chainsword",
+      "pageTitle": "Chempunk_Chainsword",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Chempunk_Chainsword",
+      "ok": true,
+      "notes": [
+        "Grievous Wounds is applied to the damaged champion even if they are protected by a shield.",
+        "New Effect: Now applies Grievous Wounds even if the damage dealt was completely mitigated by a shield.",
+        "Unique Passive - Hackshorn:",
+        "New Effect: Dealing physical damage to enemy champions inflicts them with 40% Grievous Wounds for 3 seconds.",
+        "New Effect: Is now called out in chat to notify when the item is purchased.",
+        "Unique Passive - Hackshorn: Dealing physical damage to enemy champions inflicts them with 40% Grievous Wounds for 2 seconds, increased to 60% if the target is below 50% of their maximum health."
+      ]
+    },
+    "Cosmic Drive": {
+      "group": "Cosmic Drive",
+      "pageTitle": "Cosmic_Drive",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Cosmic_Drive",
+      "ok": true,
+      "notes": [
+        "Unique Passive - Spelldance:",
+        "New Effect: Dealing magic|magic damage or true|true damage damage to an enemy champion grants you 20 bonus movement speed|ms for 4 seconds.",
+        "Unique Passive - Spelldance: Dealing ability damage to an enemy champion grants you for 2 seconds.",
+        "Unique Passive - Spelldance: Damaging an enemy champion with a basic attack or ability damage grants 2.5% bonus movement speed every 1.5 seconds over the next 5 seconds, stacking up to 4 times for a total of 10%|ms and refreshing the duration with each damage instance. At maximum stacks, gain an additional 10% bonus movement speed.",
+        "New Effect: Damaging a champion generates a stack of 2.5% bonus movement speed every 1.5 seconds for the next 5 seconds, up to 10%|MS at 4 stacks. At maximum stacks, gain an additional 10% bonus movement speed, for a total of 20%|MS. Dealing damage refreshes this effect.",
+        "New Effect: After damaging a champion with 3 separate basic attacks or abilities within 3 seconds, gain 20% bonus movement speed, decaying to 10%|ms over 2 seconds, and 40 ability power until exiting champion combat (5 seconds).",
+        "New Effect: If you have at least 160 ability power, gain 20 ability haste and .",
+        "Unique Passive - Spelldance: Dealing damage with abilities grants 10|ms (+ 20% ability haste) bonus movement speed for 4 seconds."
+      ]
+    },
+    "Dawncore": {
+      "group": "Dawncore",
+      "pageTitle": "Dawncore",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Dawncore",
+      "ok": true,
+      "notes": [
+        "First Light grants }} ability power}} and }}% heal and shield power}} by itself.",
+        "With Dawncore's base stats this totals to *0.01)}}}} ability power}} and *0.01)}}}}% heal and shield power}}.",
+        "Unique Passive - First Light: Gain 2% heal and shield power|hsp and 10 ability power for every additional 100% base mana regeneration.",
+        "Unique Passive - First Light: Gain 3% heal and shield power|hsp and 5 ability power for every additional 100% base mana regeneration.",
+        "Unique Passive - Radiance: Gain 18 summoner spell haste."
+      ]
+    },
+    "Death's Dance": {
+      "group": "Death's Dance",
+      "pageTitle": "Death's_Dance",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Death%27s_Dance",
+      "ok": true,
+      "notes": [
+        "Each instance of damage received is stored and dealt individually by Ignore Pain, regardless on when other instances of damage were taken.",
+        "Ignore Pain's self-inflicted damage:",
+        "Is attributed to the damage source.",
+        "The damage applies the source's .",
+        "Cannot be modified by any means; the damage is unaffected by damage modifiers (excluding invulnerability).",
+        "Is always classified as proc damage and is tagged as periodic without applying spell effects, regardless of the damage classification of the effect that originally triggered it.",
+        "Can kill the user if it deals lethal damage.",
+        "Does not interrupt .",
+        "Will refresh the user's combat status for every instance of damage it deals to them, delaying and interrupting certain effects that require the user to be out of combat.",
+        "Ignore Pain reduces and stores damage that is mitigated by shields.",
+        "The bleed damage will only be mitigated by normal shields and not other shield types, including physical and magic shields.",
+        "Ignore Pain's effect applies after the mitigation from Warden's Mail Rock Solid and Randuin's Omen Resilience.",
+        "Defy heals the user in 0.25-second intervals.",
+        "Triggering Defy grants a buff that stores all of its incoming healing.",
+        "If Defy is triggered again while the buff is active, it will be refreshed and the new heal value will be added to the remaining heal.",
+        "New Effect: Taking damage from Ignore Pain no longer interrupts .",
+        "New Effect: Ignore Pain now also stores post-mitigation magic damage received.",
+        "New Effect: Ignore Pain now also stores damage received to shields.",
+        "Unique Passive - Ignore Pain: Stores 35% / 15% of all physical damage received, which is successively taken as damage over time true damage instead, dealing one-third of the stored damage every second.",
+        "Unique Passive - Defy: Champion takedowns grant you 30% bonus movement speed for 2 seconds, remove Ignore Pain's remaining damage, and heal you for 10% of your maximum health over the duration.",
+        "Unique Passive: Instantly for 15% of damage dealt. Area damage and pet damage only heal 5% for every unit affected.",
+        "Unique Passive: Stores 30% / 10% of all physical|physical damage and magic|magic damage damage received, which is successively taken as damage over time true damage instead, dealing one-third of the stored damage every second.",
+        "New Effect: Now grants 30 armor."
+      ]
+    },
+    "Diadem of Songs": {
+      "group": "Diadem of Songs",
+      "pageTitle": "Diadem_of_Songs",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Diadem_of_Songs",
+      "ok": true,
+      "notes": [
+        "Harmony grants a total of }}% heal and shield power}} by itself.",
+        "With Diadem of Songs base stat this totals to )}}}}% heal and shield power}}.",
+        "Unlike Whispering Circlet, Diadem of Songs does not belong to the Manaflow item group and is not exclusive with items from that group, with the exception of Whispering Circlet.",
+        "Unique Passive - Harmony: Grants heal and shield power equal to 0.5% bonus mana.",
+        "Unique Passive - Consonance: While you or any ally you've healed or shielded in the last 3 seconds is in combat with champions, each second, heal the lowest health nearby ally champion for 0.8% maximum mana."
+      ]
+    },
+    "Echoes of Helia": {
+      "group": "Echoes of Helia",
+      "pageTitle": "Echoes_of_Helia",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Echoes_of_Helia",
+      "ok": true,
+      "notes": [
+        "Because the amount of soul charges you gain is based on pre-mitigation damage, you can gain full soul charges by dealing a total of damage before calculating for resistances.",
+        "Unique Passive - Soul Siphon:",
+        "New Effect: Gain 35% of pre-mitigation damage dealt to champions as Soul Charges, up to charges. Healing or shielding an ally consumes all Soul Charges to restore 100% of that value as health.",
+        "New Effect: Soul Shards can now be consumed to trigger the heal on allies even if there are no nearby enemies.",
+        "Unique Passive - Soul Siphon: Damaging an enemy champion with a basic attack or ability damage grants a Soul Shard, up to 3. Healing or shielding an allied champion (excluding yourself) consumes all Soul Shards to heal them for 20 per shard and deal 55 magic damage per shard to the nearest enemy champion within 1000 units of the ally.",
+        "Unique Passive - Soul Siphon: Damaging an enemy champion with a basic attack or ability damage grants a Soul Shard, up to 2. Healing or shielding an allied champion (excluding yourself) consumes all Soul Shards to heal them for per shard and deal per shard to the nearest enemy champion within 1100 units of the ally.",
+        "Unique Passive - Dissonance: Gain 3 ability power for every additional 25% base mana regeneration. Disables Harmony on your other items.",
+        "Unique Passive - Soul Siphon: Damaging an enemy champion with a basic attack or ability damage grants a Soul Shard, up to 2. Healing or shielding an allied champion (excluding yourself) consumes all Soul Shards to heal them for per shard and deal per shard to the nearest enemy champion."
+      ]
+    },
+    "Eclipse": {
+      "group": "Eclipse",
+      "pageTitle": "Eclipse",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Eclipse",
+      "ok": true,
+      "notes": [
+        "Ever Rising Moon deals proc damage, and thus will not trigger spell effects.",
+        "Ever Rising Moon's damage is affected by on-hit modifiers.",
+        "Ever Rising Moon's damage by itself is not blocked by spell shield.",
+        "The damage is blocked if the effect that applied the second stack was blocked by a spell shield.",
+        "Stacks of Ever Rising Moon are generated before the damage instances that cause them.",
+        "Blind, Cripple, Drowsy, Kinematics, Nearsight, and Stasis do not count as valid crowd control for triggering stacks of Ever Rising Moon.",
+        "Effects that deal proc damage do not trigger a stack of Ever Rising Moon unless it is also tagged as pet damage.",
+        "Such effects can still trigger a stack if they apply a debuff (i.e Black Cleaver).",
+        "Ever Rising Moon will deal its bonus damage to the closest enemy champion if multiple champions are hit at the same time.",
+        "Ambessa is special cased to apply a stack from Ever Rising Moon for the suppression application and the damage dealt.",
+        "Zed and Zed, when used together with Zed|Shadows, are special cased to apply a stack from Ever Rising Moon for each tick of damage.",
+        "Unique Passive - Ever Rising Moon: Hitting an enemy champion with 2 separate attacks or abilities within 2 seconds deals bonus physical damage equal to 8% / 4% of target's maximum health and grants you a shield for 160 / 80 (+ 40% / 20% bonus AD) for 2 seconds (6 second cooldown).",
+        "Unique Passive - Ever Rising Moon: Hitting an enemy champion with 2 separate attacks or abilities within 1.5 seconds deals bonus physical damage equal to 6% / 3% of target's maximum health and grants you 15% bonus movement speed and a shield for 160 / 80 (+ 35% / 17.5% bonus AD) for 2 seconds (6 / 12 second cooldown).",
+        "New Effect: Mythic passive now also grants 5 bonus movement speed.",
+        "Bug Fix: Champions' health bars will now accurately reflect the shield health even after activating the passive while another shield is active.",
+        "Unique Passive - Ever Rising Moon: Hitting a champion with 2 separate attacks or abilities within 1.5 seconds deals bonus physical damage equal to 8% of their maximum health and grants you 30% bonus movement speed and a 150 / 100 (+ 40% / 30% bonus AD) shield for 2 seconds (6 / 12 second cooldown)."
+      ]
+    },
+    "Endless Hunger": {
+      "group": "Endless Hunger",
+      "pageTitle": "Endless_Hunger",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Endless_Hunger",
+      "ok": true,
+      "notes": [
+        "Unique Passive - Famine: Gain 5 (+ 10% bonus AD) ability haste.",
+        "Unique Passive - Feast: When a champion that you damaged within 3 seconds dies, gain 15% omnivamp for 8 seconds."
+      ]
+    },
+    "Eternity": {
+      "group": "Eternity",
+      "pageTitle": "Fimbulwinter",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Fimbulwinter",
+      "ok": true,
+      "notes": [
+        "Unlike Winter's Approach, Fimbulwinter does not belong to the Manaflow item group and is not exclusive with items from that group, with the exception of Winter's Approach.",
+        "Awe grants a total of bonus health}} by Fimbulwinter itself.",
+        "With Fimbulwinter's health stat this totals to }}|health}}.",
+        "Unique Passive - Awe: Grants bonus health equal to 8% maximum mana.",
+        "Unique Passive - Everlasting: Immobilizing, or slowing if you are melee, an enemy champion consumes 3% current mana to grant a (+ 5% current mana) shield for 3 seconds (8 second cooldown). The shield's strength is increased (+ 5*1.8% current mana)}}if there is more than one enemy champion nearby. Can only activate if you have greater than 20% maximum mana."
+      ]
+    },
+    "Experimental Hexplate": {
+      "group": "Experimental Hexplate",
+      "pageTitle": "Experimental_Hexplate",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Experimental_Hexplate",
+      "ok": true,
+      "notes": [
+        "Unique Passive - Hexcharged: Gain 30 ultimate haste.",
+        "Unique Passive - Overdrive: Upon casting your ultimate ability, enter Overdrive to gain 35% bonus attack speed and 15% bonus movement speed for 8 seconds (30 second cooldown, starts on cast)."
+      ]
+    },
+    "Fiendhunter Bolts": {
+      "group": "Fiendhunter Bolts",
+      "pageTitle": "Fiendhunter_Bolts",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Fiendhunter_Bolts",
+      "ok": true,
+      "notes": [
+        "Opening Barrage does not consider guaranteed critical strikes (e.g. Sundered Sky, second attack) to be a critical strike unless the attacks that trigger them naturally roll critical strikes.",
+        "Attacks that cannot critically strike (e.g. first attack, Twisted Fate) do not consume stacks of Opening Barrage.",
+        "Unique Passive - Night Vigil: Gain 30 ultimate ability haste.",
+        "Unique Passive - Opening Barrage: After casting your ultimate, your next 3 basic attacks within 8 seconds gain 50% bonus attack speed and critically strike for 75% of your normal critical strike damage. If an attack would already critically strike, it deals normal critical strike damage and also deals 10% bonus true damage (45 second cooldown)."
+      ]
+    },
+    "Force of Nature": {
+      "group": "Force of Nature",
+      "pageTitle": "Force_of_Nature",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Force_of_Nature",
+      "ok": true,
+      "notes": [
+        "All champion abilities generate stacks of Steadfast when dealing magic damage to the user.",
+        ", , and generate stacks of Steadfast when dealing magic damage to the user, other runes do not.",
+        "generates stacks of Steadfast when dealing magic damage to the user.",
+        "Fated Ashes Inflame grants stacks of Steadfast more than once per second, even if its magic damage concides with another damage instance, independently of cast instance.",
+        "Some item effects do not generate stacks of Steadfast when dealing magic damage to the user.",
+        "These include: Ardent Censer Sanctify, Bami's Cinder, Hollow Radiance, and Sunfire Aegis Immolate, Guinsoo's Rageblade Wrath, Hollow Radiance Desolate, Imperial Mandate Coordinated Fire, Malignance Hatefog, Statikk Shiv Electrospark, Stormsurge Squall, Unending Despair Anguish, and Zeke's Convergence Frostfire Tempest.",
+        "All other item effects will properly generate stacks. Click the Show tab below for a list of them.",
+        "Blackfire Torch Baleful Blaze",
+        "Bramble Vest Thorns",
+        "Dusk and Dawn Spellblade",
+        "Fated Ashes Inflame",
+        "Hextech Alternator Revved",
+        "Hextech Gunblade Lightning Bolt",
+        "Hextech Rocketbelt Supersonic",
+        "Knight's Vow Pledge",
+        "Liandry's Torment Torment",
+        "Lich Bane Spellblade",
+        "Luden's Echo Echo",
+        "Nashor's Tooth Icathian Bite",
+        "Rapid Firecannon Sharpshooter",
+        "Scout's Slingshot Bullseye",
+        "Stormrazor Bolt",
+        "Terminus Shadow",
+        "Thornmail Thorns",
+        "Wit's End Fray",
+        "Zaz'Zak's Realmspike Void Explosion",
+        "Unique Passive - Steadfast: Taking magic damage from champions grants a stack of Steadfast for 7 seconds, stacking up to 8 times with the duration refreshing on subsequent magic damage from them and whenever dealing damage to them. Becoming immobilized by an enemy champion grants 2 stacks and also refreshes the duration. Damaging basic attacks and spells per cast instance can only grant 1 stack of Steadfast every 1 second. At maximum stacks, gain 70 bonus magic resistance and 10% bonus movement ",
+        "Unique Passive - Absorb: Taking magic damage from champions grants a stack of Steadfast for 7 seconds, stacking up to 10 times with the duration refreshing on subsequent magic damage from them and whenever dealing damage to them. Becoming immobilized by an enemy champion grants 2 stacks and also refreshes the duration. Damaging basic attacks and spells per cast instance can only grant 1 stack of Steadfast every 1 second.",
+        "Unique Passive - Dissipate: While at 10 stacks of Steadfast, gain 10% bonus movement speed and 30 bonus magic resistance.",
+        "New Effect: Dissipate now grants 30 bonus magic resistance.",
+        "Unique Passive - Absorb:",
+        "New Effect: Taking magic damage from enemy champions grants a stack of Steadfast for 5 seconds, up to a maximum of 6. Becoming immobilized by an enemy champion grants 2 additional stacks. Spells can only grant 1 stack of Steadfast every 1 second.",
+        "New Unique Passive - Dissipate: While at 6 stacks of Steadfast, gain 10% bonus movement speed and reduce all incoming magic damage by 20%.",
+        "Unique Passive - Absorb: Taking ability damage grants you 6 bonus movement speed and 4 bonus magic resistance for 5 seconds, stacks up to 5 times and each unique ability gives 1 stack."
+      ]
+    },
+    "Frozen Heart": {
+      "group": "Frozen Heart",
+      "pageTitle": "Frozen_Heart",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Frozen_Heart",
+      "ok": true,
+      "notes": [
+        "Frozen Heart is best suited for champions that want durability to survive and ability haste and mana to cast their spells.",
+        "The passives for the aura and damage mitigation can also be used as a counter against champions that need to attack to deal damage.",
+        "Champions that engage into the middle of a fight can spread the aura to all nearby enemies and gain great value out of the attack speed slow.",
+        "New Effect: Winter's Caress now only affects enemy champions.",
+        "Removed Unique Passive - Rock Solid: Every first incoming instance of basic damage per cast instance is reduced by 5 (+ 3.5 per 1000 maximum health), maximum 20% reduction each.",
+        "New Effect: Now has a base basic damage reduction of 7.",
+        "Unique Passive - Winter's Caress: Reduces the attack speed of nearby enemies by 15%.",
+        "Unique Passive - Rock Solid: Reduces incoming damage from basic attacks by 5 per 1000 maximum health, capped at 40% of the attack's damage."
+      ]
+    },
+    "Glory": {
+      "group": "Glory",
+      "pageTitle": "Imperial_Mandate",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Imperial_Mandate",
+      "ok": true,
+      "notes": [
+        "Removed Unique Passive - Coordinated Fire: Non-basic attack cast instances that slow or immobilize enemy champions mark them for 5 seconds. Allied champions that damage marked enemies consume the mark to deal 10% of the target's current health bonus magic damage (9 second cooldown per target, shared between all users of Imperial Mandate; starts upon mark application).",
+        "New Unique Passive - Control: Immobilizing abilities gain 15 ability haste.",
+        "New Unique Passive - Command: Immobilizing an enemy champion marks them as Vulnerable for 4 seconds, increasing the damage they take from all sources by 6%. Subsequent immobilizes against a target extend the duration of the effect.",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions mark them for 5 seconds. Allied champions that damage marked enemies consume the mark to deal 12% of the target's current health|hp bonus magic damage|magic damage and grant you and the triggering ally 25% bonus movement speed for 2 seconds (9 second cooldown per champion, starts upon mark application).",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions deal and mark them for 4 seconds. Allied champions that damage marked enemies consume the mark to deal and grant you and the triggering ally 25% bonus movement speed for 2 seconds (6 second cooldown per champion, starts upon mark application).",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions deal and mark them for 4 seconds. Allied champions that damage marked enemies consume the mark to deal and grant you and the triggering ally 20% bonus movement speed for 2 seconds (6 second cooldown per champion, starts upon mark application).",
+        "New Effect: Cooldown for both damage instances now starts on mark application rather than having only a cooldown on the mark detonation.",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions deal and mark them for 4 seconds. Allied champions that damage marked enemies consume the mark to deal and grant you and the triggering ally 20% bonus movement speed for 2 seconds (6 second cooldown per enemy champion)."
+      ]
+    },
+    "Guardian Angel": {
+      "group": "Guardian Angel",
+      "pageTitle": "Guardian_Angel",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Guardian_Angel",
+      "ok": true,
+      "notes": [
+        "Upon triggering Rebirth, all summoner spells that are not already on cooldown are placed on a 4-second .",
+        "Rebirth takes priority over Anivia, Zac, and all zombie state effects but not Zilean.",
+        "Rebirth does not activate when the user is killed by the Nexus Obelisk.",
+        "Rebirth's health restoration is considered healing and is increased by effects such as Spirit Visage Boundless Vitality, which causes it to restore 50*1.25% of base health in total.",
+        "While Rebirth is in effect, the user's health regeneration is set to 0.",
+        "20px|link= Quicksilver can be used during Rebirth.",
+        "Rebirth's untargetability does not destroy in-flight projectiles.",
+        "The following table refers for interactions while the user is unable to act:",
+        "Unique Passive - Rebirth: Upon taking lethal damage, resurrects and restores 50% of base health and 30% of maximum mana after 4 seconds of stasis (300 second cooldown).",
+        "Unique Passive: Upon taking lethal damage, resurrects and restores 50% of base health and 30% of maximum mana after 4 seconds of stasis (300 second cooldown).",
+        "Unique - Passive: Upon taking lethal damage, restores 50% of base health and maximum mana after 4 seconds of stasis (300 second cooldown)."
+      ]
+    },
+    "Guinsoo's Rageblade": {
+      "group": "Guinsoo's Rageblade",
+      "pageTitle": "Guinsoo's_Rageblade",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Guinsoo%27s_Rageblade",
+      "ok": true,
+      "notes": [
+        "Wrath deals proc damage, and thus will not trigger spell effects.",
+        "Wrath's on-hit damage does not apply to structures.",
+        "The bonus damage dealt by Wrath benefits from .",
+        "Seething Strike is not blocked by spell shield.",
+        "Attacks against structures will not grant, refresh, or affect the count of Phantom stacks.",
+        "They will grant and refresh Seething Strike stacks.",
+        "The final Seething Strike stack will also grant a Phantom stack, meaning it takes 6 attacks to trigger Phantom Hit for the first time.",
+        "The Phantom Hit occurs a static delay after the basic attack was fired (independently of melee or ranged), and will occur even if the attack was destroyed (i.e. Yasuo) or popped (i.e. untargetability).",
+        "The Phantom Hit from Seething Strike may generate stacks and trigger on abilities that applies on-attack effect. <!--Abilities that could hit multiple targets or applies multiple instances of damages only counted as single attack at same time.",
+        "On-hit effects, such as those from single-use empowered attacks, will not benefit from Phantom Hit and will apply their effect only once. This is due to the on-hit effect itself being consumed by the initial strike and unavailable for the second.",
+        "Phantom Hit does not interact with on-attack effects.",
+        "Master Yi",
+        "Tahm Kench",
+        "Tristana",
+        "Twisted Fate",
+        "Xin Zhao",
+        "Kraken Slayer (does not apply empowered hit twice)",
+        "Gwen and Gwen",
+        "Kassadin",
+        "Malphite",
+        "Mordekaiser",
+        "Volibear",
+        "Blade of the Ruined King",
+        "Guinsoo's Rageblade",
+        "Muramana",
+        "Nashor's Tooth",
+        "Recurve Bow",
+        "Stridebreaker",
+        "Titanic Hydra",
+        "Wit's End",
+        "Nocturne",
+        "Renekton",
+        "Tryndamere",
+        "Illaoi (commands Illaoi|Tentacles to attack without consuming the empowered attack)",
+        "Lee Sin (energy return doubled while only consuming 1 stack of Flurry)",
+        "Shaco (clone attacks)",
+        "Trinity Force (bonus movement speed)",
+        "Amumu (reducing his cooldowns)",
+        "Braum (stack application)",
+        "Jax (damage generation)",
+        "Rammus (reflect damage)",
+        "Bramble Vest (reflect damage)",
+        "Thornmail (reflect damage)",
+        "Akshan (stack application during Akshan)",
+        "Aurora (stack generation)",
+        "Jinx (stack generation) and Jinx|Fishbones (10% bonus damage and splash damage)",
+        "Mordekaiser (stack generation for the aura effect)",
+        "Ashe (stack generation and empowered active)",
+        "Bard|Meeps",
+        "Cho'Gath",
+        "Lulu|Pix",
+        "Jayce (stack decrement)",
+        "Sylas (stack decrement)",
+        "Xin Zhao (bonus damage and knockup)",
+        "Yone (bonus damage)",
+        "Guinsoo's Rageblade (stack generation)",
+        "Runaan's Hurricane (minor bolts)",
+        "Unique Passive - Wrath: Basic attacks deal 30 bonus magic damage on-hit.",
+        "Unique Passive - Seething Strike: Basic attacks grant 8% bonus attack speed for 3 seconds, stacking up to 4 times for a total of 32% bonus attack speed. At maximum stacks, basic attacks on-attack grant a Phantom stack for 6 seconds, up to 2 stacks. At 2 Phantom stacks, the next basic attack consumes all of those stacks on-attack to trigger a Phantom Hit that applies on-hit effects to the target at 100% effectiveness after a 0.15 second delay.",
+        "Unique Passive - Wrath: Basic attacks deal 30 bonus magic damage on-hit. Additionally, convert every 1% critical strike chance into 1.5 additional bonus magic damage|magic damage on-hit, capped at 100% critical strike chance, for a maximum of 180 bonus magic damage on-hit. This damage is affected by critical strike modifiers.",
+        "Unique Passive - Wrath: Basic attacks deal 30 bonus magic damage on-hit. Additionally, convert every 1% critical strike chance into 1.5 bonus magic damage on-hit, capped at 100% critical strike chance, for a maximum of 180 bonus magic damage on-hit. This damage is affected by critical strike modifiers.",
+        "Unique Passive - Seething Strike: Basic attacks grant 8% bonus attack speed for 3 seconds, stacking up to 4 times for a total of 32% bonus attack speed. At maximum stacks, basic attacks on-attack grant a Phantom stack for 6 seconds, up to 2 stacks. At 2 Phantom stacks, the next basic attack consumes all stacks on-attack to trigger a Phantom Hit that applies on-hit effects to the target at 100% effectiveness after a 0.15 second delay.",
+        "Unique Passive - Wrath: Convert every 1% critical strike chance into 2 bonus physical damage on-hit, capped at 100% critical strike chance, for a maximum of 200 bonus physical damage on-hit. This damage is affected by critical strike modifiers.",
+        "Unique Passive - Seething Strike: Basic attacks on-attack grant a stack for 6 seconds, up to 2 stacks. At 2 stacks, the next basic attack consumes all stacks on-attack to trigger a Phantom Hit that applies on-hit effects to the target at 100% effectiveness after a 0.15 second delay.",
+        "New Effect: On-hit damage is now capped at 100% critical strike chance."
+      ]
+    },
+    "Heartsteel": {
+      "group": "Heartsteel",
+      "pageTitle": "Heartsteel",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Heartsteel",
+      "ok": true,
+      "notes": [
+        "Colossal Consumption deals proc damage and is tagged as basic damage, and thus will not trigger spell effects.",
+        "Colossal Consumption is an auto-targeted effect.",
+        "Colossal Consumption's stacks linger for 3 seconds after no longer being in range of the target.",
+        "Colossal Consumption applies .",
+        "Colossal Consumption will activate on champion clones and grant its bonuses from them.",
+        "Unique Passive - Colossal Consumption: While within 700 units of an enemy champion, generate a stack on them each second, stacking up to 3 times. Your next basic attack against a target with 3 stacks is empowered to consume them all to deal 100|physical damage (+ 10% bonus health from items) bonus physical damage on-hit and grant you permanent bonus health equal to}} (30 second cooldown per target).",
+        "Unique Passive - Goliath: For each 1000 maximum health, gain 3% increased size, up to 30%.",
+        "Unique Passive - Colossal Consumption: While within 700 units of an enemy champion, generate a stack on them each second, stacking up to 3 times. Your next basic attack against a target with 3 stacks is empowered to consume them all to deal 125|physical damage (+ 6% maximum health) bonus physical damage on-hit and grant you permanent bonus health equal to (30 second cooldown per target).",
+        "Unique Passive - Colossal Consumption: While within 700 units of an enemy champion, generate a stack on them each second, stacking up to 3 times. Your next basic attack against a target with 3 stacks is empowered to consume them all to deal 125|physical damage (+ 6% maximum health) bonus physical damage and grant you permanent bonus health equal to 125*0.1 (+ 0.6% maximum health) (30 second cooldown per target)."
+      ]
+    },
+    "Hexoptics C44": {
+      "group": "Hexoptics C44",
+      "pageTitle": "Hexoptics_C44",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Hexoptics_C44",
+      "ok": true,
+      "notes": [
+        "Magnification does not proc against Gangplank.",
+        "Unique Passive - Magnification: Deal increased damage with basic attacks.",
+        "Unique Passive - Arcane Aim: When a champion that you damaged within 3 seconds dies, gain 100 bonus attack range for 6 seconds."
+      ]
+    },
+    "Hextech Gunblade": {
+      "group": "Hextech Gunblade",
+      "pageTitle": "Hextech_Gunblade",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Hextech_Gunblade",
+      "ok": true,
+      "notes": [
+        "Lightning Bolt deals spell damage, and thus will trigger spell effects.",
+        "Lightning Bolt is blocked by spell shield.",
+        "Lightning Bolt is a unit-targeted effect.",
+        "Lightning Bolt is not considered a projectile.",
+        "Lightning Bolt's cast breaks stealth.",
+        "Lightning Bolt has no cast time.",
+        "New Effect: Lightning Bolt now scales with 30% bonus AD.",
+        "Unique Passive: Heals for 15% of all damage dealt (including true damage). Area damage and pet damage only heal 5% for every unit affected.",
+        "New Effect: Now draws nearby minion aggro when targeting an enemy champion.",
+        "New effect: Damage is now dealt instantaneously instead of as a projectile.",
+        "New effect: Cooldown is shared with other Hextech items.",
+        "New Unique Passive - Omnivore: Now heals for 15% of all damage dealt (33% effective for AoE).",
+        "Removed Unique Passive: Your basic attacks and single target spells against champions reduce the cooldown of this item by 3 seconds.",
+        "New effect: Spell vamp is now Unique."
+      ]
+    },
+    "Hextech Rocketbelt": {
+      "group": "Hextech Rocketbelt",
+      "pageTitle": "Hextech_Rocketbelt",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Hextech_Rocketbelt",
+      "ok": true,
+      "notes": [
+        "Supersonic deals area damage, and thus will trigger spell effects.",
+        "Supersonic is blocked by spell shield.",
+        "Supersonic is a direction-targeted effect.",
+        "Supersonic's cast breaks stealth.",
+        "Supersonic has a brief cast time during the dash.",
+        "Supersonic's missiles are projectiles, but do not pass through terrain.",
+        "Supersonic's dash is interrupted by knockdown and airborne effects.",
+        "Supersonic is disabled while grounded or rooted.",
+        "Supersonic may only damage enemies once every 3 seconds by the same user.",
+        "Subsequent casts of the active against enemies recently hit by a previous cast will not deal damage.",
+        "Supersonic's damage hitbox while dashing also extends a distance behind the user.",
+        "The basic attack reset does not count as one for .",
+        "The following table refers for interactions while the user is dashing with Supersonic:",
+        "New Effect: Now grants 6 magic penetration.",
+        "New Effect: Upgraded Aeropack now grants 10 magic penetration."
+      ]
+    },
+    "Horizon Focus": {
+      "group": "Horizon Focus",
+      "pageTitle": "Horizon_Focus",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Horizon_Focus",
+      "ok": true,
+      "notes": [
+        "Hypershot is not triggered against pets and traps, but is triggered against clones.",
+        "Focus is consumed against clones.",
+        "The range at which Hypershot will trigger from an ability is measured from the user's cast position to where the target was hit.",
+        "Only the initial cast of area of effect abilities that remain at a location for a period of time (e.g. Morgana, Nasus, Rumble) will trigger Hypershot.",
+        "The ability which triggered Hypershot also benefits from the damage increase, contrary to similar damage-modifying effects like Spear of Shojin and .",
+        "New Effect: Now grants the user 10% increased damage to champions marked by Hypershot.",
+        "Unique Passive - Hypershot: Dealing ability damage to a champion at icononly = true 700 units away or greater from the cast position reveals them and increases your damage dealt to them by 10% for 6 seconds.",
+        "Unique Passive - Focus: Upon triggering Hypershot, grant sight of the icononly=true 1200 units around the target for 2 seconds and apply Hypershot's effects to enemy champions within for 3 seconds (30 second cooldown).",
+        "Unique Passive - Hypershot: Dealing ability damage to a champion with an ability that is neither unit-targeted nor auto-targeted at more than icononly = true 700 units away or slowing, immobilizing or polymorphing them reveals them and increases your damage dealt to them by 10% for 6 seconds.",
+        "New Effect: Slows can now trigger Hypershot.",
+        "Unique Passive - Hypershot: Damaging a champion with a non-targeted ability at more than icononly = true 750 units away or immobilizing one reveals them and increases your damage dealt to them by 10% for 6 seconds."
+      ]
+    },
+    "Hubris": {
+      "group": "Hubris",
+      "pageTitle": "Hubris",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Hubris",
+      "ok": true,
+      "notes": [
+        "Subsequent takedowns while Eminence is already active refresh the buff's duration and update the bonus attack damage value.",
+        "Eminence's buff is removed upon death, like most buffs.",
+        "New Effect: Added statue locations on maps other than Summoner's Rift.",
+        "Unique Passive - Ego: Scoring a champion takedown summons a Statue of yourself near the outer side of the spawn. For each takedown scored, gain a rank that upgrades your Statue.",
+        "Unique Passive - Eminence: Scoring a takedown against an enemy champion within 3 seconds of damaging them grants you 10|ad (+ 1 per Statue rank) bonus attack damage for 60 seconds."
+      ]
+    },
+    "Hullbreaker": {
+      "group": "Hullbreaker",
+      "pageTitle": "Hullbreaker",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Hullbreaker",
+      "ok": true,
+      "notes": [
+        "Skipper deals proc damage, and thus will not trigger spell effects.",
+        "Skipper's on-hit damage applies to structures.",
+        "The bonus damage dealt by Skipper benefits from .",
+        "Boarding Party does not affect untargetable minions.",
+        "Minions that are granted increased size by Boarding Party grow to it over 0.25 seconds and shrink instantly when the buff falls off.",
+        "New Effect: Skipper now stacks on-hit instead of on-attack.",
+        "Unique Passive - Skipper: Basic attacks grant a stack for 10 seconds, stacking up to 5 times. The fifth stack consumes them all to deal (+ 3.5% maximum health) bonus physical damage, increased to (+ 7% maximum health) bonus physical damage against structures.",
+        "Unique Passive - Boarding Party: While no allied champions are within icononly = true 1400 units, allied siege and super minions within icononly=true gain }} bonus armor and bonus magic resistance, as well as 10% increased size. The bonus resistances linger for 3 seconds when an allied champion is nearby.",
+        "Unique Passive - Boarding Party: While no allied champions are within icononly = true 1400 units, gain 10;15;20;28;36;44;52;60 / 5;7;10;14;18;22;26;30|levels=1;12 to 18 by 1|pp=true bonus armor and bonus magic resistance and 20% bonus basic damage against structures. Allied and within icononly=true gain 10*3;15*3;20*3;28*3;36*3;44*3;52*3;60*3 / 5*3;7*3;10*3;14*3;18*3;22*3;26*3;30*3|levels=1;12 to 18 by 1|pp=true bonus armor and bonus magic resistance, 10% bonus size and deal 200% bonus damage ag",
+        "New Effect: Now only amplifies damage dealt by basic attacks against structures, instead of all damage.",
+        "Unique Passive - Boarding Party: While no allied champions are within icononly = true 1400 units, gain bonus armor and bonus magic resistance and deal 20% bonus damage against structures. Nearby large allied minions gain bonus armor and bonus magic resistance and deal 200% bonus damage against structures."
+      ]
+    },
+    "Hydra": {
+      "group": "Hydra",
+      "pageTitle": "Titanic_Hydra",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Titanic_Hydra",
+      "ok": true,
+      "notes": [
+        "Cleave deals proc damage and is tagged as area of effect without applying spell effects.",
+        "Cleave strikes all targets in the cone simultaneously, and is not a projectile.",
+        "Cleave's on-hit damage benefits from .",
+        "The damage dealt by the area of effect cone does not.",
+        "Cleave's on-hit damage will apply to structures but its cone will not trigger while attacking them.",
+        "Cleave will trigger even if the basic attack does not deal damage, such as if the target is invulnerable.",
+        "A single attack can cause a maximum of 10 Cleave splashes.",
+        "New Effect: A single attack can now cause a maximum of 10 Cleave splashes, instead of an unlimited number of them.",
+        "Unique Passive - Cleave: Basic attacks on-hit deal bonus physical damage to the target and 3% / 1.5% maximum health|hp physical damage to other enemies in a cone in the direction of the target.",
+        "Unique Passive - Cleave: Basic attacks on-hit deal 4 / 3 bonus physical damage|physical damage}} to the target and 40 / 30 to other enemies in a cone in the direction of the target.",
+        "Unique Passive - Colossus: Gain bonus attack damage equal to 2% of bonus health.",
+        "Unique Passive - Colossus: Gain bonus attack damage equal to 1% of maximum health.",
+        "Unique Passive - Cleave: Basic attacks deal 4 / 3 bonus physical damage|physical damage}} on-hit to your target and 40 / 30 to other enemies in a cone on-hit. Cleave's damage also applies to structures.",
+        "Unique Passive - Cleave: Basic attacks deal 5 . Additionally, basic attacks also deal 40 to units behind the target.",
+        "New Effect: You can now freely exchange Ravenous Hydra and Titanic Hydra."
+      ]
+    },
+    "Immolate": {
+      "group": "Immolate",
+      "pageTitle": "Sunfire_Aegis",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Sunfire_Aegis",
+      "ok": true,
+      "notes": [
+        "Immolate deals proc damage and is tagged as periodic without applying spell effects.",
+        "Immolate is an auto-targeted effect.",
+        "Immolate's current damage per second is displayed on the item's icon as a counter which dynamically updates.",
+        "This is exclusive to Sunfire Aegis and is not present in Hollow Radiance; it is vestigial functionality due to the former's Immolate effect dealing a variable amount of damage in a previous iteration.",
+        "Against minions and monsters, it would deal an increased 20*1.6|magic damage (+ 1*1.6% bonus health)|health magic damage per tick.",
+        "The aura increases if the user increases in size, but is not impacted by their base size.",
+        "As of V26.11, Immolate aura no longer increases based on bonus size.",
+        "The aura cannot get reduced below the base radius by negative size modifiers.",
+        "Because the aura must reach an enemy's center to damage them, some melee champions will not apply the effect at their maximum attack range against champions or monsters with a large enough collision radius (for example the or ).",
+        "New Effect: Immolate now deals 150% damage to monsters.",
+        "Removed Unique Passive - Flametouch: At maximum Immolate stacks, your basic attacks create an explosion around you, applying a burn to all nearby enemies that deals your current Immolate damage to them for 3 seconds.",
+        "New Effect: Mythic passive now also grants 50 bonus health.",
+        "New Effect: Immolate now executes minions that would be killed by one more tick of damage.",
+        "Unique Passive - Immolate: Taking or dealing damage activates this passive for 3 seconds. Deal per second to nearby enemies, increased by 50% against minions and 200% against monsters. Damaging enemy champions or epic monsters with this effect adds a stack for 5 seconds, increasing subsequent Immolate damage by 12%, stacking up to 6 times for a 72% increase.",
+        "Unique Passive - Flametouch: At maximum stacks, your basic attacks explode around you, burning nearby enemies for your Immolate damage for 3 seconds."
+      ]
+    },
+    "Imperial Mandate": {
+      "group": "Imperial Mandate",
+      "pageTitle": "Imperial_Mandate",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Imperial_Mandate",
+      "ok": true,
+      "notes": [
+        "Removed Unique Passive - Coordinated Fire: Non-basic attack cast instances that slow or immobilize enemy champions mark them for 5 seconds. Allied champions that damage marked enemies consume the mark to deal 10% of the target's current health bonus magic damage (9 second cooldown per target, shared between all users of Imperial Mandate; starts upon mark application).",
+        "New Unique Passive - Control: Immobilizing abilities gain 15 ability haste.",
+        "New Unique Passive - Command: Immobilizing an enemy champion marks them as Vulnerable for 4 seconds, increasing the damage they take from all sources by 6%. Subsequent immobilizes against a target extend the duration of the effect.",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions mark them for 5 seconds. Allied champions that damage marked enemies consume the mark to deal 12% of the target's current health|hp bonus magic damage|magic damage and grant you and the triggering ally 25% bonus movement speed for 2 seconds (9 second cooldown per champion, starts upon mark application).",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions deal and mark them for 4 seconds. Allied champions that damage marked enemies consume the mark to deal and grant you and the triggering ally 25% bonus movement speed for 2 seconds (6 second cooldown per champion, starts upon mark application).",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions deal and mark them for 4 seconds. Allied champions that damage marked enemies consume the mark to deal and grant you and the triggering ally 20% bonus movement speed for 2 seconds (6 second cooldown per champion, starts upon mark application).",
+        "New Effect: Cooldown for both damage instances now starts on mark application rather than having only a cooldown on the mark detonation.",
+        "Unique Passive - Coordinated Fire: Abilities that slow or immobilize enemy champions deal and mark them for 4 seconds. Allied champions that damage marked enemies consume the mark to deal and grant you and the triggering ally 20% bonus movement speed for 2 seconds (6 second cooldown per enemy champion)."
+      ]
+    },
+    "Infinity Edge": {
+      "group": "Infinity Edge",
+      "pageTitle": "Infinity_Edge",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Infinity_Edge",
+      "ok": true,
+      "notes": [
+        "The critical strike damage stat provided by Infinity Edge increases most champions' total from 200% AD to .",
+        "Removed: No longer has a Mythic passive granting 5 bonus attack damage per Legendary item.",
+        "Mythic Passive: Empowers other Legendary items with 5 bonus attack damage.",
+        "Unique Passive - Perfection: Gain 35% bonus critical strike damage if you have at least 40% critical strike chance.",
+        "Unique Passive - Perfection:",
+        "New Effect: Gain 35% bonus critical strike damage if you have at least 60% critical strike chance.",
+        "Unique Passive - Perfection: Gain 0.4% bonus critical strike damage for every 1% critical strike chance.",
+        "Unique Passive: Critical strikes deal 225% damage|critical strike damage instead of 200%|critical strike damage.",
+        "Unique Passive: Critical strikes deal 225% damage instead of 200%."
+      ]
+    },
+    "Jak'Sho, The Protean": {
+      "group": "Jak'Sho, The Protean",
+      "pageTitle": "Jak'Sho,_The_Protean",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Jak%27Sho,_The_Protean",
+      "ok": true,
+      "notes": [
+        "The first instance of combat will generate the maximum number of stacks for Voidborn Resilence.",
+        "Unique Passive - Voidborn Resilience: Entering combat with enemy champions grants a stack every second, up to 5 stacks. At maximum stacks, increase your bonus armor and bonus magic resistance by 30% until the end of combat.",
+        "Unique Passive - Voidborn Resilience: For each second in combat with champions, gain 2 bonus armor and bonus magic resistance for 6 seconds, stacking up to 8 times for a total of 16 bonus resistances. Upon reaching maximum stacks, instantly deal 80|magic damage (+ 7% bonus health) magic damage to enemy champions within 700 units and heal for the same amount for each target damaged. You then increase your bonus resistances by 20% until the end of combat.",
+        "New Effect: Drain now has a base damage of 80.",
+        "Unique Passive - Voidborn Resilience: For each second in combat with champions, gain 2 bonus armor and bonus magic resistance for 6 seconds, stacking up to 8 times for a maximum of 16 bonus resistances. At maximum stacks, instantly deal 3% maximum health magic damage to enemies within 700 units, reduced to 1%|health against non-champions, heal for the same amount for each enemy damaged, and increase your total resistances by 10% until the end of combat (60 second cooldown)."
+      ]
+    },
+    "Kaenic Rookern": {
+      "group": "Kaenic Rookern",
+      "pageTitle": "Kaenic_Rookern",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Kaenic_Rookern",
+      "ok": true,
+      "notes": [
+        "Magebane's shield refresh timer starts as soon as the shield mitigates any amount of magic damage.",
+        "Any remaining shield will be restored to maximum value after the refresh.",
+        "Unique Passive - Magebane: After not taking magic damage for 12 seconds, gain a shield that absorbs magic damage equal to 20% of maximum health until destroyed."
+      ]
+    },
+    "Knight's Vow": {
+      "group": "Knight's Vow",
+      "pageTitle": "Knight's_Vow",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Knight%27s_Vow",
+      "ok": true,
+      "notes": [
+        "Pledge is a unit-targeted effect.",
+        "Pledge's cast does not break stealth.",
+        "Pledge has no cast time.",
+        "Pledge's effect will fail to apply and be placed on a 10-second if the active targeted an allied champion who is already designated as Worthy, by either the user or another allied champion, or an ally who has Knight's Vow and has designated a target as Worthy.",
+        "Sacrifice's redirected damage deals proc damage, and thus will not trigger spell effects.",
+        "It is always classified as proc damage regardless of the damage classification of the effect that originally triggered it.",
+        "Sacrifice triggers before Death's Dance Ignore Pain.",
+        "Sacrifice's redirected damage is attributed to the original damage source that damaged the Worthy ally.",
+        "Sacrifice's healing is attributed to the user (counts as self-healing).",
+        "Unique Passive - Pledge: Designate the target allied champion as being Worthy, forming a tether between you and them. Champions can only be designated as Worthy by one Knight's Vow at a time. You cannot be designated as Worthy by an ally's Knight's Vow (60 second cooldown; icononly=true 1250 range).",
+        "Unique Passive - Sacrifice: While your Worthy ally is and you are above 30% of your maximum health, redirect 12% of the physical|physical damage and magic|magic damage damage they take to you as the respective damage type. Additionally, you heal for 10% of the damage dealt by your Worthy ally to champions.",
+        "Unique Passive - Sacrifice: While your Worthy ally is and you are above 30% of your maximum health, redirect 10% of the physical|physical damage and magic|magic damage damage they take to you as true damage. If they are below 30% maximum health, the damage redirection is increased to 20%. Additionally, you heal for 10% of the damage dealt by your Worthy ally to champions.",
+        "Unique Passive - Sacrifice:",
+        "New Effect: While your Worthy ally is nearby and you are above 30% of your maximum health, redirect 10% of the physical|physical damage and magic|magic damage damage they take to you as true damage and heal for 8% of the damage dealt by your Worthy ally to champions. If they are below 30% maximum health, the damage redirection is increased to 20%.",
+        "Unique Passive - Sacrifice: While your Worthy ally is nearby, redirect 15% of the damage they take to you as true damage (stops if you are below 30% of your maximum health). Additionally, if they are below 50% of their maximum health, gain 35% bonus movement speed while moving towards them.",
+        "Unique Passive: If your Partner is nearby, gain 20 armor, and 15% bonus movement speed while moving toward them.",
+        "Unique Passive: While within 1000 range of your Partner, heal for 12% / 6% of the damage your Partner deals to champions and redirect 12% / 6% of the damage your Partner takes from champions (after reductions) to you as true damage. Both effects are reduced to 6% if the item holder is ranged."
+      ]
+    },
+    "Kraken Slayer": {
+      "group": "Kraken Slayer",
+      "pageTitle": "Kraken_Slayer",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Kraken_Slayer",
+      "ok": true,
+      "notes": [
+        "Bring It Down does interact with Guinsoo's Rageblade Phantom Hit which will grant an additional stack of Bring It Down.",
+        "Bring It Down deals basic damage, and thus will not trigger spell effects.",
+        "Bring It Down is not blocked by spell shield.",
+        "Bring It Down's on-hit damage does not apply to structures.",
+        "The stacks of the effect will still refresh from attacking them.",
+        "The bonus damage dealt by Bring It Down benefits from .",
+        "Most effects that trigger on-hit effects will stack and trigger Bring It Down normally.",
+        "Bring It Down does not interact with Runaan's Hurricane Wind's Fury, despite interacting with other effects applying on-hit.",
+        "It will only stack once per shot of Graves regardless of the number of targets hit, unlike other effects applying on-hit.",
+        "New Effect: Damage is now reduced to 80% for ranged champions.",
+        "Unique Passive - Bring It Down: Basic attacks on-hit grant a stack for 3 seconds, up to 2 stacks. At 2 stacks, the next basic attack consumes all stacks to deal bonus physical damage on-hit, increased by , for up to bonus physical damage.",
+        "Unique Passive - Bring It Down: Basic attacks on-hit grant a stack for 3 seconds, up to 2 stacks. At 2 stacks, the next basic attack consumes all stacks to deal on-hit. Consuming stacks on the same target within 6 seconds increases the damage by 50%, up to 100% for a maximum of bonus physical damage.",
+        "Unique Passive - Bring It Down: Basic attacks on-hit / on-attack grant a stack for 3 seconds, up to 2 stacks. At 2 stacks, the next basic attack consumes all stacks to deal 20 on-hit. Consuming stacks on the same target within 6 seconds increases the damage by 50%, up to 100%.",
+        "Unique Passive - Bring It Down: Basic attacks on-hit / on-attack grant a stack for 3 seconds, up to 2 stacks. At 2 stacks, the next basic attack consumes all stacks to deal 50 on-hit.",
+        "New Effect: True damage is now affected by the on-hit modifiers of Aphelios, Katarina, and Urgot.",
+        "Unique Passive - Bring It Down: Every third attack within 3 seconds deals 60 on-hit."
+      ]
+    },
+    "Liandry's Torment": {
+      "group": "Liandry's Torment",
+      "pageTitle": "Liandry's_Torment",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Liandry%27s_Torment",
+      "ok": true,
+      "notes": [
+        "Torment can be stacked on a target when applied by multiple users, though not refreshing the debuff for all subsequent sources at a time.",
+        "Torment deals proc damage and is tagged as periodic without applying spell effects.",
+        "Torment itself is not blocked by spell shield.",
+        "Suffering increases the damage dealt by Torment to at maximum stacks.",
+        "The increased damage from Suffering stacks multiplicatively with other damage multipliers.",
+        "Unique Passive - Torment: Dealing ability damage applies a burn for 3 seconds that deals magic damage equal to, capped at 50 against monsters.",
+        "Unique Passive - Suffering: For each second in combat with enemy champions, deal 2% increased damage, stacking up to 3 times for a total of 6%.",
+        "Bug Fix: Now properly applies its Unique passive, Torment, on regardless of distance.",
+        "Bug Fix: The Madness passive no longer modifies true damage, matching rules around other damage-amplifying effects.",
+        "Removed Unique Passive - Eyes of Pain: +15 magic penetration.",
+        "New Unique Passive - Madness: Damaging an enemy champion generates one stack every second for the next 4 seconds. Deal 2% increased damage for each stack, up to a maximum of 10%.",
+        "New Effect: Unique passive dealing bonus magic damage is now named Torment.",
+        "Unique Passive - Eyes of Pain: +15 magic penetration"
+      ]
+    },
+    "Lifeline": {
+      "group": "Lifeline",
+      "pageTitle": "Maw_of_Malmortius",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Maw_of_Malmortius",
+      "ok": true,
+      "notes": [
+        "Lifeline will still trigger if damage is taken while below 30% of maximum health.",
+        "Maw of Malmortius grants a total shield amount of |150+(}} to Lifeline with no additional bonus AD.",
+        "New Effect: Upon triggering Lifeline, gain 10% omnivamp until the end of combat.",
+        "New Effect: Life steal now lasts until the end of combat.",
+        "New Effect: Triggering Lifeline now grants 12% life steal.",
+        "New Effect: Triggering Lifeline also grants 12% omnivamp until the end of combat (have not dealt or taken damage for at least 3 seconds).",
+        "Unique Passive - Lifeline: If you would take magic damage that would reduce maximum health below 30%, you first gain a shield that absorbs 200 (+ 20% maximum health) magic damage for 5 seconds (60 second cooldown).",
+        "Unique Passive - Lifeline: If you would take magic damage that would reduce maximum health below 30%, you first gain a shield that absorbs 350 magic damage for 5 seconds (90 second cooldown). Triggering Lifeline grants Lifegrip.",
+        "Unique Passive - Lifegrip: Grants +20 attack damage, +10% spell vamp and +10% life steal until out-of-combat.",
+        "Lifegrip passive now also grants 20 attack damage."
+      ]
+    },
+    "Locket of the Iron Solari": {
+      "group": "Locket of the Iron Solari",
+      "pageTitle": "Locket_of_the_Iron_Solari",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Locket_of_the_Iron_Solari",
+      "ok": true,
+      "notes": [
+        "Devotion is an auto-targeted effect.",
+        "Devotion's cast does not break stealth.",
+        "Devotion has no cast time.",
+        "Devotion can be used during other cast times.",
+        "Devotion affects untargetable allies.",
+        "Devotion cannot stack from multiple Locket of the Iron Solaris.",
+        "Multiple triggers of the active affecting the same unit will only refresh the shield's duration.",
+        "Unique Passive - Consecrate: Grants allied champions (excluding yourself) within 3 bonus armor and 3 bonus magic resistance.",
+        "Unique Passive - Consecrate: Grant nearby allied champions 5 bonus armor and 5 bonus magic resistance.",
+        "New Effect: Active shield strength now scales with .",
+        "New Effect: Shield now decays over the duration."
+      ]
+    },
+    "Lord Dominik's Regards": {
+      "group": "Lord Dominik's Regards",
+      "pageTitle": "Lord_Dominik's_Regards",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Lord_Dominik%27s_Regards",
+      "ok": true,
+      "notes": [
+        "New Unique Passive - Giant Slayer: Deal increased damage against enemy champions.",
+        "Removed Unique Passive - Giant Slayer: Deal bonus damage against enemy champions with greater maximum health than you.",
+        "New Effect: Giant Slayer now deals bonus damage against enemy champions with greater maximum health than you, instead of just physical damage.",
+        "New Effect: Tooltip now tracks bonus damage from Giant's Slayer.",
+        "Unique Passive - Giant Slayer: Deal bonus physical damage|physical damage against enemy champions.",
+        "Unique Passive - Last Whisper: +35% total armor penetration.",
+        "Removed Unique Passive - Giant Slayer: Grants bonus physical damage against enemy champions with greater maximum health than you.",
+        "Giant Slayer passive reduced to +2% damage per 200 health difference from +2% damage per 100 health difference."
+      ]
+    },
+    "Luden's Echo": {
+      "group": "Luden's Echo",
+      "pageTitle": "Luden's_Companion",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Luden%27s_Companion",
+      "ok": true,
+      "notes": [
+        "Fire deals default damage, and thus will not trigger spell effects.",
+        "Fire is blocked by spell shield.",
+        "Fire is an auto-targeted effect.",
+        "Fire's bolts are projectiles.",
+        "Fire's remaining charges against the primary target deal their additional damage in 0.25-second intervals.",
+        "This means it takes seconds for the damage of all the charges to be dealt.",
+        "Removed Unique Passive - Load: Gain a Shot Charge stack every 3 seconds, up to a maximum of 6.",
+        "Fire - New Effect: Gain 6 Shot Charge stacks to Fire (12 second cooldown).",
+        "Unique Passive - Load: Gain a Shot Charge stack every 3 seconds, up to a maximum of 6.",
+        "Unique Passive - Fire: Damaging an enemy with an ability consumes all Shot Charges to deal 40|magic damage (+ 8% AP) bonus magic damage to them and an additional nearby enemy for each charge consumed. If there is an insufficient number of targets nearby, deal an additionalto the primary target for each remaining Shot Charge."
+      ]
+    },
+    "Malignance": {
+      "group": "Malignance",
+      "pageTitle": "Malignance",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Malignance",
+      "ok": true,
+      "notes": [
+        "Hatefog deals proc damage and is tagged as periodic and area of effect without applying spell effects.",
+        "Hatefog is not blocked by spell shield.",
+        "Hatefog does not trigger from 0 damage instances nor against invulnerable champions.",
+        "Hatefog is an auto-targeted effect.",
+        "Hatefog's magic resistance reduction does not linger and is removed as soon as the target loses the Curse debuff.",
+        "Assuming a target has not been afflicted by Curse, the first instance of magic damage from an ultimate ability does not benefit from Hatefog's magic resistance reduction.",
+        "Hatefog will trigger on each instance of ultimate ability damage dealt (see list below for special interactions).",
+        "The zone can only be created against the same target once every 3 seconds. This timer starts as soon as the zone is spawned.",
+        "Ultimate ability damage against champions already inside of a zone will instead refresh the timer on it, but only if the damaged champion is the \"owner\" of that zone.",
+        "Enemies can only be Cursed by one zone at a time; they can only be damaged and have their magic resistance reduced by one zone.",
+        "Hatefog will not create a zone against enemies that are already Cursed by one.",
+        "If multiple targets are close to one another and are damaged at the same time, Hatefog will create a zone underneath the first champion damaged which is based on .",
+        "Each scorch zone has its own radius relative to the amount of damage dealt for each instance.",
+        "The zone deals a tick of damage instantly to enemies surrounding the primary target.",
+        "Aatrox cannot trigger it.",
+        "Alistar cannot trigger it.",
+        "Annie can trigger it through the summoning, area burn, and basic attacks, whenever possible.",
+        "Bard cannot trigger it.",
+        "Briar will only trigger it in the area of her landing.",
+        "Camille cannot trigger it.",
+        "Dr. Mundo cannot trigger it.",
+        "Elise will not trigger it in spite of Spiderling damage.",
+        "Fiora cannot trigger it.",
+        "(Heimerdinger|Upgraded) Heimerdinger, Heimerdinger and Heimerdinger can trigger it on every damage instance, whenever possible.",
+        "Illaoi initial damage can trigger it but any Illaoi|tentacles originating from this ability will not.",
+        "Ivern|Daisy can trigger it on both the normal basic attacks and on her third empowered attack for all enemies hit.",
+        "Janna cannot trigger it.",
+        "Jayce cannot trigger it in either form.",
+        "K'Sante applies at inconsistent time (potentially depends on the stat update tick that his ultimate damage triggers on).",
+        "Kai'Sa cannot trigger it.",
+        "Karma will trigger it on Karma-empowered damaging abilities (Karma and Karma).",
+        "Kha'Zix cannot trigger it.",
+        "Kindred cannot trigger it.",
+        "Lillia will only trigger it upon the target being woken up, and as such any cleansing effects will also prevent the potential application of Hatefog.",
+        "Lulu cannot trigger it.",
+        "Master Yi cannot trigger it.",
+        "Milio cannot trigger it.",
+        "Mordekaiser cannot trigger it.",
+        "Nidalee cannot trigger it in either form.",
+        "Olaf cannot trigger it.",
+        "Pyke will only trigger on a champion that is alive at the moment of blinking and dealing damage (whether or not they are executed subsequently by Pyke himself).",
+        "Renata cannot trigger it.",
+        "Rengar cannot trigger it.",
+        "Riven cannot trigger it by itself but only through a successful Riven.",
+        "Ryze cannot trigger it.",
+        "clone from Shaco will trigger it from its basic attacks, the explosion, and the mini-boxes' basic attacks.",
+        "Shen cannot trigger it.",
+        "Singed cannot trigger it.",
+        "Sivir cannot trigger it.",
+        "Soraka cannot trigger it.",
+        "Sylas follows the game rules of all other ultimate abilities. Stealing his own ultimate from an enemy Sylas cannot trigger it.",
+        "Tahm Kench cannot trigger it by itself but through a successful Tahm Kench.",
+        "Taliyah cannot trigger it.",
+        "Taric cannot trigger it.",
+        "Twisted Fate and Twisted Fate cannot trigger it.",
+        "Tryndamere cannot trigger it.",
+        "bolts from Twitch can trigger it.",
+        "Udyr will trigger it on Udyr|Awakened Udyr and Udyr.",
+        "Urgot and Urgot|Mercy can trigger it.",
+        "Vayne cannot trigger it.",
+        "Vex can trigger it on the both the initial cast and the recast, whenever possible.",
+        "Viego can trigger it on both the primary target and secondary targets.",
+        "Warwick can trigger it.",
+        "Yorick can trigger it only on the Maiden's attacks. The bonus damage dealt by Yorick attacking the Maiden's target as well as any the spawned Mist Walkers' damage cannot.",
+        "Yunara can trigger it.",
+        "Zeri will only trigger it on the initial explosion.",
+        "Zilean cannot trigger it.",
+        "Zoe cannot trigger it.",
+        "enraged plants due to Zyra will not trigger it. Of course, the growth itself can trigger it on every damage instance, whenever possible.",
+        "Bug Fix: Fixed a bug that caused the passive to activate when Lissandra was blocked by a spellshield.",
+        "New Effect: Spells tagged as basic attacks now trigger Hatefog.",
+        "Unique Passive - Scorn: Gain 20 ultimate haste.",
+        "Unique Passive - Hatefog: Damaging an enemy with your ultimate ability creates a radius scorched zone beneath them for 3 seconds, dealingand reducing their magic resistance by while within."
+      ]
+    },
+    "Manaflow": {
+      "group": "Manaflow",
+      "pageTitle": "Manamune",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Manamune",
+      "ok": true,
+      "notes": [
+        "Awe grants a total of }} bonus attack damage}} by itself without any stacks of Manaflow.",
+        "With Manamune's attack damage stat this totals to )}}}}|attack damage}}.",
+        "Empowered basic attacks gained from abilities will count for triggering Manaflow upon consuming the attack.",
+        "Unique passive renamed to Manaflow from Mana Charge.",
+        "Unique Passive - Awe: Gain bonus attack damage equal to 2% of maximum mana.",
+        "Unique Passive - Mana Charge: Grants a charge every 8 seconds, up to 4 charges. Affecting an enemy or ally with an attack or ability consumes a charge and grants 3 bonus mana, increased to 6|mana if it's a champion, up to maximum of 450 bonus mana. Transforms into Muramana at +450 mana.",
+        "Unique Passive - Awe: Grants bonus attack damage equal to 2% maximum mana. Refunds 15% of mana spent from abilities.",
+        "Unique Passive - Mana Charge: Grants a charge every 4 seconds, up to 3 charges. Each basic attack on-hit or mana expenditure via an ability consumes a charge and grants +5 mana, up to a maximum of 750 mana. Transforms into Muramana at +750 mana.",
+        "New Effect: Tooltip now mentions \"Limited to 1 Tear item\".",
+        "New Effect: Can now only purchase one Awe item.",
+        "New Effect: When gaining maximum mana from Mana Charge, now preserves the percent current mana, instead of restoring the same amount of maximum mana gained."
+      ]
+    },
+    "Mikael's Blessing": {
+      "group": "Mikael's Blessing",
+      "pageTitle": "Mikael's_Blessing",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Mikael%27s_Blessing",
+      "ok": true,
+      "notes": [
+        "Purify is a unit-targeted effect.",
+        "Purify can be self-cast.",
+        "Purify's cast does not break stealth.",
+        "Purify has no cast time.",
+        "Purify has a forgiveness radius of 200 units.",
+        "Purify will also cleanse all applicable crowd control effects that apply ~0.5 seconds after it has been used. This can be used to preemptively cleanse crowd control that denies activation of abilities (such as being silenced) from yourself if used shortly before the impact. The applied crowd control will still trigger effects that trigger from crowd control application.",
+        "Purify will not remove self slows (except Quinn).",
+        "Removed Unique Passive - Harmony: Gain 25% base health regeneration for every additional 25% base mana regeneration."
+      ]
+    },
+    "Momentum": {
+      "group": "Momentum",
+      "pageTitle": "Dead_Man's_Plate",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Dead_Man%27s_Plate",
+      "ok": true,
+      "notes": [
+        "Shipwrecker deals proc damage, and thus will not trigger spell effects.",
+        "Shipwrecker is not blocked by spell shield.",
+        "Shipwrecker can apply against turrets.",
+        "Blinks always grant 7 Momentum stacks, regardless of distance.",
+        "Momentum stacks will be generated even while attached to a unit.",
+        "New Unique Passive - Unsinkable: Gain 25% slow resist.",
+        "New Effect: Shipwrecker damage now scales with .",
+        "Unique Passive - Shipwrecker: While moving, generates 5 stacks of Momentum each 0.25 seconds, granting up to 60 bonus movement speed at 100 stacks after 5 seconds of moving. Momentum decays by 15 every 0.25 seconds while immobilized. Attacks deal 1 magic damage on-hit per stack of Momentum, consuming all stacks. At max stacks, the target is also slowed by 50% for 1 second if the attacker is melee.",
+        "Unique Passive - Dreadnought: Generates a maximum of 100 Momentum stacks by moving, which grant up to 60 bonus movement speed. Momentum decays by 3 every 0.25 seconds while immobilized.",
+        "Unique Passive - Crushing Blow: Basic attacks discharge all stacks to deal (1 per stack) bonus magic damage on-hit, up to 100. Basic attacks at 100 stacks also slow by 50% for 1 second. This damage can critically strike.",
+        "New Effect: Basic attacks can now discharge all stacks to deal 1 bonus damage per stack. Slow remains at 100 stacks and for melee only.",
+        "New Effect: Basic attacking now locks out Momentum generation until your attack timer resets.",
+        "New Effect: Now only deal bonus damage on basic attacks when at full stacks."
+      ]
+    },
+    "Moonstone Renewer": {
+      "group": "Moonstone Renewer",
+      "pageTitle": "Moonstone_Renewer",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Moonstone_Renewer",
+      "ok": true,
+      "notes": [
+        "Starlit Grace's bonus shielding lasts the same duration as the shield that triggered the effect.",
+        "Starlit Grace's bonus shielding will trigger from physical and magic shields but does not adapt to the shield's damage mitigation type; the target is always granted a normal shield that blocks all damage types.",
+        "Starlit Grace has a 0.3-second cooldown per cast instance.",
+        "New Effect: Starlit Grace bounces now prioritize lower health allies.",
+        "Unique Passive - Starlit Grace: Healing or shielding an allied champion chains the effect to the other nearest allied champion within icononly = true 800 units of them (excluding yourself), granting them 40% of the heal or 45% of the original shield. If no other allied champions are in the radius, grant the same target an additional 30% of the heal or 35% of the shield.",
+        "Unique Passive - Starlit Grace: Healing or shielding an allied champion chains the effect to the other nearest allied champion within icononly = true 800 units of them (excluding yourself), granting them 35% of the heal or 40% of the shield. If no other allied champions are in the radius, grant the same target an additional 25% of the heal or 30% of the shield.",
+        "Mythic Passive: Empowers each of your other Legendary items with 5% heal and shield power|hsp.",
+        "Mythic passive changed to 5% heal and shield power from 5 ability haste.",
+        "Unique Passive - Starlit Grace:",
+        "New Effect: Healing or shielding an allied champion chains the effect to the nearest ally within icononly = true 800 units of them (excluding yourself), granting them of the heal or of the shield. If no other allies are in the radius, grant the same target an additional of the heal or of the shield.",
+        "New Effect: When affecting champions with attacks or abilities in combat, heal the nearby allied champion (excluding yourself) with the most missing health for 60 (2 second cooldown). Each second spent in combat with champions increases heal and shield power by 4%, stacking up to 5 times for a maximum of 20%."
+      ]
+    },
+    "Morellonomicon": {
+      "group": "Morellonomicon",
+      "pageTitle": "Morellonomicon",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Morellonomicon",
+      "ok": true,
+      "notes": [
+        "Grievous Wounds is applied to the damaged champion even if they are protected by a shield.",
+        "Unique Passive - Grievous Wounds: Dealing magic damage to enemy champions inflicts them with Grievous Wounds for 3 seconds.",
+        "Unique Passive - Affliction: Dealing magic damage to enemy champions inflicts them with Grievous Wounds for 3 seconds.",
+        "New Effect: Now applies Grievous Wounds even if the damage dealt was completely mitigated by a shield.",
+        "Unique Passive - Affliction:",
+        "New Effect: Dealing magic damage to enemy champions inflicts them with 40% Grievous Wounds for 3 seconds.",
+        "New Effect: Is now called out in chat to notify when the item is purchased.",
+        "Unique Passive - Affliction: Dealing magic damage to enemy champions inflicts them with 40% Grievous Wounds for 2 seconds, increased to 60% if the target is below 50% of their maximum health.",
+        "Unique Passive - Touch of Death: +15 magic penetration."
+      ]
+    },
+    "Mortal Reminder": {
+      "group": "Mortal Reminder",
+      "pageTitle": "Mortal_Reminder",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Mortal_Reminder",
+      "ok": true,
+      "notes": [
+        "Grievous Wounds is applied to the damaged champion even if they are protected by a shield.",
+        "Unique passive renamed to Grievous Wounds from Sepsis.",
+        "New Effect: Now applies Grievous Wounds even if the damage dealt was completely mitigated by a shield.",
+        "Unique Passive - Sepsis:",
+        "New Effect: Dealing physical damage to enemy champions inflicts them with 40% Grievous Wounds for 3 seconds.",
+        "New Effect: Is now called out in chat to notify when the item is purchased.",
+        "Unique Passive - Sepsis: Dealing physical damage to enemy champions inflicts them with 40% Grievous Wounds for 2 seconds. Attacking a champion 3 times within 2 seconds increases this effect to 60% until it ends.",
+        "Unique Passive - Executioner: Physical damage inflicts Grievous Wounds on enemy champions for 5 seconds.",
+        "Unique Passive - Last Whisper: +25% total armor penetration."
+      ]
+    },
+    "Nashor's Tooth": {
+      "group": "Nashor's Tooth",
+      "pageTitle": "Nashor's_Tooth",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Nashor%27s_Tooth",
+      "ok": true,
+      "notes": [
+        "Icathian Bite deals proc damage, and thus will not trigger spell effects.",
+        "Icathian Bite's on-hit damage does not apply to structures.",
+        "The bonus damage dealt by Icathian Bite benefits from .",
+        "New Unique Passive - Icathian Bite: Basic attacks deal 15 on-hit.",
+        "Unique Passive: Basic attacks deal 15 on-hit.",
+        "New Unique Passive: Basic attacks deal 15 (+ 15% AP) bonus magic damage on-hit."
+      ]
+    },
+    "Navori Flickerblade": {
+      "group": "Navori Flickerblade",
+      "pageTitle": "Navori_Flickerblade",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Navori_Flickerblade",
+      "ok": true,
+      "notes": [
+        "Transcendence will not trigger if the user declares the attack while blinded.",
+        "Transcendence will also trigger from abilities that apply on-attack effects.",
+        "Transcendence's cooldown reduction is not granted upon attacking a structure or jungle plant.",
+        "Abilities that trigger on-attack effects (Akshan, Lucian, Master Yi, Urgot) will however grant cooldown reduction upon attacking structures.",
+        "Unique Passive - Transcendence: Basic attacks on-attack reduce the remaining cooldowns of your basic abilities by 15%."
+      ]
+    },
+    "Overlord's Bloodmail": {
+      "group": "Overlord's Bloodmail",
+      "pageTitle": "Overlord's_Bloodmail",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Overlord%27s_Bloodmail",
+      "ok": true,
+      "notes": [
+        "Tyranny grants }} bonus attack damage}} by itself.",
+        "With Overlord's Bloodmail's attack damage stat this totals to )}}}}|ad}}.",
+        "Retribution's in-game tooltip falsely displays its bonus attack damage value as if it were being increased by its missing health scaling recurrently, but the actual value is unaffected.",
+        "Retribution's bonus is displayed on the item's icon as a counter which dynamically updates.",
+        "Unique Passive - Tyranny: Gain bonus attack damage equal to 2% of your bonus health.",
+        "Unique Passive - Retribution: Gain bonus attack damage equal to of your total attack damage from other sources.",
+        "Removed Unique Passive: Upon scoring a champion takedown, heal for 300 over 5 seconds.",
+        "New Unique Passive - Tyranny: Gain bonus attack damage equal to 3% bonus health.",
+        "New Unique Passive - Retribution: Increase your attack damage by .",
+        "Unique Passive: On kill or assist, gain 200 health over 5 seconds."
+      ]
+    },
+    "Phantom Dancer": {
+      "group": "Phantom Dancer",
+      "pageTitle": "Phantom_Dancer",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Phantom_Dancer",
+      "ok": true,
+      "notes": [
+        "Phantom Dancer provides the highest out of all items.",
+        "Unique Passive - Spectral Waltz: Become permanently ghosted.",
+        "Unique Passive - Spectral Waltz: Basic attacks on-attack grant ghosting and a stack of Spectral Waltz for 3 seconds, up to 5 stacks. For each stack, gain 7% bonus attack speed, for a total of 35%|as at maximum stacks.",
+        "Unique Passive - Spectral Waltz: Basic attacks on-attack grant ghosting and a stack of Spectral Waltz for 3 seconds, up to 5 stacks. For each stack, gain 7% bonus attack speed, up to 35% bonus attack speed at maximum stacks.",
+        "Unique Passive - Spectral Waltz: Basic attacks on-attack grant ghosting, 7% bonus movement speed, and a stack of Spectral Waltz for 3 seconds, up to 4 stacks. While at 4 stacks, gain 30% bonus attack speed.",
+        "Unique Passive - Spectral Waltz: Basic attacks grant ghosting and 7% bonus movement speed for 2 seconds. Attacking 5 times causes Spectral Waltz to also grant 40% bonus attack speed for the same duration.",
+        "Unique Passive - Spectral Waltz: Basic attacking a champion grants ghosting and 7% bonus movement speed for 2 seconds.",
+        "Unique Passive - Lifeline: If you would take damage that would reduce maximum health below 30%, you first gain a shield that absorbs damage decaying over 2 seconds (90 second cooldown).",
+        "Removed Unique Passive - Spectral Waltz: Grants ghosting and +7% movement speed while within 550 units of a visible enemy champion."
+      ]
+    },
+    "Quicksilver": {
+      "group": "Quicksilver",
+      "pageTitle": "Quicksilver_Sash",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Quicksilver_Sash",
+      "ok": true,
+      "notes": [
+        "Quicksilver is an auto-targeted effect.",
+        "Quicksilver's cast does not break stealth.",
+        "Quicksilver has no cast time.",
+        "Quicksilver's cooldown does not transfer between items that have its active effect.",
+        "Quicksilver is disabled during Airborne effects.",
+        "Suspension will be fully removed by Quicksilver.",
+        "Quicksilver removes suppression and nearsight while Cleanse does not.",
+        "Quicksilver cannot remove stasis.",
+        "Quicksilver will not remove self slows."
+      ]
+    },
+    "Rabadon's Deathcap": {
+      "group": "Rabadon's Deathcap",
+      "pageTitle": "Rabadon's_Deathcap",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Rabadon%27s_Deathcap",
+      "ok": true,
+      "notes": [
+        "Rabadon's Deathcap by itself grants ()}} ability power}} due to the increase from Magical Opus.",
+        "Magical Opus' ability power multiplier stacks additively with .",
+        "Magical Opus stacks recursively with other sources of ability power.",
+        "Unique Passive - Magical Opus: Increase your ability power by 35%.",
+        "Unique Passive: +40% ability power.",
+        "Unique passive ability power increased to 40% from 35%.",
+        "Unique Passive: +35% ability power.",
+        "New Effect: Tooltip now displays the amount of ability power gained from its unique passive.",
+        "Unique passive: Increases ability power by 30%."
+      ]
+    },
+    "Randuin's Omen": {
+      "group": "Randuin's Omen",
+      "pageTitle": "Randuin's_Omen",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Randuin%27s_Omen",
+      "ok": true,
+      "notes": [
+        "If the incoming attack to the user is a normal critical strike, it will deal due to Resilience, instead of .",
+        "Humility breaks spell shield, but applies its slow regardless.",
+        "Humility is an auto-targeted effect.",
+        "Humility's cast breaks stealth.",
+        "Humility has no cast time.",
+        "Humility will activate combat status despite not dealing any damage.",
+        "Humility shoots individual missiles to affected targets to indicate the buff being applied to them.",
+        "These are not considered projectiles.",
+        "Resilience's reduction is applied multiplicatively.",
+        "Resilience's reduction also affects abilities that critically strike (including through Shadowflame), but only those that are treated like a basic attack or deal modified damage. The reduction does not apply to those that deal bonus damage.",
+        "Removed Unique Passive - Rock Solid: Every first incoming instance of basic damage per cast instance is reduced by 5 (+ 3.5 per 1000 maximum health), maximum 20% reduction each.",
+        "New Unique Passive - Critical Resilience: Reduces incoming critical strike damage by 20%.",
+        "Bug Fix: Fixed the tooltip to properly count blocked damage from the Rock Solid passive.",
+        "New Effect: Now has a base basic damage reduction of 5.",
+        "Unique Passive - Rock Solid: Reduce incoming damage from basic attacks by 5 per 1000 maximum health, capped at 40% of the attack's damage.",
+        "Unique Passive: -20% critical strike damage taken from basic attacks.",
+        "Unique Passive - Cold Steel: When hit by basic attacks, cripples source's attack speed by 15% for 1 second.",
+        "New Passive: 10% reduced damage from Critical strikes. This affects the total damage dealt by a critical strike, not an additive 10% reduction in their critical strike damage."
+      ]
+    },
+    "Rapid Firecannon": {
+      "group": "Rapid Firecannon",
+      "pageTitle": "Rapid_Firecannon",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Rapid_Firecannon",
+      "ok": true,
+      "notes": [
+        "Each basic attack on-attack generates 6 Energize stacks while 1 is generated for every 24 in-game units traveled. This includes normal movement, dashes, blinks, or being displaced.",
+        "Hitting abilities that apply on-hit effects will also generate 6 stacks.",
+        "Effect applies as a separate cast instance.",
+        "Sharpshooter deals proc damage, and thus will not trigger spell effects.",
+        "Sharpshooter is not blocked by spell shield.",
+        "Sharpshooter's on-hit damage is not tied to the attack empowered by its increased range.",
+        "The maximum range cap of 150 is reached at a minimum of .",
+        "Sharpshooter's range increase stacks additively with other sources of attack range and interacts with effects that scale with the stat.",
+        "Effects that grant fixed attack range will not interact with Sharpshooter's range increase.",
+        "Rapid Firecannon is an Energized effect and will stack with other sources of it.",
+        "Energized effects will apply their on-hit damage to structures.",
+        "The movement speed stat only increases flat movement speed, and will not interact with other percentage increases.",
+        "New Effect: Tooltip now tracks how many times extra range was utilized.",
+        "Unique Passive - Energized: Moving and basic attacking generates Energize stacks, up to 100.",
+        "Unique Passive - Sharpshooter: When fully Energized, your next basic attack deals 120 bonus magic damage on-hit. Energized attacks gain 35% bonus range (+150 range maximum).",
+        "New Effect: Energized effects now also work on structures.",
+        "New Effect: Damage from other Energized effects now stacks.",
+        "Previous Passive - Energized: Moving and basic attacking generates Energize stacks, up to 100. When fully Energized, your next basic attack deals .",
+        "Previous Passive: Energized attacks gain 35% bonus range (+150 range maximum), charge 25% faster, and function on structures.",
+        "Two passive effects (unnamed and Firecannon) changed to Energized and a unique passive."
+      ]
+    },
+    "Redemption": {
+      "group": "Redemption",
+      "pageTitle": "Redemption",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Redemption",
+      "ok": true,
+      "notes": [
+        "Intervention deals area damage, and thus will trigger spell effects.",
+        "Effects such as Luden's Echo and prioritize targets based on proximity to the center.",
+        "Intervention is blocked by spell shield.",
+        "Intervention is a location-targeted effect.",
+        "Intervention's cast breaks stealth.",
+        "Intervention has no cast time.",
+        "Buying Redemption while dead will disable Intervention until you respawn.",
+        "Removed Unique Passive - Harmony: Gain 25% base health regeneration for every additional 25% base mana regeneration.",
+        "Bug Fix: Active is now correctly amplified by its own +10% bonus healing and shielding power passive while the casting champion is dead.",
+        "New Effect: Heal is affected 3 times as much by Increased Healing and Shieling power amplifiers.",
+        "New Effect: Tooltip now mentions how much healing and damage you've done.",
+        "Grants Unique Passive: +10% healing and shielding power."
+      ]
+    },
+    "Riftmaker": {
+      "group": "Riftmaker",
+      "pageTitle": "Riftmaker",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Riftmaker",
+      "ok": true,
+      "notes": [
+        "Void Infusion grants }} ability power}} by itself.",
+        "With Riftmaker's ability power stat this totals to )}}}}|ap}}.",
+        "Void Corruption lasts for 3 seconds when not fully stacked, and 5 seconds when stacked.",
+        "Bug Fix: Void Corruption passive applies more damage amplification than intended.",
+        "Unique Passive - Void Corruption: For each second in combat with champions, deal 2% increased damage, stacking up to 5 times for a total of 10%. While this effect is fully stacked, gain 10% / 6% omnivamp.",
+        "Unique Passive - Void Infusion: Gain ability power equal to 2% of bonus health|hp.",
+        "Unique Passive - Void Corruption: For each second in combat with champions, deal 3% increased damage, stacking up to 3 times for a total of 9%. While this effect is fully stacked, convert 100% of the increased damage into true damage.",
+        "New Effect: Now also gains Void Corruption stacks from taking damage from champions.",
+        "Unique Passive - Void Corruption: For each second in combat with champions, deal 3% increased damage, stacking up to 5 times. While this effect is fully stacked, convert 100% of the increased damage into true damage."
+      ]
+    },
+    "Runaan's Hurricane": {
+      "group": "Runaan's Hurricane",
+      "pageTitle": "Runaan's_Hurricane",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Runaan%27s_Hurricane",
+      "ok": true,
+      "notes": [
+        "Wind's Fury deals basic damage and is tagged as area of effect without applying spell effects.",
+        "Wind's Fury is an auto-targeted effect.",
+        "Wind's Fury's bolts:",
+        "Deal the same damage type and apply the same hit effects as basic attacks would.",
+        "This means that they apply , trigger on-hit effects (excluding Vayne), can critically strike, draw minion aggro and can be parried by effects such as dodge, block, and blind.",
+        "They will only critically strike if the primary attack would do so (with the exception of guaranteed critical strikes).",
+        "They do not trigger on-attack effects.",
+        "Are blockable projectiles.",
+        "Have a missile speed of 2000.",
+        "Of the unique override variants, Ashe and Kalista missiles are the only ones with a different speed of 2500.",
+        "Does not target structures nor wards.",
+        "Deals 0 physical damage on-hit to the primary target that is able to stack Black Cleaver Carve.",
+        "Wind's Fury's damage is unaffected if the primary attack deals modified damage, with the exceptions of Ashe and Jinx|Fishbones.",
+        "Wind's Fury will not trigger effects that were already consumed by the primary attack, but will do so if they are not consumed.",
+        "Shapeshifting champions can purchase Runaan's Hurricane but cannot trigger Wind's Fury without being in their ranged form.",
+        "The movement speed stat stacks additively with other percentage movement speed modifiers.",
+        "Removed Unique Passive - Peck: Basic attacks deal 30 bonus magic damage on-hit.",
+        "New Unique Passive - Peck: Basic attacks deal 30 bonus magic damage on-hit.",
+        "New Effect: Wind's Fury now additionally searches for any minions in range if no champions can be found.",
+        "Bug Fix: Bolts now properly apply damage from Ravenous Hydra|Ravenous Hydra's Cleave passive.",
+        "Unique Passive - Wind's Fury: Basic attacks on-attack fire additional bolts at up to 2 enemies }}, each dealing physical damage. Bolts apply on-hit effects and are affected by critical strike modifiers. The bolts will target the closest enemies to you that are not the main target.",
+        "Unique Passive - Wind's Fury: Basic attacks on-attack fire additional bolts at up to 2 enemies }}, each dealing 40% AD physical damage. Bolts apply on-hit effects and are affected by critical strike modifiers. The bolts will target the closest enemies to you that are not the main target.",
+        "Unique passive: +15 bonus on-hit physical damage.",
+        "Unique passive - Wind's Fury: When basic attacking, bolts are fired at up to 2 enemies near the target, each dealing 25% AD physical damage. Bolts can critically strike and apply on-hit effects."
+      ]
+    },
+    "Rylai's Crystal Scepter": {
+      "group": "Rylai's Crystal Scepter",
+      "pageTitle": "Rylai's_Crystal_Scepter",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Rylai%27s_Crystal_Scepter",
+      "ok": true,
+      "notes": [
+        "Rimefrost will be continously reapplied by every tick of damage over time effects, causing the effect to last for the entire duration of the damage debuff and until 1 second after the last tick.",
+        "Unique Passive - Rimefrost: Damaging an enemy with an ability slows them 30% from 1 second.",
+        "Unique Passive: Damaging abilities and spells slow affected units by 20% for 1 second.",
+        "New Effect: Damaging abilities and pet attacks slow affected units by 20% for 1 second."
+      ]
+    },
+    "Serpent's Fang": {
+      "group": "Serpent's Fang",
+      "pageTitle": "Serpent's_Fang",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Serpent%27s_Fang",
+      "ok": true,
+      "notes": [
+        "Shield Reaver will affect all shields (including physical damage shields) except magic damage shields.",
+        "Shield Reaver will reduce all active shields before the triggering damage instance.",
+        "Shield Reaver's debuff cannot be refreshed within its duration by subsequent damage dealt to the target.",
+        "Shield Reaver will not trigger against damage blocked by spell shield.",
+        "Since Fiora is immune to debuffs during Fiora, she can have any current shield penetrated multiple times.",
+        "Shield reduction for ranged champions increased to 35% from 25%.",
+        "Bug Fix: Fixed a bug where Shield Reaver passive would not be applied by ability damage.",
+        "Unique Passive - Shield Reaver:",
+        "New Effect: Dealing damage to an enemy champion reduces any shields they gain within the next 3 seconds by 50% / 25%, and if the target was not already afflicted by this effect, reduces all active shields on them by the same amount.",
+        "Unique Passive - Shield Reaver: Basic attacks and abilities deal 50 against shields. Does not apply against magic damage shields."
+      ]
+    },
+    "Serylda's Grudge": {
+      "group": "Serylda's Grudge",
+      "pageTitle": "Serylda's_Grudge",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Serylda%27s_Grudge",
+      "ok": true,
+      "notes": [
+        "Bitter Cold will be continously reapplied by every tick of damage over time effects, causing the effect to last for the entire duration of the damage debuff and until 1 second after the last tick.",
+        "Removed Unique Passive - Rancor: Gain 25% (+ 0.11% per 1 Lethality) armor penetration|armor penetration.",
+        "Unique Passive - Rancor: Gain 20% .",
+        "Unique Passive - Bitter Cold: Dealing ability damage to an enemy that is at or below 50% of their maximum health slows them by 30% for 1 second.",
+        "Unique Passive - Bitter Cold: Dealing ability damage slows affected units by 30% for 1 second.",
+        "Unique Passive - Bitter Cold: Your damaging abilities slow affected enemies by 30% for 1 second."
+      ]
+    },
+    "Shadowflame": {
+      "group": "Shadowflame",
+      "pageTitle": "Shadowflame",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Shadowflame",
+      "ok": true,
+      "notes": [
+        "Cinderbloom uses the following formula to calculate the damage for its critical strike: {\\rm increased\\ damage}={\\rm base\\ damage}+(({\\rm base\\ damage}\\times 0.2)\\times ({\\rm product\\ of\\ all\\ critical\\ damage\\ modifiers})).",
+        "For example, if an ability deals 100 damage by default, then it will critically strike for 120 damage: {\\rm 120}={\\rm 100}+({\\rm 100}\\times 0.2).",
+        "If the user has a critical damage modifier such as Infinity Edge, the damage amplifier is increased to 26%. The ability will thus critically strike for 126 damage: {\\rm 126}={\\rm 100}+(({\\rm 100}\\times 0.2)\\times (1+0.3)).",
+        "If the target has critical strike damage reduction such as Randuin's Omen Resilience, which counts as a critical damage modifier for Cinderbloom, the damage amplifier is reduced to 14%. The ability will thus critically strike for 114 damage: {\\rm 114}={\\rm 100}+(({\\rm 100}\\times 0.2)\\times (1+(-0.3))).",
+        "If the user has Infinity Edge and the target has Randuin's Omen, the damage amplifier is reduced to 18.2%, which is only slightly lower than the base amplifier of 20% due to the multiplicative nature of the modifiers. The ability will thus critically strike for 118.2 damage: 118.2=100+100\\times 0.2\\times (1+0.3)\\times(1-0.3).",
+        "If the damage dealt already critically strikes, Cinderbloom will stack multiplicatively with the critical strike damage multiplier.",
+        "For example, if a damage instance critically strikes for 200% damage, Cinderbloom will stack with that multiplier multiplicatively for a total critical strike of 240% damage: {\\rm 2.4}={\\rm 2}\\times 1.2.",
+        "Cinderbloom affects the damage dealt by all sources except summoner spells.",
+        "Cinderbloom does not apply to damage dealt against structures.",
+        "Cinderbloom only activates on damage instances against targets that are already below 40% of their maximum health.",
+        "Unique Passive - Cinderbloom: Magic damage and true damage critically strikes enemies below 35% maximum health for 120% damage, increased to 130% damage for persistent damage and pet damage.",
+        "Unique Passive - Cinderbloom: Dealing magic damage to champions ignores of their magic resistance, increased to maximum value if they were affected by a shield within the last 5 seconds.",
+        "Unique Passive - Cinderbloom: Damage against champions benefits from magic penetration, increased to maximum value if the target was affected by a shield within the last 5 seconds."
+      ]
+    },
+    "Shurelya's Battlesong": {
+      "group": "Shurelya's Battlesong",
+      "pageTitle": "Shurelya's_Battlesong",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Shurelya%27s_Battlesong",
+      "ok": true,
+      "notes": [
+        "Inspire is an auto-targeted effect.",
+        "Inspire affects untargetable allies.",
+        "Inspire's cast does not break stealth.",
+        "Inspire has no cast time.",
+        "Unique Passive - Motivate: Healing, shielding, or buffing allied champions (excluding yourself) grants you and them 20% bonus movement speed for 1.5 seconds (4 second cooldown per champion).",
+        "New Unique Passive - Motivate: Empowering or protecting an ally champion (excluding yourself) grants you both 25% bonus movement speed for 1.5 seconds. An ally can only be affected by Motivate once every 4 seconds."
+      ]
+    },
+    "Spear of Shojin": {
+      "group": "Spear of Shojin",
+      "pageTitle": "Spear_of_Shojin",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Spear_of_Shojin",
+      "ok": true,
+      "notes": [
+        "Focused Will grants stacks from damage dealt by pets, unless the pets were summoned by an innate ability.",
+        "Focused Will stacks do not amplify the triggering ability's damage. The first ability hit will not benefit from any stack, the second will benefit from one stack, and so on.",
+        "Damage tagged as basic in addition to other damage tags will still be amplified by Focused Will.",
+        "If Mordekaiser is activated through either Mordekaiser or Mordekaiser, it is considered sourced from the ability and will grant Focused Will stacks.",
+        "Udyr Stance applies 1 stack while the temporary buff is ticking, but it applies 2 stacks while the permanent buff remains after the temporary one has run out. [https://www.youtube.com/watch?v=9XkNtj81mc0]",
+        "These abilities are special cased to grant Focused Will stacks :",
+        "Jax, which is considered basic attack sourced and doesn't usually interact with effects that require an ability source.",
+        "Rengar, which is not ability damage. [https://github.com/ArdaSenyurek/Rengar-Bugs/issues/77]",
+        "Skarner, which is not ability damage.",
+        "Urgot, which is an innate.|affectedEffects=Spear of Shojin; Rengar I; Skarner Q; Urgot I|estimatedPatchOrigin=V26.01|wikiUploadTimestamp=1776168006|pagename=Spear of Shojin",
+        "Otherwise he would never be able to get 4 stacks or maintain them.",
+        "These abilities originate from the same cast instance as the basic attack and will not grant stacks.",
+        "Fizz persistent damage",
+        "If the active empowered attack is used, then the DoT will be considered sourced from the ability and grant the stacks.",
+        "These effects do not deal ability damage, pet damage, or proc damage, and will not be amped.",
+        "Aphelios additional damage, Malphite additional target damage and cone.",
+        "Focused Will stacks amplify Dead Man's Plate damage.",
+        "New Effect: Focused Will can now only gain 1 stack per unique ability cast per second.",
+        "Bug Fix: Focused Will now properly amplifies passive ability damage.",
+        "New Effect: Abilities can now only grant 1 stack per cast, up to 1 per second for damage over time effects.",
+        "New Effect: Empowered attacks granted by abilities and dealing ability damage now grant a stack on-damage and benefit from the damage amplification.",
+        "Unique Passive - Dragonforce: Gain 15 basic ability haste|haste.",
+        "Unique Passive - Focused Will: Dealing ability damage grants a stack for 6 seconds, up to 4 stacks. For each stack, your damaging abilities deal 3% increased damage, up to a maximum of 12% increased damage at 4 stacks.",
+        "Unique Passive - Dragonforce: Gain 16 basic ability haste, reduced}}for immobilizing spells.",
+        "Unique Passive - Exigency: Gain up to bonus movement speed based on missing health, capped at 67% missing health."
+      ]
+    },
+    "Spellblade": {
+      "group": "Spellblade",
+      "pageTitle": "Sheen",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Sheen",
+      "ok": true,
+      "notes": [
+        "Unique Passive - Spellblade: After using an ability, your next basic attack within 10 seconds deals 100% base AD bonus physical damage on-hit (1.5 second cooldown, begins after using the empowered attack).",
+        "New Effect: Now displays its cooldown on the item itself rather than with a buff.",
+        "New Effect: Now has an internal cooldown of 3 seconds (but now works with all spells including Karthus and Evelynn).",
+        "Unique Passive - Spellblade: After using an ability, your next basic attack (on-hit) deals 100% base AD bonus physical damage (1.5 second cooldown)."
+      ]
+    },
+    "Spirit Visage": {
+      "group": "Spirit Visage",
+      "pageTitle": "Spirit_Visage",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Spirit_Visage",
+      "ok": true,
+      "notes": [
+        "Spirit Visage grants a total of 150% base health regeneration (the stat increase and Boundless Vitality).",
+        "Boundless Vitality stacks multiplicatively with other sources of healing modifiers.",
+        "Boundless Vitality stacks additively with other sources of health regeneration modifiers.",
+        "Boundless Vitality does not increase the healing provided by Life Steal and Omnivamp effects, but directly increases the amount of the stat the champion has.",
+        "Now and Forever stacks recursively with Immortal Path Now and Forever when it comes to modifying life steal and omnivamp.",
+        "Abilities and effects that apply life steal (e.g Samira) will also only benefit from the increase in life steal, and not from the increase in healing.",
+        "Abilities and effects that directly heal the user, but scale with life steal (i.e Xin Zhao and Ambessa) will benefit from both the increase in life steal and from the increase in healing, effectively amplified by (1.25*1.25-1)*100% (1.251.25), instead of 25%.",
+        "Since Boundless Vitality updates in 0.25 second intervals, this can lead to strange interactions with abilities that scale with those stats (i.e. Bel'Veth).[https://www.youtube.com/watch?v=kZVUhWICUO0 \"strange interactions\"",
+        "New Effect: Tooltip now tracks bonus healing and shielding from Boundless Vitality.",
+        "Unique Passive - Boundless Vitality: Increases all healing and shielding received by 25%.",
+        "Unique Passive: Increases all healing received by 30% (including health regeneration, life steal and spell vamp).",
+        "Unique passive now increases effectiveness of all sources of healing by 20%; from increased effectiveness of self-healing, health regeneration, life steal and spell vamp by 20%.",
+        "Unique passive: +12% cooldown reduction and increases your healing and regeneration effects on yourself by 20%."
+      ]
+    },
+    "Staff of Flowing Water": {
+      "group": "Staff of Flowing Water",
+      "pageTitle": "Staff_of_Flowing_Water",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Staff_of_Flowing_Water",
+      "ok": true,
+      "notes": [
+        "New Effect: Rapids now also grants 15 ability haste.",
+        "Unique Passive - Rapids: Healing or shielding allied champions (excluding yourself) grants you and them 30 ability power|ap and 10% bonus movement speed|ms for 4 seconds.",
+        "Unique Passive - Rapids: Healing or shielding allied champions (excluding yourself) grants you and them and 20 ability haste for 4 seconds.",
+        "New Effect: Rapids now grants 20 ability haste.",
+        "Unique Passive - Rapids: Healing or shielding an ally grants you and them 15% bonus movement speed and for 3 seconds.",
+        "Unique Passive - Mana Font: Every 5 seconds, restores 2% of your missing mana.",
+        "Unique Passive: While in the river, grants +30% movement speed and +10 flat mana regeneration.",
+        "Unique Passive - Mana Font: Restores 2% of your missing mana every 5 seconds."
+      ]
+    },
+    "Stasis": {
+      "group": "Stasis",
+      "pageTitle": "Zhonya's_Hourglass",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Zhonya%27s_Hourglass",
+      "ok": true,
+      "notes": [
+        "Time Stop is an auto-targeted effect.",
+        "Time Stop's cast does not break stealth.",
+        "Time Stop has no cast time.",
+        "20px|link= Quicksilver is placed on a 0.5-second cooldown upon activating Time Stop."
+      ]
+    },
+    "Statikk Shiv": {
+      "group": "Statikk Shiv",
+      "pageTitle": "Statikk_Shiv",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Statikk_Shiv",
+      "ok": true,
+      "notes": [
+        "Each basic attack on-attack generates 6 Energize stacks while 1 is generated for every 24 in-game units traveled. This includes normal movement, dashes, blinks, or being displaced.",
+        "Hitting abilities that apply on-hit effects will also generate 6 stacks.",
+        "Effect applies as a separate cast instance.",
+        "Electrospark deals proc damage and is tagged as area of effect without applying spell effects.",
+        "Electrospark is not blocked by spell shield.",
+        "The lightning from Electrospark consists of individual parts as it travels from unit to unit, each one firing after a delay of 0.05 seconds.",
+        "As with all other Energized effects, Electrospark will activate and trigger against structures. It will not target structures if they are not the entities attacked."
+      ]
+    },
+    "Stormrazor": {
+      "group": "Stormrazor",
+      "pageTitle": "Stormrazor",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Stormrazor",
+      "ok": true,
+      "notes": [
+        "Each basic attack on-attack generates 6 Energize stacks while 1 is generated for every 24 in-game units traveled. This includes normal movement, dashes, blinks, or being displaced.",
+        "Hitting abilities that apply on-hit effects will also generate 6 stacks.",
+        "Effect applies as a separate cast instance.",
+        "Bolt deals proc damage, and thus will not trigger spell effects.",
+        "Bolt is not blocked by spell shield.",
+        "Bolt will not be consumed against wards or jungle plants.",
+        "Bolt is an Energized effect and will stack with other sources of it.",
+        "Energized effects will apply their on-hit damage to structures.",
+        "Bolt's on-hit damage does not apply to inhibitors nor the Nexus.",
+        "Unique Passive - Energized: Moving and basic attacking generates Energize stacks, up to 100.",
+        "Unique Passive - Bolt: When fully Energized, your next basic attack deals 100 bonus magic damage on-hit and grants you 45% bonus movement speed for 1.5 seconds.",
+        "New Unique Passive - Bolt: When fully Energized, your next basic attack deals 25|magic damage (+ 65% AD) (+ 50% AP) bonus magic damage and grants 45% bonus movement speed for 1 second.",
+        "Removed Unique Passive - Paralyze: When fully Energized, your next basic attack deals 120 bonus magic damage on-hit. Energized effects slow by 75% for 0.5 seconds.",
+        "New Effect: Tooltip now tracks champions slowed by Paralyze.",
+        "Unique Passive - Paralyze: When fully Energized, your next basic attack deals 120 bonus magic damage on-hit. Energized effects slow by 75% for 0.5 seconds.",
+        "New Effect: Energized effects now also work on structures.",
+        "New Effect: Damage from other Energized effects now stacks."
+      ]
+    },
+    "Stormsurge": {
+      "group": "Stormsurge",
+      "pageTitle": "Stormsurge",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Stormsurge",
+      "ok": true,
+      "notes": [
+        "Squall can be stacked on a target when applied by multiple users, though not refreshing the debuff for all subsequent sources at a time.",
+        "Squall deals spell damage to the main target, and the electric field deals area damage, and thus will trigger spell effects.",
+        "Squall is an auto-targeted effect.",
+        "Squall's damage is special cased to not remove sleep.",
+        "The range modifier is calculated at the moment of applying Squall, regardless of cast instances and when its damage is dealt.",
+        "Undocumented / New Effect: Squall is now special cased to not remove sleep.",
+        "Squall AP ratio for ranged champions increased to 18% AP from 15% AP.",
+        "Unique Passive - Stormraider: Dealing damage to an enemy champion equal to 35% of their maximum health within 2.5 seconds inflicts them with Squall and grants you 25% bonus movement speed for 2 seconds (30 second cooldown).",
+        "Unique Passive - Squall: After 2 seconds of having applied Squall, strike the target with lightning, dealing 120 to 260 / 90 to 195|pp=true|magic damage (+ 40% / 30% AP) magic damage to them. If the target dies before being struck, they emit an electric field instantly that shocks all enemy champions near them, dealing them the same damage and granting you 30 gold."
+      ]
+    },
+    "Sundered Sky": {
+      "group": "Sundered Sky",
+      "pageTitle": "Sundered_Sky",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Sundered_Sky",
+      "ok": true,
+      "notes": [
+        "The bonus health gained from Lightshield Strike can stack with subsequent triggers of the effect.",
+        "This can only stack up to 5 times and the duration is refreshed each time the heal is in excess of 100% maximum health.",
+        "Lightshield Strike functions as a critical strike for all purposes and its damage is affected by such as Infinity Edge.",
+        "Lightshield Strike will only affect basic attacks and not abilities that apply on-hit effects and can also critically strike.",
+        "Unique Passive - Lightshield Strike: Your next basic attack against a champion is empowered to critically strike for 175% damage and heal you for 140% base AD (+ 6% of your missing health) (6 second cooldown per target). Excess healing beyond maximum health is converted to bonus health for 6 seconds."
+      ]
+    },
+    "Support / Jungle": {
+      "group": "Support / Jungle",
+      "pageTitle": "Bounty_of_Worlds",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Bounty_of_Worlds",
+      "ok": true,
+      "notes": [
+        "While in combat, the menu in the HUD for Upgrade is disabled.",
+        "New Effect: Minion gold penalty now accounts for all champions that have a Support item, instead of each individual user. Additionally, every champion with a Support item now contributes towards hitting the minion penalty.",
+        "Unique Passive - Upgrade: You have completed the Support quest and you may upgrade this item, Bounty of Worlds, for free into Bloodsong, Celestial Opposition, Dream Maker, Solstice Sleigh, or Zaz'Zak's Realmspike by selecting one of them from a custom menu or the shop."
+      ]
+    },
+    "Terminus": {
+      "group": "Terminus",
+      "pageTitle": "Terminus",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Terminus",
+      "ok": true,
+      "notes": [
+        "Shadow deals proc damage, and thus will not trigger spell effects.",
+        "Shadow's on-hit damage does not apply to structures.",
+        "The bonus damage dealt by Shadow benefits from .",
+        "Juxtaposition's Light or Dark stacks are refreshed with the respective hit of basic attacks.",
+        "The user will still alternate between Light and Dark hits even if they are at maximum stacks of both bonuses.",
+        "Unique Passive - Shadow: Basic attacks deal 30 bonus magic damage on-hit.",
+        "Unique Passive - Juxtaposition: Basic attacks against champions alternate between Light and Dark hits, each one granting a bonus for 5 seconds that stacks up to 5 times. Light hits grant bonus armor and bonus magic resistance while Dark hits grant 6% armor penetration and magic penetration, for a total of bonus resistances and 30% resistances penetration at maximum stacks of each."
+      ]
+    },
+    "The Collector": {
+      "group": "The Collector",
+      "pageTitle": "The_Collector",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/The_Collector",
+      "ok": true,
+      "notes": [
+        "Death deals raw damage, and thus will not trigger spell effects.",
+        "Death is not blocked by spell shield.",
+        "Death execution effect cannot be triggered by the bonus damage dealt by Energized effects, 0 damage instances, and basic attacks that are parried.",
+        "Death is special cased to not affect Kled while he is Kled|mounted.",
+        "Unique Passive - Death: If you deal damage that would leave a champion below 5% of their maximum health, execute them.",
+        "Unique Passive - Taxes: Champion kills grant you an additional 25 gold.",
+        "Unique Passive - Death and Taxes: If you deal damage that would leave a champion below 5% of their maximum health, execute them. Champion kills grant you an additional 25 gold.",
+        "New Effect: Execute now only triggers against champions, instead of all enemies except epic monsters and structures.",
+        "Unique Passive - Death and Taxes: If you deal damage that would leave an enemy below 5% of their maximum health, execute them. Champion kills grant you an additional 25 gold."
+      ]
+    },
+    "Thornmail": {
+      "group": "Thornmail",
+      "pageTitle": "Thornmail",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Thornmail",
+      "ok": true,
+      "notes": [
+        "Thorns deals reactive damage, and thus will not trigger spell effects.",
+        "Thorns is not blocked by spell shield.",
+        "Thorns' reflect is not a projectile.",
+        "Thorns will trigger regardless of if the basic attack deals damage or not.",
+        "This includes if the user mitigates all damage with a shield or invulnerability.",
+        "It will not trigger if the attack is dodged, blocked, or missed while the attacker is blinded.",
+        "Grievous Wounds is applied to the attacker even if they are protected by a shield or invulnerability.",
+        "Healing effects triggering on a basic attack (, Xin Zhao, etc.) will first be reduced by Grievous Wounds.",
+        "This means that the Grievous Wounds, applied by Bramble Vest, will be effective with the basic attack that triggers the effect.",
+        "By itself, Thornmail's Thorns reflects at least magic damage}} on being hit.",
+        "New Effect: Is now called out in chat to notify when the item is purchased.",
+        "Unique Passive - Thorns: When struck by an attack, deal 10 to the attacker and inflict them with 40% Grievous Wounds for 2 seconds if they are a champion. Immobilizing enemy champions also applies 60% Grievous Wounds for 2 seconds.",
+        "Unique Passive - Thorns: Upon being hit by a basic attack on-hit, reflects 25 , while also inflicting Grievous Wounds on the attacker for 3 seconds.",
+        "Unique Passive - Cold Steel: When hit by basic attacks, cripples source's attack speed by 15% for 1 second.",
+        "New Effect: Grants 250 health.",
+        "Removed Passive: Reflects 15% of the physical damage taken (+ 25% bonus armor) from basic attacks and on-hit effects back to its source as magic damage.",
+        "New Passive – Thorns: Upon being hit by a basic attack, reflects magic damage equal to 25 (+ 10% bonus armor), inflicting Grievous Wounds on the attacker for 1 second.",
+        "New Effect: Reflected damage now deals (+25% bonus armor) bonus damage."
+      ]
+    },
+    "Umbral Glaive": {
+      "group": "Umbral Glaive",
+      "pageTitle": "Umbral_Glaive",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Umbral_Glaive",
+      "ok": true,
+      "notes": [
+        "Blackout affects all types of wards and stealthed traps (including Shaco).",
+        "The disable lingers for 2 seconds on wards and traps affected by Blackout after the user is no longer in range.",
+        "Blackout will not trigger if the owner currently has a Sweeper Drone active.",
+        "Blackout will not activate on a ward that would be detected by , whenever both are available.",
+        "New Unique Passive - Nightstalker: While out of vision of enemies for 1 second, and for 4 seconds after seen, your next basic attack against a champion deals 50 .",
+        "Bonus damage to wards is now part of a unique passive named Extinguish and is no longer part of Blackout.",
+        "Bug Fix: Passive can no longer deal bonus damage to invulnerable wards (ones that are being to).",
+        "Unique Passive - Blackout: When spotted by enemy wards or traps, gain Blackout over a 400-unit radius for 8 seconds (45 second cooldown). You disable surrounding wards, as well as expose and reveal stealthed wards and traps. The effects linger for 2 seconds after you walk away.",
+        "Unique Passive: Your basic attacks instantly kill revealed traps and deal triple damage to wards.",
+        "Unique Passive: 12 lethality.",
+        "Unique Passive - Blackout: When spotted by an enemy ward or traps, gain Blackout over a 400-unit radius for 8 seconds (45 second cooldown). You disable surrounding wards, as well as exposing stealthed wards and traps. The effects linger for 2 seconds after you walk away. Basic attacks instantly kill revealed traps and do triple damage to wards."
+      ]
+    },
+    "Unending Despair": {
+      "group": "Unending Despair",
+      "pageTitle": "Unending_Despair",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Unending_Despair",
+      "ok": true,
+      "notes": [
+        "Anguish deals area damage, and thus will trigger spell effects.",
+        "Anguish is an auto-targeted effect.",
+        "Leaving champion combat refreshes Anguish's timer immediately.",
+        "Unique Passive - Anguish: Every 7 seconds after entering combat with champions, sap all enemy champions around you within 650 units to deal (+ 3% bonus health) magic damage to them and heal yourself equal to 250% of the damage dealt."
+      ]
+    },
+    "Void Pen": {
+      "group": "Void Pen",
+      "pageTitle": "Void_Staff",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Void_Staff",
+      "ok": true,
+      "notes": [
+        "Void Staff's magic penetration becomes more effective as the target's magic resistance increases.",
+        "Magic damage dealt is increased by a factor of:",
+        "}}% at 30 magic resistance.",
+        "}}% at 100 magic resistance.",
+        "}}% at 200 magic resistance.",
+        "Unique Passive - Dissolve: Grants 40% magic penetration."
+      ]
+    },
+    "Voltaic Cyclosword": {
+      "group": "Voltaic Cyclosword",
+      "pageTitle": "Voltaic_Cyclosword",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Voltaic_Cyclosword",
+      "ok": true,
+      "notes": [
+        "Each basic attack on-attack generates 6 Energize stacks while 1 is generated for every 24 in-game units traveled. This includes normal movement, dashes, blinks, or being displaced.",
+        "Hitting abilities that apply on-hit effects will also generate 6 stacks.",
+        "Effect applies as a separate cast instance.",
+        "Firmament deals proc damage, and thus will not trigger spell effects.",
+        "Firmament is not blocked by spell shield.",
+        "Firmanent's additional lethality is applied before its own damage.",
+        "Firmanent's damage is applied before the damage of the triggering attack or ability.",
+        "Voltaic Cyclosword is an Energized effect and will stack with other sources of it.",
+        "Energized effects will apply their on-hit damage to structures.",
+        "Unique Passive - Galvanize:",
+        "New Effect: Damaging enemy champions with abilities can trigger Energized effects.",
+        "Unique Passive - Firmament:",
+        "New Effect: When fully Energized, your next basic attack grants you 15 / 12 lethality for 4 seconds and deals bonus physical damage equal to 9% / 7% of the target's current health, capped at 200 against non-champions.",
+        "Unique Passive - Galvanize: Moving and basic attacking generates Energize stacks, up to 100. Dashing or moving while in stealth generates stacks 75% faster.",
+        "Unique Passive - Firmament: When fully Energized, your next basic attack deals 100 bonus physical damage on-hit and slows the target by 99% / 20% for 0.75 seconds."
+      ]
+    },
+    "Warmog's Armor": {
+      "group": "Warmog's Armor",
+      "pageTitle": "Warmog's_Armor",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Warmog%27s_Armor",
+      "ok": true,
+      "notes": [
+        "Warmog's Vitality does not amplify temporary bonus health gained from Solstice Sleigh Going Sledding and Sundered Sky Lightshield Strike.",
+        "Warmog's Vitality grants }} health}} by itself.",
+        "With Warmog's Armor's health stat this totals to )}}}}|hp}}.",
+        "Warmog's Vitality does not count bonus health gained by item passives.",
+        "Any of the following amounts of bonus health, from other sources, is required to activate Warmog's Heart:",
+        "+*)}} bonus health}}.",
+        ")- round 0}} bonus health from items}}.",
+        "- 20)/(1+)- round 0}} to - 360)/(1+)- round 0}}|color=health}} bonus health from items with double scaling health shards.",
+        "Unique Passive - Warmog's Heart: This passive activates if you have at least 2000 bonus health. if damage has not been taken in the last 8 seconds (3 seconds for damage from non-champions).",
+        "Unique Passive - Warmog's Vitality: Gain bonus health equal to 10% bonus health from items.",
+        "Unique Passive - Warmog's Heart: This passive activates if you have at least 1500 bonus health. and gain 10% bonus movement speed if damage has not been taken in the last 6 seconds (3 seconds for damage from non-champions).",
+        "Unique Passive - Warmog's Heart: This passive activates if you have at least 1300 bonus health. and gain 10% bonus movement speed if damage has not been taken in the last 6 seconds (3 seconds for damage from non-champions).",
+        "Unique Passive - Warmog's Heart: This passive activates if you have at least 1100 bonus health. if damage has not been taken in the last 6 seconds (3 seconds for damage from non-champions).",
+        "Unique Passive - Warmog's Heart: If you have at least 3000 maximum health, regenerates 5% maximum health every second if you haven't taken damage from champions in 6 seconds (3 seconds for damage from non-champions).",
+        "Unique Passive - Warmog's Heart: Regenerate 2.5% maximum health every half-second if damage has not been taken in the last 6 seconds (3 seconds for damage from minions).",
+        "New Effect: Warmog's Heart now has a reduced 3 second cooldown when taking damage from minions and monsters."
+      ]
+    },
+    "Wit's End": {
+      "group": "Wit's End",
+      "pageTitle": "Wit's_End",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Wit%27s_End",
+      "ok": true,
+      "notes": [
+        "Fray deals proc damage, and thus will not trigger spell effects.",
+        "Fray's on-hit damage does not apply to structures.",
+        "The bonus damage dealt by Fray benefits from .",
+        "Unique Passive - Fray: Basic attacks deal on-hit.",
+        "Unique Passive - Fray: Basic attacks deal on-hit and grant you 20 bonus movement speed for 2 seconds.",
+        "Unique Passive - At Wit's End: Basic attacks deal . While below 50% health, heal for 100% / 33% of this effect's .",
+        "New Effect: Now grants 5% bonus movement speed.",
+        "New Unique Passive - At Wit's End: Basic attacks deal . While below 50% health, heal for 33% of this effect's damage dealt, increased to 100% for melee champions.",
+        "Removed Unique Passive: Basic attacks deal 42 bonus magic damage on-hit.",
+        "Removed Unique Passive: Basic attacks (on-hit) grant 6 magic resistance and reduce the target's magic resistance by 6 for 5 seconds. Both effects stack up to 30 magic resistance. Ranged champions only steal 3 magic resistance per basic attack, up to the same cap.",
+        "New Effect: Melee champions instead steal 6 magic resistance per basic attack."
+      ]
+    },
+    "Youmuu's Ghostblade": {
+      "group": "Youmuu's Ghostblade",
+      "pageTitle": "Youmuu's_Ghostblade",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Youmuu%27s_Ghostblade",
+      "ok": true,
+      "notes": [
+        "Wraith Step is an auto-targeted effect.",
+        "Wraith Step's cast does not break stealth.",
+        "Wraith Step has no cast time.",
+        "Wraith Step's percentage movement speed stacks additively with other sources of percentage movement speed.",
+        "Unique Passive - Haunt: Gain 40 bonus movement speed|ms while out-of-combat with enemy champions for 3 seconds.",
+        "Unique Passive - Haunt: While moving, generate 1 Spectral Shard for every 55 units travelled. Gain 0.4 bonus movement speed while out-of-combat for every Spectral Shard, up to 40 bonus movement speed with 100 Spectral Shards. At maximum shards, also gain . Dealing damage to an enemy champion causes Spectral Shards to reset after 3 seconds.",
+        "Mythic Passive: Empowers each of your other Legendary items with 7 bonus attack damage.",
+        "Unique Passive - Haunt: While moving, generate 1 Spectral Shard for every 45 units travelled. Gain 1 bonus movement speed while out-of-combat for every 4 Spectral Shards, up to 40 bonus movement speed with 100 Spectral Shards. At maximum shards, also gain . Dealing damage to an enemy champion causes Spectral Shards to reset after 3 seconds.",
+        "Mythic Passive: Empowers other Legendary items with 7 bonus attack damage.",
+        "Unique Passive - Haunt: Gain 40 bonus movement speed while out-of-combat.",
+        "Unique Passive - Haunt: +40 movement speed out-of-combat.",
+        "Unique Passive: +40 movement speed out-of-combat."
+      ]
+    },
+    "Yun Tal Wildarrows": {
+      "group": "Yun Tal Wildarrows",
+      "pageTitle": "Yun_Tal_Wildarrows",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Yun_Tal_Wildarrows",
+      "ok": true,
+      "notes": [
+        "On Zeri, Flurry is special-cased to activate only upon hitting a champion with all bolts of Zeri.",
+        "Unique Passive - Practice Makes Lethal: Basic attacks on-attack grant 0.2% critical strike chance, stacking up to 125 times for a total of 25% critical strike chance.",
+        "Unique Passive - Flurry: Attacking an enemy champion grants you 30% bonus attack speed for 4 seconds (40 second cooldown, reduced by 1 second on-hit, or 2 seconds if it critically strikes).",
+        "Unique Passive - Serrated Edge: Basic damage that critically strikes on-hit inflicts a bleed on the target, causing them to take Subsequent applications of the bleed can stack, but do not refresh the duration of the previous bleed.",
+        "Unique Passive - Serrated Edge: Basic damage that critically strikes on-hit inflicts a bleed on the target, causing them to takeSubsequent applications of the bleed can stack, but do not refresh the duration of the previous bleed."
+      ]
+    },
+    "Zeke's Convergence": {
+      "group": "Zeke's Convergence",
+      "pageTitle": "Zeke's_Convergence",
+      "wikiUrl": "https://wiki.leagueoflegends.com/en-us/Zeke%27s_Convergence",
+      "ok": true,
+      "notes": [
+        "Frostfire Tempest deals proc damage and is tagged as area of effect without applying spell effects.",
+        "Frostfire Tempest is granted at the start of the triggering ability's cast time.",
+        "Frostfire Tempest is not blocked by spell shield.",
+        "Frostfire Tempest is an auto-targeted effect.",
+        "New Effect: Frostfire Tempest can now stall up to 5 seconds before activation until either a valid enemy is in its radius or the stall period ends.",
+        "New Unique Passive - Cryocombustion: Gain 15 ultimate ability haste.",
+        "Unique Passive - Frostfire Tempest: Upon casting your ultimate ability, you summon a storm of flame and ice in a icononly=true 350-radius around you for 5 seconds, dealing 50 magic damage every second and slowing enemies within the area by 30% (45 second cooldown).",
+        "Unique Passive - Convergence: Immobilizing enemy champions marks them for 8 seconds. Your Accomplice's basic attacks on-hit and ability hits against marked enemies fire a missile at them that deals upon arrival.",
+        "Unique Passive - Convergence: When you immobilize an enemy, they receive from your Accomplice's basic attacks on-hit and abilities for the next 4 seconds.",
+        "Unique Passive: Casting your ultimate ability within range of your Conduit grant both of you bonus effects for 10 seconds. You are surrounded with a 300 range storm which slows enemies within it by 20%, and your Conduit's basic attacks burn their target with dealing 30% bonus magic damage over 2 seconds (45 second cooldown).",
+        "Unique Passive - Frostfire Covenant: If an enemy is both struck by and , your storm ignites and becomes . A storm, deals 40 magic damage per second to nearby enemies and slows by 40% instead for 3 seconds.",
+        "New Passive: Casting your ultimate near your ally summons a local frost storm for 10 seconds. As the storm rages, nearby enemies are slowed by 20% and your ally's attacks burn their targets for 50% bonus magic damage over 2 seconds (45 second cooldown)."
+      ]
+    }
+  }
+}

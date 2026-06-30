@@ -11,6 +11,7 @@ import type { Item } from "@/app/actions/sim";
 const EXCLUSIVE_GROUP_BY_ITEM_GROUP: Record<string, string> = {
   Terminus: "Fatality",
   "Last Whisper": "Fatality",
+  "Serpent's Fang": "Serpent's Fang",
 };
 
 export function getItemExclusiveGroup(item: Item): string | null {

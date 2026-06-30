@@ -737,7 +737,7 @@ function RandomBuildGenerator(): React.ReactElement {
   const [spinPosition, setSpinPosition] = useState(0);
 
   useEffect(() => {
-    fetch("/data/metaBuilds.json")
+    fetch(`/data/metaBuilds.json?ts=${Date.now()}`)
       .then((res) => {
         if (!res.ok) throw new Error("Meta data not found");
         return res.json();
@@ -1048,7 +1048,7 @@ function MetaAnalysis(): React.ReactElement {
   }>({ x: 0, y: 0 });
 
   useEffect(() => {
-    fetch("/data/metaBuilds.json")
+    fetch(`/data/metaBuilds.json?ts=${Date.now()}`)
       .then((res) => {
         if (!res.ok)
           throw new Error(
