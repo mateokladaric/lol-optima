@@ -24,6 +24,8 @@ export const STAT_TOOLTIPS = {
 
 export const PROFILE_TOOLTIPS: Record<string, string> = {
   balanced: "Mix of sustained damage and durability for a reference 1v1 duel.",
+  balanced_ap:
+    "AP spell itemization with balanced durability — best 1v1 mix for mages and AP scalers.",
   glass: "Pure damage — lowest survivability tradeoff.",
   full_lethality:
     "Flat armor pen all-in — 3.5s burst window, scores combo + item burst only.",

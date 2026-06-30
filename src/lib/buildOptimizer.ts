@@ -370,6 +370,21 @@ export function championEligibleForFullLethality(champion: Character): boolean {
   return adScore >= 35;
 }
 
+/** AP-primary kits — balanced AP mirrors balanced but spell itemization. */
+export function championEligibleForBalancedAp(
+  champion: Character,
+): boolean {
+  return championUsesApScaling(champion);
+}
+
+function isApBuildProfile(profile: BuildProfileId): boolean {
+  return (
+    profile === "ap" ||
+    profile === "spell" ||
+    profile === "balanced_ap"
+  );
+}
+
 export function fightDurationOptionsForProfile(
   profile: BuildProfileId,
   duel: ResolvedDuel,
@@ -635,6 +650,7 @@ function itemCursedStatContribution(item: Item): number {
 
 export type BuildProfileId =
   | "balanced"
+  | "balanced_ap"
   | "glass"
   | "full_lethality"
   | "ability_burst"
@@ -783,7 +799,7 @@ export function keystoneCandidatesFor(
       if (burstAssassin || burstMage) return false;
       return (
         usesAp &&
-        (profile === "ap" ||
+        (isApBuildProfile(profile) ||
           profile === "bruiser" ||
           profile === "tank" ||
           (profile === "balanced" && apLean))
@@ -793,7 +809,7 @@ export function keystoneCandidatesFor(
     if (n === "Conqueror") {
       if (burstAssassin || burstMage) return false;
       if (apLean && !adLean) return false;
-      if (profile === "ap" || profile === "spell") return false;
+      if (isApBuildProfile(profile)) return false;
       return (
         profile === "ad" ||
         profile === "bruiser" ||
@@ -829,6 +845,7 @@ export function keystoneCandidatesFor(
         burstMage ||
         profile === "ap" ||
         profile === "spell" ||
+        profile === "balanced_ap" ||
         (profile === "balanced" && (apLean || burstAssassin || burstMage))
       );
     }
@@ -840,6 +857,7 @@ export function keystoneCandidatesFor(
         usesAp ||
         profile === "ap" ||
         profile === "spell" ||
+        profile === "balanced_ap" ||
         burstMage ||
         (profile === "balanced" && apLean)
       );
@@ -850,6 +868,7 @@ export function keystoneCandidatesFor(
       return (
         tank ||
         profile === "bruiser" ||
+        profile === "balanced_ap" ||
         (profile === "balanced" && !burstAssassin && !burstMage)
       );
     }
@@ -1275,6 +1294,14 @@ function profileScore(
         duelFactor
       );
 
+    case "balanced_ap": {
+      const spellMixed =
+        dps.abilityDPS + dps.dotDPS + dps.burstDPS + dps.sustainedDPS * 0.2;
+      return (
+        Math.log1p(spellMixed / 45) * Math.log1p(ehp / 400) * duelFactor
+      );
+    }
+
     case "spell":
       return (
         Math.log1p(dps.abilityDPS + dps.dotDPS + dps.burstDPS) *
@@ -1368,6 +1395,7 @@ function purchasePowerScore(
         dps.autoAttackDPS + dps.onHitDPS + dps.sustainedDPS * 0.25
       );
     case "ap":
+    case "balanced_ap":
       return dps.abilityDPS + dps.dotDPS + dps.burstDPS;
     case "tank":
       return (
@@ -1809,7 +1837,16 @@ export function dedupeBuildRecommendations(
     const items = itemsFromNames(rec.items, byName);
     const exactKey = `${[...rec.items].sort().join("|")}::${rec.rune}`;
     if (keptExact.has(exactKey)) continue;
-    if (items.length === 6 && !isDistinct(items, keptItems, minDiff)) continue;
+    const hasProfile = kept.some((k) => k.profile === rec.profile);
+    if (
+      items.length === 6 &&
+      !hasProfile &&
+      !isDistinct(items, keptItems, minDiff)
+    ) {
+      // First row per archetype always survives even if item groups overlap.
+    } else if (items.length === 6 && !isDistinct(items, keptItems, minDiff)) {
+      continue;
+    }
 
     keptExact.add(exactKey);
     if (items.length === 6) keptItems.push(items);
@@ -1836,7 +1873,19 @@ export function dedupeSerializedMetaBuilds(
     const items = itemsFromNames(row.items, byName);
     const exactKey = `${[...row.items].sort().join("|")}::${row.rune}`;
     if (keptExact.has(exactKey)) continue;
-    if (items.length === 6 && !isDistinct(items, keptItems, minDiff)) continue;
+    const profile = row.profile ?? profileFromBuildType(row.buildType);
+    const hasProfile = kept.some(
+      (k) => (k.profile ?? profileFromBuildType(k.buildType)) === profile,
+    );
+    if (
+      items.length === 6 &&
+      !hasProfile &&
+      !isDistinct(items, keptItems, minDiff)
+    ) {
+      // First row per archetype always survives even if item groups overlap.
+    } else if (items.length === 6 && !isDistinct(items, keptItems, minDiff)) {
+      continue;
+    }
 
     keptExact.add(exactKey);
     if (items.length === 6) keptItems.push(items);
@@ -1854,6 +1903,11 @@ const PROFILE_META: Record<
     label: "Balanced (1v1)",
     description:
       "Best mix of sustained damage and durability for a reference duel.",
+  },
+  balanced_ap: {
+    label: "Balanced AP",
+    description:
+      "Best mix of spell damage and durability for AP champions in a 1v1 duel.",
   },
   glass: {
     label: "Maximum damage",
@@ -1948,6 +2002,7 @@ export function recommendBuildsForChampion(
   };
   const profiles: BuildProfileId[] = [
     "balanced",
+    "balanced_ap",
     "glass",
     "full_lethality",
     "ability_burst",
@@ -1967,6 +2022,12 @@ export function recommendBuildsForChampion(
     if (
       profile === "full_lethality" &&
       !championEligibleForFullLethality(champion)
+    ) {
+      continue;
+    }
+    if (
+      profile === "balanced_ap" &&
+      !championEligibleForBalancedAp(champion)
     ) {
       continue;
     }
@@ -2035,7 +2096,6 @@ export function recommendBuildsForChampion(
     }
 
     if (primary.length === 0 || !isValidFullBuild(primary)) continue;
-    if (!isDistinct(primary, seenItemSets)) continue;
 
     const { rune: gRune } = getCachedKeystone(
       search.keystoneCache,
@@ -2202,6 +2262,7 @@ export function recommendBuildsForChampion(
     if (a.profile !== b.profile) {
       const order: BuildProfileId[] = [
         "balanced",
+        "balanced_ap",
         "glass",
         "full_lethality",
         "ability_burst",
@@ -2250,6 +2311,7 @@ export type SerializedMeta = {
 
 const BUILD_PROFILE_IDS: BuildProfileId[] = [
   "balanced",
+  "balanced_ap",
   "glass",
   "full_lethality",
   "ability_burst",
